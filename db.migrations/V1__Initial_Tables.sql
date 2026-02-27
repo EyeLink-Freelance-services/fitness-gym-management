@@ -12,7 +12,7 @@ create table public.companies
 (
     id         uuid primary key default gen_random_uuid(),
     name       varchar(255)                   not null,
-    mode       varchar(100)                   not null,
+    mode       text                           not null,
     created_at timestamptz      default now() not null,
     updated_at timestamptz      default now() not null,
     deleted_at timestamptz
