@@ -1,18 +1,12 @@
-# NextAdmin - Next.js Admin Dashboard Template and Components
+# EyeLink Freelance - Fitness Gym
 
-**NextAdmin** is a Free, open-source Next.js admin dashboard toolkit featuring 200+ UI components and templates that come with pre-built elements, components, pages, high-quality design, integrations, and much more to help you create powerful admin dashboards with ease.
+**Fitness Gym** is an application to manage member of gym even for company or personal coaching. covering core capabilities including member management, training and diet planning, scheduling, communication, and revenue tracking.
 
 
 [![nextjs admin template](https://cdn.pimjo.com/nextadmin-2.png)](https://nextadmin.co/)
 
 
-**NextAdmin** provides you with a diverse set of dashboard UI components, elements, examples and pages necessary for creating top-notch admin panels or dashboards with **powerful** features and integrations. Whether you are working on a complex web application or a basic website, **NextAdmin** has got you covered.
-
-### [✨ Visit Website](https://nextadmin.co/)
-### [🚀 Live Demo](https://demo.nextadmin.co/)
-### [📖 Docs](https://docs.nextadmin.co/)
-
-By leveraging the latest features of **Next.js 14** and key functionalities like **server-side rendering (SSR)**, **static site generation (SSG)**, and seamless **API route integration**, **NextAdmin** ensures optimal performance. With the added benefits of **React 18 advancements** and **TypeScript** reliability, **NextAdmin** is the ultimate choice to kickstart your **Next.js** project efficiently.
+By leveraging the latest features of **Next.js 16** and key functionalities like **server-side rendering (SSR)**, **static site generation (SSG)**, and seamless **API route integration**, **Fitness Gym** ensures optimal performance. With the added benefits of **React 19 advancements** and **TypeScript** reliability
 
 ## Installation
 
@@ -38,52 +32,28 @@ And if you're using **Yarn**, it's:
 yarn dev
 ```
 
-And voila! You're now ready to start developing. **Happy coding**!
+And voila! You're now ready to start.
 
 ## Highlighted Features
-**200+ Next.js Dashboard Ul Components and Templates** - includes a variety of prebuilt **Ul elements, components, pages, and examples** crafted with a high-quality design.
-Additionally, features seamless **essential integrations and extensive functionalities**.
 
-- A library of over **200** professional dashboard UI components and elements.
-- Five distinctive dashboard variations, catering to diverse use-cases.
-- A comprehensive set of essential dashboard and admin pages.
-- More than **45** **Next.js** files, ready for use.
 - Styling facilitated by **Tailwind CSS** files.
-- A design that resonates premium quality and high aesthetics.
-- A handy UI kit with assets.
-- Over ten web apps complete with examples.
 - Support for both **dark mode** and **light mode**.
-- Essential integrations including - Authentication (**NextAuth**), Database (**Postgres** with **Prisma**), and Search (**Algolia**).
-- Detailed and user-friendly documentation.
+- Essential integrations including - Authentication (**auth built-in supabase**), Database (**Supabase Postgres**)
+- user-friendly.
 - Customizable plugins and add-ons.
 - **TypeScript** compatibility.
-- Plus, much more!
 
-All these features and more make **NextAdmin** a robust, well-rounded solution for all your dashboard development needs.
+## Tips
 
-## Update Logs
+- .env.example is an example for .env that we will have:
+    - the prefix **NEXT_PUBLIC** is for client side page. it will not work on server side.
+    - without prefix means you will handle the value of the .env variable in server side only. it will not work on client side
+- Folder:
+    - **(public)**: A route group for pages that do NOT require authentication. in the url it will be /sign-in not public/sign-in 
+    - **(app) or (protected)**: protected application area. Uses the protected layout, Requires authentication.
+    - **api**: This is your server-call API layer (server page). Contains all endpoints server app/api/**/route.ts. Those Route Handlers use lib/supabase/server.ts to run Supabase queries securely. 
+    - **lib**: It is NOT routing. It is NOT UI. it contains Supabase client, DB query helpers, Validation schemas, Utility functions, Business logic
+    - **lib/validation**: Zod schemas. used in API validation and Forms.
+    - **lib/auth/**: Role-based logic. Permission helpers. Workspace checks.
+    - **src/components/**: all reusable UI components. should not contains business logic, supabase call
 
-### Version 1.2.2 - [December 01, 2025]
-- Updated to Next.js 16
-- Updated dependencies.
-
-### Version 1.2.1 - [Mar 20, 2025]
-- Fix Peer dependency issues and NextConfig warning.
-- Updated apexcharts and react-apexhcarts to the latest version.
-
-### Version 1.2.0 - Major Upgrade and UI Improvements - [Jan 27, 2025]
-
-- Upgraded to Next.js v15 and updated dependencies
-- API integration with loading skeleton for tables and charts.
-- Improved code structure for better readability.
-- Rebuilt components like dropdown, sidebar, and all ui-elements using accessibility practices.
-- Using search-params to store dropdown selection and refetch data.
-- Semantic markups, better separation of concerns and more.
-
-### Version 1.1.0
-- Updated Dependencies
-- Removed Unused Integrations
-- Optimized App
-
-### Version 1.0
-- Initial Release - [May 13, 2024]
