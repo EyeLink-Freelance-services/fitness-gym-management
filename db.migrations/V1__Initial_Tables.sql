@@ -39,11 +39,11 @@ CREATE TABLE public.company_role
 CREATE TABLE public.company_role_permission
 (
     id              uuid primary key default gen_random_uuid(),
-    company_role_id uuid         not null references public.company_role (id) on delete cascade,
-    module          varchar(100) not null,
-    can_read        boolean      not null,
-    can_write       boolean      not null,
-    can_delete      boolean      not null,
+    company_role_id uuid    not null references public.company_role (id) on delete cascade,
+    module          text    not null,
+    can_read        boolean not null,
+    can_write       boolean not null,
+    can_delete      boolean not null,
     unique (company_role_id, module)
 );
 
