@@ -1,9 +1,10 @@
 import { cn } from "@/lib/utils";
 import { type HTMLInputTypeAttribute, useId } from "react";
+import Label from "@/components/FormElements/common/label";
 
 type InputGroupProps = {
   className?: string;
-  label: string;
+  label: React.ReactNode;
   placeholder: string;
   type: HTMLInputTypeAttribute;
   fileStyleVariant?: "style1" | "style2";
@@ -17,6 +18,9 @@ type InputGroupProps = {
   iconPosition?: "left" | "right";
   height?: "sm" | "default";
   defaultValue?: string;
+  inputProps?: React.ComponentPropsWithRef<"input">;
+  error?: string;
+  id?: string;
 };
 
 const InputGroup: React.FC<InputGroupProps> = ({
@@ -29,19 +33,33 @@ const InputGroup: React.FC<InputGroupProps> = ({
   active,
   handleChange,
   icon,
+  inputProps,
+  error,
+  id: providedId,
   ...props
 }) => {
-  const id = useId();
+  const { className: inputClassName, ...restInputProps } = inputProps ?? {};
+  const autoId = useId();
+  const id = providedId ?? restInputProps.id ?? autoId;
+  const isRequired = restInputProps.required ?? required;
+  const isDisabled = restInputProps.disabled ?? disabled;
+  const inputName = restInputProps.name ?? props.name;
+  const onChange = restInputProps.onChange ?? handleChange;
+  const value = (restInputProps.value ?? props.value) as
+    | string
+    | number
+    | readonly string[]
+    | undefined;
+  const defaultValue = restInputProps.defaultValue ?? props.defaultValue;
 
   return (
     <div className={className}>
-      <label
+      <Label
+        as="label"
         htmlFor={id}
-        className="text-body-sm font-medium text-dark dark:text-white"
-      >
-        {label}
-        {required && <span className="ml-1 select-none text-red">*</span>}
-      </label>
+        value={label}
+        required={Boolean(isRequired)}
+      />
 
       <div
         className={cn(
@@ -54,11 +72,11 @@ const InputGroup: React.FC<InputGroupProps> = ({
         <input
           id={id}
           type={type}
-          name={props.name}
+          name={inputName}
           placeholder={placeholder}
-          onChange={handleChange}
-          value={props.value}
-          defaultValue={props.defaultValue}
+          onChange={onChange}
+          value={value}
+          defaultValue={defaultValue}
           className={cn(
             "w-full rounded-lg border-[1.5px] border-stroke bg-transparent outline-none transition focus:border-primary disabled:cursor-default disabled:bg-gray-2 data-[active=true]:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary dark:disabled:bg-dark dark:data-[active=true]:border-primary",
             type === "file"
@@ -66,14 +84,24 @@ const InputGroup: React.FC<InputGroupProps> = ({
               : "px-5.5 py-3 text-dark placeholder:text-dark-6 dark:text-white",
             props.iconPosition === "left" && "pl-12.5",
             props.height === "sm" && "py-2.5",
+            error &&
+              "border-red-500 focus:border-red-500 dark:border-red-400 dark:focus:border-red-400",
+            inputClassName,
           )}
-          required={required}
-          disabled={disabled}
+          required={isRequired}
+          disabled={isDisabled}
           data-active={active}
+          {...restInputProps}
         />
 
         {icon}
       </div>
+
+      {error && (
+        <p className="mt-1 text-body-sm text-red-500 dark:text-red-400">
+          {error}
+        </p>
+      )}
     </div>
   );
 };

@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Bebas+Neue&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -477,4 +479,39 @@ input[type="search"]::-webkit-search-cancel-button {
 
 .custom-gradient-1 {
   background-image: linear-gradient(145deg, #eef 0%, #fff8fc 100%);
+}
+
+@layer components {
+  .form-panel {
+    @apply rounded-xl border border-gray-300 dark:border-dark-3 p-6;
+  }
+
+  .panel-header {
+    @apply mb-6;
+  }
+
+  .panel-label {
+    font-family: "DM Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    @apply text-primary;
+  }
+
+  .panel-title {
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 52px;
+    letter-spacing: 2px;
+    line-height: 1;
+    text-transform: uppercase;
+    margin: 0;
+    @apply text-dark dark:text-white;
+  }
+
+  .panel-sub {
+    font-size: 14px;
+    margin-top: 8px;
+    @apply text-dark-5 dark:text-dark-6;
+  }
 }

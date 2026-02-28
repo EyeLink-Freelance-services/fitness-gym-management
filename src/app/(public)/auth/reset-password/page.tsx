@@ -1,5 +1,5 @@
+import { redirect } from "next/navigation";
+
 export default function ResetPasswordPage() {
-    return(
-        <div>Reset password</div>
-    )
+  redirect("/auth/forgot-password");
 }

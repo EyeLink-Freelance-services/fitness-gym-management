@@ -1,15 +1,19 @@
 import { CheckIcon, XIcon } from "@/assets/icons";
 import { cn } from "@/lib/utils";
+import type { ReactNode } from "react";
 import { useId } from "react";
 
 type PropsType = {
   withIcon?: "check" | "x";
   withBg?: boolean;
-  label: string;
+  label: ReactNode;
   name?: string;
   minimal?: boolean;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   radius?: "default" | "md";
+  inputProps?: React.ComponentPropsWithRef<"input">;
+  error?: string;
+  id?: string;
 };
 
 export function Checkbox({
@@ -20,8 +24,14 @@ export function Checkbox({
   minimal,
   onChange,
   radius,
+  inputProps,
+  error,
+  id: providedId,
 }: PropsType) {
-  const id = useId();
+  const { className: inputClassName, onChange: inputOnChange, ...restInputProps } = inputProps ?? {};
+  const autoId = useId();
+  const id = providedId ?? restInputProps.id ?? autoId;
+  const inputName = restInputProps.name ?? name;
 
   return (
     <div>
@@ -35,10 +45,14 @@ export function Checkbox({
         <div className="relative">
           <input
             type="checkbox"
-            onChange={onChange}
-            name={name}
+            onChange={(e) => {
+              inputOnChange?.(e);
+              onChange?.(e);
+            }}
+            name={inputName}
             id={id}
-            className="peer sr-only"
+            className={cn("peer sr-only", inputClassName)}
+            {...restInputProps}
           />
 
           <div
@@ -49,6 +63,7 @@ export function Checkbox({
                 : "peer-checked:bg-gray-2 dark:peer-checked:bg-transparent",
               minimal && "mr-3 border-stroke dark:border-dark-3",
               radius === "md" && "rounded-md",
+              error && "border-red-500 dark:border-red-400",
             )}
           >
             {!withIcon && (
@@ -64,6 +79,8 @@ export function Checkbox({
         </div>
         <span>{label}</span>
       </label>
+
+      {error && <p className="mt-1 text-body-sm text-red-500 dark:text-red-400">{error}</p>}
     </div>
   );
 }
