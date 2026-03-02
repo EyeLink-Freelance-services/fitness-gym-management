@@ -6,6 +6,7 @@ import { TopChannelsSkeleton } from "@/components/Tables/top-channels/skeleton";
 import { createTimeFrameExtractor } from "@/utils/timeframe-extractor";
 import { Suspense } from "react";
 import { ChatsCard } from "./(dashboard)/components/chats-card";
+import { FormsTesting } from "./(dashboard)/components/FormsTesting";
 import { OverviewCardsGroup } from "./(dashboard)/components/overview-cards";
 import { OverviewCardsSkeleton } from "./(dashboard)/components/overview-cards/skeleton";
 import { RegionLabels } from "./(dashboard)/components/region-labels";
@@ -22,6 +23,8 @@ export default async function Home({ searchParams }: PropsType) {
 
   return (
     <>
+      <FormsTesting />
+
       <Suspense fallback={<OverviewCardsSkeleton />}>
         <OverviewCardsGroup />
       </Suspense>

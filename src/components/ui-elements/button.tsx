@@ -1,7 +1,7 @@
-import { cva, VariantProps } from "class-variance-authority";
-import type { HTMLAttributes } from "react";
+import { ButtonProps } from "@/types/shared";
+import { cva } from "class-variance-authority";
 
-const buttonVariants = cva(
+export const buttonVariants = cva(
   "inline-flex items-center justify-center gap-2.5 text-center font-medium hover:bg-opacity-90 font-medium transition focus:outline-none",
   {
     variants: {
@@ -16,7 +16,7 @@ const buttonVariants = cva(
           "border border-dark hover:bg-dark/10 text-dark dark:hover:bg-white/10 dark:border-white/25 dark:text-white",
       },
       shape: {
-        default: "",
+        default: "rounded-[10px]",
         rounded: "rounded-[5px]",
         full: "rounded-full",
       },
@@ -32,12 +32,6 @@ const buttonVariants = cva(
     },
   },
 );
-
-type ButtonProps = HTMLAttributes<HTMLButtonElement> &
-  VariantProps<typeof buttonVariants> & {
-    label: string;
-    icon?: React.ReactNode;
-  };
 
 export function Button({
   label,
