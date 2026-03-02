@@ -2,7 +2,7 @@ import { Button } from "@/components/ui-elements/button";
 import { PasswordRecoverySuccess } from "@/types/forms";
 
 export default function RecoverySuccess({
-  onBackToLogin,
+  goToApp,
 }: PasswordRecoverySuccess) {
   return (
     <div className="space-y-4 py-4 text-center">
@@ -12,9 +12,9 @@ export default function RecoverySuccess({
       </p>
       <Button
         type="button"
-        label="Back to Login"
+        label="Get in the application"
         className="w-full"
-        onClick={onBackToLogin}
+        onClick={goToApp}
       />
     </div>
   );

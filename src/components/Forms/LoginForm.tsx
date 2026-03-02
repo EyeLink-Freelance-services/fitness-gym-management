@@ -7,16 +7,39 @@ import InputGroup from "../FormElements/InputGroup";
 import { GoogleIcon } from "@/assets/icons";
 import { validateEmail } from "@/lib/forms/formValidation";
 import Header from "../FormElements/common/header";
+import { useState } from "react";
+import { LOGIN_ENDPOINT } from "@/constants/urls";
+import { useRouter } from "next/navigation";
+import { ROUTES } from "@/constants/route";
 
 export default function LoginForm({ onForgotPassword }: LoginFormProps) {
+  const[errorMsg, setErrorMsg] = useState<string | null>(null)
+  const router = useRouter();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<LoginFormData>();
 
-  const onSubmit = (data: LoginFormData) => {
-    console.log(data);
+  const onSubmit = async (data: LoginFormData) => {
+    setErrorMsg(null);
+		console.log(data, 'data')
+		try {
+			const res = await fetch(LOGIN_ENDPOINT, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(data),
+			});
+			const json = await res.json();
+			if (!res.ok) {
+				setErrorMsg(json.message);
+			} else {
+				router.push(ROUTES.HOME);
+        router.refresh();
+			}
+		} catch (err: any) {
+			setErrorMsg(err.message);
+		}
   };
 
   return (
@@ -50,6 +73,10 @@ export default function LoginForm({ onForgotPassword }: LoginFormProps) {
             required: "Password is required",
           })}
         />
+
+        {errorMsg && (
+          <div className="mb-2 text-sm text-red-600">{errorMsg}</div>
+        )}
 
         <div className="-mt-2 text-right">
           <Button

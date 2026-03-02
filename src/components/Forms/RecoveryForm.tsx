@@ -3,32 +3,56 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type {
-  RecoveryStep1FormData,
-  RecoveryStep2FormData,
-  RecoveryStep3FormData,
   RecoveryFormProps,
+  RecoveryNewPasswordFormData,
+  RecoveryRegisteredEmailFormData,
 } from "@/types/forms";
 import Header from "../FormElements/common/header";
-import RecoveryCode from "./Recovery/RecoveryCode";
 import RecoveryNewPassword from "./Recovery/RecoveryNewPassword";
 import RecoverySuccess from "./Recovery/RecoverySuccess";
 import RegisteredEmail from "./Recovery/RegisteredEmail";
 
-export default function RecoveryForm({ onBackToLogin }: RecoveryFormProps) {
-  const [step, setStep] = useState(1);
-  const [recoverEmail, setRecoverEmail] = useState("");
+export default function RecoveryForm({ step, onBackToLogin }: RecoveryFormProps) {
+  const [errorUpdatePasswordForm, setUpdatePasswordFormError] = useState(null);
+  const [success, setSuccess] = useState(false);
+  const [sent, setSent] = useState(false);
 
-  const step1Form = useForm<RecoveryStep1FormData>();
-  const step2Form = useForm<RecoveryStep2FormData>();
-  const step3Form = useForm<RecoveryStep3FormData>();
+  const step1RegisteredForm = useForm<RecoveryRegisteredEmailFormData>({
+    defaultValues: {
+      email: ''
+    }
+  });
+  const step2NewPasswordForm = useForm<RecoveryNewPasswordFormData>();
 
-  const handleStep1 = (data: RecoveryStep1FormData) => {
-    setRecoverEmail(data.email);
-    setStep(2);
+  const handleStep1 = async (data: RecoveryRegisteredEmailFormData) => {
+    await fetch("/api/auth/reset/start", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(data),
+    });
+
+    // Always show success (don’t reveal if email exists)
+    setSent(true);
   };
 
-  const handleStep2 = () => setStep(3);
-  const handleStep3 = () => setStep(4);
+  const handleStep2 = async (values: RecoveryNewPasswordFormData) => {
+    setUpdatePasswordFormError(null);
+
+    const r = await fetch("/api/auth/reset/confirm", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ password: values.newPassword, confirmPassword: values.confirmPassword }),
+    });
+
+    const data = await r.json().catch(() => null);
+
+    if (!r.ok || !data?.ok) {
+      setUpdatePasswordFormError(data?.message ?? "Could not reset password");
+      return;
+    }
+
+    setSuccess(true);
+  }
 
   return (
     <div className="form-panel space-y-4 bg-white/80 p-8 shadow-lg backdrop-blur-sm">
@@ -39,7 +63,7 @@ export default function RecoveryForm({ onBackToLogin }: RecoveryFormProps) {
       />
 
       <div className="mb-6 flex gap-1.5">
-        {[1, 2, 3].map((s) => (
+        {[1, 2].map((s) => (
           <div
             key={s}
             className={`h-0.5 flex-1 rounded-full bg-stroke transition-colors ${
@@ -50,27 +74,32 @@ export default function RecoveryForm({ onBackToLogin }: RecoveryFormProps) {
       </div>
 
       {step === 1 && (
-        <RegisteredEmail
-          form={step1Form}
-          onNext={handleStep1}
-          onBackToLogin={onBackToLogin}
-        />
+        sent ? (
+          <div className="space-y-2">
+            <p className="text-sm">
+              If an account exists for that email, you’ll receive a password reset link shortly.
+            </p>
+            <p className="text-xs opacity-70">
+              Check your spam/junk folder too.
+            </p>
+          </div>
+        ) : (
+          <RegisteredEmail
+            form={step1RegisteredForm}
+            onNext={handleStep1}
+            onBackToLogin={onBackToLogin}
+          />
+        )
       )}
 
-      {step === 2 && (
-        <RecoveryCode
-          form={step2Form}
-          recoverEmail={recoverEmail}
-          onNext={handleStep2}
-          onResend={() => setStep(1)}
-        />
+      {step === 2 && !success && (
+        <>
+          <RecoveryNewPassword form={step2NewPasswordForm} onNext={handleStep2} />
+          {errorUpdatePasswordForm && <p className="text-sm text-red-600">{errorUpdatePasswordForm}</p>}
+        </>
       )}
 
-      {step === 3 && (
-        <RecoveryNewPassword form={step3Form} onNext={handleStep3} />
-      )}
-
-      {step === 4 && <RecoverySuccess onBackToLogin={onBackToLogin} />}
+      {success && <RecoverySuccess goToApp={onBackToLogin} />}
     </div>
   );
 }

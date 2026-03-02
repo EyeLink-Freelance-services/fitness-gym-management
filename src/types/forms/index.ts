@@ -21,7 +21,7 @@ export interface LoginFormData {
   password: string;
 }
 
-export interface RecoveryStep1FormData {
+export interface RecoveryRegisteredEmailFormData {
   email: string;
 }
 
@@ -29,7 +29,7 @@ export interface RecoveryStep2FormData {
   code: string;
 }
 
-export interface RecoveryStep3FormData {
+export interface RecoveryNewPasswordFormData {
   newPassword: string;
   confirmPassword: string;
 }
@@ -101,6 +101,7 @@ export interface LoginFormProps {
 }
 
 export interface RecoveryFormProps {
+  step: number;
   onBackToLogin: () => void;
 }
 
@@ -119,18 +120,18 @@ export type ValidateResult = true | string;
 /* Recover Password */
 
 export type RegisteredEmailConfirmations = {
-  form: UseFormReturn<RecoveryStep1FormData>;
-  onNext: (data: RecoveryStep1FormData) => void;
+  form: UseFormReturn<RecoveryRegisteredEmailFormData>;
+  onNext: (data: RecoveryRegisteredEmailFormData) => void;
   onBackToLogin: () => void;
 };
 
 export type PasswordRecoverySuccess = {
-  onBackToLogin: () => void;
+  goToApp: () => void;
 };
 
 export type NewPasswordProps = {
-  form: UseFormReturn<RecoveryStep3FormData>;
-  onNext: () => void;
+  form: UseFormReturn<RecoveryNewPasswordFormData>;
+  onNext: (values: RecoveryNewPasswordFormData) => void;
 };
 
 
