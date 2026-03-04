@@ -1,7 +1,7 @@
 import { compactFormat } from "@/lib/formatters/format-number";
-import { getOverviewData } from "../../fetch";
 import { OverviewCard } from "./card";
-import * as icons from "./icons";
+import * as icons from "@/components/IconsCollection/icons";
+import { getOverviewData } from "@/data/superAdmin";
 
 export async function OverviewCardsGroup() {
   const { views, profit, products, users } = await getOverviewData();

@@ -1,15 +1,16 @@
 import { PaymentsOverview } from "@/components/Charts/payments-overview";
 import { UsedDevices } from "@/components/Charts/used-devices";
 import { WeeksProfit } from "@/components/Charts/weeks-profit";
-import { TopChannels } from "@/components/Tables/top-channels";
-import { TopChannelsSkeleton } from "@/components/Tables/top-channels/skeleton";
+import { TableUI } from "@/components/Tables";
+import { Skeleton } from "@/components/Tables/skeleton";
 import { createTimeFrameExtractor } from "@/utils/timeframe-extractor";
 import { Suspense } from "react";
-import { ChatsCard } from "./(dashboard)/components/chats-card";
-import { FormsTesting } from "./(dashboard)/components/FormsTesting";
-import { OverviewCardsGroup } from "./(dashboard)/components/overview-cards";
-import { OverviewCardsSkeleton } from "./(dashboard)/components/overview-cards/skeleton";
-import { RegionLabels } from "./(dashboard)/components/region-labels";
+import { ChatsCard } from "../../components/Dashboard/chats-card";
+import { FormsTesting } from "../../components/Dashboard/FormsTesting";
+import { OverviewCardsGroup } from "../../components/Dashboard/overview-cards";
+import { OverviewCardsSkeleton } from "../../components/Dashboard/overview-cards/skeleton";
+import { RegionLabels } from "../../components/Dashboard/region-labels";
+import { getTopChannels } from "@/data/superAdmin";
 
 type PropsType = {
   searchParams: Promise<{
@@ -51,8 +52,8 @@ export default async function Home({ searchParams }: PropsType) {
         <RegionLabels />
 
         <div className="col-span-12 grid xl:col-span-8">
-          <Suspense fallback={<TopChannelsSkeleton />}>
-            <TopChannels />
+          <Suspense fallback={<Skeleton />}>
+            <TableUI data={getTopChannels()} />
           </Suspense>
         </div>
 

@@ -6,7 +6,7 @@ import {
   MEMBERSHIP_PLANS,
   ACTIVITY_LEVELS,
   COACH_OPTIONS,
-} from "@/data/constants";
+} from "@/data/dashboardForm";
 import InputGroup from "../FormElements/InputGroup";
 import { Select } from "../FormElements/select";
 import { TextAreaGroup } from "../FormElements/InputGroup/text-area";

@@ -1,9 +1,9 @@
 import { DotIcon } from "@/assets/icons";
+import { getChatsData } from "@/data/superAdmin";
 import { formatMessageTime } from "@/lib/formatters/format-message-time";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
-import { getChatsData } from "../fetch";
 
 export async function ChatsCard() {
   const data = await getChatsData();

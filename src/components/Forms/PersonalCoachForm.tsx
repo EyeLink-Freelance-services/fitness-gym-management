@@ -2,7 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import type { PersonalCoachFormData } from "@/types/forms";
-import { SPECIALIZATIONS, AVAILABILITY_OPTIONS } from "@/data/constants";
+import { SPECIALIZATIONS, AVAILABILITY_OPTIONS } from "@/data/dashboardForm";
 import InputGroup from "../FormElements/InputGroup";
 import { Select } from "../FormElements/select";
 import { TextAreaGroup } from "../FormElements/InputGroup/text-area";

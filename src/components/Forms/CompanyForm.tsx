@@ -2,7 +2,7 @@
 
 import { useFieldArray, useForm } from "react-hook-form";
 import type { CompanyFormData } from "@/types/forms";
-import { COMPANY_STATES } from "@/data/constants";
+import { COMPANY_STATES } from "@/data/dashboardForm";
 import InputGroup from "../FormElements/InputGroup";
 import { TextAreaGroup } from "../FormElements/InputGroup/text-area";
 import { Select } from "../FormElements/select";

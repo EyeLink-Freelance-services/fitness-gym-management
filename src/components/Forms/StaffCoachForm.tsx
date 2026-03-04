@@ -3,7 +3,7 @@
 import { useForm } from "react-hook-form";
 import { useEffect } from "react";
 import type { StaffCoachFormData, StaffCoachFormProps } from "@/types/forms";
-import { COACH_ROLES, STAFF_ROLES } from "@/data/constants";
+import { COACH_ROLES, STAFF_ROLES } from "@/data/dashboardForm";
 import InputGroup from "../FormElements/InputGroup";
 import { Select } from "../FormElements/select";
 import { RadioInput } from "../FormElements/radio";

@@ -9,8 +9,8 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import dayjs from "dayjs";
-import { getInvoiceTableData } from "./fetch";
-import { DownloadIcon, PreviewIcon } from "./icons";
+import { Download, Preview } from "../IconsCollection/icons";
+import { getInvoiceTableData } from "@/data/superAdmin";
 
 export async function InvoiceTable() {
   const data = await getInvoiceTableData();
@@ -65,7 +65,7 @@ export async function InvoiceTable() {
                 <div className="flex items-center justify-end gap-x-3.5">
                   <button className="hover:text-primary">
                     <span className="sr-only">View Invoice</span>
-                    <PreviewIcon />
+                    <Preview />
                   </button>
 
                   <button className="hover:text-primary">
@@ -75,7 +75,7 @@ export async function InvoiceTable() {
 
                   <button className="hover:text-primary">
                     <span className="sr-only">Download Invoice</span>
-                    <DownloadIcon />
+                    <Download />
                   </button>
                 </div>
               </TableCell>

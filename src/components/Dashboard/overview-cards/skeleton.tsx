@@ -1,4 +1,4 @@
-import { Skeleton } from "@/components/ui/skeleton";
+import { SkeletonUI } from "@/components/ui/skeleton";
 
 export function OverviewCardsSkeleton() {
   return (
@@ -8,16 +8,16 @@ export function OverviewCardsSkeleton() {
           key={i}
           className="rounded-[10px] bg-white p-6 shadow-1 dark:bg-gray-dark"
         >
-          <Skeleton className="size-12 rounded-full" />
+          <SkeletonUI className="size-12 rounded-full" />
 
           <div className="mt-6 flex items-end justify-between">
             <div>
-              <Skeleton className="mb-1.5 h-7 w-18" />
+              <SkeletonUI className="mb-1.5 h-7 w-18" />
 
-              <Skeleton className="h-5 w-20" />
+              <SkeletonUI className="h-5 w-20" />
             </div>
 
-            <Skeleton className="h-5 w-15" />
+            <SkeletonUI className="h-5 w-15" />
           </div>
         </div>
       ))}

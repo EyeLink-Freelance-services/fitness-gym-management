@@ -1,4 +1,4 @@
-import * as Icons from "../icons";
+import * as Icons from "../../components/Layouts/sidebar/icons";
 
 export const NAV_DATA = [
   {
@@ -6,7 +6,7 @@ export const NAV_DATA = [
     items: [
       {
         title: "Dashboard",
-        url:'/',
+        url: "/",
         icon: Icons.HomeIcon,
         items: [],
       },
