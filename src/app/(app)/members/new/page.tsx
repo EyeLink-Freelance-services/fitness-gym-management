@@ -1,5 +1,6 @@
 "use client";
 
+import ClientForm from "@/components/Forms/ClientForm";
 import { useState } from "react";
 
 export default function NewMemberPage() {
@@ -39,44 +40,8 @@ export default function NewMemberPage() {
   }
 
   return (
-    <div style={{ maxWidth: 520 }}>
-      <h1>New member</h1>
-
-      <form onSubmit={onSubmit}>
-        <label style={{ display: "block", marginTop: 12 }}>
-          First name
-          <input value={firstName} onChange={(e) => setFirstName(e.target.value)} style={{ width: "100%", padding: 8, marginTop: 6 }} />
-        </label>
-
-        <label style={{ display: "block", marginTop: 12 }}>
-          Last name
-          <input value={lastName} onChange={(e) => setLastName(e.target.value)} style={{ width: "100%", padding: 8, marginTop: 6 }} />
-        </label>
-
-        <label style={{ display: "block", marginTop: 12 }}>
-          Email (optional)
-          <input value={email} onChange={(e) => setEmail(e.target.value)} style={{ width: "100%", padding: 8, marginTop: 6 }} />
-        </label>
-
-        <label style={{ display: "block", marginTop: 12 }}>
-          Phone (optional)
-          <input value={phone} onChange={(e) => setPhone(e.target.value)} style={{ width: "100%", padding: 8, marginTop: 6 }} />
-        </label>
-
-        <label style={{ display: "block", marginTop: 12 }}>
-          Status
-          <select value={status} onChange={(e) => setStatus(e.target.value as any)} style={{ width: "100%", padding: 8, marginTop: 6 }}>
-            <option value="active">active</option>
-            <option value="inactive">inactive</option>
-          </select>
-        </label>
-
-        {error && <p style={{ color: "crimson" }}>{error}</p>}
-
-        <button disabled={saving} style={{ marginTop: 16, padding: "10px 12px" }}>
-          {saving ? "Saving..." : "Create member"}
-        </button>
-      </form>
+    <div className="max-w-2xl">
+      <ClientForm />
     </div>
   );
 }

@@ -9,15 +9,13 @@ import { Notification } from "./notification";
 import { ThemeToggleSwitch } from "./theme-toggle";
 import { UserInfo } from "./user-info";
 
-type UserRole = "admin" | "staff" | "coach";
-
 interface HeaderProps {
-  role: UserRole;
+  mode: string;
   workspaceName: string;
 }
 
 export function Header({
-  role,
+  mode,
   workspaceName,
 }: HeaderProps) {
   const { toggleSidebar, isMobile } = useSidebarContext();
@@ -48,7 +46,7 @@ export function Header({
         <h1 className="mb-0.5 text-heading-5 font-bold text-dark dark:text-white">
           {workspaceName}
         </h1>
-        <p className="font-medium">{role}</p>
+        <p className="font-medium">{mode}</p>
       </div>
 
       <div className="flex flex-1 items-center justify-end gap-2 min-[375px]:gap-4">

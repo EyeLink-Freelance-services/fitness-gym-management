@@ -12,24 +12,54 @@ import { Select } from "../FormElements/select";
 import { TextAreaGroup } from "../FormElements/InputGroup/text-area";
 import { Checkbox } from "../FormElements/checkbox";
 import { Button } from "../ui-elements/button";
-import {
-  validateEmail,
-  validatePhone,
-  validateRequired,
-} from "@/lib/forms/formValidation";
 import Header from "../FormElements/common/header";
 import Label from "../FormElements/common/label";
+import { MemberCreateInput, MemberCreateSchema } from "@/lib/validation/schemas/member";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
+
+interface ICoaches {
+  coach_id: string,
+  company_id: string,
+  label: string
+}
 
 export default function ClientForm() {
+  const [agreeTerms, setAgreeTerms] = useState<boolean>(false);
+  const [coaches, setCoaches] = useState<ICoaches[]>([]);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<ClientFormData>();
+  } = useForm<MemberCreateInput>({
+    resolver: zodResolver(MemberCreateSchema),
+    defaultValues: {
+      status: "active",
+    },
+  });
 
-  const onSubmit = (data: ClientFormData) => {
-    console.log(data);
+  useEffect(() => {
+    const getCoaches = async () => {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/coaches`, {
+        method: 'GET',
+        cache: 'no-store'
+      })
+      const json = await res.json();
+      if(!json.ok) {
+        setErrorMsg(json.message);
+      } else {
+        console.log(json.data, 'json.data')
+        setCoaches(json.data);
+      }
+    }
+
+    getCoaches();
+  }, [])
+
+  const onSubmit = async (values: MemberCreateInput) => {
+    console.log(values);
   };
 
   return (
@@ -55,18 +85,14 @@ export default function ClientForm() {
             label="First Name"
             placeholder="Asha"
             required
-            inputProps={register("firstName", {
-              validate: (v) => validateRequired(v, "First name is required"),
-            })}
+            inputProps={register("first_name")}
           />
           <InputGroup
             type="text"
             label="Last Name"
             placeholder="Ramsahoy"
             required
-            inputProps={register("lastName", {
-              validate: (v) => validateRequired(v, "Last name is required"),
-            })}
+            inputProps={register("last_name")}
           />
         </div>
 
@@ -76,9 +102,7 @@ export default function ClientForm() {
             label="Date of Birth"
             placeholder="DD / MM / YYYY"
             required
-            inputProps={register("dateOfBirth", {
-              required: "Date of birth is required",
-            })}
+            inputProps={register("dob")}
           />
           <Select
             label="Gender"
@@ -89,7 +113,7 @@ export default function ClientForm() {
               { value: "Non-binary", label: "Non-binary" },
               { value: "Prefer not to say", label: "Prefer not to say" },
             ]}
-            selectProps={register("gender", { required: "Gender is required" })}
+            selectProps={register("gender")}
           />
         </div>
 
@@ -106,10 +130,7 @@ export default function ClientForm() {
           label="Email Address"
           placeholder="member@email.com"
           required
-          inputProps={register("email", {
-            required: "Email is required",
-            validate: (v) => validateEmail(v),
-          })}
+          inputProps={register("email")}
         />
 
         <InputGroup
@@ -117,21 +138,23 @@ export default function ClientForm() {
           label="Phone Number"
           placeholder="+230 5XXX XXXX"
           required
-          inputProps={register("phone", {
-            required: "Phone number is required",
-            validate: (v) => validatePhone(v),
-          })}
+          inputProps={register("phone")}
+        />
+
+        <InputGroup
+          type="text"
+          label="Emergency Contact Name"
+          placeholder="Name"
+          required
+          inputProps={register("emergency_contact_name")}
         />
 
         <InputGroup
           type="text"
           label="Emergency Contact"
-          placeholder="Name & phone number"
+          placeholder="phone number"
           required
-          inputProps={register("emergencyContact", {
-            validate: (v) =>
-              validateRequired(v, "Emergency contact is required"),
-          })}
+          inputProps={register("emergency_contact_phone")}
         />
 
         <div className="my-6 flex items-center gap-3">
@@ -145,19 +168,19 @@ export default function ClientForm() {
         <TextAreaGroup
           label={<Label value="Known Medical Condition" optional />}
           placeholder="e.g. Hypertension, Asthma, Knee injury, Pregnancy... Leave blank if none."
-          textareaProps={register("medicalConditions")}
+          textareaProps={register("medical_notes")}
         />
 
-        <Select
+        {/* <Select
           label="Physical Activity Level"
           placeholder="Select activity level"
           items={ACTIVITY_LEVELS.map((a) => ({ value: a, label: a }))}
           selectProps={register("activityLevel", {
             required: "Activity level is required",
           })}
-        />
+        /> */}
 
-        <div className="my-6 flex items-center gap-3">
+        {/* <div className="my-6 flex items-center gap-3">
           <div className="h-px flex-1 bg-stroke dark:bg-dark-3" />
           <span className="text-body-xs font-medium uppercase tracking-wider text-dark-5 dark:text-dark-6">
             Membership
@@ -172,16 +195,16 @@ export default function ClientForm() {
           selectProps={register("membershipPlan", {
             required: "Membership plan is required",
           })}
-        />
+        /> */}
 
         <Select
           label={<Label value="Assigned Coach" optional />}
           placeholder="No coach assigned"
-          items={COACH_OPTIONS.map((c) => ({ value: c, label: c }))}
-          selectProps={register("assignedCoach")}
+          items={coaches.map((c) => ({ value: c.coach_id, label: c.label }))}
+          selectProps={register("assigned_coach_id")}
         />
 
-        <InputGroup
+        {/* <InputGroup
           type="text"
           label="Start Date"
           placeholder="DD / MM / YYYY"
@@ -189,7 +212,7 @@ export default function ClientForm() {
           inputProps={register("startDate", {
             required: "Start date is required",
           })}
-        />
+        /> */}
 
         <div className="my-6 flex items-center gap-3">
           <div className="h-px flex-1 bg-stroke dark:bg-dark-3" />
@@ -223,10 +246,9 @@ export default function ClientForm() {
                 .
               </span>
             }
-            inputProps={register("agreeTerms", {
-              validate: (v) => (v ? true : "You must confirm agreement"),
-            })}
-            error={errors.agreeTerms?.message}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setAgreeTerms(e.target.checked)
+            }
           />
         </div>
 

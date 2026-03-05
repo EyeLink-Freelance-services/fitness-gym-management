@@ -36,7 +36,7 @@ export async function createMember(payload: MemberCreateInput) {
   const { data, error } = await supabase
     .from(TABLE)
     .insert(payload)
-    .select("id, first_name, last_name, email, phone, status, created_at")
+    .select('*')
     .single();
 
   if (error) throw error;
