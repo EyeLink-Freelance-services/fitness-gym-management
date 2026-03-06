@@ -10,9 +10,15 @@ const TABLE = "members";
  */
 export async function listMembers() {
   const supabase = await supabaseServer();
+
+  console.log('lol');
+
+  const {data: {session}} = await supabase.auth.getSession();
+  console.log('session', session);
+
   const { data, error } = await supabase
     .from(TABLE)
-    .select("id, first_name, last_name, email, phone, status, created_at")
+    .select("*")
     .order("created_at", { ascending: false });
 
   if (error) throw error;
@@ -23,7 +29,7 @@ export async function getMember(id: string) {
   const supabase = await supabaseServer();
   const { data, error } = await supabase
     .from(TABLE)
-    .select("id, first_name, last_name, email, phone, status, created_at")
+    .select('*')
     .eq("id", id)
     .maybeSingle();
 
@@ -33,6 +39,7 @@ export async function getMember(id: string) {
 
 export async function createMember(payload: MemberCreateInput) {
   const supabase = await supabaseServer();
+
   const { data, error } = await supabase
     .from(TABLE)
     .insert(payload)

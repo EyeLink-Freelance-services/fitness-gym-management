@@ -5,7 +5,8 @@ export const MemberStatus = z.enum(["active", "inactive"]);
 
 export const MemberBaseSchema = z.object({
   company_id: z.string().uuid(),
-  assigned_coach_id: z.string().uuid().nullable().optional(),
+  assigned_coach_id: z.string().nullable()
+  .optional(),
 
   member_code: z
     .string()
@@ -20,9 +21,7 @@ export const MemberBaseSchema = z.object({
   last_name: z.string().trim().min(1, "Last name is required").max(100),
 
   dob: z
-    .union([z.string().date(), z.string().regex(/^\d{4}-\d{2}-\d{2}$/)])
-    .optional()
-    .nullable(),
+    .union([z.string().date(), z.string().regex(/^\d{4}-\d{2}-\d{2}$/)]),
 
   gender: z.string().trim().max(50).optional().nullable(),
 
@@ -38,8 +37,7 @@ export const MemberBaseSchema = z.object({
   emergency_contact_phone: z.string().refine(
     (value) => isValidPhoneNumber(value),
     { message: "Invalid international phone number" }
-  ).optional()
-   .nullable(),
+  ),
 
   medical_notes: z.string().trim().max(2000).optional().nullable(),
 

@@ -36,9 +36,11 @@ create index if not exists idx_members_company_coach on public.members(company_i
 create unique index if not exists uq_members_company_member_code on public.members(company_id, member_code) where member_code is not null;
 
 drop trigger if exists trg_members_updated_at ON public.members;
-create trigger trg_members_updated_at
-before update on public.members
-for each row execute function public.set_updated_at();
+CREATE TRIGGER trg_set_updated_at
+BEFORE UPDATE ON members
+FOR EACH ROW
+WHEN (OLD.updated_at IS DISTINCT FROM NEW.updated_at) -- only if value changed
+EXECUTE FUNCTION public.set_updated_at();
 
 create table if not exists public.member_measurements (
   id uuid primary key default gen_random_uuid(),

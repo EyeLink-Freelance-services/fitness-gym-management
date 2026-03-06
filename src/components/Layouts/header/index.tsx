@@ -8,10 +8,11 @@ import { MenuIcon } from "./icons";
 import { Notification } from "./notification";
 import { ThemeToggleSwitch } from "./theme-toggle";
 import { UserInfo } from "./user-info";
+import React from "react";
 
 interface HeaderProps {
-  mode: string;
-  workspaceName: string;
+  mode: string | React.ReactNode;
+  workspaceName: string | React.ReactNode;
 }
 
 export function Header({
@@ -46,7 +47,7 @@ export function Header({
         <h1 className="mb-0.5 text-heading-5 font-bold text-dark dark:text-white">
           {workspaceName}
         </h1>
-        <p className="font-medium">{mode}</p>
+        <div className="font-medium">{mode}</div>
       </div>
 
       <div className="flex flex-1 items-center justify-end gap-2 min-[375px]:gap-4">

@@ -72,7 +72,7 @@ $$;
 REVOKE ALL ON FUNCTION public.ensure_active_company() FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.ensure_active_company() TO authenticated;
 
--- Active company ids for current user (Optional)  NOT YET RAN
+-- Active company ids for current user (Optional)  NOT YET RAN (it is for SUPER ADMIN)
 create or replace function public.current_company_ids()
 returns uuid[]
 language sql
@@ -84,45 +84,54 @@ as $$
 $$;
 
 -- Is current user in company?
-create or replace function public.is_company_member(_company_id uuid)
-returns boolean
-language sql
-stable
-as $$
-  select exists (
-    select 1
-    from public.company_user cu
-    where cu.company_id = _company_id
-      and cu.user_id = auth.uid()
+CREATE OR REPLACE FUNCTION public.is_company_member(
+  _company_id uuid
+)
+RETURNS boolean
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public, auth
+AS $$
+  SELECT EXISTS (
+    SELECT 1
+    FROM public.company_user cu
+    WHERE cu.company_id = _company_id
+      AND cu.user_id = auth.uid()
   );
 $$;
 
-GRANT EXECUTE ON FUNCTION public.is_company_member(_company_id uuid) TO authenticated;
+ALTER FUNCTION public.is_company_member(uuid) OWNER TO postgres;
+REVOKE ALL ON FUNCTION public.is_company_member(uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.is_company_member(uuid) TO authenticated;
 
 -- Does current user have a role in company?
-create or replace function public.has_company_role(
-  _company_user_id uuid,
+CREATE OR REPLACE FUNCTION public.has_company_role(
+  _company_id uuid,
   _role text
 )
-returns boolean
-language sql
-stable
-as $$
-  select exists (
-    select 1
-    from public.company_user_role cur
-    join public.company_role cr
-      on cr.id = cur.company_role_id
-    join public.company_user cu
-      on cu.id = cur.company_user_id
-    where cur.company_user_id = _company_user_id
-      and cu.user_id = auth.uid()
-      and cr.name = _role
+RETURNS boolean
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public, auth
+AS $$
+  SELECT EXISTS (
+    SELECT 1
+    FROM public.company_user cu
+    JOIN public.company_user_role cur
+      ON cur.company_user_id = cu.id
+    JOIN public.company_role cr
+      ON cr.id = cur.company_role_id
+    WHERE cu.company_id = _company_id
+      AND cu.user_id = auth.uid()
+      AND lower(cr.name) = lower(_role)
   );
 $$;
 
-GRANT EXECUTE ON FUNCTION public.has_company_role(_company_user_id uuid,
-  _role text) TO authenticated;
+ALTER FUNCTION public.has_company_role(uuid, text) OWNER TO postgres;
+REVOKE ALL ON FUNCTION public.has_company_role(uuid, text) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.has_company_role(uuid, text) TO authenticated;
 
 -- =========================================================
 
@@ -226,7 +235,7 @@ ADD COLUMN IF NOT EXISTS disclaimer text;
 CREATE OR REPLACE VIEW public.v_company_coaches AS
 SELECT
     cu.company_id,
-    cu.id AS coach_id,
+    p.id AS coach_id,
     CONCAT(p.first_name, ' ', p.last_name) AS label
 FROM public.company_user cu
 JOIN public.profiles p 

@@ -1,42 +1,45 @@
-import { createClient } from "@/lib/supabase/client";
+"use client"
+
 import { Sidebar } from "@/components/Layouts/sidebar";
 
 import { Header } from "@/components/Layouts/header";
-import type { PropsWithChildren } from "react";
-import { supabaseServer } from "@/lib/supabase/server";
+import { useEffect, useState, type PropsWithChildren } from "react";
+import { CompanyProvider, ICompany } from "@/app/context/company-context";
+import { Skeleton } from "@/components/ui/skeleton";
 
-interface ICompany {
-  company_id: string,
-  company_name: string,
-  company_mode: string
-}
+export default function RootLayout({ children }: PropsWithChildren) {
+  const [company, setCompany] = useState<ICompany | null>(null);
 
-export default async function RootLayout({ children }: PropsWithChildren) {
-  const supabase = await supabaseServer();
+  useEffect(() => {
+    fetch("/api/company/overview")
+      .then((res) => res.json())
+      .then((res) => setCompany(res.data))
+      .catch(console.error);
+  }, []);
 
-  // const {data: {session}} = await supabase.auth.getSession();
-  // if(!session) return; //not logged in
-
-  const { data , error } = await supabase.rpc("ensure_active_company");
-  
-  if(error) {
-    console.error(error)
-    return <div>{error.message}</div> 
-  }
-
-  const companyOverview: ICompany = data 
-
-  return (
+  if (!company) return (
     <div className="flex min-h-screen">
       <Sidebar />
 
       <div className="w-full bg-gray-2 dark:bg-[#020d1a]">
-        <Header workspaceName={companyOverview?.company_name} mode={companyOverview?.company_mode} />
-
-        <main className="isolate mx-auto w-full max-w-screen-2xl overflow-hidden p-4 md:p-6 2xl:p-10">
-          {children}
-        </main>
+        <Header workspaceName={<Skeleton className="h-5 w-50" />} mode={<Skeleton className="h-5 w-50" />} />
       </div>
     </div>
+  );
+
+  return (
+    <CompanyProvider company={company}>
+      <div className="flex min-h-screen">
+        <Sidebar />
+
+        <div className="w-full bg-gray-2 dark:bg-[#020d1a]">
+          <Header workspaceName={company?.company_name} mode={company?.company_mode} />
+
+          <main className="isolate mx-auto w-full max-w-screen-2xl p-4 md:p-6 2xl:px-10 2xl:py-5">
+            {children}
+          </main>
+        </div>
+      </div>
+    </CompanyProvider>
   );
 }

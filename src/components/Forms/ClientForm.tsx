@@ -1,76 +1,54 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import type { ClientFormData } from "@/types/forms";
-import {
-  MEMBERSHIP_PLANS,
-  ACTIVITY_LEVELS,
-  COACH_OPTIONS,
-} from "@/data/constants";
 import InputGroup from "../FormElements/InputGroup";
 import { Select } from "../FormElements/select";
 import { TextAreaGroup } from "../FormElements/InputGroup/text-area";
-import { Checkbox } from "../FormElements/checkbox";
-import { Button } from "../ui-elements/button";
 import Header from "../FormElements/common/header";
 import Label from "../FormElements/common/label";
-import { MemberCreateInput, MemberCreateSchema } from "@/lib/validation/schemas/member";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { FieldErrors, useFormContext, UseFormRegister } from "react-hook-form";
+import { MemberCreateInput } from "@/lib/validation/schemas/member";
 import { useEffect, useState } from "react";
 
 interface ICoaches {
-  coach_id: string,
-  company_id: string,
+  coach_id: string | undefined,
+  company_id: string | undefined,
   label: string
 }
 
+
 export default function ClientForm() {
-  const [agreeTerms, setAgreeTerms] = useState<boolean>(false);
   const [coaches, setCoaches] = useState<ICoaches[]>([]);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<MemberCreateInput>({
-    resolver: zodResolver(MemberCreateSchema),
-    defaultValues: {
-      status: "active",
-    },
-  });
+
+  const { register, formState: { errors } } = useFormContext<MemberCreateInput>();
 
   useEffect(() => {
-    const getCoaches = async () => {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/coaches`, {
-        method: 'GET',
-        cache: 'no-store'
-      })
-      const json = await res.json();
-      if(!json.ok) {
-        setErrorMsg(json.message);
-      } else {
-        console.log(json.data, 'json.data')
-        setCoaches(json.data);
+      const getCoaches = async () => {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/coaches`, {
+          method: 'GET',
+          cache: 'no-store'
+        })
+        const json = await res.json();
+        if(!json.ok) {
+          console.log('no coaches')
+        } else {
+          console.log(json.data, 'json.data')
+          setCoaches(json.data);
+        }
       }
-    }
-
-    getCoaches();
-  }, [])
-
-  const onSubmit = async (values: MemberCreateInput) => {
-    console.log(values);
-  };
+  
+      getCoaches();
+    }, [])
+  
 
   return (
-    <div className="form-panel space-y-4">
+    <div className="form-panel bg-white dark:bg-transparent space-y-4 py-10">
       <Header
         label="- Members"
         title="New client"
         subtitle="Register a new gym member"
       />
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-7">
+      <div className="space-y-7">
         <div className="my-6 flex items-center gap-3">
           <div className="h-px flex-1 bg-stroke dark:bg-dark-3" />
           <span className="text-body-xs font-medium uppercase tracking-wider text-dark-5 dark:text-dark-6">
@@ -86,23 +64,27 @@ export default function ClientForm() {
             placeholder="Asha"
             required
             inputProps={register("first_name")}
+            error={errors?.first_name && errors.first_name.message}
           />
+          
           <InputGroup
             type="text"
             label="Last Name"
             placeholder="Ramsahoy"
             required
             inputProps={register("last_name")}
+            error={errors?.last_name && errors.last_name.message}
           />
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <InputGroup
-            type="text"
+            type="date"
             label="Date of Birth"
             placeholder="DD / MM / YYYY"
             required
             inputProps={register("dob")}
+            error={errors?.dob && errors.dob.message}
           />
           <Select
             label="Gender"
@@ -131,6 +113,7 @@ export default function ClientForm() {
           placeholder="member@email.com"
           required
           inputProps={register("email")}
+          error={errors?.email && errors.email.message}
         />
 
         <InputGroup
@@ -139,22 +122,23 @@ export default function ClientForm() {
           placeholder="+230 5XXX XXXX"
           required
           inputProps={register("phone")}
+          error={errors?.phone && errors.phone.message}
         />
 
         <InputGroup
           type="text"
-          label="Emergency Contact Name"
+          label={<Label value="Emergency Contact Name" optional />}
           placeholder="Name"
-          required
           inputProps={register("emergency_contact_name")}
         />
 
         <InputGroup
-          type="text"
+          type="tel"
           label="Emergency Contact"
-          placeholder="phone number"
+          placeholder="phone number +230 XXXXXX"
           required
           inputProps={register("emergency_contact_phone")}
+          error={errors?.emergency_contact_phone && errors.emergency_contact_phone.message}
         />
 
         <div className="my-6 flex items-center gap-3">
@@ -199,9 +183,11 @@ export default function ClientForm() {
 
         <Select
           label={<Label value="Assigned Coach" optional />}
+          defaultValue={undefined}
           placeholder="No coach assigned"
-          items={coaches.map((c) => ({ value: c.coach_id, label: c.label }))}
+          items={[...coaches, {coach_id: undefined, label: 'No coach assigned'}].map((c) => ({ value: c.coach_id, label: c.label }))}
           selectProps={register("assigned_coach_id")}
+          error={errors?.assigned_coach_id && errors.assigned_coach_id.message}
         />
 
         {/* <InputGroup
@@ -213,47 +199,6 @@ export default function ClientForm() {
             required: "Start date is required",
           })}
         /> */}
-
-        <div className="my-6 flex items-center gap-3">
-          <div className="h-px flex-1 bg-stroke dark:bg-dark-3" />
-          <span className="text-body-xs font-medium uppercase tracking-wider text-dark-5 dark:text-dark-6">
-            Agreement
-          </span>
-          <div className="h-px flex-1 bg-stroke dark:bg-dark-3" />
-        </div>
-
-        <div className="max-h-32 overflow-y-auto rounded-lg border border-stroke bg-gray-2 p-4 text-body-sm leading-relaxed text-dark-5 dark:border-dark-3 dark:bg-dark-2 dark:text-dark-6">
-          The undersigned acknowledges that physical exercise involves inherent
-          risks of injury. By registering as a member, I voluntarily assume
-          these risks. I confirm that I am in adequate physical condition to
-          participate in gym activities.
-        </div>
-
-        <div className="mb-5">
-          <Checkbox
-            minimal
-            radius="md"
-            label={
-              <span className="text-body-sm text-dark-5 dark:text-dark-6">
-                I confirm the member has read, understood, and accepted the{" "}
-                <a href="#" className="text-primary hover:underline">
-                  Terms &amp; Conditions
-                </a>
-                , and{" "}
-                <a href="#" className="text-primary hover:underline">
-                  Privacy Policy
-                </a>
-                .
-              </span>
-            }
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setAgreeTerms(e.target.checked)
-            }
-          />
-        </div>
-
-        <Button type="submit" label="Register Client" className="w-full" />
-      </form>
+      </div>
     </div>
-  );
-}
+  )}
