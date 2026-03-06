@@ -15,8 +15,7 @@ import {
   formatColumnLabel,
   isImageSrc,
 } from "@/lib/formatters/format-table";
-
-type TableRowData = Record<string, unknown>;
+import { TableUIProps } from "@/types/shared";
 
 export async function TableUI({
   className,
@@ -24,19 +23,13 @@ export async function TableUI({
   data,
   buttonLabel,
   buttonPath,
-}: {
-  className?: string;
-  title?: string;
-  data: TableRowData[] | Promise<TableRowData[]>;
-  buttonLabel?: string;
-  buttonPath?: string;
-}) {
+}: TableUIProps) {
   const rows = await data;
   const allKeys = Array.from(new Set(rows.flatMap((row) => Object.keys(row))));
   const firstRowKeys = Object.keys(rows[0] ?? {});
   const remainingKeys = allKeys.filter((key) => !firstRowKeys.includes(key));
   const orderedKeys = [...firstRowKeys, ...remainingKeys].filter(
-    (key) => key !== "logo",
+    (key) => key !== "logo" && key !== "id",
   );
 
   const hasRows = rows.length > 0 && orderedKeys.length > 0;
@@ -62,14 +55,14 @@ export async function TableUI({
         )}
       </div>
 
-      <Table className="min-w-[640px]">
+      <Table className="w-full table-fixed">
         <TableHeader>
           <TableRow className="border-none uppercase [&>th]:text-center">
             {orderedKeys.map((key, index) => (
               <TableHead
                 key={key}
                 className={cn(
-                  index === 0 && "min-w-[160px] !text-left",
+                  index === 0 && "!text-left",
                   isNumericColumn(key) && index !== 0 && "!text-right",
                 )}
               >
@@ -95,7 +88,7 @@ export async function TableUI({
                 {orderedKeys.map((key, index) => {
                   const value = row[key];
 
-                  if (key === "name") {
+                  if (index === 0) {
                     const logo = row.logo;
 
                     return (

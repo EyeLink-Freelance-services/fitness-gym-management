@@ -1,6 +1,7 @@
-import * as Icons from "../../components/Layouts/sidebar/icons";
+import * as Icons from "../../components/IconsCollection/icons";
+import type { NavSection } from "@/types/dashboard";
 
-export const NAV_DATA = [
+export const NAV_DATA: NavSection[] = [
   {
     label: "MAIN MENU",
     items: [

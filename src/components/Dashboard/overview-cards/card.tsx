@@ -1,17 +1,8 @@
 import { ArrowDownIcon, ArrowUpIcon } from "@/assets/icons";
 import { cn } from "@/lib/utils";
-import type { JSX, SVGProps } from "react";
+import { OverviewCardProps } from "@/types/dashboard";
 
-type PropsType = {
-  label: string;
-  data: {
-    value: number | string;
-    growthRate: number;
-  };
-  Icon: (props: SVGProps<SVGSVGElement>) => JSX.Element;
-};
-
-export function OverviewCard({ label, data, Icon }: PropsType) {
+export function OverviewCard({ label, data, Icon }: OverviewCardProps) {
   const isDecreasing = data.growthRate < 0;
 
   return (

@@ -140,3 +140,12 @@ export type RecoveryCodeProps = {
   onNext: () => void;
   onResend: () => void;
 };
+
+// Dashboard form
+
+type FormType = "company" | "personal";
+
+export type FormModalTriggerProps = {
+  buttonLabel: string;
+  formType: FormType;
+};

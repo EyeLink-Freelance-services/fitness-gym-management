@@ -1,4 +1,5 @@
 import * as logos from "@/assets/logos";
+import { Users, Gym, Trainer, Profit } from "@/components/IconsCollection/icons";
 
 export async function getInvoiceTableData() {
   await new Promise((resolve) => setTimeout(resolve, 1400));
@@ -95,29 +96,6 @@ export async function getOverviewData() {
       growthRate: 4.35,
     },
     products: {
-      value: 3456,
-      growthRate: 2.59,
-    },
-  };
-}
-
-export async function getOwnerData() {
-  await new Promise((resolve) => setTimeout(resolve, 2000));
-
-  return {
-    users: {
-      value: 3456,
-      growthRate: -0.95,
-    },
-    company: {
-      value: 3456,
-      growthRate: 0.43,
-    },
-    coach: {
-      value: 4220,
-      growthRate: 4.35,
-    },
-    revenue: {
       value: 3456,
       growthRate: 2.59,
     },
@@ -295,91 +273,129 @@ export async function getWeeksProfitData(timeFrame?: string) {
   };
 }
 
-export async function getTopGym() {
-  await new Promise((resolve) => setTimeout(resolve, 1500));
+export const DUMMY_COACHES = [
+  {
+    name: "Alex",
+    logo: logos.google,
+    specialization: "Strength Training",
+    clients: 3456,
+    status: "Active",
+    location: "New York, USA",
+  },
+  {
+    name: "Alex",
+    logo: logos.x,
+    specialization: "Strength Training",
+    clients: 356,
+    status: "Active",
+    location: "New York, USA",
+  },
+  {
+    name: "Alex",
+    logo: logos.github,
+    specialization: "Cardio",
+    clients: 456,
+    status: "Active",
+    location: "New York, USA",
+  },
+  {
+    name: "Alex",
+    logo: logos.vimeo,
+    specialization: "Training",
+    clients: 3456,
+    status: "Active",
+    location: "New York, USA",
+  },
+  {
+    name: "Alex",
+    logo: logos.facebook,
+    specialization: "Strength",
+    clients: 3450,
+    status: "Active",
+    location: "New York, USA",
+  },
+];
 
-  return [
-    {
-      name: "MyFit",
-      logo: logos.google,
-      clients: 3456,
-      location: "New York, USA",
-      status: "Active",
-    },
-    {
-      name: "MyFit",
-      logo: logos.x,
-      clients: 3456,
-      location: "USA",
-      status: "Active",
-    },
-    {
-      name: "MyFit",
-      logo: logos.github,
-      clients: 3456,
-      location: "Mauritius",
-      status: "Active",
-    },
-    {
-      name: "MyFit",
-      logo: logos.vimeo,
-      clients: 3456,
-      location: "Port Louis",
-      status: "Active",
-    },
-    {
-      name: "MyFit",
-      logo: logos.facebook,
-      clients: 3456,
-      location: "New York, USA",
-      status: "Active",
-    },
-  ];
-}
+export const OVERVIEW_SUPER_ADMIN_DATA = [
+  {
+    name: "users",
+    value: 3456,
+    growthRate: -0.95,
+    icon: Users,
+  },
+  {
+    name: "company",
+    value: 3456,
+    growthRate: 0.43,
+    icon: Gym,
+  },
+  {
+    name: "coach",
+    value: 4220,
+    growthRate: 4.35,
+    icon: Trainer,
+  },
+  {
+    name: "revenue",
+    value: 3456,
+    growthRate: 2.59,
+    icon: Profit,
+  },
+];
 
-export async function getTopCoaches() {
-  await new Promise((resolve) => setTimeout(resolve, 1500));
-
-  return [
-    {
-      name: "Alex",
-      logo: logos.google,
-      specialization: "Strength Training",
-      clients: 3456,
-      status: "Active",
-      location: "New York, USA",
-    },
-    {
-      name: "Alex",
-      logo: logos.x,
-      specialization: "Strength Training",
-      clients: 3456,
-      status: "Active",
-      location: "New York, USA",
-    },
-    {
-      name: "Alex",
-      logo: logos.github,
-      specialization: "Cardio",
-      clients: 3456,
-      status: "Active",
-      location: "New York, USA",
-    },
-    {
-      name: "Alex",
-      logo: logos.vimeo,
-      specialization: "Training",
-      clients: 3456,
-      status: "Active",
-      location: "New York, USA",
-    },
-    {
-      name: "Alex",
-      logo: logos.facebook,
-      specialization: "Strength",
-      clients: 3456,
-      status: "Active",
-      location: "New York, USA",
-    },
-  ];
-}
+export const DUMMY_GYMS = [
+  {
+    id: 1,
+    name: "MyFit",
+    logo: logos.google,
+    clients: 3456,
+    location: "New York, USA",
+    status: "Active",
+    createdAt: "2024-01-10",
+  },
+  {
+    id: 2,
+    name: "MyFit",
+    logo: logos.x,
+    clients: 3456,
+    location: "USA",
+    status: "Active",
+    createdAt: "2024-02-10",
+  },
+  {
+    id: 3,
+    name: "MyFit",
+    logo: logos.github,
+    clients: 3456,
+    location: "Mauritius",
+    status: "Active",
+    createdAt: "2024-04-10",
+  },
+  {
+    id: 4,
+    name: "MyFit",
+    logo: logos.vimeo,
+    clients: 3456,
+    location: "Port Louis",
+    status: "Active",
+    createdAt: "2024-06-10",
+  },
+  {
+    id: 5,
+    name: "MyFit",
+    logo: logos.facebook,
+    clients: 3456,
+    location: "New York, USA",
+    status: "Active",
+    createdAt: "2024-07-10",
+  },
+  {
+    id: 5,
+    name: "MyFit",
+    logo: logos.facebook,
+    clients: 3456,
+    location: "New York, USA",
+    status: "Active",
+    createdAt: "2026-02-10",
+  },
+];

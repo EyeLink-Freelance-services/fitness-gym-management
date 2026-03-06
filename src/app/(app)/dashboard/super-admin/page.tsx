@@ -1,24 +1,22 @@
 import { DashboardSection } from "@/components/Dashboard/dashboard-section";
 import { OverviewCard } from "../../../../components/Dashboard/overview-cards/card";
-import * as icons from "@/components/IconsCollection/icons";
 import { compactFormat } from "@/lib/formatters/format-number";
 import { WeeksProfit } from "@/components/Charts/weeks-profit";
 import { createTimeFrameExtractor } from "@/utils/timeframe-extractor";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/Tables/skeleton";
 import { TableUI } from "@/components/Tables";
-import { getOwnerData, getTopCoaches, getTopGym } from "@/data/superAdmin";
-
-type PropsType = {
-  searchParams: Promise<{
-    selected_time_frame?: string;
-  }>;
-};
+import { SearchType } from "@/types/dashboard";
+import {
+  getSuperAdminOverviewData,
+  getTopCoaches,
+  getTopGyms,
+} from "@/services/dashboard.services";
 
 export default async function SuperAdminDashboardPage({
   searchParams,
-}: PropsType) {
-  const { users, company, coach, revenue } = await getOwnerData();
+}: SearchType) {
+  const overviewData = await getSuperAdminOverviewData();
   const { selected_time_frame } = await searchParams;
   const extractTimeFrame = createTimeFrameExtractor(selected_time_frame);
 
@@ -26,38 +24,17 @@ export default async function SuperAdminDashboardPage({
     <div>
       <DashboardSection title="Overview">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <OverviewCard
-            label="Total Users"
-            data={{
-              ...users,
-              value: compactFormat(users.value),
-            }}
-            Icon={icons.Users}
-          />
-          <OverviewCard
-            label="Gym Count"
-            data={{
-              ...company,
-              value: compactFormat(company.value),
-            }}
-            Icon={icons.Gym}
-          />
-          <OverviewCard
-            label="Coach Count"
-            data={{
-              ...coach,
-              value: compactFormat(coach.value),
-            }}
-            Icon={icons.Trainer}
-          />
-          <OverviewCard
-            label="Total Revenue"
-            data={{
-              ...revenue,
-              value: compactFormat(revenue.value),
-            }}
-            Icon={icons.Profit}
-          />
+          {overviewData.map((item) => (
+            <OverviewCard
+              key={item.name}
+              label={item.name}
+              data={{
+                ...item,
+                value: compactFormat(item.value),
+              }}
+              Icon={item.icon}
+            />
+          ))}
         </div>
       </DashboardSection>
 
@@ -72,7 +49,7 @@ export default async function SuperAdminDashboardPage({
           <Suspense fallback={<Skeleton />}>
             <TableUI
               title="Last 5 Gyms"
-              data={getTopGym()}
+              data={getTopGyms(5)}
               buttonLabel="View All"
               buttonPath="/dashboard/super-admin/company"
             />
@@ -83,7 +60,7 @@ export default async function SuperAdminDashboardPage({
           <Suspense fallback={<Skeleton />}>
             <TableUI
               title="Last 5 Coaches"
-              data={getTopCoaches()}
+              data={getTopCoaches(5)}
               buttonLabel="View All"
               buttonPath="/dashboard/super-admin/coaches"
             />

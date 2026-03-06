@@ -2,7 +2,7 @@ import { TableUI } from "@/components/Tables";
 import { Skeleton } from "@/components/Tables/skeleton";
 import { Suspense } from "react";
 import { FormModalTrigger } from "@/components/Dashboard/form-modal-trigger";
-import { getTopGym } from "@/data/superAdmin";
+import { getAllGyms } from "@/services/dashboard.services";
 
 export default function CompanyCoachesPage() {
   return (
@@ -12,7 +12,7 @@ export default function CompanyCoachesPage() {
       </div>
 
       <Suspense fallback={<Skeleton />}>
-        <TableUI title="Companies" data={getTopGym()} />
+        <TableUI title="Companies" data={getAllGyms()} />
       </Suspense>
     </div>
   );

@@ -4,11 +4,11 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getDashboardNav } from "../../../data/sidebar/dashboard-nav";
 import { NAV_DATA } from "../../../data/sidebar";
-import { ArrowLeftIcon, ChevronUp } from "./icons";
+import { ArrowLeftIcon, ChevronUp } from "../../IconsCollection/icons";
 import { MenuItem } from "./menu-item";
 import { useSidebarContext } from "./sidebar-context";
+import { getDashboardNav } from "@/utils/dashboard-nav";
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -134,7 +134,15 @@ export function Sidebar() {
                                       href={subItem.url}
                                       isActive={pathname === subItem.url}
                                     >
+                                      <div className="flex gap-2">
+                                      {subItem.icon && (
+                                        <subItem.icon
+                                          className="size-6 shrink-0"
+                                          aria-hidden="true"
+                                        />
+                                      )}
                                       <span>{subItem.title}</span>
+                                      </div>
                                     </MenuItem>
                                   </li>
                                 ))}

@@ -5,15 +5,12 @@ import { createPortal } from "react-dom";
 import CompanyForm from "@/components/Forms/CompanyForm";
 import PersonalCoachForm from "@/components/Forms/PersonalCoachForm";
 import { Button } from "@/components/ui-elements/button";
+import { FormModalTriggerProps } from "@/types/forms";
 
-type FormType = "company" | "personal";
-
-type FormModalTriggerProps = {
-  buttonLabel: string;
-  formType: FormType;
-};
-
-export function FormModalTrigger({ buttonLabel, formType }: FormModalTriggerProps) {
+export function FormModalTrigger({
+  buttonLabel,
+  formType,
+}: FormModalTriggerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const titleId = useId();
@@ -43,7 +40,11 @@ export function FormModalTrigger({ buttonLabel, formType }: FormModalTriggerProp
 
   return (
     <>
-      <Button type="button" label={buttonLabel} onClick={() => setIsOpen(true)} />
+      <Button
+        type="button"
+        label={buttonLabel}
+        onClick={() => setIsOpen(true)}
+      />
 
       {isOpen &&
         (mounted
