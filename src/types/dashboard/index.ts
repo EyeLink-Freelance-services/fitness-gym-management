@@ -28,3 +28,12 @@ export type OverviewCardProps = {
   };
   Icon: (props: SVGProps<SVGSVGElement>) => JSX.Element;
 };
+
+export type DashboardSectionProps = {
+  title?: string;
+  className?: string;
+  buttonLabel?: string;
+  buttonPath?: string;
+  buttonToast?: string;
+  children: React.ReactNode;
+};

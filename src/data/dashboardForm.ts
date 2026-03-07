@@ -51,9 +51,9 @@ export const AVAILABILITY_OPTIONS = [
 ] as const;
 
 export const MEMBERSHIP_PLANS = [
-  "Basic — RM 80/mo (Gym access only)",
-  "Standard — RM 150/mo (+ Group classes)",
-  "Premium — RM 250/mo (+ PT sessions)",
+  "Basic — Rs 80/mo (Gym access only)",
+  "Standard — Rs 150/mo (+ Group classes)",
+  "Premium — Rs 250/mo (+ PT sessions)",
 ] as const;
 
 export const ACTIVITY_LEVELS = [

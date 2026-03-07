@@ -6,7 +6,7 @@ export function OverviewCard({ label, data, Icon }: OverviewCardProps) {
   const isDecreasing = data.growthRate < 0;
 
   return (
-    <div className="rounded-[10px] bg-gray-50 p-6 shadow-1 dark:bg-gray-dark">
+    <div className="rounded-[10px] border-0 bg-gray-50 p-6 shadow-1 dark:border dark:border-gray-7/50 dark:bg-gray-dark">
       <Icon />
 
       <div className="mt-6 flex items-end justify-between">

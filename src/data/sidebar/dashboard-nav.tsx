@@ -38,8 +38,8 @@ export const COMPANY_NAV: NavSection[] = [
       icon: Icons.User,
       items: [
         {
-          title: "Staff Members",
-          url: "/dashboard/company/members",
+          title: "Staff",
+          url: "/dashboard/company/staff",
           icon: Icons.User,
         },
         {
@@ -47,17 +47,22 @@ export const COMPANY_NAV: NavSection[] = [
           url: "/dashboard/company/coaches",
           icon: Icons.TrainingIcon,
         },
+        {
+          title: "Client",
+          url: "/dashboard/company/clients",
+          icon: Icons.TrainingIcon,
+        },
       ],
     },
     {
       title: "Membership Plans",
-      url: "/payments",
+      url: "/dashboard/company/membership",
       icon: Icons.PaymentsIcon,
       items: [],
     },
     {
       title: "Payment Records",
-      url: "/payments",
+      url: "/dashboard/company/payment",
       icon: Icons.PaymentsIcon,
       items: [],
     },

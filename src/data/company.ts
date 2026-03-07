@@ -107,29 +107,26 @@ export const COACH_ASSIGNMENTS = [
     client: "Alex Brown",
     coach: "John Smith",
     status: "Assigned",
+    createdAt: "2024-01-10",
   },
   {
     client: "New User",
-    coach: "—",
+    coach: "Nac Joy",
     status: "Pending",
+    createdAt: "2025-01-10",
   },
 ];
 
 export const ANNOUNCEMENTS = [
   {
-    title: "Holiday hours",
-    date: "Mar 1",
+    title: "Gym closure - 12 Mar (Public Holiday)",
+    desc: "All branches will be closed. Classes rescheduled.",
+    time: "Posted 2 hours ago",
   },
   {
-    title: "New class: HIIT",
-    date: "Mar 2",
-  },
-];
-
-export const MEDICAL_ALERTS = [
-  {
-    name: "Chris Lee",
-    note: "Knee injury — low impact only",
+    title: "New class: Muay Thai starts 10 Mar",
+    desc: "Register via call before Friday.",
+    time: "Posted yesterday",
   },
 ];
 
@@ -137,5 +134,20 @@ export const PENDING_COACH = [
   {
     name: "New User",
     joined: "Mar 2",
+  },
+];
+
+export const NEW_GYM_CLIENTS = [
+  {
+    client: "Alex Brown",
+    contact: "0435 ",
+    plan: "PRemium",
+    date: "2024-01-10",
+  },
+  {
+    client: "New User",
+    contact: "5990540",
+    plan: "Standard",
+    date: "2025-01-10",
   },
 ];
