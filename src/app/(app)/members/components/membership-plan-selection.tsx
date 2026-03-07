@@ -64,7 +64,7 @@ export default function MembershipPlansSelector() {
       <div className="mx-auto max-w-7xl">
         <div className="mb-8 text-center">
           <h2 className="panel-title">
-            Choose Your Membership Plan
+            Membership Plan
           </h2>
           <p className="panel-sub">
             Select the plan that best fits your fitness journey.
