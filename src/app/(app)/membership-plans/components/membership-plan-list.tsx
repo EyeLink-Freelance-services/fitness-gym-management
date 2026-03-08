@@ -1,7 +1,9 @@
 "use client";
 
 import { Skeleton } from "@/components/ui/skeleton";
-import { MembershipPlanRow } from "@/lib/validation/schemas/membership-plan";
+import { formatCurrency } from "@/lib/formatters/format-number";
+import { MembershipPlanEditInput, MembershipPlanRow } from "@/lib/validation/schemas/membership-plan";
+import { getDurationLabel } from "@/utils/transform-days-label";
 import { useMemo, useState } from "react";
 
 type Props = {
@@ -10,27 +12,7 @@ type Props = {
   onCreate?: () => void;
   onView?: (plan: MembershipPlanRow) => void;
   onEdit?: (plan: MembershipPlanRow) => void;
-  onToggleActive?: (plan: MembershipPlanRow) => void;
-};
-
-const formatCurrency = (value: number) =>
-  new Intl.NumberFormat("en-MU", {
-    style: "currency",
-    currency: "MUR",
-    maximumFractionDigits: 2,
-  }).format(value);
-
-const getDurationLabel = (plan: MembershipPlanRow) => {
-  if (plan.is_monthly) {
-    const months = plan.duration_days / 30;
-    if (months === 1) return "1 month";
-    if (Number.isInteger(months)) return `${months} months`;
-  }
-
-  if (plan.duration_days === 1) return "1 day";
-  if (plan.duration_days < 30) return `${plan.duration_days} days`;
-
-  return `${plan.duration_days} days`;
+  onToggleActive?: (plan: MembershipPlanEditInput) => void;
 };
 
 export default function MembershipPlansList({
@@ -196,7 +178,7 @@ export default function MembershipPlansList({
 
                         <button
                           type="button"
-                          onClick={() => onToggleActive?.(plan)}
+                          onClick={() => onToggleActive?.({...plan, features: plan.features?.map((feature) => ({ value: feature })), is_active: !plan.is_active})}
                           className={[
                             "rounded-lg px-3 py-1.5 text-sm transition",
                             plan.is_active

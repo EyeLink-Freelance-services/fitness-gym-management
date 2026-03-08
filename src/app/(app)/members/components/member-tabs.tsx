@@ -5,11 +5,12 @@ import { Tabs } from "@/components/ui/tabs";
 import { ShowcaseSection } from "@/components/Layouts/showcase-section";
 import MemberActions from "../components/ui";
 import MeasurementsTab from "./measurements-tab";
-import MembershipPlansSelector from "./membership-plan-selection";
+import MembershipPlansSelector from "../../membership-plans/components/membership-plan-selector";
+import { MembershipPlanTab } from "./membership-plan-tab";
 
 type MemberTab = "measurments" | "progress" | "membership" | "medical";
 
-interface MemberTabsProps {
+export interface MemberTabsProps {
   member: any; // replace with your member type
 }
 
@@ -36,7 +37,7 @@ export default function MemberTabs({ member }: MemberTabsProps) {
 						)}
 						{activeTab === "progress" && <div>Progress content here</div>}
 						{activeTab === "membership" && 
-							<MembershipPlansSelector />
+							<MembershipPlanTab member={member} />
 						}
 						{activeTab === "medical" && <div>Medical content here</div>}
 					</div>

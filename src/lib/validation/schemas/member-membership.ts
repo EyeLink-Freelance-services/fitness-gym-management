@@ -1,3 +1,4 @@
+import { Timestamp } from "next/dist/server/lib/cache-handlers/types";
 import { z } from "zod";
 
 export const MemberMembershipStatusSchema = z.enum([
@@ -11,8 +12,8 @@ export const MemberMembershipBaseSchema = z.object({
   member_id: z.string().uuid("Invalid member id"),
   plan_id: z.string().uuid("Invalid plan id"),
 
-  start_date: z.string().date("Start date must be a valid date"),
-  end_date: z.string().date("End date must be a valid date"),
+  start_date: z.union([z.string().date(), z.string().regex(/^\d{4}-\d{2}-\d{2}$/)]),
+  end_date: z.union([z.string().date(), z.string().regex(/^\d{4}-\d{2}-\d{2}$/)]),
 
   status: MemberMembershipStatusSchema.default("active"),
 });
@@ -43,6 +44,27 @@ export const MemberMembershipUpdateSchema = MemberMembershipBaseSchema.partial()
     }
   });
 
+export const MemberMembershipTransactionSchema = z.object({
+  plan_id: z.string().uuid("Invalid plan id"),
+
+  start_date: z.iso.date("Start date must be a valid date"),
+  end_date: z.iso.date("End date must be a valid date"),
+
+  status: MemberMembershipStatusSchema.default("active"),
+});
+
 export type MemberMembershipBaseInput = z.infer<typeof MemberMembershipBaseSchema>;
-export type MemberMembershipCreateInput = z.infer<typeof MemberMembershipCreateSchema>;
+export type MemberMembershipCreateInput = z.infer<typeof MemberMembershipTransactionSchema>;
 export type MemberMembershipUpdateInput = z.infer<typeof MemberMembershipUpdateSchema>;
+
+export type MemberMembershipPlan = {
+	id: string,
+	company_id: string,
+	member_id: string,
+	plan_id: string,
+	start_date: Date,
+	end_date: Date,
+	status: string,
+	created_by: string,
+	created_at: Timestamp
+}

@@ -34,6 +34,7 @@ create table if not exists public.member_memberships (
 );
 
 create index if not exists idx_member_memberships_member on public.member_memberships(member_id, end_date desc);
+create index if not exists idx_member_memberships_plan_id on public.member_memberships(plan_id);
 
 /* --- Helper: can access member (admin/staff OR assigned coach) --- */
 create or replace function public.can_access_member(p_member_id uuid)
@@ -102,6 +103,8 @@ with check (
   (public.has_company_role(company_id,'admin') or public.has_company_role(company_id,'staff'))
   and created_by = auth.uid()
 );
+
+-- member memberships update policy todo
 
 GRANT SELECT, INSERT, UPDATE, DELETE
 ON public.membership_plans

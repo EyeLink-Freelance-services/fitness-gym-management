@@ -20,6 +20,19 @@ export async function listMembershipPlan() {
   return data ?? [];
 }
 
+export async function listMembershipPlanActive() {
+  const supabase = await supabaseServer();
+
+  const { data, error } = await supabase
+    .from(TABLE)
+    .select("*")
+		.eq('is_active', true)
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+  return data ?? [];
+}
+
 export async function getMembershipPlan(id: string) {
   const supabase = await supabaseServer();
 
@@ -39,13 +52,18 @@ export async function createMembershipPlan(payload: MembershipPlanCreateInput) {
   const {data: {user}, error: authError} = await supabase.auth.getUser();
 
   if(authError) throw authError
+	if (!user) throw new Error("User not authenticated");
+
+	const { id: _id, created_by, created_at, updated_at, features,  ...rest } = payload as any;
 
   const payloadComplete = {
-    ...payload,
+    ...rest,
 		features: payload.features?.map((f) => f.value).filter(Boolean) ?? [],
     created_by: user?.id,
     updated_by: user?.id
   }
+
+	console.log(payloadComplete, 'payloadComplet');
 	
   const { data, error } = await supabase
     .from(TABLE)
@@ -65,7 +83,7 @@ export async function updateMembershipPlan(payload: MembershipPlanEditInput) {
   if(authError) throw authError
 	if (!user) throw new Error("User not authenticated");
 
-  const { id: _id, created_by, created_at, updated_at, ...rest } = payload as any;
+  const { id: _id, created_by, created_at, updated_at, features,  ...rest } = payload as any;
 
   const payloadComplete = {
     ...rest,

@@ -40,6 +40,20 @@ export async function getMemberMembership(id: string) {
   return data;
 }
 
+export async function getMembershipPlanByMemberIdAndCompanyId(idMember: string, idCompany: string) {
+  const supabase = await supabaseServer();
+
+  const { data, error } = await supabase
+    .from(TABLE)
+    .select("*")
+    .eq("member_id", idMember)
+    .eq("company_id", idCompany)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data;
+}
+
 export async function createMemberMembership(payload:  MemberMembershipCreateInput) {
   const supabase = await supabaseServer();
 

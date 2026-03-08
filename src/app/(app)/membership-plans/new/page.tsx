@@ -35,7 +35,7 @@ export default function CreateMembershipPlanForm() {
   });
 
   const onSubmit = async (values: MembershipPlanCreateInput) => {
-		console.log('lol')
+		console.log('lol', values)
 
     const res = await createMembershipPlanAction(values);
     

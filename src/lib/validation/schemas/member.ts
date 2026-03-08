@@ -30,7 +30,7 @@ export const MemberBaseSchema = z.object({
     { message: "Invalid international phone number" }
   ),
 
-  email: z.string().trim().email().optional().nullable(),
+  email: z.string().trim().email("Invalid email address"),
   address: z.string().trim().max(500).optional().nullable(),
 
   emergency_contact_name: z.string().trim().max(150).optional().nullable(),
@@ -53,17 +53,24 @@ export const MemberUpdateSchema = MemberBaseSchema.partial().extend({
 export type MemberCreateInput = z.infer<typeof MemberCreateSchema>;
 export type MemberUpdateInput = z.infer<typeof MemberUpdateSchema>;
 
-// import { z } from "zod";
-
-// export const MemberCreateSchema = z.object({
-//   first_name: z.string().min(1),
-//   last_name: z.string().min(1),
-//   email: z.string().email().optional().or(z.literal("")).transform(v => v || undefined),
-//   phone: z.string().optional().or(z.literal("")).transform(v => v || undefined),
-//   status: z.enum(["active", "inactive"]).default("active"),
-// });
-
-// export const MemberUpdateSchema = MemberCreateSchema.partial();
-
-// export type MemberCreateInput = z.infer<typeof MemberCreateSchema>;
-// export type MemberUpdateInput = z.infer<typeof MemberUpdateSchema>;
+export type MemberWithMembershipInput = {
+  p_company_id: string;
+  p_assigned_coach_id?: string | null;
+  p_member_code?: string | null;
+  p_first_name: string;
+  p_last_name: string;
+  p_dob: string;
+  p_gender?: string | null;
+  p_phone: string;
+  p_email: string;
+  p_address?: string | null;
+  p_emergency_contact_name?: string | null;
+  p_emergency_contact_phone: string;
+  p_medical_notes?: string | null;
+  p_member_status?: "active" | "inactive";
+  p_created_by: string;
+  p_plan_id?: string | null;
+  p_start_date?: string | null;
+  p_end_date: string;
+  p_membership_status?: "active" | "expired" | "cancelled";
+};

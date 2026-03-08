@@ -1,6 +1,6 @@
 "use server"
 
-import { createMembershipPlan, listMembershipPlan, updateMembershipPlan } from "@/lib/db/queries/membership-plan";
+import { createMembershipPlan, listMembershipPlan, listMembershipPlanActive, updateMembershipPlan } from "@/lib/db/queries/membership-plan";
 import { MembershipPlanCreateInput, MembershipPlanEditInput, MembershipPlanEditSchema, MembershipPlanFormSchema, MembershipPlanRow } from "@/lib/validation/schemas/membership-plan";
 import { revalidatePath } from "next/cache";
 
@@ -8,6 +8,24 @@ export async function listMembershipPlanAction() {
 
 	try {
 		const membershipPlan: MembershipPlanRow[] = await listMembershipPlan();
+
+		return {
+				ok: true,
+				data: membershipPlan
+		};
+
+	} catch (error: any) {
+		return {
+				ok: false,
+				message: error.message ?? 'failed to list membership plan'
+		}
+	}
+}
+
+export async function listMembershipPlanActiveAction() {
+
+	try {
+		const membershipPlan: MembershipPlanRow[] = await listMembershipPlanActive();
 
 		return {
 				ok: true,
@@ -33,13 +51,8 @@ export async function createMembershipPlanAction(values: MembershipPlanCreateInp
 		};
 	}
 
-	const payload = {
-		...parsed.data,
-		features: parsed.data.features?.map((f) => f.value).filter(Boolean) ?? [],
-	};
-
 	try {
-		const membershipPlan = await createMembershipPlan(payload);
+		const membershipPlan = await createMembershipPlan(parsed.data);
 		revalidatePath('/membership-plans')
 
 		return {
@@ -55,6 +68,7 @@ export async function createMembershipPlanAction(values: MembershipPlanCreateInp
 }
 
 export async function updateMembershipPlanAction(values: MembershipPlanEditInput) {
+	console.log(values)
 	const parsed = MembershipPlanEditSchema.safeParse(values);
 
 	if (!parsed.success) {

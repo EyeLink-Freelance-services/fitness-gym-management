@@ -6,6 +6,166 @@ do $$ begin
 exception when duplicate_object then null; end $$;
 
 -- =========================================================
+-- run in transactional way
+create or replace function public.create_member_with_membership(
+  p_company_id uuid,
+  p_first_name text,
+  p_last_name text,
+  p_dob date,
+  p_gender text,
+  p_phone text,
+  p_email text,
+  p_emergency_contact_phone text,
+  p_member_status public.member_status,
+  p_created_by uuid,
+  p_plan_id uuid,
+  p_end_date date,
+  p_assigned_coach_id uuid default null,
+  p_member_code text default null,
+  p_address text default null,
+  p_emergency_contact_name text default null,
+  p_medical_notes text default null,
+
+  p_start_date date default current_date,
+  p_membership_status text default 'active'
+)
+returns table (
+  member_id uuid,
+  membership_id uuid
+)
+language plpgsql
+security invoker
+as $$
+declare
+  v_member_id uuid;
+  v_membership_id uuid;
+begin
+  insert into public.members (
+    company_id,
+    assigned_coach_id,
+    member_code,
+    first_name,
+    last_name,
+    dob,
+    gender,
+    phone,
+    email,
+    address,
+    emergency_contact_name,
+    emergency_contact_phone,
+    medical_notes,
+    status,
+    created_by
+  )
+  values (
+    p_company_id,
+    p_assigned_coach_id,
+    p_member_code,
+    p_first_name,
+    p_last_name,
+    p_dob,
+    p_gender,
+    p_phone,
+    p_email,
+    p_address,
+    p_emergency_contact_name,
+    p_emergency_contact_phone,
+    p_medical_notes,
+    coalesce(p_member_status, 'active'::public.member_status),
+    p_created_by
+  )
+  returning id into v_member_id;
+
+  insert into public.member_memberships (
+    company_id,
+    member_id,
+    plan_id,
+    start_date,
+    end_date,
+    status,
+    created_by
+  )
+  values (
+    p_company_id,
+    v_member_id,
+    p_plan_id,
+    p_start_date,
+    p_end_date,
+    coalesce(p_membership_status, 'active'),
+    p_created_by
+  )
+  returning id into v_membership_id;
+
+  return query
+  select v_member_id, v_membership_id;
+end;
+$$;
+
+ALTER FUNCTION public.create_member_with_membership(
+  uuid,
+  text,
+  text,
+  date,
+  text,
+  text,
+  text,
+  text,
+  public.member_status,
+  uuid,
+  uuid,
+  date,
+  uuid,
+  text,
+  text,
+  text,
+  text,
+  date,
+  text
+) OWNER TO postgres;
+
+REVOKE ALL ON FUNCTION public.create_member_with_membership(
+  uuid,
+  text,
+  text,
+  date,
+  text,
+  text,
+  text,
+  text,
+  public.member_status,
+  uuid,
+  uuid,
+  date,
+  uuid,
+  text,
+  text,
+  text,
+  text,
+  date,
+  text
+) FROM PUBLIC;
+
+-- GRANT EXECUTE ON FUNCTION public.create_member_with_membership(
+--   uuid,
+--   text,
+--   text,
+--   date,
+--   text,
+--   text,
+--   text,
+--   text,
+--   public.member_status,
+--   uuid,
+--   uuid,
+--   date,
+--   uuid,
+--   text,
+--   text,
+--   text,
+--   text,
+--   date,
+--   text
+-- ) TO authenticated;
 
 create table if not exists public.members (
   id uuid primary key default gen_random_uuid(),

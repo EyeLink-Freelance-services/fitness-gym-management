@@ -24,7 +24,7 @@ export default function MembershipPlanForm({
   form
 }: Props) {	
 	
-	const { fields, append, remove, replace } = useFieldArray({
+	const { fields, append, remove } = useFieldArray({
 		control: form.control,
 		name: "features",
 	});

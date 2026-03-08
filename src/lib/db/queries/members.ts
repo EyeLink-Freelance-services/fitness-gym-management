@@ -1,5 +1,6 @@
 import { supabaseServer } from "@/lib/supabase/server";
-import type { MemberCreateInput, MemberUpdateInput } from "@/lib/validation/schemas/member";
+import type { MemberCreateInput, MemberUpdateInput, MemberWithMembershipInput } from "@/lib/validation/schemas/member";
+import { MemberMembershipCreateInput } from "@/lib/validation/schemas/member-membership";
 
 const TABLE = "members";
 
@@ -10,11 +11,6 @@ const TABLE = "members";
  */
 export async function listMembers() {
   const supabase = await supabaseServer();
-
-  console.log('lol');
-
-  const {data: {session}} = await supabase.auth.getSession();
-  console.log('session', session);
 
   const { data, error } = await supabase
     .from(TABLE)
@@ -47,6 +43,43 @@ export async function createMember(payload: MemberCreateInput) {
     .single();
 
   if (error) throw error;
+  return data;
+}
+
+export async function createMemberWithMembershipPlan(payloadMember: MemberCreateInput, payloadMemberMembership: MemberMembershipCreateInput) {
+  const supabase = await supabaseServer();
+
+  const {data: {user}, error: authError} = await supabase.auth.getUser();
+
+  if(authError) throw authError
+	if (!user) throw new Error("User not authenticated");
+
+  const payloadMemberWithMembershipPlan: MemberWithMembershipInput = {
+    p_company_id: payloadMember.company_id,
+    p_assigned_coach_id: payloadMember.assigned_coach_id ?? null,
+    p_first_name: payloadMember.first_name,
+    p_last_name: payloadMember.last_name,
+    p_member_code: payloadMember.member_code ?? null,
+    p_dob: payloadMember.dob,
+    p_gender: payloadMember.gender ?? null,
+    p_phone: payloadMember.phone,
+    p_email: payloadMember.email,
+    p_address: payloadMember.address ?? null,
+    p_medical_notes: payloadMember.medical_notes ?? null,
+    p_emergency_contact_name: payloadMember.emergency_contact_name ?? null,
+    p_emergency_contact_phone: payloadMember.emergency_contact_phone,
+    p_member_status: payloadMember.status ?? "active",
+    p_created_by: user.id,
+    p_plan_id: payloadMemberMembership.plan_id,
+    p_end_date: payloadMemberMembership.end_date,
+    p_start_date: payloadMemberMembership.start_date,
+    p_membership_status: payloadMemberMembership.status ?? "active",
+  }
+
+  const { data, error } = await supabase.rpc("create_member_with_membership", payloadMemberWithMembershipPlan);
+
+  if (error) throw error;
+
   return data;
 }
 

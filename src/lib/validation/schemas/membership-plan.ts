@@ -4,7 +4,7 @@ export const MembershipPlanFormSchema = z.object({
   company_id: z.string().uuid(),
   name: z.string().trim().min(1, "Name is required").max(150),
   price: z.number().min(0, "Price must be >= 0"),
-  entree_fee: z.number().min(0, "Entry fee must be >= 0"),
+  entree_fee: z.number().min(0, "Entry fee must be >= 0").optional(),
   duration_days: z.number().int().min(1, "Duration must be at least 1 day"),
   is_monthly: z.boolean(),
   description: z.string().trim().max(2000).nullable().optional(),

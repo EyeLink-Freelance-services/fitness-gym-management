@@ -377,6 +377,7 @@ with check (
 );
 
 GRANT USAGE ON SCHEMA public TO authenticated;
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO authenticated;
 
 GRANT SELECT, INSERT, UPDATE, DELETE
 ON public.companies

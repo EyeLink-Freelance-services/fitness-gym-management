@@ -1,8 +1,26 @@
 "use server"
 
-import { createMember } from "@/lib/db/queries/members";
+import { getMembershipPlanByMemberIdAndCompanyId } from "@/lib/db/queries/member-membership";
+import { createMember, createMemberWithMembershipPlan } from "@/lib/db/queries/members";
 import { MemberCreateInput, MemberCreateSchema } from "@/lib/validation/schemas/member";
+import { MemberMembershipCreateInput, MemberMembershipPlan, MemberMembershipTransactionSchema } from "@/lib/validation/schemas/member-membership";
 import { revalidatePath } from "next/cache";
+
+export async function getMembershipPlanAction(idMember: string, idCompany: string) {
+  try {
+		const membershipPlan: MemberMembershipPlan = await getMembershipPlanByMemberIdAndCompanyId(idMember, idCompany);
+
+		return {
+			ok: true,
+			data: membershipPlan
+		};
+	} catch (error: any) {
+		return {
+			ok: false,
+			message: error.message ?? 'failed to create member'
+		}
+	}
+}
 
 export async function createMemberAction(values: MemberCreateInput) {
 	const parsed = MemberCreateSchema.safeParse(values);
@@ -17,6 +35,42 @@ export async function createMemberAction(values: MemberCreateInput) {
 
 	try {
 		const member = await createMember(parsed.data);
+		revalidatePath('/members')
+
+		return {
+			ok: true,
+			data: member
+		};
+	} catch (error: any) {
+		return {
+			ok: false,
+			message: error.message ?? 'failed to create member'
+		}
+	}
+}
+
+export async function createMemberWithMembershipPlanAction(valuesMember: MemberCreateInput, valuesMemberMembership: MemberMembershipCreateInput) {
+  const parsedMember = MemberCreateSchema.safeParse(valuesMember);
+  const parsedMemberMembershipPlan = MemberMembershipTransactionSchema.safeParse(valuesMemberMembership);
+
+  if (!parsedMember.success) {
+		return {
+			ok: false,
+			errors: parsedMember.error.flatten(),
+			message: 'Invalid payload for Member'
+		};
+	}
+
+  if (!parsedMemberMembershipPlan.success) {
+		return {
+			ok: false,
+			errors: parsedMemberMembershipPlan.error.flatten(),
+			message: 'Invalid payload for Member membership plan'
+		};
+	}
+
+  try {
+		const member = await createMemberWithMembershipPlan(parsedMember.data, parsedMemberMembershipPlan.data);
 		revalidatePath('/members')
 
 		return {

@@ -2,7 +2,7 @@
 
 import ClientForm from "@/components/Forms/ClientForm";
 import { useEffect, useState, useTransition } from "react";
-import MembershipPlansSelector from "../components/membership-plan-selection";
+import MembershipPlansSelector from "../../membership-plans/components/membership-plan-selector";
 import { Button, buttonVariants } from "@/components/ui-elements/button";
 import { Checkbox } from "@/components/FormElements/checkbox";
 import { MemberCreateInput, MemberCreateSchema } from "@/lib/validation/schemas/member";
@@ -11,14 +11,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useCompany } from "@/app/context/company-context";
 import { useRouter } from "next/navigation";
 import { ROUTES } from "@/constants/route";
-import { createMember } from "@/lib/db/queries/members";
-import { createMemberAction } from "../actions";
+import { createMemberAction, createMemberWithMembershipPlanAction } from "../actions";
 import { ArrowLeftIcon } from "@/assets/icons";
+import { MembershipPlanRow } from "@/lib/validation/schemas/membership-plan";
+import { formatDateLocal } from "@/lib/formatters/format-date";
+import { MemberMembershipCreateInput, MemberMembershipStatusSchema } from "@/lib/validation/schemas/member-membership";
 
 export default function NewMemberPage() {
   const { company_id } = useCompany();
   const [agreeTerms, setAgreeTerms] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState<MembershipPlanRow | null>(null);
   const [isPending, startTransition] = useTransition();
   
   const router = useRouter();
@@ -36,19 +39,44 @@ export default function NewMemberPage() {
   const{ handleSubmit } = methods
 
   const onSubmit =  (values: MemberCreateInput) => {
-    const payload = {
+    const payloadMember: MemberCreateInput = {
       ...values,
       assigned_coach_id: values.assigned_coach_id || null
     };
+
+    if(selectedPlan?.id) {
+      const today = new Date();
+      const end = new Date(today);
+      end.setDate(end.getDate() + selectedPlan.duration_days);
+
+      const payloadWithMembershipPlan: MemberMembershipCreateInput  = {
+        plan_id: selectedPlan.id,
+        start_date: formatDateLocal(today),
+        end_date: formatDateLocal(end),
+        status: MemberMembershipStatusSchema.parse("active")
+      };
+
+      startTransition(async () => {
+        const res = await createMemberWithMembershipPlanAction(payloadMember, payloadWithMembershipPlan);
+        if(!res.ok) {
+          setErrorMsg(res.message)
+          console.log(res.errors?.fieldErrors, 'errororo')
+        } else {
+          router.push(ROUTES.MEMBERS.ID(res.data[0].member_id))
+        }
+      });
+      
+    } else {
+      startTransition(async () => {
+        const res = await createMemberAction(payloadMember);
+        if(!res.ok) {
+          setErrorMsg(res.message)
+        } else {
+          router.push(ROUTES.MEMBERS.ID(res.data.id))
+        }
+      });
+    }
     
-    startTransition(async () => {
-      const res = await createMemberAction(payload);
-      if(!res.ok) {
-        setErrorMsg(res.message)
-      } else {
-        router.push(ROUTES.MEMBERS.ID(res.data.id))
-      }
-    });
   };
 
   return (
@@ -57,7 +85,8 @@ export default function NewMemberPage() {
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <ClientForm />
-          <MembershipPlansSelector />
+          <MembershipPlansSelector selectedPlan={selectedPlan}
+            setSelectedPlan={setSelectedPlan} />
           <div className="my-6 flex items-center gap-3">
             <div className="h-px flex-1 bg-stroke dark:bg-dark-3" />
             <span className="text-body-xs font-medium uppercase tracking-wider text-dark-5 dark:text-dark-6">
