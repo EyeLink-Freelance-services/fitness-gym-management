@@ -1,14 +1,33 @@
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import type { ButtonHTMLAttributes, ReactNode, SVGProps, JSX } from "react";
 import type { VariantProps } from "class-variance-authority";
 import { buttonVariants } from "@/components/ui-elements/button";
 
 export type TableRowData = object;
+
+export type DashboardCampaignStatus = "All" | "Published" | "Scheduled" | "Draft";
+
 export type StatusTone =
   | "primary"
   | "success"
   | "warning"
   | "danger"
   | "neutral";
+
+export type ButtonColorVariant =
+  | "primary"
+  | "green"
+  | "dark"
+  | "outlinePrimary"
+  | "outlineGreen"
+  | "outlineDark";
+
+export interface DashboardOverviewItem {
+  label: string;
+  value: string;
+  trend: number;
+  note: string;
+  Icon: (props: SVGProps<SVGSVGElement>) => JSX.Element;
+}
 
 export interface StatusBadgeProps {
   label: string;

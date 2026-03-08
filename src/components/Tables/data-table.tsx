@@ -114,7 +114,7 @@ export function DataTable<TData extends RowData>({
           )}
 
           {hasToolbar && (
-            <div className="w-full md:w-[40%]">
+            <div>
               {searchPlaceholder ? (
                 <input
                   type="text"

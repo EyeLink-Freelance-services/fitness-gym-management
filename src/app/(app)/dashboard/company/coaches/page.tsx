@@ -1,83 +1,69 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import Link from "next/link";
+"use client";
 
-const DUMMY_COACHES = [
+import { DataTable } from "@/components/Tables";
+import { Button } from "@/components/ui-elements/button";
+import { StatusBadge } from "@/components/ui-elements/status-badge";
+import { COMPANY_COACH_ROWS } from "@/data/company-coaches";
+import type { CompanyCoachRow } from "@/types/dashboard/company-directory";
+import type { ColumnDef } from "@tanstack/react-table";
+
+const columns: ColumnDef<CompanyCoachRow>[] = [
   {
-    id: "1",
-    name: "John Smith",
-    email: "john@example.com",
-    clients: 12,
-    status: "Active",
+    accessorKey: "name",
+    header: "Name",
+    cell: ({ row }) => (
+      <span className="font-medium text-dark dark:text-white">
+        {row.original.name}
+      </span>
+    ),
+    meta: {
+      align: "left",
+      headClassName: "min-w-[220px]",
+    },
   },
   {
-    id: "2",
-    name: "Sarah Lee",
-    email: "sarah@example.com",
-    clients: 8,
-    status: "Active",
+    accessorKey: "email",
+    header: "Email",
+    meta: {
+      align: "left",
+      headClassName: "min-w-[260px]",
+    },
   },
   {
-    id: "3",
-    name: "Mike Johnson",
-    email: "mike@example.com",
-    clients: 15,
-    status: "Active",
+    accessorKey: "clients",
+    header: "Clients",
   },
   {
-    id: "4",
-    name: "Emma Wilson",
-    email: "emma@example.com",
-    clients: 6,
-    status: "On leave",
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => (
+      <StatusBadge label={row.original.status} tone={row.original.statusTone} />
+    ),
   },
 ];
 
 export default function CompanyCoachesPage() {
   return (
-    <div>
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-dark dark:text-white">
-          Coaches
-        </h1>
+    <>
+      <div className="flex">
+        <Button
+          label="Add Member"
+          className="mb-4 ml-auto"
+          toastMessage="Form not yet created"
+        />
       </div>
-      <div className="rounded-[10px] bg-white shadow-1 dark:bg-gray-dark">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Clients</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead></TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {DUMMY_COACHES.map((coach) => (
-              <TableRow key={coach.id}>
-                <TableCell className="font-medium">{coach.name}</TableCell>
-                <TableCell>{coach.email}</TableCell>
-                <TableCell>{coach.clients}</TableCell>
-                <TableCell>{coach.status}</TableCell>
-                <TableCell>
-                  <Link
-                    href="#"
-                    className="text-sm font-medium text-primary hover:underline"
-                  >
-                    View
-                  </Link>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-    </div>
+
+      <DataTable
+        title="Coaches"
+        description="Coach availability and current client load."
+        data={COMPANY_COACH_ROWS}
+        columns={columns}
+        getRowId={(row) => row.id}
+        tableClassName="min-w-[860px]"
+        searchPlaceholder="Search coach, email, status..."
+        initialPageSize={10}
+        emptyStateLabel="No coaches available."
+      />
+    </>
   );
 }

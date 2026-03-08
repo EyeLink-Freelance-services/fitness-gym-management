@@ -68,7 +68,7 @@ export const COMPANY_NAV: NavSection[] = [
     },
     {
       title: "Announcements",
-      url: "/announcement",
+      url: "/dashboard/company/announcement",
       icon: Icons.Alphabet,
       items: [],
     },

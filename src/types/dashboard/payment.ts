@@ -1,23 +1,6 @@
-import type { JSX, SVGProps } from "react";
-import type { StatusTone } from "@/types/shared";
-
-export type PaymentButtonVariant =
-  | "primary"
-  | "green"
-  | "dark"
-  | "outlinePrimary"
-  | "outlineGreen"
-  | "outlineDark";
+import type { ButtonColorVariant, StatusTone } from "@/types/shared";
 
 export type PaymentCollectionsTimeFrame = "last 6 months" | "last 12 months";
-
-export interface PaymentOverviewItem {
-  label: string;
-  value: string;
-  trend: number;
-  note: string;
-  Icon: (props: SVGProps<SVGSVGElement>) => JSX.Element;
-}
 
 export interface CompanyPaymentAlert {
   title: string;
@@ -51,7 +34,7 @@ export interface PaymentTransactionRow {
   status: string;
   statusTone: StatusTone;
   actionLabel: string;
-  actionVariant: PaymentButtonVariant;
+  actionVariant: ButtonColorVariant;
   actionToast: string;
 }
 
@@ -64,7 +47,7 @@ export interface PaymentRenewalRow {
   daysLeftTone: StatusTone;
   autoRenew: boolean;
   actionLabel: string;
-  actionVariant: PaymentButtonVariant;
+  actionVariant: ButtonColorVariant;
   actionToast: string;
 }
 
@@ -78,7 +61,7 @@ export interface PaymentTableFilters {
 export interface PaymentQuickActionItem {
   label: string;
   description: string;
-  variant: PaymentButtonVariant;
+  variant: ButtonColorVariant;
   toastMessage: string;
 }
 

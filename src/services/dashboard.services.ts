@@ -4,7 +4,21 @@ import {
   EXPIRING_MEMBERSHIPS,
   NEW_GYM_CLIENTS,
 } from "@/data/company";
+import {
+  COMPANY_ANNOUNCEMENT_FILTERS,
+  COMPANY_ANNOUNCEMENT_OVERVIEW,
+  COMPANY_ANNOUNCEMENTS,
+} from "@/data/company-announcement";
+import { COMPANY_ANNOUNCEMENT_METRICS } from "@/data/company-announcement-metrics";
+import {
+  COMPANY_MEMBERSHIP_DISTRIBUTION,
+  COMPANY_MEMBERSHIP_OVERVIEW,
+  COMPANY_MEMBERSHIP_PLANS,
+  COMPANY_MEMBERSHIP_PROMOTIONS,
+  COMPANY_MEMBERSHIP_REVENUE,
+} from "@/data/company-membership";
 import type { PaymentCollectionsTimeFrame } from "@/types/dashboard/payment";
+import type { MembershipRevenueTimeFrame } from "@/types/dashboard/membership";
 import {
   COMPANY_PAYMENT_ALERT,
   COMPANY_PAYMENT_COLLECTIONS,
@@ -145,4 +159,63 @@ export async function getCompanyPaymentRenewals(limit?: number) {
   }
 
   return COMPANY_PAYMENT_RENEWALS.slice(0, limit);
+}
+
+export async function getCompanyMembershipOverviewData() {
+  await new Promise((r) => setTimeout(r, 200));
+  return COMPANY_MEMBERSHIP_OVERVIEW;
+}
+
+export async function getCompanyMembershipPlans() {
+  await new Promise((r) => setTimeout(r, 200));
+  return COMPANY_MEMBERSHIP_PLANS;
+}
+
+export async function getCompanyMembershipRevenue(
+  timeFrame: MembershipRevenueTimeFrame | string = "this month",
+) {
+  await new Promise((r) => setTimeout(r, 200));
+
+  if (timeFrame === "this quarter") {
+    return COMPANY_MEMBERSHIP_REVENUE["this quarter"];
+  }
+
+  return COMPANY_MEMBERSHIP_REVENUE["this month"];
+}
+
+export async function getCompanyMembershipDistribution(
+  timeFrame: MembershipRevenueTimeFrame | string = "this month",
+) {
+  await new Promise((r) => setTimeout(r, 200));
+
+  if (timeFrame === "this quarter") {
+    return COMPANY_MEMBERSHIP_DISTRIBUTION["this quarter"];
+  }
+
+  return COMPANY_MEMBERSHIP_DISTRIBUTION["this month"];
+}
+
+export async function getCompanyMembershipPromotions() {
+  await new Promise((r) => setTimeout(r, 200));
+  return COMPANY_MEMBERSHIP_PROMOTIONS;
+}
+
+export async function getCompanyAnnouncementOverviewData() {
+  await new Promise((r) => setTimeout(r, 200));
+  return COMPANY_ANNOUNCEMENT_OVERVIEW;
+}
+
+export async function getCompanyAnnouncements() {
+  await new Promise((r) => setTimeout(r, 200));
+  return COMPANY_ANNOUNCEMENTS;
+}
+
+export async function getCompanyAnnouncementFilters() {
+  await new Promise((r) => setTimeout(r, 200));
+  return COMPANY_ANNOUNCEMENT_FILTERS;
+}
+
+export async function getCompanyAnnouncementMetrics() {
+  await new Promise((r) => setTimeout(r, 200));
+  return COMPANY_ANNOUNCEMENT_METRICS;
 }

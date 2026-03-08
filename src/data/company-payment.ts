@@ -3,13 +3,13 @@ import type {
   CompanyPaymentAlert,
   PaymentCollectionBucket,
   PaymentCollectionsTimeFrame,
-  PaymentOverviewItem,
   PaymentRenewalRow,
   PaymentTableFilters,
   PaymentTransactionRow,
 } from "@/types/dashboard/payment";
+import { DashboardOverviewItem } from "@/types/shared";
 
-export const COMPANY_PAYMENT_OVERVIEW: PaymentOverviewItem[] = [
+export const COMPANY_PAYMENT_OVERVIEW: DashboardOverviewItem[] = [
   {
     label: "Collected This Month",
     value: "Rs 33,580",

@@ -80,26 +80,6 @@ export const EXPIRING_MEMBERSHIPS = [
     plan: "Basic",
     expiresAt: "2026-03-12",
   },
-  {
-    member: "D",
-    plan: "Basic",
-    expiresAt: "2026-03-12",
-  },
-  {
-    member: "A",
-    plan: "Basic",
-    expiresAt: "2026-04-12",
-  },
-  {
-    member: "B",
-    plan: "Basic",
-    expiresAt: "2024-03-12",
-  },
-  {
-    member: "C",
-    plan: "Basic",
-    expiresAt: "2027-03-12",
-  },
 ];
 
 export const COACH_ASSIGNMENTS = [
