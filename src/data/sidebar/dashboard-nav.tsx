@@ -55,6 +55,12 @@ export const COMPANY_NAV: NavSection[] = [
       ],
     },
     {
+      title: "Client & Coach",
+      url: "/dashboard/company/clientCoachAssign",
+      icon: Icons.User,
+      items: [],
+    },
+    {
       title: "Membership Plans",
       url: "/dashboard/company/membership",
       icon: Icons.PaymentsIcon,

@@ -1,8 +1,6 @@
 import {
-  COACH_ASSIGNMENTS,
   DUMMY_KPIS,
-  EXPIRING_MEMBERSHIPS,
-  NEW_GYM_CLIENTS,
+  GYM_CLIENTS,
 } from "@/data/company";
 import {
   COMPANY_ANNOUNCEMENT_FILTERS,
@@ -31,6 +29,9 @@ import {
   DUMMY_GYMS,
   OVERVIEW_SUPER_ADMIN_DATA,
 } from "@/data/superAdmin";
+import { buildCompanyClientRows } from "@/utils/dashboard/company-client-rows";
+
+const COMPANY_CLIENT_ROWS = buildCompanyClientRows(GYM_CLIENTS);
 
 // Gyms
 export async function getAllGyms() {
@@ -86,12 +87,13 @@ export async function getExpiringSoonGyms(limit = 5) {
 
   const now = new Date();
 
-  const upcoming = EXPIRING_MEMBERSHIPS.filter(
-    (item) => new Date(item.expiresAt) >= now,
+  const upcoming = COMPANY_CLIENT_ROWS.filter(
+    (item) => item.expiresAt && new Date(item.expiresAt) >= now,
   );
 
   const sorted = upcoming.sort(
-    (a, b) => new Date(a.expiresAt).getTime() - new Date(b.expiresAt).getTime(),
+    (a, b) =>
+      new Date(a.expiresAt ?? 0).getTime() - new Date(b.expiresAt ?? 0).getTime(),
   );
 
   return sorted.slice(0, limit);
@@ -101,9 +103,13 @@ export async function getExpiringSoonGyms(limit = 5) {
 export async function getGymCoachCLientAssign(limit = 5) {
   await new Promise((r) => setTimeout(r, 200));
 
-  const sorted = [...COACH_ASSIGNMENTS].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-  );
+  const sorted = [...COMPANY_CLIENT_ROWS]
+    .filter((client) => client.coach || client.status || client.assignedOn)
+    .sort(
+      (a, b) =>
+        new Date(b.assignedOn ?? 0).getTime() -
+        new Date(a.assignedOn ?? 0).getTime(),
+    );
 
   return sorted.slice(0, limit);
 }
@@ -112,8 +118,9 @@ export async function getGymCoachCLientAssign(limit = 5) {
 export async function getGymNewClient(limit = 5) {
   await new Promise((r) => setTimeout(r, 200));
 
-  const sorted = [...NEW_GYM_CLIENTS].sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+  const sorted = [...COMPANY_CLIENT_ROWS].sort(
+    (a, b) =>
+      new Date(b.joinedAt ?? 0).getTime() - new Date(a.joinedAt ?? 0).getTime(),
   );
 
   return sorted.slice(0, limit);

@@ -21,7 +21,12 @@ export interface CompanyCoachRow {
 export interface CompanyClientRow {
   id: string;
   name: string;
-  contact: string;
-  plan: string;
-  joinedAt: string;
+  contact?: string;
+  plan?: string;
+  joinedAt?: string;
+  expiresAt?: string;
+  coach?: string | null;
+  assignedOn?: string;
+  status?: string;
+  statusTone?: StatusTone;
 }

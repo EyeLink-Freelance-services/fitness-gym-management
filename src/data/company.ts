@@ -1,3 +1,4 @@
+import type { CompanyClientRow } from "@/types/dashboard/company-directory";
 import * as Icons from "../components/IconsCollection/icons";
 
 export const DUMMY_KPIS = [
@@ -49,54 +50,6 @@ export const DUMMY_KPIS = [
   },
 ];
 
-export const EXPIRING_MEMBERSHIPS = [
-  {
-    member: "Alex Brown",
-    plan: "Premium",
-    expiresAt: "2024-04-10",
-  },
-  {
-    member: "Jane Doe",
-    plan: "Basic",
-    expiresAt: "2025-03-12",
-  },
-  {
-    member: "Jane Six",
-    plan: "Basic",
-    expiresAt: "2025-04-12",
-  },
-  {
-    member: "Jane Five",
-    plan: "Basic",
-    expiresAt: "2025-01-12",
-  },
-  {
-    member: "Doe",
-    plan: "Basic",
-    expiresAt: "2026-03-15",
-  },
-  {
-    member: "Janoe",
-    plan: "Basic",
-    expiresAt: "2026-03-12",
-  },
-];
-
-export const COACH_ASSIGNMENTS = [
-  {
-    client: "Alex Brown",
-    coach: "John Smith",
-    status: "Assigned",
-    createdAt: "2024-01-10",
-  },
-  {
-    client: "New User",
-    coach: "Nac Joy",
-    status: "Pending",
-    createdAt: "2025-01-10",
-  },
-];
-
 export const ANNOUNCEMENTS = [
   {
     title: "Gym closure - 12 Mar (Public Holiday)",
@@ -117,17 +70,38 @@ export const PENDING_COACH = [
   },
 ];
 
-export const NEW_GYM_CLIENTS = [
+export const GYM_CLIENTS: CompanyClientRow[] = [
   {
-    client: "Alex Brown",
-    contact: "0435 ",
-    plan: "PRemium",
-    date: "2024-01-10",
+    id: "client-1",
+    name: "Alex Brown",
+    contact: "0435",
+    plan: "Premium",
+    joinedAt: "2024-01-10",
+    expiresAt: "2026-03-20",
+    coach: "John Smith",
+    assignedOn: "2024-01-10",
+    status: "Assigned",
   },
   {
-    client: "New User",
+    id: "client-2",
+    name: "New User",
     contact: "5990540",
     plan: "Standard",
-    date: "2025-01-10",
+    joinedAt: "2026-01-10",
+    expiresAt: "2026-03-15",
+    coach: "Nac Joy",
+    assignedOn: "2025-01-10",
+    status: "Pending",
+  },
+  {
+    id: "client-3",
+    name: "Jane Doe",
+    contact: "0400123456",
+    plan: "Basic",
+    joinedAt: "2025-11-18",
+    expiresAt: "2026-04-05",
+    coach: null,
+    assignedOn: undefined,
+    status: "Unassigned",
   },
 ];

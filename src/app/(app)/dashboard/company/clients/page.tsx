@@ -2,9 +2,12 @@
 
 import { DataTable } from "@/components/Tables";
 import { Button } from "@/components/ui-elements/button";
-import { COMPANY_CLIENT_ROWS } from "@/data/company-clients";
+import { GYM_CLIENTS } from "@/data/company";
 import type { CompanyClientRow } from "@/types/dashboard/company-directory";
+import { buildCompanyClientRows } from "@/utils/dashboard/company-client-rows";
 import type { ColumnDef } from "@tanstack/react-table";
+
+const companyClientRows = buildCompanyClientRows(GYM_CLIENTS);
 
 const columns: ColumnDef<CompanyClientRow>[] = [
   {
@@ -23,6 +26,7 @@ const columns: ColumnDef<CompanyClientRow>[] = [
   {
     accessorKey: "contact",
     header: "Contact",
+    cell: ({ row }) => row.original.contact ?? "N/A",
     meta: {
       align: "left",
       headClassName: "min-w-[180px]",
@@ -31,6 +35,7 @@ const columns: ColumnDef<CompanyClientRow>[] = [
   {
     accessorKey: "plan",
     header: "Plan",
+    cell: ({ row }) => row.original.plan ?? "—",
     meta: {
       align: "left",
     },
@@ -38,13 +43,34 @@ const columns: ColumnDef<CompanyClientRow>[] = [
   {
     accessorKey: "joinedAt",
     header: "Joined",
+    cell: ({ row }) => {
+      if (!row.original.joinedAt) {
+        return <span className="text-dark-6 dark:text-dark-5">—</span>;
+      }
+
+      return (
+        <span className="text-dark-6 dark:text-dark-5">
+          {new Date(row.original.joinedAt).toLocaleDateString("en-GB", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          })}
+        </span>
+      );
+    },
+  },
+  {
+    accessorKey: "expiresAt",
+    header: "Expires At",
     cell: ({ row }) => (
       <span className="text-dark-6 dark:text-dark-5">
-        {new Date(row.original.joinedAt).toLocaleDateString("en-GB", {
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-        })}
+        {row.original.expiresAt
+          ? new Date(row.original.expiresAt).toLocaleDateString("en-GB", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+            })
+          : "—"}
       </span>
     ),
   },
@@ -64,7 +90,7 @@ export default function CompanyClientsPage() {
       <DataTable
         title="Clients"
         description="Recently joined clients from the shared company dataset."
-        data={COMPANY_CLIENT_ROWS}
+        data={companyClientRows}
         columns={columns}
         getRowId={(row) => row.id}
         tableClassName="min-w-[780px]"

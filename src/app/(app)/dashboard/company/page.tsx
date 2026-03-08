@@ -13,6 +13,95 @@ import { SearchType } from "@/types/dashboard";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/Tables/skeleton";
 import { TableUI } from "@/components/Tables";
+import type { CompanyClientRow } from "@/types/dashboard/company-directory";
+import type { TableUIColumn } from "@/types/shared";
+
+function formatDate(date?: string) {
+  if (!date) {
+    return "—";
+  }
+
+  return new Date(date).toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+const expiringSoonColumns: TableUIColumn<CompanyClientRow>[] = [
+  {
+    key: "name",
+    label: "Member",
+    align: "left",
+    headClassName: "min-w-[180px]",
+  },
+  {
+    key: "plan",
+    label: "Plan",
+    align: "left",
+    headClassName: "min-w-[120px]",
+  },
+  {
+    key: "expiresAt",
+    label: "Expires At",
+    render: (row) => formatDate(row.expiresAt),
+    headClassName: "min-w-[140px]",
+  },
+];
+
+const coachAssignmentColumns: TableUIColumn<CompanyClientRow>[] = [
+  {
+    key: "name",
+    label: "Client Name",
+    align: "left",
+    headClassName: "min-w-[180px]",
+  },
+  {
+    key: "coach",
+    label: "Coach Name",
+    align: "left",
+    render: (row) => row.coach ?? "Unassigned",
+    headClassName: "min-w-[160px]",
+  },
+  {
+    key: "status",
+    label: "Status",
+    headClassName: "min-w-[120px]",
+  },
+  {
+    key: "assignedOn",
+    label: "Assigned On",
+    render: (row) => formatDate(row.assignedOn),
+    headClassName: "min-w-[140px]",
+  },
+];
+
+const newSignupColumns: TableUIColumn<CompanyClientRow>[] = [
+  {
+    key: "name",
+    label: "Client Name",
+    align: "left",
+    headClassName: "min-w-[180px]",
+  },
+  {
+    key: "contact",
+    label: "Contact",
+    align: "left",
+    headClassName: "min-w-[140px]",
+  },
+  {
+    key: "plan",
+    label: "Plan",
+    align: "left",
+    headClassName: "min-w-[120px]",
+  },
+  {
+    key: "joinedAt",
+    label: "Joined At",
+    render: (row) => formatDate(row.joinedAt),
+    headClassName: "min-w-[140px]",
+  },
+];
 
 export default async function CompanyDashboardPage({
   searchParams,
@@ -52,28 +141,31 @@ export default async function CompanyDashboardPage({
             <TableUI
               title="Expiring Soon"
               data={getExpiringSoonGyms(5)}
+              columns={expiringSoonColumns}
               buttonLabel="View All"
-              buttonPath="/dashboard/company"
+              buttonPath="/dashboard/company/clients"
             />
           </Suspense>
         </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2 mb-8">
+      <div className="mb-8 grid gap-6 lg:grid-cols-2">
         <Suspense fallback={<Skeleton />}>
           <TableUI
             title="Coach & Client Assigned"
             data={getGymCoachCLientAssign(5)}
+            columns={coachAssignmentColumns}
             buttonLabel="View All"
-            buttonPath="/dashboard/company"
+            buttonPath="/dashboard/company/clientCoachAssign"
           />
         </Suspense>
         <Suspense fallback={<Skeleton />}>
           <TableUI
             title="New Signups"
             data={getGymNewClient(5)}
+            columns={newSignupColumns}
             buttonLabel="View All"
-            buttonPath="/dashboard/company"
+            buttonPath="/dashboard/company/clients"
           />
         </Suspense>{" "}
       </div>
