@@ -33,6 +33,7 @@ export default function EditMembershipPlanForm({plan}: MembershipPlanProps) {
 			duration_days: plan.duration_days,
 			is_monthly: plan.is_monthly,
 			description: plan.description ?? "",
+			features: plan.features?.map((feature) => ({ value: feature })) ?? [],
 			is_active: plan.is_active,
 			created_by: plan.created_by,
 			updated_by: plan.updated_by,

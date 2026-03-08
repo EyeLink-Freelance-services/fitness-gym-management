@@ -16,7 +16,7 @@ export default async function EditPage({params,
 	return (
 		<div className="space-y-6">
       <Link href={ROUTES.MEMBERSHIP.LIST_MEMBERSHIP}>
-        <ArrowLeftIcon className="mb-5 cursor-pointer" />
+        <ArrowLeftIcon className="cursor-pointer" />
       </Link>
 
       {/* Client-side EditMembershipPlanForm */}

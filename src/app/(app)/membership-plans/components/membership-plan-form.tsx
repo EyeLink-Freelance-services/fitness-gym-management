@@ -1,7 +1,7 @@
 "use client";
 
 import { Field, Input, Select, Textarea } from "@/components/ui/form";
-import { UseFormReturn } from "react-hook-form";
+import { useFieldArray, UseFormReturn } from "react-hook-form";
 
 export type MembershipPlanFormValues = {
   name: string;
@@ -10,6 +10,9 @@ export type MembershipPlanFormValues = {
   duration_days: number;
   is_monthly: boolean;
   description?: string | null;
+  features?: {
+  	value: string;
+	}[];
   is_active: boolean;
 };
 
@@ -19,7 +22,13 @@ type Props = {
 
 export default function MembershipPlanForm({
   form
-}: Props) {
+}: Props) {	
+	
+	const { fields, append, remove, replace } = useFieldArray({
+		control: form.control,
+		name: "features",
+	});
+	
   const isMonthly = form.watch("is_monthly");
 
   return (
@@ -109,6 +118,48 @@ export default function MembershipPlanForm({
 
       <Field label="Description" error={form.formState.errors.description?.message}>
         <Textarea rows={4} {...form.register("description")} />
+      </Field>
+			<Field label="Features" error={form.formState.errors.features?.message}>
+        <div className="mb-2 flex items-center justify-between">
+					<span className="text-sm">
+						Define available features for this plan
+					</span>
+					<div className="flex gap-2">
+						<button
+							type="button"
+							onClick={() => append({value: ''})}
+							className="rounded-lg border px-3 py-1 text-sm"
+						>
+							Add feature
+						</button>
+						<button
+							type="button"
+							onClick={() => form.resetField("features")}
+							className="rounded-lg border px-3 py-1 text-sm"
+						>
+							Reset Feature
+						</button>
+					</div>
+        </div>
+
+        <div className="space-y-2">
+          {fields.map((field, index) => (
+            <div key={field.id} className="flex gap-2">
+              <input
+                {...form.register(`features.${index}.value`)}
+                className="w-full rounded-lg border px-3 py-2"
+                placeholder={`Feature ${index + 1}`}
+              />
+              <button
+                type="button"
+                onClick={() => remove(index)}
+                className="rounded-lg border px-3 py-2 text-sm"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+        </div>
       </Field>
 
       <div className="flex items-center gap-2">

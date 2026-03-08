@@ -59,6 +59,9 @@ ALTER FUNCTION public.can_access_member(uuid) OWNER TO postgres;
 REVOKE ALL ON FUNCTION public.can_access_member(uuid) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.can_access_member(uuid) TO authenticated;
 
+ALTER TABLE membership_plans
+ADD COLUMN features text[];
+
 alter table public.membership_plans enable row level security;
 alter table public.member_memberships enable row level security;
 

@@ -13,9 +13,9 @@ export default async function ViewPage({params,
 	const singleMembershipPlan: MembershipPlanRow = await getMembershipPlan(id);
 
 	return (
-		<div className="space-y-6">
+		<div>
       <Link href={ROUTES.MEMBERSHIP.LIST_MEMBERSHIP}>
-        <ArrowLeftIcon className="mb-5 cursor-pointer" />
+        <ArrowLeftIcon className="cursor-pointer" />
       </Link>
 
       {/* Client-side Tabs */}

@@ -33,8 +33,13 @@ export async function createMembershipPlanAction(values: MembershipPlanCreateInp
 		};
 	}
 
+	const payload = {
+		...parsed.data,
+		features: parsed.data.features?.map((f) => f.value).filter(Boolean) ?? [],
+	};
+
 	try {
-		const membershipPlan = await createMembershipPlan(parsed.data);
+		const membershipPlan = await createMembershipPlan(payload);
 		revalidatePath('/membership-plans')
 
 		return {

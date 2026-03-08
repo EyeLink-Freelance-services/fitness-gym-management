@@ -10,6 +10,8 @@ import { ROUTES } from "@/constants/route";
 import { useState } from "react";
 import { createMembershipPlanAction } from "../actions";
 import { useCompany } from "@/app/context/company-context";
+import Link from "next/link";
+import { ArrowLeftIcon } from "@/assets/icons";
 
 
 export default function CreateMembershipPlanForm() {
@@ -27,12 +29,14 @@ export default function CreateMembershipPlanForm() {
       duration_days: 30,
       is_monthly: true,
       description: "",
+			features: [],
       is_active: true,
     },
   });
 
   const onSubmit = async (values: MembershipPlanCreateInput) => {
 		console.log('lol')
+
     const res = await createMembershipPlanAction(values);
     
     if(!res.ok) {
@@ -45,6 +49,9 @@ export default function CreateMembershipPlanForm() {
   return (
     <form onSubmit={form.handleSubmit(
     onSubmit)} className="grid gap-6">
+			<Link href={ROUTES.MEMBERSHIP.LIST_MEMBERSHIP}>
+        <ArrowLeftIcon className="cursor-pointer" />
+      </Link>
       <MembershipPlanForm form={form as unknown as UseFormReturn<MembershipPlanFormValues>} />
 			
 			{errorMsg && (

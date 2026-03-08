@@ -42,10 +42,11 @@ export async function createMembershipPlan(payload: MembershipPlanCreateInput) {
 
   const payloadComplete = {
     ...payload,
+		features: payload.features?.map((f) => f.value).filter(Boolean) ?? [],
     created_by: user?.id,
     updated_by: user?.id
   }
-
+	
   const { data, error } = await supabase
     .from(TABLE)
     .insert(payloadComplete)
@@ -68,6 +69,7 @@ export async function updateMembershipPlan(payload: MembershipPlanEditInput) {
 
   const payloadComplete = {
     ...rest,
+		features: payload.features?.map((f) => f.value).filter(Boolean) ?? [],
     updated_by: user.id,
   };
 

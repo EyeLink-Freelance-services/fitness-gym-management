@@ -1,27 +1,16 @@
 "use client";
 
 import { Skeleton } from "@/components/ui/skeleton";
+import { MembershipPlanRow } from "@/lib/validation/schemas/membership-plan";
 import { useMemo, useState } from "react";
-
-type MembershipPlan = {
-  id: string;
-  name: string;
-  price: number;
-  entree_fee: number;
-  duration_days: number;
-  is_monthly: boolean;
-  description?: string | null;
-  is_active: boolean;
-  created_at?: string;
-};
 
 type Props = {
   loading: boolean,
-  plans: MembershipPlan[] | undefined;
+  plans: MembershipPlanRow[] | undefined;
   onCreate?: () => void;
-  onView?: (plan: MembershipPlan) => void;
-  onEdit?: (plan: MembershipPlan) => void;
-  onToggleActive?: (plan: MembershipPlan) => void;
+  onView?: (plan: MembershipPlanRow) => void;
+  onEdit?: (plan: MembershipPlanRow) => void;
+  onToggleActive?: (plan: MembershipPlanRow) => void;
 };
 
 const formatCurrency = (value: number) =>
@@ -31,7 +20,7 @@ const formatCurrency = (value: number) =>
     maximumFractionDigits: 2,
   }).format(value);
 
-const getDurationLabel = (plan: MembershipPlan) => {
+const getDurationLabel = (plan: MembershipPlanRow) => {
   if (plan.is_monthly) {
     const months = plan.duration_days / 30;
     if (months === 1) return "1 month";
@@ -163,7 +152,7 @@ export default function MembershipPlansList({
                     </td>
 
                     <td className="px-4 py-4 text-sm text-gray-700">
-                      {formatCurrency(plan.entree_fee)}
+                      {plan.entree_fee && formatCurrency(plan.entree_fee)}
                     </td>
 
                     <td className="px-4 py-4 text-sm text-gray-700">
@@ -267,7 +256,7 @@ export default function MembershipPlansList({
                   <div>
                     <p className="text-gray-500">Entry Fee</p>
                     <p className="font-medium text-gray-900">
-                      {formatCurrency(plan.entree_fee)}
+                      {plan.entree_fee && formatCurrency(plan.entree_fee)}
                     </p>
                   </div>
 

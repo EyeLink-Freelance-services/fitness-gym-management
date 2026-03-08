@@ -8,6 +8,11 @@ export const MembershipPlanFormSchema = z.object({
   duration_days: z.number().int().min(1, "Duration must be at least 1 day"),
   is_monthly: z.boolean(),
   description: z.string().trim().max(2000).nullable().optional(),
+	features: z.array(
+		z.object({
+			value: z.string().trim().min(1).max(100)
+		})
+	).optional(),
   is_active: z.boolean(),
 }).superRefine((data, ctx) => {
   if (data.is_monthly && data.duration_days % 30 !== 0) {
@@ -34,10 +39,11 @@ export type MembershipPlanRow = {
   company_id: string;
   name: string;
   price: number;
-  entree_fee: number;
+  entree_fee?: number;
   duration_days: number;
   is_monthly: boolean;
   description: string | null;
+	features?: [];
   is_active: boolean;
   created_by: string;
   updated_by: string | null;

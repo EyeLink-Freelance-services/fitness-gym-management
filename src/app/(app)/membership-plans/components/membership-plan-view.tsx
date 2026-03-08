@@ -72,7 +72,7 @@ export default function MembershipPlanView({plan}: MembershipPlanProps) {
 					<div className="rounded-2xl border border-gray-200 p-4">
 						<p className="text-sm text-gray-500">Entry Fee</p>
 						<p className="mt-1 text-lg font-semibold text-gray-900">
-							{formatCurrency(plan.entree_fee)}
+							{plan.entree_fee && formatCurrency(plan.entree_fee)}
 						</p>
 					</div>
 
@@ -91,9 +91,28 @@ export default function MembershipPlanView({plan}: MembershipPlanProps) {
 					</div>
 				</div>
 
+
 				<div className="mt-4 rounded-2xl border border-gray-200 p-4">
 					<p className="text-sm text-gray-500">Description</p>
 					<p className="mt-2 text-sm text-gray-800">{plan.description || "-"}</p>
+				</div>
+
+				<div className="mt-4 rounded-2xl border border-gray-200 p-4">
+					<p className="text-sm text-gray-500">Features</p>
+					{
+						!plan.features ? (
+							<span className="text-sm text- font-[200]">no features available</span>
+						) : (
+							<ul className="mt-2 space-y-1 text-sm text-gray-800">
+								{plan.features?.map((f, index) => (
+									<li key={index} className="flex items-center gap-2 text-sm text-gray-600">
+										<span className="mt-1 h-2 w-2 rounded-full dark:bg-gray' bg-black" />
+										<span>{f}</span>
+									</li>
+								))}
+							</ul>
+						)
+					}
 				</div>
 
 				<div className="mt-4 grid gap-4 md:grid-cols-2">
