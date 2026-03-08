@@ -1,4 +1,4 @@
-import { ArrowDownIcon, ArrowUpIcon } from "@/assets/icons";
+import { ArrowDownIcon, ArrowUpIcon } from "@/components/IconsCollection/icons";
 import { cn } from "@/lib/utils";
 import { OverviewCardProps } from "@/types/dashboard";
 

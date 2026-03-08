@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronUpIcon } from "@/assets/icons";
+import { ChevronUpIcon } from "@/components/IconsCollection/icons";
 import { cn } from "@/lib/utils";
 import { useId, useState } from "react";
 import Label from "@/components/FormElements/common/label";

@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import type { LoginFormData, LoginFormProps } from "@/types/forms";
 import { Button } from "../ui-elements/button";
 import InputGroup from "../FormElements/InputGroup";
-import { GoogleIcon } from "@/assets/icons";
+import { GoogleIcon } from "@/components/IconsCollection/icons";
 import { validateEmail } from "@/lib/forms/formValidation";
 import Header from "../FormElements/common/header";
 

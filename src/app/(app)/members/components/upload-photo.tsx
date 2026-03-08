@@ -1,4 +1,4 @@
-import { UploadIcon } from "@/assets/icons";
+import { UploadIcon } from "@/components/IconsCollection/icons";
 import { ShowcaseSection } from "@/components/Layouts/showcase-section";
 import Image from "next/image";
 

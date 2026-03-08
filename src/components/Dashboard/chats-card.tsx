@@ -1,4 +1,4 @@
-import { DotIcon } from "@/assets/icons";
+import { DotIcon } from "@/components/IconsCollection/icons";
 import { getChatsData } from "@/data/superAdmin";
 import { formatMessageTime } from "@/lib/formatters/format-message-time";
 import { cn } from "@/lib/utils";

@@ -1,4 +1,4 @@
-import { CheckIcon, XIcon } from "@/assets/icons";
+import { CheckIcon, XIcon } from "@/components/IconsCollection/icons";
 import { cn } from "@/lib/utils";
 import { useId } from "react";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { SearchIcon } from "@/assets/icons";
+import { SearchIcon } from "@/components/IconsCollection/icons";
 import Image from "next/image";
 import Link from "next/link";
 import { useSidebarContext } from "../sidebar/sidebar-context";

@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronUpIcon } from "@/assets/icons";
+import { ChevronUpIcon } from "@/components/IconsCollection/icons";
 import flatpickr from "flatpickr";
 import { useEffect } from "react";
 

@@ -1,4 +1,3 @@
-import { TrashIcon } from "@/assets/icons";
 import {
   Table,
   TableBody,
@@ -9,7 +8,7 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import dayjs from "dayjs";
-import { Download, Preview } from "../IconsCollection/icons";
+import { Download, Preview, TrashIcon } from "../IconsCollection/icons";
 import { getInvoiceTableData } from "@/data/superAdmin";
 
 export async function InvoiceTable() {

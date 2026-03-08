@@ -3,7 +3,7 @@ import {
   EmailIcon,
   PencilSquareIcon,
   UserIcon,
-} from "@/assets/icons";
+} from "@/components/IconsCollection/icons";
 import InputGroup from "@/components/FormElements/InputGroup";
 import { TextAreaGroup } from "@/components/FormElements/InputGroup/text-area";
 import { ShowcaseSection } from "@/components/Layouts/showcase-section";

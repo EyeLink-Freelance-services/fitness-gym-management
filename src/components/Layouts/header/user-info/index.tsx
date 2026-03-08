@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronUpIcon } from "@/assets/icons";
+import { ChevronUpIcon } from "@/components/IconsCollection/icons";
 import {
   Dropdown,
   DropdownContent,

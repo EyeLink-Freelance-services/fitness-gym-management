@@ -1,5 +1,17 @@
-import * as logos from "@/assets/logos";
-import { Users, Gym, Trainer, Profit } from "@/components/IconsCollection/icons";
+import {
+  Users,
+  Gym,
+  Trainer,
+  Profit,
+} from "@/components/IconsCollection/icons";
+
+const logos = {
+  google: "/images/logo/google.svg",
+  x: "/images/logo/x.svg",
+  github: "/images/logo/github.svg",
+  vimeo: "/images/logo/vimeo.svg",
+  facebook: "/images/logo/facebook.svg",
+} as const;
 
 export async function getInvoiceTableData() {
   await new Promise((resolve) => setTimeout(resolve, 1400));
