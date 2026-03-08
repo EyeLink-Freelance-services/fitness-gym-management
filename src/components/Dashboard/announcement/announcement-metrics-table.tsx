@@ -1,3 +1,5 @@
+"use client";
+
 import { DataTable } from "@/components/Tables";
 import { Button } from "@/components/ui-elements/button";
 import { StatusBadge } from "@/components/ui-elements/status-badge";
