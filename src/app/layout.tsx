@@ -23,12 +23,14 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: PropsWithChildren) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="bg-[url(/images/common/bg.jpg)] bg-cover bg-center bg-no-repeat">
-        <Providers>
-          <NextTopLoader color="#5750F1" showSpinner={false} />
-          {children}
-          <ToastProvider />
-        </Providers>
+      <body>
+        <div className="min-h-screen bg-[url('/images/common/bg.jpg')] bg-cover bg-center bg-no-repeat">
+          <Providers>
+            <NextTopLoader color="#5750F1" showSpinner={false} />
+            {children}
+            <ToastProvider />
+          </Providers>
+        </div>
       </body>
     </html>
   );
