@@ -1,0 +1,4 @@
+export const RECOVERY = {
+  VERIFY_REGISTERED_EMAIL: 1,
+  RESET_PASSWORD: 2
+} as const;

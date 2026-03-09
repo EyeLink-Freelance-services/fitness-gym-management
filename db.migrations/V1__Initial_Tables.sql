@@ -60,5 +60,9 @@ CREATE INDEX idx_company_user_company_id ON public.company_user (company_id);
 CREATE INDEX idx_company_user_role_company_role_id ON public.company_user_role (company_role_id);
 CREATE UNIQUE INDEX idx_company_one_owner ON public.company_user (company_id) WHERE is_owner = true;
 
+-- updated: update column profiles
+alter table profiles
+add COLUMN phone VARCHAR(20) unique;
+
 -- TODO: Add Check constraint for enums
 -- TODO: updated_at trigger if frontend is not setting it
