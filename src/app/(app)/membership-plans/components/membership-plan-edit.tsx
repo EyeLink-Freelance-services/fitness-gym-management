@@ -4,12 +4,12 @@ import { useRouter } from "next/navigation";
 import { useForm, UseFormReturn } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { MembershipPlanEditInput, MembershipPlanEditSchema, MembershipPlanRow } from "@/lib/validation/schemas/membership-plan";
-import { Button } from "@/components/ui/form";
 import MembershipPlanForm, { MembershipPlanFormValues } from "../components/membership-plan-form";
 import { ROUTES } from "@/constants/route";
 import { useState } from "react";
 import { useCompany } from "@/app/context/company-context";
 import { updateMembershipPlanAction } from "../actions";
+import { Button } from "@/components/ui-elements/button";
 
 type MembershipPlanProps = {
 	plan: MembershipPlanRow
@@ -61,9 +61,10 @@ export default function EditMembershipPlanForm({plan}: MembershipPlanProps) {
 			)}
 
       <div className="flex justify-end">
-        <Button type="submit" disabled={form.formState.isSubmitting}>
-          {form.formState.isSubmitting ? "Saving..." : "Edit plan"}
-        </Button>
+        <Button 
+          label={form.formState.isSubmitting ? "Saving..." : "Edit plan"} 
+          type="submit" disabled={form.formState.isSubmitting} 
+        />
       </div>
     </form>
   );

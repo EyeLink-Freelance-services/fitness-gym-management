@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import { useForm, UseFormReturn } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { MembershipPlanCreateInput, MembershipPlanFormSchema } from "@/lib/validation/schemas/membership-plan";
-import { Button } from "@/components/ui/form";
 import MembershipPlanForm, { MembershipPlanFormValues } from "../components/membership-plan-form";
 import { ROUTES } from "@/constants/route";
 import { useState } from "react";
@@ -12,6 +11,7 @@ import { createMembershipPlanAction } from "../actions";
 import { useCompany } from "@/app/context/company-context";
 import Link from "next/link";
 import { ArrowLeftIcon } from "@/assets/icons";
+import { Button } from "@/components/ui-elements/button";
 
 
 export default function CreateMembershipPlanForm() {
@@ -59,9 +59,11 @@ export default function CreateMembershipPlanForm() {
 			)}
 
       <div className="flex justify-end">
-        <Button type="submit" disabled={form.formState.isSubmitting}>
-          {form.formState.isSubmitting ? "Saving..." : "Create plan"}
-        </Button>
+        <Button 
+          label={form.formState.isSubmitting ? "Saving..." : "Create plan"} 
+          type="submit" 
+          disabled={form.formState.isSubmitting} 
+        />
       </div>
     </form>
   );
