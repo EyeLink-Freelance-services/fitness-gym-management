@@ -3,7 +3,7 @@ import MembershipPlansSelector from "../../membership-plans/components/membershi
 import { useEffect, useState } from "react";
 import { MemberTabsProps } from "./member-tabs";
 import { getMembershipPlanAction } from "../actions";
-import { Skeleton } from "@/components/ui/skeleton";
+import { SkeletonUI } from "@/components/ui/skeleton";
 
 export function MembershipPlanTab({member}: MemberTabsProps) {
   const company = useCompany();
@@ -34,10 +34,10 @@ export function MembershipPlanTab({member}: MemberTabsProps) {
 			{
 				loading ? (
 					<div className="w-full flex flex-col gap-2 h-full">
-						<Skeleton className="h-5 w-20 mx-auto" />
-						<Skeleton className="h-10 w-80 bg-gray-3 mx-auto" />
-						<Skeleton className="h-10 w-50 bg-gray-3 mx-auto" />
-						<Skeleton className="h-80 w-200 mt-5 bg-gray-3 " />
+						<SkeletonUI className="h-5 w-20 mx-auto" />
+						<SkeletonUI className="h-10 w-80 bg-gray-3 mx-auto" />
+						<SkeletonUI className="h-10 w-50 bg-gray-3 mx-auto" />
+						<SkeletonUI className="h-80 w-200 mt-5 bg-gray-3 " />
 					</div>
 				) : (
 					<MembershipPlansSelector selectedPlan={selectedPlan} setSelectedPlan={setSelectedPlan} />
