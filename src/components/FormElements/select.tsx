@@ -7,7 +7,7 @@ import Label from "@/components/FormElements/common/label";
 
 type PropsType = {
   label: React.ReactNode;
-  items: { value: string; label: string }[];
+  items: { value: string | undefined; label: string }[];
   prefixIcon?: React.ReactNode;
   className?: string;
   selectProps?: React.ComponentPropsWithRef<"select">;
@@ -75,8 +75,8 @@ export function Select({
             </option>
           )}
 
-          {items.map((item) => (
-            <option key={item.value} value={item.value}>
+          {items.map((item, index) => (
+            <option key={index} value={item.value}>
               {item.label}
             </option>
           ))}

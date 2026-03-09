@@ -101,7 +101,7 @@ export function Sidebar() {
                           <div>
                             <MenuItem
                               isActive={item.items.some(
-                                ({ url }) => url === pathname,
+                                ({ url }) => url.includes(pathname),
                               )}
                               onClick={() => toggleExpanded(item.title)}
                             >
@@ -132,7 +132,7 @@ export function Sidebar() {
                                     <MenuItem
                                       as="link"
                                       href={subItem.url}
-                                      isActive={pathname === subItem.url}
+                                      isActive={pathname.includes(subItem.url)}
                                     >
                                       <div className="flex gap-2">
                                       {subItem.icon && (
@@ -162,7 +162,11 @@ export function Sidebar() {
                                 className="flex items-center gap-3 py-3"
                                 as="link"
                                 href={href}
-                                isActive={pathname === href}
+                                isActive={
+                                  href === "/"
+                                    ? pathname === "/"
+                                    : pathname === href || pathname.startsWith(`${href}/`)
+                                }
                               >
                                 <item.icon
                                   className="size-6 shrink-0"

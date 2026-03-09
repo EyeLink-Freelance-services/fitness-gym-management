@@ -12,6 +12,7 @@ export const buttonVariants = cva(
         primary: "bg-primary text-white",
         green: "bg-green text-white",
         dark: "bg-dark text-white dark:bg-white/10",
+        disabled:'bg-gray-300 text-gray',
         outlinePrimary:
           "border border-primary hover:bg-primary/10 text-primary",
         outlineGreen: "border border-green hover:bg-green/10 text-green",

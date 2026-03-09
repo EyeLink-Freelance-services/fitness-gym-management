@@ -12,12 +12,9 @@ export async function supabaseServer() {
       getAll() {
         return cookieStore.getAll();
       },
-      setAll(cookiesToSet) {
-        // Next.js server components can set cookies
-        // NOTE: In Route Handlers you may prefer NextResponse and set cookies on the response.
-        cookiesToSet.forEach(({ name, value, options }) => {
-          cookieStore.set(name, value, options);
-        });
+      setAll() {
+        // Next.js server components cannot set cookies, setCookie will be handled by proxy
+        // leave empty here
       },
     },
   });
