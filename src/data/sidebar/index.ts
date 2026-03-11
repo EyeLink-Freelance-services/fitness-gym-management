@@ -1,5 +1,7 @@
+import { AuthPermission } from "@/constants/permission";
 import * as Icons from "../../components/IconsCollection/icons";
 import type { NavSection } from "@/types/dashboard";
+import { ROUTES } from "@/constants/route";
 
 export function getAuthorizedNav(
   itemSections: NavSection[],
@@ -30,66 +32,128 @@ export const NAV_DATA: NavSection[] = [
     items: [
       {
         title: "Dashboard",
-        url: "/",
         icon: Icons.HomeIcon,
-        items: [],
-        permission: "dashboard.view"
+        items: [
+          {
+            title: "General Overview",
+            url: ROUTES.DASHBOARD.COMPANY.ROOT,
+          },
+          {
+            title: "Announcements & Communications",
+            url: ROUTES.DASHBOARD.COMPANY.ANNOUNCEMENT,
+          },
+          {
+            title: "Clients & Coach Assigned",
+            url: ROUTES.DASHBOARD.COMPANY.CLIENT_COACH_ASSIGN,
+          },
+          {
+            title: "Clients",
+            url: ROUTES.DASHBOARD.COMPANY.CLIENTS,
+          },
+          {
+            title: "Coaches Overview",
+            url: ROUTES.DASHBOARD.COMPANY.COACHES,
+          },
+          {
+            title: "Memberships",
+            url: ROUTES.DASHBOARD.COMPANY.MEMBERSHIP,
+          },
+          {
+            title: "Payment Overview",
+            url: ROUTES.DASHBOARD.COMPANY.PAYMENT,
+          },
+          {
+            title: "Staff Overview",
+            url: ROUTES.DASHBOARD.COMPANY.STAFF,
+          },
+        ],
+        permission: AuthPermission.dashboard.company
+      },
+      {
+        title: "Dashboard",
+        icon: Icons.HomeIcon,
+        items: [
+          {
+            title: "General Overview",
+            url: ROUTES.DASHBOARD.PERSONAL_COACH.ROOT,
+          }
+        ],
+        permission: AuthPermission.dashboard.personalCoach
+      },
+      {
+        title: "Dashboard",
+        icon: Icons.HomeIcon,
+        items: [
+          {
+            title: "General Overview",
+            url: ROUTES.DASHBOARD.SUPER_ADMIN.ROOT,
+          },
+          {
+            title: "Coaches",
+            url: ROUTES.DASHBOARD.SUPER_ADMIN.COACHES,
+          },
+          {
+            title: "Companies",
+            url: ROUTES.DASHBOARD.SUPER_ADMIN.COMPANY,
+          }
+        ],
+        permission: AuthPermission.dashboard.superAdmin
       },
       {
         title: "Members",
-        url:'/members',
+        url: ROUTES.MEMBERS.LIST_MEMBER,
         icon: Icons.User,
         items: [],
-        permission: "members.view"
+        permission: AuthPermission.members.view
       },
       {
         title: "Membership Plans",
-        url:'/membership-plans',
+        url: ROUTES.MEMBERSHIP.LIST_MEMBERSHIP,
         icon: Icons.User,
         items: [],
-        permission: "membership_plans.view"
+        permission: AuthPermission.membershipPlans.view
       },
       {
         title: "Training Plans",
-        url: "/training-plans",
+        url: ROUTES.TRAINING_PLANS.TEMPLATES,
         icon: Icons.TrainingIcon,
         items: [],
-        permission: "training_plans.view"
+        permission: AuthPermission.trainingPlans.view
       },
       {
         title: "Diet Plans",
-        url: "/diet-plans",
+        url: ROUTES.DIET_PLANS.TEMPLATES,
         icon: Icons.DietPlanIcon,
         items: [],
-        permission: "diet_plans.view"
+        permission: AuthPermission.dietPlans.view
       },
       {
         title: "Calendar & Schedule",
         url: "/calendar",
         icon: Icons.Calendar,
         items: [],
-        permission: "calendar.view"
+        permission: AuthPermission.calendar.view,
       },
       {
         title: "Payment records",
         url: "/payments",
         icon: Icons.PaymentsIcon,
         items: [],
-        permission: "payments.view"
+        permission: AuthPermission.payments.view
       },
       {
         title: "Additional Services",
         url:'/additional-services',
         icon: Icons.AdditionalServicesIcon,
         items: [],
-        permission: "services.view"
+        permission: AuthPermission.services.view
       },
       {
         title: "Communication & Announcement",
         url: "/announcement",
         icon: Icons.Alphabet,
         items: [],
-        permission: "announcements.view"
+        permission: AuthPermission.announcements.view
       },
     ],
   },
@@ -97,36 +161,18 @@ export const NAV_DATA: NavSection[] = [
     label: "MANAGEMENT",
     items: [
       {
-        title: "User",
-        icon: Icons.User,
-        items: [
-          {
-            title: "All Users",
-            url: "/users",
-          },
-          {
-            title: "Staff",
-            url: "/staff",
-          },
-          {
-            title: "Coaches",
-            url: "/coaches",
-          },
-        ],
-      },
-      {
         title: "Tasks",
         url:'/tasks',
         icon: Icons.Alphabet,
         items: [],
-        permission: "tasks.view"
+        permission: AuthPermission.tasks.view
       },
       {
         title: "Settings",
         url:'/settings',
         icon: Icons.FourCircle,
         items: [],
-        permission: "settings.view"
+        permission: AuthPermission.settings.view
       },
     ],
   }

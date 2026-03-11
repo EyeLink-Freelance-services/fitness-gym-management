@@ -12,7 +12,7 @@ const TABLE = "members";
  * Use RLS policies to restrict by workspace/tenant as needed.
  */
 export async function listMembers() {
-  const auth = await requirePermission(AuthPermission.MEMBERS_VIEW)
+  const auth = await requirePermission(AuthPermission.members.view)
   const supabase = await supabaseServer();
 
   const { data, error } = await supabase

@@ -12,8 +12,8 @@ end;
 $$;
 
 -- set active_company_id after logged in
-DROP FUNCTION public.ensure_active_company();
-create or replace function public.ensure_active_company()
+DROP FUNCTION public.ensure_active_company_or_personal_workspace();
+create or replace function public.ensure_active_company_or_personal_workspace()
 returns jsonb
 language plpgsql
 security definer
@@ -133,8 +133,8 @@ begin
 end;
 $$;
 
-REVOKE ALL ON FUNCTION public.ensure_active_company() FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION public.ensure_active_company() TO authenticated;
+REVOKE ALL ON FUNCTION public.ensure_active_company_or_personal_workspace() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.ensure_active_company_or_personal_workspace() TO authenticated;
 
 -- Active company ids for current user (Optional)  NOT YET RAN (it is for SUPER ADMIN)
 create or replace function public.current_company_ids()

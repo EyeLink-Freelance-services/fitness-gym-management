@@ -12,10 +12,23 @@ export default function RootLayout({ children }: PropsWithChildren) {
   const [auth, setAuth] = useState<IAuthContext | null>(null);
 
   useEffect(() => {
-    fetch("/api/auth/users")
-      .then((res) => res.json())
-      .then((res) => setAuth(res.data))
-      .catch(console.error);
+    const loadAuth = async () => {
+      try {
+        const res = await fetch("/api/auth/users");
+
+        if (!res.ok) {
+          throw new Error(`Request failed: ${res.status}`);
+        }
+
+        const data = await res.json();
+
+        setAuth(data.data);
+      } catch (error) {
+        console.error("Failed to fetch auth user:", error);
+      }
+    };
+
+    loadAuth();
   }, []);
 
   if (!auth) return (

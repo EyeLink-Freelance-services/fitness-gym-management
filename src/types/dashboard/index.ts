@@ -12,7 +12,7 @@ export type NavItem = {
   url?: string;
   icon: React.FC<React.SVGProps<SVGSVGElement>>;
   items: SubItem[];
-  permission?: AuthPermission;
+  permission?: string;
 };
 export type NavSection = { label: string; items: NavItem[] };
 

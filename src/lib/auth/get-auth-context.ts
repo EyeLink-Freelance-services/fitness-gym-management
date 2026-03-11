@@ -11,7 +11,7 @@ export const getAuthContext = cache(async () => {
 
   if (!user) return null;
 
-  const { data, error } = await supabase.rpc("ensure_active_company");
+  const { data, error } = await supabase.rpc("ensure_active_company_or_personal_workspace");
 
   if (error) throw error;
 
