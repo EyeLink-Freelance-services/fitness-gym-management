@@ -5,6 +5,7 @@ export type SubItem = {
   title: string;
   url: string;
   icon?: React.FC<SVGProps<SVGSVGElement>>;
+  permission?: string;
 };
 
 export type NavItem = {

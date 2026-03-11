@@ -48,7 +48,7 @@ export const AuthPermission = {
 
   management: {
     users: "management.users.view",
-    client: "dashboard.client.view",
+    staff: "dashboard.client.view",
     personalCoach: "dashboard.personal_coach.view",
   },
 

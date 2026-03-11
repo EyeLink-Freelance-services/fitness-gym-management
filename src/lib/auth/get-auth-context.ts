@@ -2,6 +2,19 @@ import { cache } from "react";
 import { getPermissionStringTable } from "../formatters/format-permission";
 import { supabaseServer } from "../supabase/server";
 
+export async function buildAuthContext(data: any) {
+  const permissions = getPermissionStringTable(data.permissions ?? []);
+
+  return {
+    userId: data.profile.id,
+    profile: data.profile,
+    company: data.company,
+    isOwner: data.company_user?.is_owner ?? false,
+    roles: data.roles?.map((r: any) => r.name) ?? [],
+    permissions,
+  };
+}
+
 export const getAuthContext = cache(async () => {
   const supabase = await supabaseServer();
 
@@ -15,15 +28,5 @@ export const getAuthContext = cache(async () => {
 
   if (error) throw error;
 
-  const permissions = getPermissionStringTable(data.permissions)
-
-  return {
-    userId: data.profile.id,
-    profile: data.profile,
-    company: data.company,
-    isOwner: data.company_user?.is_owner ?? false,
-    roles: data.roles?.map((r: any) => r.name) ?? [],
-    permissions,
-  };
-
+  return buildAuthContext(data);
 }) 

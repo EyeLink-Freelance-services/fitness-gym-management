@@ -1,6 +1,6 @@
 "use client";
 
-import { Skeleton } from "@/components/ui/skeleton";
+import { SkeletonUI } from "@/components/ui/skeleton";
 import { formatCurrency } from "@/lib/formatters/format-number";
 import { MembershipPlanEditInput, MembershipPlanRow } from "@/lib/validation/schemas/membership-plan";
 import { getDurationLabel } from "@/utils/transform-days-label";
@@ -106,7 +106,7 @@ export default function MembershipPlansList({
                 <tr>
                   {Array.from({length: 7}).map((_, index) => (
                     <td key={index} colSpan={1} className="px-4 py-8 text-center text-sm text-gray-500">
-                      <Skeleton className="h-5 "/>
+                      <SkeletonUI className="h-5 "/>
                     </td>
                   ))}
                 </tr>
@@ -198,7 +198,7 @@ export default function MembershipPlansList({
         </div>
 
         <div className="grid gap-3 p-4 md:hidden">
-          {!filteredPlans && <Skeleton className="h-10 w-5"/>}
+          {!filteredPlans && <SkeletonUI className="h-10 w-5"/>}
           {filteredPlans?.length === 0 ? (
             <div className="py-6 text-center text-sm text-gray-500">
               No membership plans found.

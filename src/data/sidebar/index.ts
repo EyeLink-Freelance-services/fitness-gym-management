@@ -2,29 +2,30 @@ import { AuthPermission } from "@/constants/permission";
 import * as Icons from "../../components/IconsCollection/icons";
 import type { NavSection } from "@/types/dashboard";
 import { ROUTES } from "@/constants/route";
+import { IAuthContext } from "@/types/auth-context";
 
-export function getAuthorizedNav(
-  itemSections: NavSection[],
-  permissions?: string[]
-): NavSection[] {
-  return itemSections
-    .map((section) => ({
-      ...section,
-      items: section.items.filter((item) => {
-        // parent without permission -> keep it
-        if (!item.permission) {
-          // if it has children, optionally filter children too
-          if (item.items?.length) {
-            return true;
-          }
-          return true;
-        }
+// <export function getAuthorizedNav(
+//   itemSections: NavSection[],
+//   auth: IAuthContext | undefined
+// ): NavSection[] {
+//   return itemSections
+//     .map((section) => ({
+//       ...section,
+//       items: section.items.filter((item) => {
+//         // parent without permission -> keep it
+//         if (!item.permission) {
+//           // if it has children, optionally filter children too
+//           if (item.items?.length) {
+//             return true;
+//           }
+//           return true;
+//         }
 
-        return permissions?.includes(item.permission);
-      }),
-    }))
-    .filter((section) => section.items.length > 0);
-}
+//         return auth?.permissions?.includes(item.permission);
+//       }),
+//     }))
+//     .filter((section) => section.items.length > 0);
+// }>
 
 export const NAV_DATA: NavSection[] = [
   {
@@ -37,34 +38,42 @@ export const NAV_DATA: NavSection[] = [
           {
             title: "General Overview",
             url: ROUTES.DASHBOARD.COMPANY.ROOT,
+            permission: AuthPermission.dashboard.company
           },
           {
             title: "Announcements & Communications",
             url: ROUTES.DASHBOARD.COMPANY.ANNOUNCEMENT,
+            permission: AuthPermission.dashboard.company
           },
           {
             title: "Clients & Coach Assigned",
             url: ROUTES.DASHBOARD.COMPANY.CLIENT_COACH_ASSIGN,
+            permission: AuthPermission.dashboard.company
           },
           {
             title: "Clients",
             url: ROUTES.DASHBOARD.COMPANY.CLIENTS,
+            permission: AuthPermission.dashboard.company
           },
           {
             title: "Coaches Overview",
             url: ROUTES.DASHBOARD.COMPANY.COACHES,
+            permission: AuthPermission.dashboard.company
           },
           {
             title: "Memberships",
             url: ROUTES.DASHBOARD.COMPANY.MEMBERSHIP,
+            permission: AuthPermission.dashboard.company
           },
           {
             title: "Payment Overview",
             url: ROUTES.DASHBOARD.COMPANY.PAYMENT,
+            permission: AuthPermission.dashboard.company
           },
           {
             title: "Staff Overview",
             url: ROUTES.DASHBOARD.COMPANY.STAFF,
+            permission: AuthPermission.dashboard.company
           },
         ],
         permission: AuthPermission.dashboard.company
@@ -76,6 +85,7 @@ export const NAV_DATA: NavSection[] = [
           {
             title: "General Overview",
             url: ROUTES.DASHBOARD.PERSONAL_COACH.ROOT,
+            permission: AuthPermission.dashboard.personalCoach
           }
         ],
         permission: AuthPermission.dashboard.personalCoach
@@ -87,14 +97,17 @@ export const NAV_DATA: NavSection[] = [
           {
             title: "General Overview",
             url: ROUTES.DASHBOARD.SUPER_ADMIN.ROOT,
+            permission: AuthPermission.dashboard.superAdmin
           },
           {
             title: "Coaches",
             url: ROUTES.DASHBOARD.SUPER_ADMIN.COACHES,
+            permission: AuthPermission.dashboard.superAdmin
           },
           {
             title: "Companies",
             url: ROUTES.DASHBOARD.SUPER_ADMIN.COMPANY,
+            permission: AuthPermission.dashboard.superAdmin
           }
         ],
         permission: AuthPermission.dashboard.superAdmin

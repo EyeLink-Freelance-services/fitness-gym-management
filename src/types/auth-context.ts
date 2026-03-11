@@ -1,12 +1,23 @@
+import { Timestamp } from "next/dist/server/lib/cache-handlers/types";
+
 export interface IAuthContext {
   userId: string;
   profile: IProfile,
-  isOwner: boolean,
   companyId: string | null;
   company: ICompany;
+  isOwner: boolean;
   roles: IRole[];
   permissions: string[];
 };
+
+export interface ICompanyUser {
+  id: string,
+  company_id: string,
+  is_owner: boolean,
+  joined_at: Timestamp,
+  user_id: string
+}
+
 
 export interface IProfile {
   id: string,
