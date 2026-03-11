@@ -25,10 +25,6 @@ export async function updateProfile(id: string, payload: ProfileUpdateFormValues
 export async function getProfile(id: string) {
   const supabase = await supabaseServer();
 
-  console.log(id, 'id')
-
-  console.log((await supabase.auth.getUser()).data, 'getuser')
-
   const { data, error } = await supabase
     .from(TABLE)
     .select("*")

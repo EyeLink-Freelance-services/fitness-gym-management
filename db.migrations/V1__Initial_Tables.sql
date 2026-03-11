@@ -13,60 +13,124 @@ $$;
 
 -- set active_company_id after logged in
 DROP FUNCTION public.ensure_active_company();
-CREATE OR REPLACE FUNCTION public.ensure_active_company()
-RETURNS json
-LANGUAGE plpgsql
-SECURITY DEFINER
-AS $$
-DECLARE
+create or replace function public.ensure_active_company()
+returns jsonb
+language plpgsql
+security definer
+as $$
+declare
   v_company uuid;
-  result json;
-BEGIN
-	
-	-- 1) if already set, return it
-  SELECT p.active_company_id
-  INTO v_company
-  FROM public.profiles p
-  WHERE p.id = auth.uid();
+  v_company_user_id uuid;
+  result jsonb;
+begin
+  -- 1) if already set on profile, use it
+  select p.active_company_id
+  into v_company
+  from public.profiles p
+  where p.id = auth.uid();
 
-	-- 2) pick best existing membership
-  IF v_company IS NULL THEN
-    SELECT cu.company_id
-    INTO v_company
-    FROM public.company_user cu
-    WHERE cu.user_id = auth.uid()
-    ORDER BY cu.is_owner DESC, cu.joined_at DESC
-    LIMIT 1;
-  END IF;
+  -- 2) otherwise pick best existing membership
+  if v_company is null then
+    select cu.company_id
+    into v_company
+    from public.company_user cu
+    where cu.user_id = auth.uid()
+    order by cu.is_owner desc, cu.joined_at desc
+    limit 1;
+  end if;
 
-	-- 3) if no company, create personal workspace + owner link
-  IF v_company IS NULL THEN
-    INSERT INTO public.companies(name, mode)
-    VALUES ('Personal Workspace', 'personal')
-    RETURNING id INTO v_company;
+  -- 3) if no company, create personal workspace + owner link
+  if v_company is null then
+    insert into public.companies(name, mode)
+    values ('Personal Workspace', 'personal')
+    returning id into v_company;
 
-    INSERT INTO public.company_user(user_id, company_id, is_owner)
-    VALUES (auth.uid(), v_company, true);
-  END IF;
+    insert into public.company_user(user_id, company_id, is_owner)
+    values (auth.uid(), v_company, true)
+    returning id into v_company_user_id;
+  end if;
 
-	-- 4) set profile active
-  UPDATE public.profiles
-  SET active_company_id = v_company,
+  -- 4) ensure active company is stored on profile
+  update public.profiles
+  set active_company_id = v_company,
       updated_at = now()
-  WHERE id = auth.uid();
+  where id = auth.uid();
 
-  SELECT json_build_object(
-    'company_id', c.id,
-    'company_name', c.name,
-    'company_mode', c.mode
+  -- 5) get company_user id for that active company
+  if v_company_user_id is null then
+    select cu.id
+    into v_company_user_id
+    from public.company_user cu
+    where cu.user_id = auth.uid()
+      and cu.company_id = v_company
+    limit 1;
+  end if;
+
+  -- 6) return full auth/menu context
+  select jsonb_build_object(
+    'profile', jsonb_build_object(
+      'id', p.id,
+      'first_name', p.first_name,
+      'last_name', p.last_name,
+      'picture_url', p.picture_url,
+      'active_company_id', p.active_company_id
+    ),
+    'company', jsonb_build_object(
+      'id', c.id,
+      'name', c.name,
+      'mode', c.mode
+    ),
+    'company_user', jsonb_build_object(
+      'id', cu.id,
+      'user_id', cu.user_id,
+      'company_id', cu.company_id,
+      'is_owner', cu.is_owner,
+      'joined_at', cu.joined_at
+    ),
+    'roles', coalesce(roles_data.roles, '[]'::jsonb),
+    'permissions', coalesce(perms_data.permissions, '[]'::jsonb)
   )
-  INTO result
-  FROM public.companies c
-  WHERE c.id = v_company;
+  into result
+  from public.profiles p
+  join public.companies c
+    on c.id = v_company
+  join public.company_user cu
+    on cu.user_id = p.id
+   and cu.company_id = c.id
+  left join lateral (
+    select jsonb_agg(
+      distinct jsonb_build_object(
+        'id', cr.id,
+        'name', cr.name
+      )
+    ) as roles
+    from public.company_user_role cur
+    join public.company_role cr
+      on cr.id = cur.company_role_id
+    where cur.company_user_id = cu.id
+  ) roles_data on true
+  left join lateral (
+    select jsonb_agg(
+      distinct jsonb_build_object(
+        'role_id', cr.id,
+        'role_name', cr.name,
+        'module', crp.module,
+        'can_read', crp.can_read,
+        'can_write', crp.can_write,
+        'can_delete', crp.can_delete
+      )
+    ) as permissions
+    from public.company_user_role cur
+    join public.company_role cr
+      on cr.id = cur.company_role_id
+    join public.company_role_permission crp
+      on crp.company_role_id = cr.id
+    where cur.company_user_id = cu.id
+  ) perms_data on true
+  where p.id = auth.uid();
 
-  RETURN result;
-
-END;
+  return result;
+end;
 $$;
 
 REVOKE ALL ON FUNCTION public.ensure_active_company() FROM PUBLIC;

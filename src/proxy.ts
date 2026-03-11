@@ -3,7 +3,11 @@ import { createServerClient } from "@supabase/ssr";
 import { NextRequest, NextResponse } from "next/server";
 
 const PUBLIC_ROUTES = [ROUTES.LOGIN, ROUTES.RESET_PASSWORD.NEW_PASSWORD];
-const PROTECTED_PREFIXES = [ROUTES.HOME, ROUTES.MEMBERS.LIST_MEMBER, ROUTES.MEMBERSHIP.LIST_MEMBERSHIP];
+const PROTECTED_PREFIXES = [
+	ROUTES.HOME, 
+	ROUTES.MEMBERS.LIST_MEMBER, 
+	ROUTES.MEMBERSHIP.LIST_MEMBERSHIP
+];
 
 function isProtectedRoute(pathname: string) {
   return PROTECTED_PREFIXES.some((route) =>
@@ -51,7 +55,7 @@ export async function proxy(req: NextRequest) {
   }
 
 	// Block public auth pages when logged in
-	if (user && isPublicRoute(pathname, ROUTES.FORGOT_PASSWORD)) {
+	if (user && isPublicRoute(pathname, ROUTES.RESET_PASSWORD.NEW_PASSWORD)) {
     return NextResponse.redirect(new URL(ROUTES.HOME, req.url));
   }
 

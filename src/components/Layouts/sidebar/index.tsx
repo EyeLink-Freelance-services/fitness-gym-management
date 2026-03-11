@@ -3,43 +3,50 @@
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
-import { NAV_DATA } from "../../../data/sidebar";
+import { ReactNode, useEffect, useState } from "react";
+import { getAuthorizedNav, NAV_DATA } from "../../../data/sidebar";
 import { ArrowLeftIcon, ChevronUp } from "../../IconsCollection/icons";
 import { MenuItem } from "./menu-item";
 import { useSidebarContext } from "./sidebar-context";
 import { getDashboardNav } from "@/utils/dashboard-nav";
+import { IAuthContext } from "@/types/auth-context";
 
-export function Sidebar() {
+interface sidebarProps {
+  auth?: IAuthContext
+}
+
+
+export function Sidebar({auth}: sidebarProps) {
   const pathname = usePathname();
   const { setIsOpen, isOpen, isMobile, toggleSidebar } = useSidebarContext();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
 
-  const isDashboard = pathname.startsWith("/dashboard/");
-  const navData = isDashboard ? getDashboardNav(pathname) : NAV_DATA;
+  const navData = getAuthorizedNav(NAV_DATA , auth?.permissions);
+  // const isDashboard = pathname.startsWith("/dashboard/");
+  // const navData = isDashboard ? getDashboardNav(pathname) : NAV_DATA;
 
   const toggleExpanded = (title: string) => {
     setExpandedItems((prev) => (prev.includes(title) ? [] : [title]));
   };
 
-  useEffect(() => {
-    const data = pathname.startsWith("/dashboard/")
-      ? getDashboardNav(pathname)
-      : NAV_DATA;
-    data.some((section) =>
-      section.items.some((item) =>
-        item.items.some((subItem) => {
-          if (subItem.url === pathname) {
-            setExpandedItems((prev) =>
-              prev.includes(item.title) ? prev : [...prev, item.title],
-            );
-            return true;
-          }
-          return false;
-        }),
-      ),
-    );
-  }, [pathname]);
+  // useEffect(() => {
+  //   const data = pathname.startsWith("/dashboard/")
+  //     ? getDashboardNav(pathname)
+  //     : NAV_DATA;
+  //   data.some((section) =>
+  //     section.items.some((item) =>
+  //       item.items.some((subItem) => {
+  //         if (subItem.url === pathname) {
+  //           setExpandedItems((prev) =>
+  //             prev.includes(item.title) ? prev : [...prev, item.title],
+  //           );
+  //           return true;
+  //         }
+  //         return false;
+  //       }),
+  //     ),
+  //   );
+  // }, [pathname]);
 
   return (
     <>

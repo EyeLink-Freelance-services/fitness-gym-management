@@ -1,12 +1,7 @@
 "use client";
 
+import { ICompany } from "@/types/auth-context";
 import { createContext, useContext } from "react";
-
-export interface ICompany {
-  company_id: string;
-  company_name: string;
-  company_mode: string;
-}
 
 const CompanyContext = createContext<ICompany | null>(null);
 

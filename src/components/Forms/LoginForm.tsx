@@ -43,7 +43,7 @@ export default function LoginForm({ onForgotPassword }: LoginFormProps) {
   };
 
   return (
-    <div className="form-panel space-y-4 bg-white/80 p-8 shadow-lg backdrop-blur-sm">
+    <div className="form-panel space-y-4 bg-white/80 px-8 py-12 shadow-lg backdrop-blur-sm">
       <Header
         label="- Authentication"
         title="Welcome back"
@@ -90,20 +90,6 @@ export default function LoginForm({ onForgotPassword }: LoginFormProps) {
         </div>
 
         <Button type="submit" label="Sign In" className="w-full" />
-
-        <div className="my-4 flex items-center gap-3">
-          <span className="h-px flex-1 bg-stroke" />
-          <span className="text-body-xs text-dark-5">or continue with</span>
-          <span className="h-px flex-1 bg-stroke" />
-        </div>
-
-        <Button
-          type="button"
-          label="Continue with Google"
-          variant="outlineDark"
-          className="w-full"
-          icon={<GoogleIcon width={18} height={18} className="shrink-0" />}
-        />
       </form>
     </div>
   );

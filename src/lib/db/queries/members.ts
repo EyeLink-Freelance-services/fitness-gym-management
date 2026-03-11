@@ -1,3 +1,5 @@
+import { AuthPermission } from "@/constants/permission";
+import { requirePermission } from "@/lib/auth/permission";
 import { supabaseServer } from "@/lib/supabase/server";
 import type { MemberCreateInput, MemberUpdateInput, MemberWithMembershipInput } from "@/lib/validation/schemas/member";
 import { MemberMembershipCreateInput } from "@/lib/validation/schemas/member-membership";
@@ -10,6 +12,7 @@ const TABLE = "members";
  * Use RLS policies to restrict by workspace/tenant as needed.
  */
 export async function listMembers() {
+  const auth = await requirePermission(AuthPermission.MEMBERS_VIEW)
   const supabase = await supabaseServer();
 
   const { data, error } = await supabase

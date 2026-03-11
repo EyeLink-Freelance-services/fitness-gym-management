@@ -1,3 +1,4 @@
+import { AuthPermission } from "@/constants/permission";
 import type { JSX, SVGProps } from "react";
 
 export type SubItem = {
@@ -11,6 +12,7 @@ export type NavItem = {
   url?: string;
   icon: React.FC<React.SVGProps<SVGSVGElement>>;
   items: SubItem[];
+  permission?: AuthPermission;
 };
 export type NavSection = { label: string; items: NavItem[] };
 
