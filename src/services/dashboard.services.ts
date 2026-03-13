@@ -3,6 +3,14 @@ import {
   GYM_CLIENTS,
 } from "@/data/company";
 import {
+  PERSONAL_COACH_ANNOUNCEMENTS,
+  PERSONAL_COACH_CLIENT_PROGRESS,
+  PERSONAL_COACH_MEDICAL_NOTES,
+  PERSONAL_COACH_OVERVIEW,
+  PERSONAL_COACH_PROGRESS_SERIES,
+  PERSONAL_COACH_TODAY_SESSIONS,
+} from "@/data/personal-coach";
+import {
   COMPANY_ANNOUNCEMENT_FILTERS,
   COMPANY_ANNOUNCEMENT_OVERVIEW,
   COMPANY_ANNOUNCEMENTS,
@@ -79,6 +87,53 @@ export async function getSuperAdminOverviewData() {
 export async function getCompanyOverviewData() {
   await new Promise((r) => setTimeout(r, 200));
   return DUMMY_KPIS;
+}
+
+// Personal coach overview data
+export async function getPersonalCoachOverviewData() {
+  await new Promise((r) => setTimeout(r, 200));
+  return PERSONAL_COACH_OVERVIEW;
+}
+
+export async function getPersonalCoachTodaySessions(limit = 5) {
+  await new Promise((r) => setTimeout(r, 200));
+
+  const sorted = [...PERSONAL_COACH_TODAY_SESSIONS].sort(
+    (a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime(),
+  );
+
+  return sorted.slice(0, limit);
+}
+
+export async function getPersonalCoachProgressSeries() {
+  await new Promise((r) => setTimeout(r, 200));
+  return PERSONAL_COACH_PROGRESS_SERIES;
+}
+
+export async function getPersonalCoachClientProgress(limit = 5) {
+  await new Promise((r) => setTimeout(r, 200));
+
+  return PERSONAL_COACH_CLIENT_PROGRESS.slice(0, limit);
+}
+
+export async function getPersonalCoachMedicalNotes(limit = 5) {
+  await new Promise((r) => setTimeout(r, 200));
+
+  const sorted = [...PERSONAL_COACH_MEDICAL_NOTES].sort(
+    (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+  );
+
+  return sorted.slice(0, limit);
+}
+
+export async function getPersonalCoachAnnouncements(limit = 5) {
+  await new Promise((r) => setTimeout(r, 200));
+
+  const sorted = [...PERSONAL_COACH_ANNOUNCEMENTS].sort(
+    (a, b) => new Date(b.publishAt).getTime() - new Date(a.publishAt).getTime(),
+  );
+
+  return sorted.slice(0, limit);
 }
 
 // get 5 latest gyms membership which is expiring soon

@@ -12,13 +12,13 @@ import { useCompany } from "@/app/context/company-context";
 import { useRouter } from "next/navigation";
 import { ROUTES } from "@/constants/route";
 import { createMemberAction, createMemberWithMembershipPlanAction } from "../actions";
-import { ArrowLeftIcon } from "@/assets/icons";
 import { MembershipPlanRow } from "@/lib/validation/schemas/membership-plan";
 import { formatDateLocal } from "@/lib/formatters/format-date";
 import { MemberMembershipCreateInput, MemberMembershipStatusSchema } from "@/lib/validation/schemas/member-membership";
+import { ArrowLeftIcon } from "@/components/IconsCollection/icons";
 
 export default function NewMemberPage() {
-  const { company_id } = useCompany();
+  const { id } = useCompany();
   const [agreeTerms, setAgreeTerms] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [selectedPlan, setSelectedPlan] = useState<MembershipPlanRow | null>(null);
@@ -30,7 +30,7 @@ export default function NewMemberPage() {
     mode: 'onChange',
     resolver: zodResolver(MemberCreateSchema),
     defaultValues: {
-      company_id: company_id,
+      company_id: id,
       assigned_coach_id: null,
       status: "active",
     },

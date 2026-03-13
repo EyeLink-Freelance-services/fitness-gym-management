@@ -26,7 +26,7 @@ export default function EditMembershipPlanForm({plan}: MembershipPlanProps) {
     resolver: zodResolver(MembershipPlanEditSchema),
     defaultValues: {
 			id: plan.id,
-      company_id: company.company_id,
+      company_id: company.id,
       name: plan.name,
 			price: plan.price,
 			entree_fee: plan.entree_fee,

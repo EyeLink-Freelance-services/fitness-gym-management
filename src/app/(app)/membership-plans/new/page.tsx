@@ -10,8 +10,8 @@ import { useState } from "react";
 import { createMembershipPlanAction } from "../actions";
 import { useCompany } from "@/app/context/company-context";
 import Link from "next/link";
-import { ArrowLeftIcon } from "@/assets/icons";
 import { Button } from "@/components/ui-elements/button";
+import { ArrowLeftIcon } from "@/components/IconsCollection/icons";
 
 
 export default function CreateMembershipPlanForm() {
@@ -22,7 +22,7 @@ export default function CreateMembershipPlanForm() {
   const form = useForm<MembershipPlanCreateInput>({
     resolver: zodResolver(MembershipPlanFormSchema),
     defaultValues: {
-      company_id: company.company_id,
+      company_id: company.id,
       name: "",
       price: 0,
       entree_fee: 0,

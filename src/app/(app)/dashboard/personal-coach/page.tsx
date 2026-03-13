@@ -1,176 +1,259 @@
 import { DashboardSection } from "@/components/Dashboard/dashboard-section";
-import { ChartPlaceholder } from "@/components/Dashboard/chart-placeholder";
+import { ClientProgressCard } from "@/components/Dashboard/personal-coach/client-progress-card";
+import { OverviewCard } from "@/components/Dashboard/overview-cards/card";
+import { SessionsCard } from "@/components/Dashboard/personal-coach/sessions-card";
+import { TableUI } from "@/components/Tables";
+import { Button } from "@/components/ui-elements/button";
+import { StatusBadge } from "@/components/ui-elements/status-badge";
+import { cn } from "@/lib/utils";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import * as icons from "@/components/IconsCollection/icons";
-import Link from "next/link";
+  getPersonalCoachAnnouncements,
+  getPersonalCoachClientProgress,
+  getPersonalCoachMedicalNotes,
+  getPersonalCoachOverviewData,
+  getPersonalCoachProgressSeries,
+  getPersonalCoachTodaySessions,
+} from "@/services/dashboard.services";
+import type {
+  PersonalCoachAnnouncementRow,
+  PersonalCoachClientProgressRow,
+  PersonalCoachMedicalNoteRow,
+} from "@/types/dashboard/personal-coach";
+import type { TableUIColumn } from "@/types/shared";
+import { toast } from "sonner";
 
-export default function PersonalCoachDashboardPage() {
-  const kpis = [
-    { label: "Active Clients", value: 12, trend: 2, icon: icons.Users },
-    { label: "Sessions This Week", value: 28, trend: 5, icon: icons.Views },
-    { label: "Earnings (MTD)", value: "$2,840", trend: 12, icon: icons.Profit },
-    { label: "Completion Rate", value: "94%", icon: icons.Product },
-  ];
+function formatDate(date: string) {
+  return new Date(date).toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+}
 
-  const todaySessions = [
-    { time: "09:00", client: "Alex B.", status: "Done" },
-    { time: "11:00", client: "Jane D.", status: "Now" },
-    { time: "14:00", client: "Chris L.", status: "Upcoming" },
-  ];
+function getProgressBarClassName(progress: number) {
+  if (progress >= 70) {
+    return "bg-green";
+  }
 
-  const tomorrowSessions = [
-    { time: "10:00", client: "Mike J." },
-    { time: "15:00", client: "Sarah K." },
-  ];
+  if (progress >= 50) {
+    return "bg-primary";
+  }
 
-  const clients = [
-    { name: "Alex Brown", goal: "Weight loss", progress: 75 },
-    { name: "Jane Doe", goal: "Strength", progress: 60 },
-    { name: "Chris Lee", goal: "Endurance", progress: 40 },
-  ];
+  return "bg-[#FFA70B]";
+}
 
-  const announcements = [{ title: "New nutrition workshop", date: "Mar 5" }];
+const clientProgressColumns: TableUIColumn<PersonalCoachClientProgressRow>[] = [
+  {
+    key: "clientName",
+    label: "Client",
+    align: "left",
+    headClassName: "min-w-[170px]",
+  },
+  {
+    key: "goal",
+    label: "Goal",
+    align: "left",
+    headClassName: "min-w-[130px]",
+  },
+  {
+    key: "progress",
+    label: "Progress",
+    render: (row) => (
+      <div className="flex items-center gap-3">
+        <div className="h-2 w-24 overflow-hidden rounded-full bg-dark-2 dark:bg-dark-3">
+          <div
+            className={cn(
+              "h-full rounded-full",
+              getProgressBarClassName(row.progress),
+            )}
+            style={{ width: `${row.progress}%` }}
+          />
+        </div>
+        <span className="text-sm font-medium text-dark dark:text-white">
+          {row.progress}%
+        </span>
+      </div>
+    ),
+    headClassName: "min-w-[170px]",
+  },
+  {
+    key: "actions",
+    label: "Actions",
+    render: () => (
+      <div className="flex justify-center gap-2">
+        <Button
+          label="Plan"
+          size="small"
+          variant="outlineDark"
+          className="px-4 py-2"
+          toastMessage="Training plan page not yet created"
+        />
+        <Button
+          label="Diet"
+          size="small"
+          variant="outlineDark"
+          className="px-4 py-2"
+          toastMessage="Diet plan page not yet created"
+        />
+      </div>
+    ),
+    headClassName: "min-w-[170px]",
+  },
+];
+
+const medicalNoteColumns: TableUIColumn<PersonalCoachMedicalNoteRow>[] = [
+  {
+    key: "clientName",
+    label: "Client",
+    align: "left",
+    headClassName: "min-w-[150px]",
+  },
+  {
+    key: "note",
+    label: "Condition",
+    align: "left",
+    headClassName: "min-w-[150px]",
+  },
+  {
+    key: "restriction",
+    label: "Restriction",
+    align: "left",
+    headClassName: "min-w-[240px]",
+  },
+  {
+    key: "severity",
+    label: "Severity",
+    render: (row) => (
+      <StatusBadge label={row.severity} tone={row.severityTone} />
+    ),
+    headClassName: "min-w-[120px]",
+  },
+];
+
+const announcementColumns: TableUIColumn<PersonalCoachAnnouncementRow>[] = [
+  {
+    key: "title",
+    label: "Announcement",
+    align: "left",
+    headClassName: "min-w-[260px]",
+  },
+  {
+    key: "audience",
+    label: "Audience",
+    align: "left",
+    headClassName: "min-w-[200px]",
+  },
+  {
+    key: "publishAt",
+    label: "Publish Date",
+    render: (row) => formatDate(row.publishAt),
+    headClassName: "min-w-[140px]",
+  },
+  {
+    key: "status",
+    label: "Status",
+    render: (row) => <StatusBadge label={row.status} tone={row.statusTone} />,
+    headClassName: "min-w-[120px]",
+  },
+];
+
+export default async function PersonalCoachDashboardPage() {
+  const [
+    overviewData,
+    sessions,
+    progressSeries,
+    clientProgress,
+    announcements,
+    medicalNotes,
+  ] = await Promise.all([
+    getPersonalCoachOverviewData(),
+    getPersonalCoachTodaySessions(6),
+    getPersonalCoachProgressSeries(),
+    getPersonalCoachClientProgress(4),
+    getPersonalCoachAnnouncements(3),
+    getPersonalCoachMedicalNotes(3),
+  ]);
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-bold text-dark dark:text-white">
-        Personal Coach Dashboard
-      </h1>
-
       <DashboardSection title="Overview">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {/* {kpis.map((kpi) => (
-            <KpiCard
-              key={kpi.label}
-              label={kpi.label}
-              value={kpi.value}
-              trend={kpi.trend}
-              icon={kpi.icon}
+          {overviewData.map((item) => (
+            <OverviewCard
+              key={item.label}
+              label={item.label}
+              data={{
+                value: item.value,
+                growthRate: item.trend,
+              }}
+              Icon={item.icon}
             />
-          ))} */}
+          ))}
         </div>
       </DashboardSection>
 
-      <ChartPlaceholder title="Client progress" className="mb-8" />
+      <div className="mb-8 grid grid-cols-12 gap-4 md:gap-6 2xl:gap-7.5">
+        <div className="col-span-12 xl:col-span-8">
+          <ClientProgressCard data={progressSeries} />
+        </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <DashboardSection title="Today's sessions">
-          <div className="rounded-[10px] bg-white shadow-1 dark:bg-gray-dark">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Time</TableHead>
-                  <TableHead>Client</TableHead>
-                  <TableHead>Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {todaySessions.map((row) => (
-                  <TableRow key={`${row.time}-${row.client}`}>
-                    <TableCell>{row.time}</TableCell>
-                    <TableCell className="font-medium">{row.client}</TableCell>
-                    <TableCell>
-                      <span
-                        className={`inline-flex rounded px-2 py-0.5 text-xs font-medium ${
-                          row.status === "Done"
-                            ? "bg-green/20 text-green"
-                            : row.status === "Now"
-                              ? "bg-primary/20 text-primary"
-                              : "bg-dark-3 text-dark-6"
-                        }`}
-                      >
-                        {row.status}
-                      </span>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </DashboardSection>
-
-        <DashboardSection title="Tomorrow">
-          <ul className="space-y-2 rounded-[10px] bg-white p-4 shadow-1 dark:bg-gray-dark">
-            {tomorrowSessions.map((s) => (
-              <li
-                key={`${s.time}-${s.client}`}
-                className="flex justify-between text-sm text-dark dark:text-white"
-              >
-                <span>{s.time}</span>
-                <span className="font-medium">{s.client}</span>
-              </li>
-            ))}
-          </ul>
-        </DashboardSection>
+        <div className="col-span-12 xl:col-span-4">
+          <SessionsCard sessions={sessions} />
+        </div>
       </div>
 
-      <DashboardSection title="Client roster">
-        <div className="rounded-[10px] bg-white shadow-1 dark:bg-gray-dark">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Client</TableHead>
-                <TableHead>Goal</TableHead>
-                <TableHead>Progress</TableHead>
-                <TableHead></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {clients.map((row) => (
-                <TableRow key={row.name}>
-                  <TableCell className="font-medium">{row.name}</TableCell>
-                  <TableCell>{row.goal}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <div className="h-2 w-24 overflow-hidden rounded-full bg-dark-2 dark:bg-dark-3">
-                        <div
-                          className="h-full rounded-full bg-primary"
-                          style={{ width: `${row.progress}%` }}
-                        />
-                      </div>
-                      <span className="text-sm">{row.progress}%</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-2">
-                      <Link
-                        href="#"
-                        className="text-sm font-medium text-primary hover:underline"
-                      >
-                        Plan
-                      </Link>
-                      <Link
-                        href="#"
-                        className="text-sm font-medium text-primary hover:underline"
-                      >
-                        Diet
-                      </Link>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      </DashboardSection>
+      <div className="mb-8 grid grid-cols-12 gap-6">
+        <TableUI
+          title="My Clients"
+          description="Manage current clients, goals, and active program progress."
+          data={clientProgress}
+          columns={clientProgressColumns}
+          rowKey={(row) => row.id}
+          className="col-span-12 xl:col-span-7"
+          headerActions={
+            <Button
+              label="View Clients"
+              size="small"
+              toastMessage="Promo creation is not connected yet."
+            />
+          }
+        />
 
-      <DashboardSection title="Announcements">
-        <ul className="space-y-2 rounded-[10px] bg-white p-4 shadow-1 dark:bg-gray-dark">
-          {announcements.map((a) => (
-            <li key={a.title} className="text-sm text-dark dark:text-white">
-              <span className="font-medium">{a.title}</span>
-              <span className="ml-2 text-dark-6">{a.date}</span>
-            </li>
-          ))}
-        </ul>
-      </DashboardSection>
+        <TableUI
+          title="Announcements"
+          description="Recent client communications and scheduled updates."
+          data={announcements}
+          columns={announcementColumns}
+          rowKey={(row) => row.id}
+          className="col-span-12 xl:col-span-5"
+          headerActions={
+            <Button
+              label="View All"
+              size="small"
+              toastMessage="Promo creation is not connected yet."
+            />
+          }
+        />
+      </div>
+
+      <div className="col-span-12 grid gap-6 xl:col-span-5">
+        <TableUI
+          title="Medical Notes"
+          description="Keep restrictions and risk flags visible during planning."
+          data={medicalNotes}
+          columns={medicalNoteColumns}
+          rowKey={(row) => row.id}
+          tableClassName="min-w-[640px]"
+          buttonLabel="View all Medical History"
+          headerActions={
+            <Button
+              label="Add Medical Notes"
+              size="small"
+              toastMessage="Promo creation is not connected yet."
+            />
+          }
+        />
+      </div>
     </div>
   );
 }

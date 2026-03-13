@@ -14,7 +14,7 @@ export function MembershipPlanTab({member}: MemberTabsProps) {
 	useEffect(() => {
 		const getMembershipPlanOfMember = async () => {
 			setLoading(true);
-			const res = await getMembershipPlanAction(member.id, company.company_id)
+			const res = await getMembershipPlanAction(member.id, company.id)
 			if(!res.ok) {
 				setErrorMsg(res.message)
 			} else if(res.data) {

@@ -1,8 +1,8 @@
 import { getMember } from "@/lib/db/queries/members";
-import { ArrowLeftIcon } from "@/assets/icons";
 import Link from "next/link";
 import { ROUTES } from "@/constants/route";
 import MemberTabs from "../components/member-tabs";
+import { ArrowLeftIcon } from "@/components/IconsCollection/icons";
 
 export default async function MemberPage({
   params,
@@ -14,15 +14,15 @@ export default async function MemberPage({
 
   if (!singleMember) {
     return (
-      <div className="max-w-xl mx-auto mt-10 text-center">
+      <div className="mx-auto mt-10 max-w-xl text-center">
         <h1 className="text-2xl font-semibold">Member Not Found</h1>
-        <p className="text-gray-500 mt-2">
+        <p className="mt-2 text-gray-500">
           The member you are looking for does not exist.
         </p>
 
         <Link
           href="/members"
-          className="inline-block mt-6 px-4 py-2 bg-black text-white rounded-lg"
+          className="mt-6 inline-block rounded-lg bg-black px-4 py-2 text-white"
         >
           Back to Members
         </Link>
@@ -41,4 +41,3 @@ export default async function MemberPage({
     </div>
   );
 }
-

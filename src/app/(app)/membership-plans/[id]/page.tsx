@@ -1,9 +1,9 @@
-import { ArrowLeftIcon } from "@/assets/icons";
 import { ROUTES } from "@/constants/route";
 import { getMembershipPlan } from "@/lib/db/queries/membership-plan";
 import Link from "next/link";
 import MembershipPlanView from "../components/membership-plan-view";
 import { MembershipPlanRow } from "@/lib/validation/schemas/membership-plan";
+import { ArrowLeftIcon } from "@/components/IconsCollection/icons";
 
 export default async function ViewPage({params,
 }: {

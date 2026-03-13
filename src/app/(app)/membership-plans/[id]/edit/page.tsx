@@ -1,9 +1,9 @@
 import { ROUTES } from "@/constants/route";
 import { getMembershipPlan } from "@/lib/db/queries/membership-plan";
 import EditMembershipPlanForm from "../../components/membership-plan-edit";
-import { ArrowLeftIcon } from "@/assets/icons";
 import Link from "next/link";
 import { MembershipPlanRow } from "@/lib/validation/schemas/membership-plan";
+import { ArrowLeftIcon } from "@/components/IconsCollection/icons";
 
 
 export default async function EditPage({params,
