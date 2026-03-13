@@ -8,17 +8,9 @@ import { MenuIcon } from "./icons";
 import { Notification } from "./notification";
 import { ThemeToggleSwitch } from "./theme-toggle";
 import { UserInfo } from "./user-info";
-import React from "react";
+import { HeaderProps } from "@/types/shared";
 
-interface HeaderProps {
-  mode: string | React.ReactNode;
-  workspaceName: string | React.ReactNode;
-}
-
-export function Header({
-  mode,
-  workspaceName,
-}: HeaderProps) {
+export function Header({ mode, workspaceName }: HeaderProps) {
   const { toggleSidebar, isMobile } = useSidebarContext();
 
   return (

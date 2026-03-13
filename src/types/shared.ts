@@ -4,7 +4,11 @@ import { buttonVariants } from "@/components/ui-elements/button";
 
 export type TableRowData = object;
 
-export type DashboardCampaignStatus = "All" | "Published" | "Scheduled" | "Draft";
+export type DashboardCampaignStatus =
+  | "All"
+  | "Published"
+  | "Scheduled"
+  | "Draft";
 
 export type StatusTone =
   | "primary"
@@ -20,6 +24,11 @@ export type ButtonColorVariant =
   | "outlinePrimary"
   | "outlineGreen"
   | "outlineDark";
+
+export interface HeaderProps {
+  mode: string | React.ReactNode;
+  workspaceName: string | React.ReactNode;
+}
 
 export interface DashboardOverviewItem {
   label: string;

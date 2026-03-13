@@ -14,27 +14,34 @@ import { LogOutIcon, SettingsIcon, UserIcon } from "./icons";
 import { LOGOUT_ENDPOINT } from "@/constants/urls";
 import { ROUTES } from "@/constants/route";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/app/context/auth-context";
 
 export function UserInfo() {
+  const auth = useAuth();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
 
   const logout = async () => {
     await fetch(LOGOUT_ENDPOINT, {
-      method: "POST"
+      method: "POST",
     });
 
-    setIsOpen(false)
-    
+    setIsOpen(false);
+
     router.push(ROUTES.LOGIN);
     router.refresh();
-  }
-
-  const USER = {
-    name: "John Smith",
-    email: "johnson@nextadmin.com",
-    img: "/images/user/user-03.png",
   };
+
+  const fullName =
+    `${auth.profile.first_name} ${auth.profile.last_name}`.trim();
+  const displayName = fullName || "Account";
+
+  const firstName = auth.profile.first_name || "User";
+  const lastName = auth.profile.last_name || "";
+  const initial = `${firstName[0]}${lastName[0]}`.trim();
+
+  const subtitle = auth.company?.name || auth.roles[0] || "Signed in";
+  const avatarSrc = auth.profile.picture_url || "/images/user/user-03.png";
 
   return (
     <Dropdown isOpen={isOpen} setIsOpen={setIsOpen}>
@@ -43,15 +50,15 @@ export function UserInfo() {
 
         <figure className="flex items-center gap-3">
           <Image
-            src={USER.img}
+            src={avatarSrc}
             className="size-12"
-            alt={`Avatar of ${USER.name}`}
+            alt={`Avatar of ${displayName}`}
             role="presentation"
             width={200}
             height={200}
           />
           <figcaption className="flex items-center gap-1 font-medium text-dark dark:text-dark-6 max-[1024px]:sr-only">
-            <span>{USER.name}</span>
+            <span>{initial}</span>
 
             <ChevronUpIcon
               aria-hidden
@@ -73,9 +80,9 @@ export function UserInfo() {
 
         <figure className="flex items-center gap-2.5 px-5 py-3.5">
           <Image
-            src={USER.img}
+            src={avatarSrc}
             className="size-12"
-            alt={`Avatar for ${USER.name}`}
+            alt={`Avatar for ${displayName}`}
             role="presentation"
             width={200}
             height={200}
@@ -83,10 +90,12 @@ export function UserInfo() {
 
           <figcaption className="space-y-1 text-base font-medium">
             <div className="mb-2 leading-none text-dark dark:text-white">
-              {USER.name}
+              {displayName}
             </div>
 
-            <div className="leading-none text-gray-6">{USER.email}</div>
+            <div className="leading-none text-gray-6">
+              {typeof subtitle === "string" ? subtitle : subtitle.name}
+            </div>
           </figcaption>
         </figure>
 
