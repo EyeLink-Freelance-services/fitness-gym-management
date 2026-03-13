@@ -1,4 +1,16 @@
 import {
+  CLIENT_BODY_COMPOSITION,
+  CLIENT_BODY_MEASUREMENTS,
+  CLIENT_COACH_SUMMARY,
+  CLIENT_MEAL_PLAN,
+  CLIENT_MEMBERSHIP_SUMMARY,
+  CLIENT_OVERVIEW,
+  CLIENT_PAYMENT_HISTORY,
+  CLIENT_UPCOMING_SESSIONS,
+  CLIENT_WEIGHT_TREND,
+  CLIENT_WORKOUT_PLAN,
+} from "@/data/client";
+import {
   DUMMY_KPIS,
   GYM_CLIENTS,
 } from "@/data/company";
@@ -134,6 +146,67 @@ export async function getPersonalCoachAnnouncements(limit = 5) {
   );
 
   return sorted.slice(0, limit);
+}
+
+// Client dashboard
+export async function getClientOverviewData() {
+  await new Promise((r) => setTimeout(r, 200));
+  return CLIENT_OVERVIEW;
+}
+
+export async function getClientMembershipSummary() {
+  await new Promise((r) => setTimeout(r, 200));
+  return CLIENT_MEMBERSHIP_SUMMARY;
+}
+
+export async function getClientCoachSummary() {
+  await new Promise((r) => setTimeout(r, 200));
+  return CLIENT_COACH_SUMMARY;
+}
+
+export async function getClientWeightTrend() {
+  await new Promise((r) => setTimeout(r, 200));
+  return CLIENT_WEIGHT_TREND;
+}
+
+export async function getClientBodyComposition() {
+  await new Promise((r) => setTimeout(r, 200));
+  return CLIENT_BODY_COMPOSITION;
+}
+
+export async function getClientUpcomingSessions(limit = 5) {
+  await new Promise((r) => setTimeout(r, 200));
+
+  const sorted = [...CLIENT_UPCOMING_SESSIONS].sort(
+    (a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime(),
+  );
+
+  return sorted.slice(0, limit);
+}
+
+export async function getClientBodyMeasurements() {
+  await new Promise((r) => setTimeout(r, 200));
+  return CLIENT_BODY_MEASUREMENTS;
+}
+
+export async function getClientWorkoutPlan() {
+  await new Promise((r) => setTimeout(r, 200));
+  return CLIENT_WORKOUT_PLAN;
+}
+
+export async function getClientMealPlan() {
+  await new Promise((r) => setTimeout(r, 200));
+  return CLIENT_MEAL_PLAN;
+}
+
+export async function getClientPaymentHistory(limit?: number) {
+  await new Promise((r) => setTimeout(r, 200));
+
+  if (!limit) {
+    return CLIENT_PAYMENT_HISTORY;
+  }
+
+  return CLIENT_PAYMENT_HISTORY.slice(0, limit);
 }
 
 // get 5 latest gyms membership which is expiring soon
