@@ -20,7 +20,7 @@ export default function TrainingPlansList({ plans }: Props) {
         <div>
           <h1 className="text-xl font-semibold">Training Plans</h1>
           <p className="text-sm text-gray-500">
-            Create and manage workout programs
+            Manage workout programs
           </p>
         </div>
 
