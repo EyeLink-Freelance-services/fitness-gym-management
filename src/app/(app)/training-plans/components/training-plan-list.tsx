@@ -2,8 +2,8 @@
 
 import { TrainingPlan } from "@/types/training-plan";
 import { useRouter } from "next/navigation";
-import TrainingPlanRow from "./training-plan-row";
 import { ROUTES } from "@/constants/route";
+import TrainingPlanCard from "./training-plan-card";
 
 type Props = {
   plans: TrainingPlan[];
@@ -32,27 +32,13 @@ export default function TrainingPlansList({ plans }: Props) {
         </button>
       </div>
 
-      {/* Table */}
-      <div className="bg-white border rounded-xl overflow-hidden">
-        <table className="w-full">
-
-          <thead className="bg-gray-50 text-sm text-gray-600">
-            <tr>
-              <th className="px-4 py-3 text-left">Title</th>
-              <th className="px-4 py-3 text-left">Status</th>
-              <th className="px-4 py-3 text-left">Created</th>
-              <th className="px-4 py-3 text-right">Actions</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {plans.map(plan => (
-              <TrainingPlanRow key={plan.id} plan={plan}/>
-            ))}
-          </tbody>
-
-        </table>
+      {/* Cards */}
+      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {plans.map((plan) => (
+          <TrainingPlanCard key={plan.id} plan={plan} />
+        ))}
       </div>
+
     </div>
   );
 }
