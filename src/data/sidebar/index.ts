@@ -1,6 +1,6 @@
 import { AuthPermission } from "@/constants/permission";
 import * as Icons from "../../components/IconsCollection/icons";
-import type { NavSection } from "@/types/dashboard";
+import type { NavSection } from "@/types/dashboard/dashboard-shared";
 import { ROUTES } from "@/constants/route";
 import { IAuthContext } from "@/types/auth-context";
 
@@ -75,6 +75,16 @@ export const NAV_DATA: NavSection[] = [
             url: ROUTES.DASHBOARD.COMPANY.STAFF,
             permission: AuthPermission.dashboard.company
           },
+          {
+            title: "Schema Builder",
+            url: ROUTES.DASHBOARD.COMPANY.SCHEMA,
+            permission: AuthPermission.dashboard.company
+          },
+          {
+            title: "Formula Builder",
+            url: ROUTES.DASHBOARD.COMPANY.FORMULAS,
+            permission: AuthPermission.dashboard.company
+          },
         ],
         permission: AuthPermission.dashboard.company
       },
@@ -85,6 +95,31 @@ export const NAV_DATA: NavSection[] = [
           {
             title: "General Overview",
             url: ROUTES.DASHBOARD.PERSONAL_COACH.ROOT,
+            permission: AuthPermission.dashboard.personalCoach
+          },
+          {
+            title: "Clients",
+            url: ROUTES.DASHBOARD.PERSONAL_COACH.CLIENTS,
+            permission: AuthPermission.dashboard.personalCoach
+          },
+          {
+            title: "Data Entry",
+            url: ROUTES.DASHBOARD.PERSONAL_COACH.DATA_ENTRY,
+            permission: AuthPermission.dashboard.personalCoach
+          },
+          {
+            title: "Progress",
+            url: ROUTES.DASHBOARD.PERSONAL_COACH.PROGRESS,
+            permission: AuthPermission.dashboard.personalCoach
+          },
+          {
+            title: "Schema Builder",
+            url: ROUTES.DASHBOARD.PERSONAL_COACH.SCHEMA,
+            permission: AuthPermission.dashboard.personalCoach
+          },
+          {
+            title: "Formula Builder",
+            url: ROUTES.DASHBOARD.PERSONAL_COACH.FORMULAS,
             permission: AuthPermission.dashboard.personalCoach
           }
         ],

@@ -1,7 +1,8 @@
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Button } from "../ui-elements/button";
-import { DashboardSectionProps } from "@/types/dashboard";
+import { DashboardSectionProps } from "@/types/dashboard/dashboard-shared";
+import CardTitle from "./overview-cards/cardTitle";
 
 export function DashboardSection({
   title,
@@ -14,14 +15,12 @@ export function DashboardSection({
   return (
     <section
       className={cn(
-        "mb-8 rounded-[10px] bg-white px-7.5 py-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card",
+        "mb-8 rounded-xl bg-white px-7.5 py-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card",
         className,
       )}
     >
       <div className="flex items-center justify-between">
-        <h2 className="mb-4 text-body-2xlg font-bold text-dark dark:text-white">
-          {title}
-        </h2>
+        <CardTitle title={title} />
 
         {buttonLabel && buttonPath && (
           <Link href={buttonPath}>

@@ -10,10 +10,7 @@ import {
   CLIENT_WEIGHT_TREND,
   CLIENT_WORKOUT_PLAN,
 } from "@/data/client";
-import {
-  DUMMY_KPIS,
-  GYM_CLIENTS,
-} from "@/data/company";
+import { DUMMY_KPIS, GYM_CLIENTS } from "@/data/company";
 import {
   PERSONAL_COACH_ANNOUNCEMENTS,
   PERSONAL_COACH_CLIENT_PROGRESS,
@@ -221,7 +218,8 @@ export async function getExpiringSoonGyms(limit = 5) {
 
   const sorted = upcoming.sort(
     (a, b) =>
-      new Date(a.expiresAt ?? 0).getTime() - new Date(b.expiresAt ?? 0).getTime(),
+      new Date(a.expiresAt ?? 0).getTime() -
+      new Date(b.expiresAt ?? 0).getTime(),
   );
 
   return sorted.slice(0, limit);

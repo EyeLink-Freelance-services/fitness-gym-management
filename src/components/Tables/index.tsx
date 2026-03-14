@@ -16,6 +16,7 @@ import {
   isImageSrc,
 } from "@/lib/formatters/format-table";
 import type { TableRowData, TableUIColumn, TableUIProps } from "@/types/shared";
+import CardTitle from "../Dashboard/overview-cards/cardTitle";
 
 const alignmentClasses = {
   left: {
@@ -47,7 +48,8 @@ export async function TableUI<TData extends TableRowData = TableRowData>({
   emptyStateLabel,
 }: TableUIProps<TData>) {
   const rows = await data;
-  const toRecord = (row: TData | TableRowData) => row as Record<string, unknown>;
+  const toRecord = (row: TData | TableRowData) =>
+    row as Record<string, unknown>;
   const allKeys = Array.from(
     new Set(rows.flatMap((row) => Object.keys(toRecord(row)))),
   );
@@ -91,14 +93,10 @@ export async function TableUI<TData extends TableRowData = TableRowData>({
     >
       <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <h2 className="text-body-2xlg font-bold text-dark dark:text-white">
-            {title ? title : "Top Channels"}
-          </h2>
-          {description && (
-            <p className="mt-1 text-sm text-dark-6 dark:text-dark-5">
-              {description}
-            </p>
-          )}
+          <CardTitle
+            title={title ? title : "List"}
+            subtitle={description}
+          />
         </div>
 
         <div className="flex flex-wrap gap-3">
@@ -222,7 +220,8 @@ export async function TableUI<TData extends TableRowData = TableRowData>({
                       className={cn(
                         alignmentClasses[alignment].cell,
                         "text-dark-6 dark:text-dark-5",
-                        isNumericColumn(key) && "font-medium text-dark dark:text-white",
+                        isNumericColumn(key) &&
+                          "font-medium text-dark dark:text-white",
                         column.cellClassName,
                         column.className,
                       )}

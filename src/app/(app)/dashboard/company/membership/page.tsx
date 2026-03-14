@@ -12,7 +12,7 @@ import {
   getCompanyMembershipPromotions,
   getCompanyMembershipRevenue,
 } from "@/services/dashboard.services";
-import { SearchType } from "@/types/dashboard";
+import { SearchType } from "@/types/dashboard/dashboard-shared";
 import { createTimeFrameExtractor } from "@/utils/timeframe-extractor";
 
 export default async function CompanyMembershipPage({

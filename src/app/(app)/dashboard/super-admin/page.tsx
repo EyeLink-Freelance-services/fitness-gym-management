@@ -6,7 +6,7 @@ import { createTimeFrameExtractor } from "@/utils/timeframe-extractor";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/Tables/skeleton";
 import { TableUI } from "@/components/Tables";
-import { SearchType } from "@/types/dashboard";
+import { SearchType } from "@/types/dashboard/dashboard-shared";
 import {
   getSuperAdminOverviewData,
   getTopCoaches,

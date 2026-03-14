@@ -1,6 +1,6 @@
 import { IAuthContext } from "@/types/auth-context";
 import { getAuthContext } from "./get-auth-context";
-import { NavItem, NavSection, SubItem } from "@/types/dashboard";
+import { NavItem, NavSection, SubItem } from "@/types/dashboard/dashboard-shared";
 import { AuthPermission } from "@/constants/permission";
 
 export async function requirePermission(permission: string) {

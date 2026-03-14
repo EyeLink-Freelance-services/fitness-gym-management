@@ -1,4 +1,4 @@
-import { NavSection } from "@/types/dashboard";
+import { NavSection } from "@/types/dashboard/dashboard-shared";
 import * as Icons from "../../components/IconsCollection/icons";
 import { section } from "@/utils/dashboard-nav";
 

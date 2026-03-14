@@ -9,10 +9,17 @@ export const ROUTES = {
       COACHES: "/dashboard/company/coaches",
       MEMBERSHIP: "/dashboard/company/membership",
       PAYMENT: "/dashboard/company/payment",
-      STAFF: "/dashboard/company/staff"
+      STAFF: "/dashboard/company/staff",
+      SCHEMA: "/dashboard/company/schema",
+      FORMULAS: "/dashboard/company/formulas",
     },
     PERSONAL_COACH: {
-      ROOT: "/dashboard/personal-coach"
+      ROOT: "/dashboard/personal-coach",
+      CLIENTS: "/dashboard/personal-coach/clients",
+      DATA_ENTRY: "/dashboard/personal-coach/data-entry",
+      PROGRESS: "/dashboard/personal-coach/progress",
+      SCHEMA: "/dashboard/personal-coach/schema",
+      FORMULAS: "/dashboard/personal-coach/formulas",
     },
     SUPER_ADMIN: {
       ROOT: "/dashboard/super-admin",

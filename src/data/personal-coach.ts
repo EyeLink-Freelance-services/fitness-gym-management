@@ -28,8 +28,8 @@ export const PERSONAL_COACH_OVERVIEW: PersonalCoachOverviewItem[] = [
     icon: Icons.Product,
   },
   {
-    label: "Monthly Earnings",
-    value: "RM 9,450",
+    label: "Monthly Earnings (Rs)",
+    value: "9,450",
     trend: 12,
     icon: Icons.Profit,
   },
@@ -126,40 +126,41 @@ export const PERSONAL_COACH_PROGRESS_SERIES: PersonalCoachProgressSeries[] = [
   },
 ];
 
-export const PERSONAL_COACH_CLIENT_PROGRESS: PersonalCoachClientProgressRow[] = [
-  {
-    id: "progress-1",
-    clientName: "James Lim",
-    goal: "Weight Loss",
-    progress: 65,
-    nextReviewAt: "2026-03-15",
-    adherence: "Strong",
-  },
-  {
-    id: "progress-2",
-    clientName: "Priya G.",
-    goal: "Endurance",
-    progress: 80,
-    nextReviewAt: "2026-03-13",
-    adherence: "Excellent",
-  },
-  {
-    id: "progress-3",
-    clientName: "Ravi K.",
-    goal: "Muscle Gain",
-    progress: 38,
-    nextReviewAt: "2026-03-16",
-    adherence: "Needs support",
-  },
-  {
-    id: "progress-4",
-    clientName: "Mel Xin",
-    goal: "Mobility",
-    progress: 54,
-    nextReviewAt: "2026-03-18",
-    adherence: "Stable",
-  },
-];
+export const PERSONAL_COACH_CLIENT_PROGRESS: PersonalCoachClientProgressRow[] =
+  [
+    {
+      id: "progress-1",
+      clientName: "James Lim",
+      goal: "Weight Loss",
+      progress: 65,
+      nextReviewAt: "2026-03-15",
+      adherence: "Strong",
+    },
+    {
+      id: "progress-2",
+      clientName: "Priya G.",
+      goal: "Endurance",
+      progress: 80,
+      nextReviewAt: "2026-03-13",
+      adherence: "Excellent",
+    },
+    {
+      id: "progress-3",
+      clientName: "Ravi K.",
+      goal: "Muscle Gain",
+      progress: 38,
+      nextReviewAt: "2026-03-16",
+      adherence: "Needs support",
+    },
+    {
+      id: "progress-4",
+      clientName: "Mel Xin",
+      goal: "Mobility",
+      progress: 54,
+      nextReviewAt: "2026-03-18",
+      adherence: "Stable",
+    },
+  ];
 
 export const PERSONAL_COACH_MEDICAL_NOTES: PersonalCoachMedicalNoteRow[] = [
   {
@@ -195,7 +196,7 @@ export const PERSONAL_COACH_ANNOUNCEMENTS: PersonalCoachAnnouncementRow[] = [
   {
     id: "announcement-1",
     title: "Rate increase from 1 April",
-    audience: "All active clients",
+    // audience: "Transformation program clients",
     publishAt: "2026-03-10",
     status: "Posted",
     statusTone: "success",
@@ -203,7 +204,6 @@ export const PERSONAL_COACH_ANNOUNCEMENTS: PersonalCoachAnnouncementRow[] = [
   {
     id: "announcement-2",
     title: "Free nutrition workshop - 12 Mar",
-    audience: "Transformation program clients",
     publishAt: "2026-03-09",
     status: "Posted",
     statusTone: "success",
@@ -211,7 +211,6 @@ export const PERSONAL_COACH_ANNOUNCEMENTS: PersonalCoachAnnouncementRow[] = [
   {
     id: "announcement-3",
     title: "Form check video submission reminder",
-    audience: "Remote coaching clients",
     publishAt: "2026-03-12",
     status: "Scheduled",
     statusTone: "primary",

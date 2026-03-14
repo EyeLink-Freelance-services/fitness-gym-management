@@ -9,7 +9,7 @@ import {
 } from "@/services/dashboard.services";
 import { PaymentsOverview } from "@/components/Charts/payments-overview";
 import { createTimeFrameExtractor } from "@/utils/timeframe-extractor";
-import { SearchType } from "@/types/dashboard";
+import { SearchType } from "@/types/dashboard/dashboard-shared";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/Tables/skeleton";
 import { TableUI } from "@/components/Tables";

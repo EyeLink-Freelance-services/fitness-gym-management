@@ -51,7 +51,7 @@ export function UserInfo() {
         <figure className="flex items-center gap-3">
           <Image
             src={avatarSrc}
-            className="size-12"
+            className="size-12 rounded-[50%]"
             alt={`Avatar of ${displayName}`}
             role="presentation"
             width={200}

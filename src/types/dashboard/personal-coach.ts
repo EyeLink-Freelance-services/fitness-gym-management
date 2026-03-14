@@ -19,6 +19,10 @@ export interface PersonalCoachSessionRow {
   statusTone: StatusTone;
 }
 
+export type PersonalCoachSessionProps = {
+  sessions: PersonalCoachSessionRow[];
+};
+
 export interface PersonalCoachProgressPoint {
   label: string;
   value: number;
@@ -40,6 +44,10 @@ export interface PersonalCoachProgressSeries {
   points: PersonalCoachProgressPoint[];
 }
 
+export type PersonalCoachProgressProps = {
+  data: PersonalCoachProgressSeries[];
+};
+
 export interface PersonalCoachMedicalNoteRow {
   id: string;
   clientName: string;
@@ -53,7 +61,7 @@ export interface PersonalCoachMedicalNoteRow {
 export interface PersonalCoachAnnouncementRow {
   id: string;
   title: string;
-  audience: string;
+  audience?: string;
   publishAt: string;
   status: string;
   statusTone: StatusTone;

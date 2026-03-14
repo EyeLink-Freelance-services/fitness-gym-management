@@ -4,7 +4,7 @@ import {
   PERSONAL_COACH_NAV,
   SUPER_ADMIN_NAV,
 } from "@/data/sidebar/dashboard-nav";
-import { NavItem, NavSection } from "@/types/dashboard";
+import { NavItem, NavSection } from "@/types/dashboard/dashboard-shared";
 
 export function section(label: string, items: NavItem[]): NavSection {
   return { label, items };

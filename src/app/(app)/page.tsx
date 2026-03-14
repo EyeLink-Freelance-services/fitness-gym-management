@@ -26,7 +26,12 @@ export default async function Home({ searchParams }: PropsType) {
     <>
       <FormsTesting />
 
-      <Suspense fallback={<OverviewCardsSkeleton />}>
+      {/* Measurement Testing */}
+
+
+      {/* End Measurement Testing */}
+
+      {/* <Suspense fallback={<OverviewCardsSkeleton />}>
         <OverviewCardsGroup />
       </Suspense>
 
@@ -60,7 +65,7 @@ export default async function Home({ searchParams }: PropsType) {
         <Suspense fallback={null}>
           <ChatsCard />
         </Suspense>
-      </div>
+      </div> */}
     </>
   );
 }
