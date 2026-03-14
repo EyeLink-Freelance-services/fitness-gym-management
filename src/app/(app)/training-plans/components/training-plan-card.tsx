@@ -58,7 +58,7 @@ export default function TrainingPlanCard({ plan }: Props) {
           }
           className="text-blue-600 text-sm hover:underline"
         >
-          Edit
+          View/Edit
         </button>
 
         <button

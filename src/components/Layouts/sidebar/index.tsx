@@ -22,7 +22,6 @@ export function Sidebar({auth}: sidebarProps) {
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
 
   const navData = getAuthorizedNav(NAV_DATA , auth);
-  console.log(navData, 'nanana')
   // const isDashboard = pathname.startsWith("/dashboard/");
   // const navData = isDashboard ? getDashboardNav(pathname) : NAV_DATA;
 

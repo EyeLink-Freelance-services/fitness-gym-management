@@ -1,3 +1,7 @@
+import InputGroup from "@/components/FormElements/InputGroup";
+import { TextAreaGroup } from "@/components/FormElements/InputGroup/text-area";
+import { Select } from "@/components/FormElements/select";
+import { Button } from "@/components/ui-elements/button";
 import { TrainingPlanStatus } from "@/types/training-plan";
 
 type Props = {
@@ -16,6 +20,12 @@ const statusStyles: Record<TrainingPlanStatus, string> = {
   archived: "bg-slate-100 text-slate-700 ring-1 ring-inset ring-slate-200",
 };
 
+const statusItems: { value: TrainingPlanStatus; label: string }[] = [
+  { value: "draft", label: "Draft" },
+  { value: "published", label: "Published" },
+  { value: "archived", label: "Archived" },
+];
+
 export default function TrainingPlanHeader({
   title,
   description,
@@ -26,50 +36,65 @@ export default function TrainingPlanHeader({
   onSave,
 }: Props) {
   return (
-    <div className="border-b border-slate-200 bg-white">
+    <div className="border-b border-stroke bg-white dark:border-dark-3 dark:bg-dark">
       <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-4 px-4 py-4 md:px-6 lg:px-8">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-          <div className="flex-1 space-y-3">
-            <input
-              value={title}
-              onChange={(e) => onChangeTitle(e.target.value)}
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div className="flex-1 space-y-4">
+            <InputGroup
+              label=""
+              type="text"
               placeholder="Training plan title"
-              className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-xl font-semibold text-slate-900 outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100"
+              value={title}
+              handleChange={(e) => onChangeTitle(e.target.value)}
+              inputProps={{
+                className: "text-xl font-semibold",
+              }}
             />
 
-            <textarea
-              value={description ?? ""}
-              onChange={(e) => onChangeDescription(e.target.value)}
+            <TextAreaGroup
+              label=""
               placeholder="Add a short description..."
-              rows={3}
-              className="w-full resize-none rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100"
+              textareaProps={{
+                rows: 3,
+                value: description ?? "",
+                onChange: (e) => onChangeDescription(e.target.value),
+                className: "resize-none",
+              }}
             />
           </div>
 
-          <div className="flex flex-col gap-3 lg:w-[280px]">
-            <div className="flex items-center gap-2">
-              <span className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${statusStyles[status]}`}>
-                {status}
-              </span>
+          <div className="flex flex-col gap-4 lg:w-[280px]">
+            <div>
+              <p className="text-lg font-medium text-dark dark:text-white">
+                Current status
+              </p>
+
+              <div className="mt-3 flex items-center gap-2">
+                <span
+                  className={`inline-flex rounded-full px-3 py-1 text-xs font-medium capitalize ${statusStyles[status]}`}
+                >
+                  {status}
+                </span>
+              </div>
             </div>
 
-            <select
-              value={status}
-              onChange={(e) => onChangeStatus(e.target.value as TrainingPlanStatus)}
-              className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-slate-400 focus:ring-4 focus:ring-slate-100"
-            >
-              <option value="draft">Draft</option>
-              <option value="published">Published</option>
-              <option value="archived">Archived</option>
-            </select>
+            <Select
+              label=""
+              placeholder="Select status"
+              items={statusItems}
+              selectProps={{
+                value: status,
+                onChange: (e) =>
+                  onChangeStatus(e.target.value as TrainingPlanStatus),
+              }}
+            />
 
-            <button
-              type="button"
+            <Button
+              type="submit"
               onClick={onSave}
-              className="rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800"
-            >
-              Save Plan
-            </button>
+              label="Save Plan"
+              className="rounded-lg bg-primary text-md font-medium text-white transition hover:opacity-90"
+            />
           </div>
         </div>
       </div>

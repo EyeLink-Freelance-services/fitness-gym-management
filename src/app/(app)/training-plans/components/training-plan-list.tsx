@@ -3,6 +3,7 @@
 import { TrainingPlan } from "@/types/training-plan";
 import { useRouter } from "next/navigation";
 import { ROUTES } from "@/constants/route";
+import Header from "@/components/FormElements/common/header";
 import TrainingPlanCard from "./training-plan-card";
 
 type Props = {
@@ -14,15 +15,13 @@ export default function TrainingPlansList({ plans }: Props) {
 
   return (
     <div className="max-w-6xl mx-auto">
-
-      {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-xl font-semibold">Training Plans</h1>
-          <p className="text-sm text-gray-500">
-            Manage workout programs
-          </p>
-        </div>
+        {/* Header */}
+        <Header
+          label="- Overview"
+          title="Training Plans"
+          subtitle="Manage workout programs"
+        />
 
         <button
           onClick={() => router.push(ROUTES.TRAINING_PLANS.NEW_TEMPLATES)}

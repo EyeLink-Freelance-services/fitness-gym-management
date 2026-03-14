@@ -53,8 +53,8 @@ export default function SessionSidebar({
       <div className="h-full p-4 md:p-5">
         <div className="mb-4 flex items-center justify-between">
           <div>
-            <h2 className="text-sm font-semibold text-slate-900">Sessions</h2>
-            <p className="text-xs text-slate-500">Organize workout days</p>
+            <h2 className="text-lg font-semibold text-slate-900">Sessions</h2>
+            <p className="text-sm text-slate-500">Organize workout days</p>
           </div>
           <button
             type="button"

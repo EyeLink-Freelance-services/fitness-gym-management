@@ -7,9 +7,19 @@ import { useEffect, useState, type PropsWithChildren } from "react";
 import { CompanyProvider } from "@/app/context/company-context";
 import { SkeletonUI } from "@/components/ui/skeleton";
 import { IAuthContext } from "@/types/auth-context";
+import { usePathname } from "next/navigation";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { ROUTES } from "@/constants/route";
 
 export default function RootLayout({ children }: PropsWithChildren) {
   const [auth, setAuth] = useState<IAuthContext | null>(null);
+  const pathname = usePathname();
+
+  const hideSidebar =
+    pathname.startsWith(ROUTES.TRAINING_PLANS.TEMPLATES) &&
+    pathname !== ROUTES.TRAINING_PLANS.TEMPLATES;
+
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const loadAuth = async () => {
@@ -44,7 +54,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
   return (
     <CompanyProvider company={auth.company}>
       <div className="flex min-h-screen">
-        <Sidebar auth={auth}/>
+        {(!hideSidebar || isMobile) && <Sidebar auth={auth} />}
 
         <div className="w-full bg-gray-2 dark:bg-[#020d1a]">
           <Header workspaceName={auth.company?.name} mode={auth.company?.mode} />

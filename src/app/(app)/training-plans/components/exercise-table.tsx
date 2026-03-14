@@ -59,8 +59,8 @@ export default function ExerciseTable({
     <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
 
       <div className="border-b border-slate-200 px-5 py-4">
-        <h3 className="text-sm font-semibold text-slate-900">Exercises</h3>
-        <p className="text-xs text-slate-500">
+        <h3 className="text-lg font-semibold text-slate-900">Exercises</h3>
+        <p className="text-sm text-slate-500">
           Drag rows to reorder exercises
         </p>
       </div>

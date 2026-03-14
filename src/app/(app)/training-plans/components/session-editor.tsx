@@ -1,5 +1,8 @@
 import { TrainingPlanSession, TrainingSessionExercise } from "@/types/training-plan";
 import ExerciseTable from "./exercise-table";
+import InputGroup from "@/components/FormElements/InputGroup";
+import { TextAreaGroup } from "@/components/FormElements/InputGroup/text-area";
+import { Button } from "@/components/ui-elements/button";
 
 type Props = {
   session: TrainingPlanSession;
@@ -26,63 +29,63 @@ export default function SessionEditor({
   return (
     <div className="h-full overflow-auto">
       <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-6 px-4 py-5 md:px-6 lg:px-8">
-        <div className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-            <div className="flex-1 space-y-3">
-              <div className="grid grid-cols-1 gap-3 md:grid-cols-[140px_minmax(0,1fr)]">
-                <div>
-                  <label className="mb-1 block text-xs font-medium text-slate-600">Day</label>
-                  <input
-                    type="number"
-                    value={session.day_index ?? ""}
-                    onChange={(e) =>
-                      onUpdateSession({
-                        day_index: e.target.value ? Number(e.target.value) : null,
-                      })
-                    }
-                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-4 focus:ring-slate-100"
-                  />
-                </div>
+        <div className="flex flex-col gap-4 rounded-2xl border border-stroke bg-white p-5 shadow-sm dark:border-dark-3 dark:bg-dark-2">
+          <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+            <div className="flex-1 space-y-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-[140px_minmax(0,1fr)]">
+                <InputGroup
+                  label="Day"
+                  type="number"
+                  placeholder="1"
+                  value={session.day_index?.toString() ?? ""}
+                  handleChange={(e) =>
+                    onUpdateSession({
+                      day_index: e.target.value ? Number(e.target.value) : null,
+                    })
+                  }
+                  inputProps={{
+                    min: 1,
+                  }}
+                />
 
-                <div>
-                  <label className="mb-1 block text-xs font-medium text-slate-600">Session title</label>
-                  <input
-                    value={session.title}
-                    onChange={(e) => onUpdateSession({ title: e.target.value })}
-                    placeholder="Upper body"
-                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-4 focus:ring-slate-100"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="mb-1 block text-xs font-medium text-slate-600">Notes</label>
-                <textarea
-                  value={session.notes ?? ""}
-                  onChange={(e) => onUpdateSession({ notes: e.target.value })}
-                  rows={3}
-                  placeholder="Session notes..."
-                  className="w-full resize-none rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-4 focus:ring-slate-100"
+                <InputGroup
+                  label="Session title"
+                  type="text"
+                  placeholder="Upper body"
+                  value={session.title}
+                  handleChange={(e) =>
+                    onUpdateSession({ title: e.target.value })
+                  }
                 />
               </div>
+
+              <TextAreaGroup
+                label="Notes"
+                placeholder="Session notes..."
+                textareaProps={{
+                  rows: 3,
+                  value: session.notes ?? "",
+                  onChange: (e) =>
+                    onUpdateSession({ notes: e.target.value }),
+                  className: "resize-none",
+                }}
+              />
             </div>
 
-            <div className="flex gap-2">
-              <button
+            <div className="flex flex-col gap-2 sm:flex-row md:flex-col">
+              <Button
                 type="button"
                 onClick={onAddExercise}
-                className="rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-slate-800"
-              >
-                + Add Exercise
-              </button>
+                className="rounded-lg bg-primary text-sm font-medium text-white transition hover:opacity-90"
+                label="+ Add Exercise"
+              />
 
-              <button
+              <Button
                 type="button"
                 onClick={onDeleteSession}
-                className="rounded-xl border border-rose-300 bg-white px-4 py-2.5 text-sm font-medium text-rose-600 hover:bg-rose-50"
-              >
-                Delete Session
-              </button>
+                className="rounded-lg border border-rose-300 bg-white px-4 py-3 text-sm font-medium !text-rose-600 transition hover:bg-rose-50 dark:border-rose-500/30 dark:bg-dark dark:text-rose-400 dark:hover:bg-rose-500/10"
+                label="Delete Session"
+              />
             </div>
           </div>
         </div>

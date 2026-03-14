@@ -1,5 +1,10 @@
+'use client'
+
 import { TrainingPlanStatus } from "@/types/training-plan";
 import TrainingPlanBuilder from "../components/training-plan-builder";
+import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
+import { ArrowLeftIcon } from "@/assets/icons";
+import { useRouter } from "next/navigation";
 
 function getTrainingPlan() {
 	const id = '1';
@@ -72,10 +77,17 @@ function getTrainingPlan() {
 
 
 export default function NewTrainingPlanPage() {
+	const router = useRouter();
 	const initialPlan = getTrainingPlan();
 	return (
-		<div className="min-h-screen bg-slate-50">
-			<TrainingPlanBuilder initialPlan={initialPlan} />
-		</div>	
+		<div>
+			<ArrowLeftIcon onClick={() => router.back()} className="mb-2 cursor-pointer" />
+			<h2 className="text-[23px] font-bold mb-5 leading-[30px] text-dark dark:text-white">
+				New Training Plan
+			</h2>
+			<div className="min-h-screen bg-slate-50">
+				<TrainingPlanBuilder initialPlan={initialPlan} />
+			</div>	
+		</div>
 	);
 }

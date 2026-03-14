@@ -1,5 +1,9 @@
 import { TrainingPlan } from "@/types/training-plan";
 import TrainingPlanBuilder from "../components/training-plan-builder";
+import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
+import { ArrowLeftIcon } from "@/assets/icons";
+import Link from "next/link";
+import { ROUTES } from "@/constants/route";
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -78,8 +82,14 @@ export default async function Page({ params }: PageProps) {
   const trainingPlan = await getTrainingPlan(id);
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <TrainingPlanBuilder initialPlan={trainingPlan} />
+    <div>
+      <Link href={ROUTES.TRAINING_PLANS.TEMPLATES}>
+        <ArrowLeftIcon className="mb-2" />
+      </Link>
+      <Breadcrumb pageName="Training Plan" />
+      <div className="min-h-screen bg-slate-50">
+        <TrainingPlanBuilder initialPlan={trainingPlan} />
+      </div>
     </div>
   );
 }
