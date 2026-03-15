@@ -4,7 +4,10 @@ import { ComputedResultsPanel } from "@/components/Dashboard/client-records/comp
 import { DynamicFormGroup } from "@/components/Dashboard/client-records/dynamic-form-group";
 import { Button } from "@/components/ui-elements/button";
 import { evaluateFormulaCollection } from "@/lib/formula/preview-engine";
-import type { ClientRecordDraft, ComputedMetric } from "@/types/dashboard/client-records";
+import type {
+  ClientRecordDraft,
+  ComputedMetric,
+} from "@/types/dashboard/client-records";
 import type { FormulaDefinition } from "@/types/dashboard/formula-builder";
 import { useMemo, useState } from "react";
 
@@ -37,7 +40,10 @@ export function DataEntryWorkspace({
 
   const computedMetrics = useMemo<ComputedMetric[]>(() => {
     try {
-      const resolved = evaluateFormulaCollection(formulas, getNumericScope(values));
+      const resolved = evaluateFormulaCollection(
+        formulas,
+        getNumericScope(values),
+      );
 
       return draft.computedMetrics.map((metric) => {
         const formula = formulas.find((item) => item.key === metric.key);
@@ -58,7 +64,7 @@ export function DataEntryWorkspace({
   }, [draft.computedMetrics, formulas, values]);
 
   return (
-    <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_250px]">
+    <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_350px]">
       <div className="grid gap-6">
         <section className="rounded-[12px] border border-stroke/70 bg-white p-3 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card">
           <div className="grid gap-3 xl:grid-cols-[280px_minmax(0,1fr)] xl:items-center">
@@ -70,25 +76,21 @@ export function DataEntryWorkspace({
                 <h2 className="text-lg font-bold text-dark dark:text-white">
                   {draft.clientName}
                 </h2>
-                <p className="mt-0.5 text-xs text-dark-5">
+                <p className="mt-0.5 text-xs text-dark-5 dark:text-dark-6">
                   Male 32y 172cm Premium Schema v3
                 </p>
               </div>
             </div>
-            <div className="grid gap-2 sm:grid-cols-[160px_130px_minmax(220px,1fr)]">
-              <select className="rounded-[10px] border border-stroke bg-transparent px-4 py-3 text-sm text-dark dark:border-dark-3 dark:text-white">
-                <option>{draft.clientName}</option>
-              </select>
-              <input
-                value={draft.sessionDate}
-                onChange={() => undefined}
-                className="rounded-[10px] border border-stroke bg-transparent px-4 py-3 text-sm text-dark dark:border-dark-3 dark:text-white"
-              />
+            <div className="flex items-center gap-3">
+              <p className="min-w-[120px] rounded-[10px] border border-stroke bg-transparent px-4 py-3 text-center text-sm text-dark dark:border-dark-3 dark:text-white">
+                {new Date().toISOString().split("T")[0]}
+              </p>
+
               <input
                 value={notes}
                 onChange={(event) => setNotes(event.target.value)}
                 placeholder="Session notes..."
-                className="rounded-[10px] border border-stroke bg-transparent px-4 py-3 text-sm text-dark dark:border-dark-3 dark:text-white"
+                className="w-full rounded-[10px] border border-stroke bg-transparent px-4 py-3 text-sm text-dark dark:border-dark-3 dark:text-white"
               />
             </div>
           </div>
@@ -108,16 +110,16 @@ export function DataEntryWorkspace({
           />
         ))}
 
-        <div className="grid gap-3 sm:grid-cols-[120px_minmax(0,1fr)]">
+        <div className="flex items-center gap-3">
           <Button
             label="Save Draft"
             variant="outlineDark"
-            className="w-full"
+            size="small"
             toastMessage="Draft storage will be connected in phase 2."
           />
           <Button
             label="Save & Compute"
-            className="w-full"
+            size="small"
             toastMessage="Preview mode is active for this UI-first release."
           />
         </div>

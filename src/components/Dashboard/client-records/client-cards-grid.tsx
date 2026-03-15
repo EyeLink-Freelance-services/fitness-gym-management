@@ -2,44 +2,10 @@
 
 import { Button } from "@/components/ui-elements/button";
 import { cn } from "@/lib/utils";
-import type { ClientListRow } from "@/types/dashboard/client-records";
+import type { ClientCardsGridProps } from "@/types/dashboard/client-records";
+import { getAccent, getStatusTone, initials } from "@/utils/dashboard/shared";
 import { useMemo, useState } from "react";
-
-type ClientCardsGridProps = {
-  clients: ClientListRow[];
-};
-
-function initials(name: string) {
-  return name
-    .split(" ")
-    .map((item) => item[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
-}
-
-function getStatusTone(status: ClientListRow["status"]) {
-  if (status === "Active") {
-    return "bg-green/15 text-green";
-  }
-
-  if (status === "Due Entry") {
-    return "bg-[#FFA70B]/15 text-[#FFA70B]";
-  }
-
-  return "bg-primary/15 text-primary";
-}
-
-function getAccent(index: number) {
-  const accents = [
-    "bg-green/15 text-green",
-    "bg-pink-400/15 text-pink-300",
-    "bg-cyan-400/15 text-cyan-300",
-    "bg-orange-400/15 text-orange-300",
-  ];
-
-  return accents[index % accents.length];
-}
+import CardTitle from "../overview-cards/cardTitle";
 
 export function ClientCardsGrid({ clients }: ClientCardsGridProps) {
   const [query, setQuery] = useState("");
@@ -58,16 +24,26 @@ export function ClientCardsGrid({ clients }: ClientCardsGridProps) {
     );
   }, [clients, query]);
 
+  const activeClients = clients.filter((client) => client.status === "Active");
+  const dueEntryClients = clients.filter(
+    (client) => client.status === "Due Entry",
+  );
+  const onboardingClients = clients.filter(
+    (client) => client.status === "Onboarding",
+  );
+
   return (
     <div>
       <div className="mb-6 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
         <div>
-          <h2 className="text-body-2xlg font-bold text-dark dark:text-white">
-            My Clients
-          </h2>
-          <p className="mt-1 text-sm text-dark-6 dark:text-dark-5">
-            {clients.length} active schema-linked clients
-          </p>
+          {activeClients || dueEntryClients || onboardingClients ? (
+            <CardTitle
+              title="My Clients"
+              subtitle={` ${activeClients.length} active clients |  ${dueEntryClients.length} due entry clients | ${onboardingClients.length} onboarding clients`}
+            />
+          ) : (
+            <CardTitle title="My Clients" />
+          )}
         </div>
         <div className="flex flex-col gap-3 sm:flex-row">
           <input
@@ -100,7 +76,7 @@ export function ClientCardsGrid({ clients }: ClientCardsGridProps) {
                   <div className="font-semibold text-dark dark:text-white">
                     {client.name}
                   </div>
-                  <div className="text-xs text-dark-5">
+                  <div className="text-xs text-dark-5 dark:text-dark-6">
                     {client.age ? `Male ${client.age}y` : client.goal}
                     {client.height ? ` · ${client.height}cm` : ""}
                     {client.plan ? ` · ${client.plan}` : ""}
@@ -120,7 +96,7 @@ export function ClientCardsGrid({ clients }: ClientCardsGridProps) {
 
             <div className="mt-4 grid grid-cols-2 gap-2">
               <div className="rounded-[10px] bg-dark-2/60 p-3">
-                <div className="text-[10px] uppercase tracking-[0.18em] text-dark-5">
+                <div className="text-[10px] uppercase tracking-[0.18em] text-dark-5 dark:text-dark-6">
                   Weight
                 </div>
                 <div className="mt-2 text-xl font-bold text-primary">
@@ -128,7 +104,7 @@ export function ClientCardsGrid({ clients }: ClientCardsGridProps) {
                 </div>
               </div>
               <div className="rounded-[10px] bg-dark-2/60 p-3">
-                <div className="text-[10px] uppercase tracking-[0.18em] text-dark-5">
+                <div className="text-[10px] uppercase tracking-[0.18em] text-dark-5 dark:text-dark-6">
                   Body Fat
                 </div>
                 <div className="mt-2 text-xl font-bold text-orange-400">
@@ -136,7 +112,7 @@ export function ClientCardsGrid({ clients }: ClientCardsGridProps) {
                 </div>
               </div>
               <div className="rounded-[10px] bg-dark-2/60 p-3">
-                <div className="text-[10px] uppercase tracking-[0.18em] text-dark-5">
+                <div className="text-[10px] uppercase tracking-[0.18em] text-dark-5 dark:text-dark-6">
                   Lean
                 </div>
                 <div className="mt-2 text-xl font-bold text-green">
@@ -144,7 +120,7 @@ export function ClientCardsGrid({ clients }: ClientCardsGridProps) {
                 </div>
               </div>
               <div className="rounded-[10px] bg-dark-2/60 p-3">
-                <div className="text-[10px] uppercase tracking-[0.18em] text-dark-5">
+                <div className="text-[10px] uppercase tracking-[0.18em] text-dark-5 dark:text-dark-6">
                   BMI
                 </div>
                 <div className="mt-2 text-xl font-bold text-primary">
@@ -155,7 +131,8 @@ export function ClientCardsGrid({ clients }: ClientCardsGridProps) {
 
             <div className="mt-4 flex items-center justify-between gap-3 text-xs">
               <span className="text-dark-5">
-                Last {new Date(client.lastEntryAt).toLocaleDateString("en-GB", {
+                Last{" "}
+                {new Date(client.lastEntryAt).toLocaleDateString("en-GB", {
                   day: "numeric",
                   month: "short",
                   year: "numeric",
@@ -164,7 +141,9 @@ export function ClientCardsGrid({ clients }: ClientCardsGridProps) {
               <span
                 className={cn(
                   "font-semibold",
-                  client.status === "Due Entry" ? "text-[#FFA70B]" : "text-green",
+                  client.status === "Due Entry"
+                    ? "text-[#FFA70B]"
+                    : "text-green",
                 )}
               >
                 {client.progressNote}
@@ -172,13 +151,6 @@ export function ClientCardsGrid({ clients }: ClientCardsGridProps) {
             </div>
           </div>
         ))}
-
-        <button
-          type="button"
-          className="flex min-h-[240px] items-center justify-center rounded-[14px] border border-dashed border-dark-3 bg-dark-2/30 text-dark-5 transition-colors hover:border-primary hover:text-primary"
-        >
-          + Add New Client
-        </button>
       </div>
     </div>
   );

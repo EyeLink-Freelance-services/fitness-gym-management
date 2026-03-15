@@ -20,6 +20,10 @@ export interface ClientListRow {
   daysSinceEntry?: number;
 }
 
+export type ClientCardsGridProps = {
+  clients: ClientListRow[];
+};
+
 export interface ComputedMetric {
   id: string;
   label: string;

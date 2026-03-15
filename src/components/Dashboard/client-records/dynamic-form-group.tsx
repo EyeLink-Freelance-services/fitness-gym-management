@@ -1,5 +1,6 @@
 "use client";
 
+import CustomSelect from "@/components/ui/custom-select";
 import { cn } from "@/lib/utils";
 import type { FieldGroup, SchemaField } from "@/types/dashboard/coach-schema";
 
@@ -20,18 +21,13 @@ function renderInput(
 
   if (field.type === "dropdown") {
     return (
-      <select
-        value={value}
-        onChange={(event) => onChange(field.key, event.target.value)}
+      <CustomSelect
+        options={field.options ?? []}
+        defaultValue={value}
+        onChange={(val) => onChange(field.key, val)}
+        placeholder="Select option"
         className={baseClassName}
-      >
-        <option value="">Select option</option>
-        {field.options?.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
+      />
     );
   }
 
@@ -41,7 +37,9 @@ function renderInput(
         <input
           type="checkbox"
           checked={value === "true"}
-          onChange={(event) => onChange(field.key, String(event.target.checked))}
+          onChange={(event) =>
+            onChange(field.key, String(event.target.checked))
+          }
         />
         <span className="text-sm text-dark dark:text-white">{field.label}</span>
       </label>
@@ -50,7 +48,13 @@ function renderInput(
 
   return (
     <input
-      type={field.type === "date" ? "date" : field.type === "number" ? "number" : "text"}
+      type={
+        field.type === "date"
+          ? "date"
+          : field.type === "number"
+            ? "number"
+            : "text"
+      }
       value={value}
       readOnly={field.readOnly}
       onChange={(event) => onChange(field.key, event.target.value)}
@@ -86,12 +90,12 @@ export function DynamicFormGroup({
         </div>
       </div>
 
-      <div className="grid gap-3 px-4 py-4 md:grid-cols-2 xl:grid-cols-6">
+      <div className="flex flex-col justify-evenly gap-3 px-4 py-4 md:flex-row">
         {group.fields.map((field) => (
           <label
             key={field.id}
             className={cn(
-              "grid gap-1.5",
+              "grid w-full gap-1.5",
               field.type === "text" && "md:col-span-2 xl:col-span-6",
               field.type === "boolean" && "md:col-span-2 xl:col-span-2",
               isLifestyleGroup &&
@@ -101,7 +105,7 @@ export function DynamicFormGroup({
             )}
           >
             {field.type !== "boolean" && (
-              <span className="text-[10px] font-medium uppercase tracking-[0.16em] text-dark-5">
+              <span className="text-[10px] font-medium uppercase tracking-[0.16em] text-dark-5 dark:text-dark-6">
                 {field.label}
                 {field.unit ? ` · ${field.unit}` : ""}
               </span>

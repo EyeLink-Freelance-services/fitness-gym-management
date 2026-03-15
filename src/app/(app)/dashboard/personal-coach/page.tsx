@@ -1,9 +1,11 @@
+import Link from "next/link";
 import { DashboardSection } from "@/components/Dashboard/dashboard-section";
 import { ClientProgressCard } from "@/components/Dashboard/personal-coach/client-progress-card";
 import { OverviewCard } from "@/components/Dashboard/overview-cards/card";
 import { SessionsCard } from "@/components/Dashboard/personal-coach/sessions-card";
 import { DataTable, TableUI } from "@/components/Tables";
 import { Button } from "@/components/ui-elements/button";
+import { ROUTES } from "@/constants/route";
 
 import {
   getPersonalCoachAnnouncements,
@@ -73,11 +75,9 @@ export default async function PersonalCoachDashboardPage() {
           rowKey={(row) => row.id}
           className="col-span-12 xl:col-span-7"
           headerActions={
-            <Button
-              label="View All"
-              size="small"
-              toastMessage="Promo creation is not connected yet."
-            />
+            <Link href={ROUTES.DASHBOARD.PERSONAL_COACH.CLIENTS}>
+              <Button label="View All" size="small" />
+            </Link>
           }
         />
 

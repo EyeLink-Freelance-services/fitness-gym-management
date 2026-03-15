@@ -1,3 +1,5 @@
+import { ClientListRow } from "@/types/dashboard";
+
 export function formatDate(date: string) {
   return new Date(date).toLocaleDateString("en-GB", {
     day: "2-digit",
@@ -33,4 +35,36 @@ export function formatTimeParts(date: string) {
       })
       .split(" ")[1],
   };
+}
+
+export function initials(name: string) {
+  return name
+    .split(" ")
+    .map((item) => item[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+}
+
+export function getStatusTone(status: ClientListRow["status"]) {
+  if (status === "Active") {
+    return "bg-green/15 text-green";
+  }
+
+  if (status === "Due Entry") {
+    return "bg-[#FFA70B]/15 text-[#FFA70B]";
+  }
+
+  return "bg-primary/15 text-primary";
+}
+
+export function getAccent(index: number) {
+  const accents = [
+    "bg-green/15 text-green",
+    "bg-pink-400/15 text-pink-300",
+    "bg-cyan-400/15 text-cyan-300",
+    "bg-orange-400/15 text-orange-300",
+  ];
+
+  return accents[index % accents.length];
 }
