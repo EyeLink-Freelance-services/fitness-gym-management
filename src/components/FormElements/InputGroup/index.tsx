@@ -4,6 +4,7 @@ import Label from "@/components/FormElements/common/label";
 
 type InputGroupProps = {
   className?: string;
+  labelClassName?: string;
   label: React.ReactNode;
   placeholder: string;
   type: HTMLInputTypeAttribute;
@@ -25,6 +26,7 @@ type InputGroupProps = {
 
 const InputGroup: React.FC<InputGroupProps> = ({
   className,
+  labelClassName,
   label,
   type,
   placeholder,
@@ -59,6 +61,7 @@ const InputGroup: React.FC<InputGroupProps> = ({
         htmlFor={id}
         value={label}
         required={Boolean(isRequired)}
+        className={labelClassName}
       />
 
       <div

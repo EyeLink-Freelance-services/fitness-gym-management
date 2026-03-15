@@ -9,7 +9,6 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-
 import {
   SortableContext,
   verticalListSortingStrategy,
@@ -35,7 +34,6 @@ export default function ExerciseTable({
   onDeleteExercise,
   onReorderExercises,
 }: Props) {
-
   const sortedExercises = [...exercises].sort(
     (a, b) => a.order_index - b.order_index
   );
@@ -56,78 +54,79 @@ export default function ExerciseTable({
   }
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-
-      <div className="border-b border-slate-200 px-5 py-4">
-        <h3 className="text-lg font-semibold text-slate-900">Exercises</h3>
-        <p className="text-sm text-slate-500">
-          Drag rows to reorder exercises
-        </p>
-      </div>
-
-      {/* Drag context OUTSIDE table */}
+    <div className="overflow-hidden rounded-2xl border border-stroke bg-white shadow-sm dark:border-dark-3 dark:bg-dark-2">
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}
       >
-
         <SortableContext
           items={sortedExercises.map((exercise) => exercise.id)}
           strategy={verticalListSortingStrategy}
         >
+          {sortedExercises.length === 0 ? (
+            <div className="px-6 py-12 text-center">
+              <div className="mx-auto max-w-md">
+                <p className="text-sm font-medium text-dark dark:text-white">
+                  No exercises yet
+                </p>
+                <p className="mt-1 text-sm text-dark-5 dark:text-dark-6">
+                  Add one to start building this session.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <>
+              {/* Mobile */}
+              <div className="divide-y divide-stroke dark:divide-dark-3 md:hidden">
+                {sortedExercises.map((exercise) => (
+                  <ExerciseRow
+                    key={exercise.id}
+                    exercise={exercise}
+                    mode="mobile"
+                    onUpdate={(updates) =>
+                      onUpdateExercise(exercise.id, updates)
+                    }
+                    onDelete={() => onDeleteExercise(exercise.id)}
+                  />
+                ))}
+              </div>
 
-          <div className="overflow-x-auto">
+              {/* Desktop */}
+              <div className="hidden overflow-x-auto md:block">
+                <table className="w-full border-collapse">
+                  <thead className="bg-gray-1 dark:bg-dark">
+                    <tr className="text-left text-xs font-semibold uppercase tracking-wide text-dark-5 dark:text-dark-6">
+                      <th className="w-14 px-4 py-3"></th>
+                      <th className="px-4 py-3">Exercise</th>
+                      <th className="px-4 py-3">Sets</th>
+                      <th className="px-4 py-3">Reps</th>
+                      <th className="px-4 py-3">Weight</th>
+                      <th className="px-4 py-3">Rest</th>
+                      <th className="px-4 py-3">Tempo</th>
+                      <th className="px-4 py-3 text-right">Actions</th>
+                    </tr>
+                  </thead>
 
-            <table className="min-w-[980px] w-full">
-
-              <thead className="bg-slate-50">
-                <tr className="text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  <th className="px-4 py-3 w-14"></th>
-                  <th className="px-4 py-3">Exercise</th>
-                  <th className="px-4 py-3">Sets</th>
-                  <th className="px-4 py-3">Reps</th>
-                  <th className="px-4 py-3">Weight</th>
-                  <th className="px-4 py-3">Rest</th>
-                  <th className="px-4 py-3">Tempo</th>
-                  <th className="px-4 py-3 text-right">Actions</th>
-                </tr>
-              </thead>
-
-              <tbody>
-
-                {sortedExercises.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan={8}
-                      className="px-4 py-10 text-center text-sm text-slate-500"
-                    >
-                      No exercises yet. Add one to start building this session.
-                    </td>
-                  </tr>
-                ) : (
-                  sortedExercises.map((exercise) => (
-                    <ExerciseRow
-                      key={exercise.id}
-                      exercise={exercise}
-                      onUpdate={(updates) =>
-                        onUpdateExercise(exercise.id, updates)
-                      }
-                      onDelete={() => onDeleteExercise(exercise.id)}
-                    />
-                  ))
-                )}
-
-              </tbody>
-
-            </table>
-
-          </div>
-
+                  <tbody className="divide-y divide-stroke dark:divide-dark-3">
+                    {sortedExercises.map((exercise) => (
+                      <ExerciseRow
+                        key={exercise.id}
+                        exercise={exercise}
+                        mode="desktop"
+                        onUpdate={(updates) =>
+                          onUpdateExercise(exercise.id, updates)
+                        }
+                        onDelete={() => onDeleteExercise(exercise.id)}
+                      />
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
         </SortableContext>
-
       </DndContext>
-
     </div>
   );
 }

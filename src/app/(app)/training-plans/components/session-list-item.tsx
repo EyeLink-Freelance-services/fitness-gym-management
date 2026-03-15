@@ -10,7 +10,11 @@ type Props = {
   onClick: () => void;
 };
 
-export default function SessionListItem({ session, isActive, onClick }: Props) {
+export default function SessionListItem({
+  session,
+  isActive,
+  onClick,
+}: Props) {
   const {
     attributes,
     listeners,
@@ -27,43 +31,52 @@ export default function SessionListItem({ session, isActive, onClick }: Props) {
     transition,
   };
 
+  const dayLabel = session.day_index ?? session.order_index + 1;
+
   return (
     <div
       ref={setNodeRef}
       style={style}
       onClick={onClick}
       className={[
-        "w-full rounded-xl border px-4 py-3 cursor-pointer transition",
+        "group w-full cursor-pointer rounded-2xl border px-4 py-3 transition-all duration-200",
         isActive
-          ? "border-slate-900 bg-white shadow-sm"
-          : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-100",
-        isDragging ? "opacity-60" : "",
+          ? "border-primary bg-white shadow-sm dark:bg-dark-2"
+          : "border-stroke bg-white hover:border-primary/40 hover:bg-gray-1 dark:border-dark-3 dark:bg-dark-2 dark:hover:border-primary/40 dark:hover:bg-white/5",
+        isDragging ? "opacity-60 shadow-lg" : "",
       ].join(" ")}
     >
       <div className="flex items-start gap-3">
-
-        {/* Drag handle */}
         <button
           type="button"
           {...attributes}
           {...listeners}
-          className="cursor-grab text-slate-400 hover:text-slate-700 active:cursor-grabbing"
+          className="mt-0.5 flex h-8 w-8 shrink-0 cursor-grab items-center justify-center rounded-lg text-dark-5 transition hover:bg-gray-2 hover:text-dark active:cursor-grabbing dark:text-dark-6 dark:hover:bg-white/10 dark:hover:text-white"
           onClick={(e) => e.stopPropagation()}
+          aria-label="Reorder session"
         >
-          ⋮⋮
+          <span className="text-sm leading-none">⋮⋮</span>
         </button>
 
         <div className="min-w-0 flex-1">
-          <p className="text-xs font-medium uppercase text-slate-500">
-            Day {session.day_index ?? session.order_index + 1}
+          <p className="text-[11px] font-medium uppercase tracking-wide text-dark-5 dark:text-dark-6">
+            Day {dayLabel}
           </p>
 
-          <p className="truncate text-sm font-semibold text-slate-900">
-            {session.title}
+          <p
+            className={[
+              "truncate text-sm font-semibold transition-colors",
+              isActive
+                ? "text-primary dark:text-primary"
+                : "text-dark dark:text-white",
+            ].join(" ")}
+          >
+            {session.title || "Untitled session"}
           </p>
 
-          <p className="text-xs text-slate-500">
-            {session.exercises.length} exercises
+          <p className="mt-1 text-xs text-dark-5 dark:text-dark-6">
+            {session.exercises.length}{" "}
+            {session.exercises.length === 1 ? "exercise" : "exercises"}
           </p>
         </div>
       </div>
