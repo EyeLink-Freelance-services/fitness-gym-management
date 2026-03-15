@@ -15,6 +15,7 @@ import { LOGOUT_ENDPOINT } from "@/constants/urls";
 import { ROUTES } from "@/constants/route";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/context/auth-context";
+import { getUserDisplayInfo } from "@/lib/auth/user-display";
 
 export function UserInfo() {
   const auth = useAuth();
@@ -32,16 +33,8 @@ export function UserInfo() {
     router.refresh();
   };
 
-  const fullName =
-    `${auth.profile.first_name} ${auth.profile.last_name}`.trim();
-  const displayName = fullName || "Account";
-
-  const firstName = auth.profile.first_name || "User";
-  const lastName = auth.profile.last_name || "";
-  const initial = `${firstName[0]}${lastName[0]}`.trim();
-
-  const subtitle = auth.company?.name || auth.roles[0] || "Signed in";
-  const avatarSrc = auth.profile.picture_url || "/images/user/user-03.png";
+  const { displayName, initial, subtitle, avatarSrc } =
+    getUserDisplayInfo(auth);
 
   return (
     <Dropdown isOpen={isOpen} setIsOpen={setIsOpen}>
@@ -93,9 +86,7 @@ export function UserInfo() {
               {displayName}
             </div>
 
-            <div className="leading-none text-gray-6">
-              {typeof subtitle === "string" ? subtitle : subtitle.name}
-            </div>
+            <div className="leading-none text-gray-6">{subtitle}</div>
           </figcaption>
         </figure>
 

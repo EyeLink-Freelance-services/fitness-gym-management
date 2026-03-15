@@ -10,7 +10,10 @@ import type {
 } from "@/types/dashboard/formula-builder";
 import { PersonalCoachSessionRow } from "@/types/dashboard/personal-coach";
 
-export const statusClassNames: Record<PersonalCoachSessionRow["status"], string> = {
+export const statusClassNames: Record<
+  PersonalCoachSessionRow["status"],
+  string
+> = {
   Done: "text-green",
   Now: "text-[#FFA70B]",
   Scheduled: "text-[#0ABEF9]",
@@ -24,7 +27,7 @@ export const PERSONAL_COACH_SCHEMA_SUMMARY: SchemaSummary = {
   activeVersion: "v2",
   totalGroups: 4,
   totalFields: 17,
-  totalFormulas: 6,
+  totalFormulas: 4,
   linkedClients: 8,
   updatedAt: "2026-03-13T08:10:00.000Z",
   status: "active",
@@ -34,8 +37,7 @@ export const PERSONAL_COACH_FIELD_GROUPS: FieldGroup[] = [
   {
     id: "coach-group-basics",
     name: "Client Basics",
-    description:
-      "Every session starts with a compact set of coach-defined inputs.",
+    description: "Set of coach-defined inputs.",
     accentColor: "from-primary/20 to-primary/5",
     sortOrder: 10,
     fields: [
@@ -303,7 +305,7 @@ export const PERSONAL_COACH_SCHEMA_VERSIONS: SchemaVersionSummary[] = [
     changedAt: "2026-03-13T08:10:00.000Z",
     changedBy: "Ava Wilson",
     fieldCount: 17,
-    formulaCount: 6,
+    formulaCount: 4,
     linkedClients: 8,
     isActive: true,
   },
@@ -329,7 +331,6 @@ export const PERSONAL_COACH_FORMULAS: FormulaDefinition[] = [
     unit: "kg/m²",
     decimals: 1,
     expression: "weight / (height / 100) ^ 2",
-    description: "Quick screening metric for the coach dashboard.",
     showPortal: true,
     sortOrder: 10,
     activeVersion: "v2",
@@ -400,85 +401,5 @@ export const PERSONAL_COACH_FORMULAS: FormulaDefinition[] = [
       { key: "body_fat_pct", label: "Body Fat %", source: "formula" },
       { key: "weight", label: "Weight", source: "field" },
     ],
-  },
-  {
-    id: "coach-formula-lean-mass",
-    ownerType: "personal_coach",
-    label: "Lean Mass",
-    key: "lean_mass",
-    unit: "kg",
-    decimals: 1,
-    expression: "weight - fat_mass",
-    description: "Lean mass trend line for recomposition reviews.",
-    showPortal: true,
-    sortOrder: 50,
-    activeVersion: "v2",
-    recordCount: 20,
-    dependencies: ["fat_mass"],
-    detectedVariables: [
-      { key: "weight", label: "Weight", source: "field" },
-      { key: "fat_mass", label: "Fat Mass", source: "formula" },
-    ],
-  },
-  {
-    id: "coach-formula-calorie-target",
-    ownerType: "personal_coach",
-    label: "Calorie Target",
-    key: "calorie_target",
-    unit: "kcal",
-    decimals: 0,
-    expression: "(bmr * activity_multiplier) - 350",
-    description: "Coach-specific moderate deficit target.",
-    showPortal: true,
-    sortOrder: 60,
-    activeVersion: "v2",
-    recordCount: 18,
-    dependencies: ["bmr"],
-    detectedVariables: [
-      { key: "bmr", label: "BMR", source: "formula" },
-      {
-        key: "activity_multiplier",
-        label: "Activity Multiplier",
-        source: "field",
-      },
-    ],
-  },
-];
-
-export const PERSONAL_COACH_FORMULA_VERSIONS: FormulaVersionSummary[] = [
-  {
-    id: "coach-version-bodyfat-v2",
-    formulaId: "coach-formula-body-fat",
-    version: "v2",
-    expression:
-      "495 / (1.0994921 - (0.0009929 * (chest_mm + abdominal_mm + thigh_mm)) + (0.0000023 * (chest_mm + abdominal_mm + thigh_mm) ^ 2) - (0.0001392 * age)) - 450",
-    note: "Refined the body-fat curve for current clientele.",
-    recordCount: 20,
-    createdAt: "2026-03-13T08:10:00.000Z",
-    changedBy: "Ava Wilson",
-    isActive: true,
-  },
-  {
-    id: "coach-version-bodyfat-v1",
-    formulaId: "coach-formula-body-fat",
-    version: "v1",
-    expression:
-      "495 / (1.10938 - (0.0008267 * (chest_mm + abdominal_mm + thigh_mm)) - (0.0002574 * age)) - 450",
-    note: "Initial body-fat estimate before formula calibration.",
-    recordCount: 6,
-    createdAt: "2026-01-18T10:00:00.000Z",
-    changedBy: "Ava Wilson",
-    isActive: false,
-  },
-  {
-    id: "coach-version-calorie-v1",
-    formulaId: "coach-formula-calorie-target",
-    version: "v1",
-    expression: "(bmr * activity_multiplier) - 350",
-    note: "Current moderate cut target for lifestyle clients.",
-    recordCount: 18,
-    createdAt: "2026-03-13T08:10:00.000Z",
-    changedBy: "Ava Wilson",
-    isActive: true,
   },
 ];

@@ -16,11 +16,12 @@ export function FieldGroupCard({ group }: FieldGroupCardProps) {
               {group.name}
             </h3>
             <span className="text-xs uppercase tracking-[0.18em] text-dark-5">
-              {group.fields.length} fields {group.unitHint ? `· ${group.unitHint}` : ""}
+              {group.fields.length} fields{" "}
+              {group.unitHint ? `· ${group.unitHint}` : ""}
             </span>
           </div>
           {group.description && (
-            <p className="mt-2 text-sm text-dark-6 dark:text-dark-5">
+            <p className="mt-2 text-sm text-dark-6 dark:text-dark-6">
               {group.description}
             </p>
           )}

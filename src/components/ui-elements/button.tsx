@@ -11,6 +11,7 @@ export const buttonVariants = cva(
       variant: {
         primary: "bg-primary text-white",
         green: "bg-green text-white",
+        danger: "bg-red text-white",
         dark: "bg-dark text-white dark:bg-white/10",
         disabled:'bg-gray-300 text-gray',
         outlinePrimary:
@@ -27,6 +28,7 @@ export const buttonVariants = cva(
       size: {
         default: "py-3.5 px-10 py-3.5 lg:px-8 xl:px-10",
         small: "py-[11px] px-6",
+        xs: "py-1 px-4"
       },
     },
     defaultVariants: {

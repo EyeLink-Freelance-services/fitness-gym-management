@@ -13,6 +13,7 @@ type CustomSelectProps = {
   onChange?: (value: string) => void;
   className?: string;
   placeholder?: string;
+  disabled?: boolean;
 };
 
 const CustomSelect = ({
@@ -21,11 +22,13 @@ const CustomSelect = ({
   onChange,
   className,
   placeholder = "Select an option",
+  disabled,
 }: CustomSelectProps) => {
   return (
     <div className="relative">
       <select
         defaultValue={defaultValue}
+        disabled={disabled}
         onChange={(e) => onChange?.(e.target.value)}
         className="h-11 w-full appearance-none rounded-[10px] border border-stroke bg-transparent px-4 text-sm text-dark outline-none focus:border-primary dark:border-dark-3 dark:text-white"
       >

@@ -26,7 +26,8 @@ export type OverviewCardProps = {
   label: string;
   data: {
     value: number | string;
-    growthRate: number;
+    growthRate?: number;
+    arrow?: "up" | "down";
   };
   Icon?: (props: SVGProps<SVGSVGElement>) => JSX.Element;
 };

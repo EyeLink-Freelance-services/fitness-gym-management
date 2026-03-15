@@ -8,41 +8,53 @@ const Chart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
 });
 
+const DEFAULT_COLOR = "#5750F1";
+
 type Props = {
   data: PersonalCoachProgressSeries[];
+  height?: number;
+  unit?: string;
+  showLegend?: boolean;
 };
 
-export function ClientProgressChart({ data }: Props) {
+export function ClientProgressChart({
+  data,
+  height = 360,
+  unit = "%",
+  showLegend,
+}: Props) {
   const categories = data[0]?.points.map((point) => point.label) ?? [];
+  const allValues = data.flatMap((s) => s.points.map((p) => p.value));
+  const dataMin = Math.min(...allValues, 0);
+  const dataMax = Math.max(...allValues);
+
+  const isPercent = unit === "%";
+  const yMin = isPercent ? 0 : Math.floor(dataMin - (dataMax - dataMin) * 0.1);
+  const yMax = isPercent ? 100 : Math.ceil(dataMax + (dataMax - dataMin) * 0.1);
+
+  const formatValue = (value: number) => {
+    if (unit === "%") return `${value.toFixed(0)}%`;
+    if (unit === "kg") return value.toFixed(1);
+    return value.toFixed(0);
+  };
 
   const options: ApexOptions = {
     chart: {
       type: "area",
-      height: 360,
-      toolbar: {
-        show: false,
-      },
+      height,
+      toolbar: { show: false },
       fontFamily: "inherit",
     },
-    colors: data.map((series) => series.color),
-    stroke: {
-      curve: "smooth",
-      width: 3,
-    },
-    dataLabels: {
-      enabled: false,
-    },
+    colors: data.map((series) => series.color ?? DEFAULT_COLOR),
+    stroke: { curve: "smooth", width: 3 },
+    dataLabels: { enabled: false },
     legend: {
-      show: true,
+      show: showLegend ?? data.length > 1,
       position: "top",
       horizontalAlign: "center",
       fontSize: "13px",
-      labels: {
-        colors: "#64748B",
-      },
-      markers: {
-        size: 6,
-      },
+      labels: { colors: "#64748B" },
+      markers: { size: 6 },
     },
     fill: {
       type: "gradient",
@@ -59,43 +71,31 @@ export function ClientProgressChart({ data }: Props) {
     },
     xaxis: {
       categories,
-      axisBorder: {
-        show: false,
-      },
-      axisTicks: {
-        show: false,
-      },
+      axisBorder: { show: false },
+      axisTicks: { show: false },
       labels: {
-        style: {
-          colors: "#94A3B8",
-          fontSize: "12px",
-        },
+        style: { colors: "#94A3B8", fontSize: "12px" },
       },
     },
     yaxis: {
-      min: 0,
-      max: 100,
-      tickAmount: 10,
+      min: yMin,
+      max: yMax,
+      tickAmount: 5,
       labels: {
-        formatter: (value) => `${value.toFixed(0)}%`,
-        style: {
-          colors: "#94A3B8",
-          fontSize: "12px",
-        },
+        formatter: (value) => formatValue(value),
+        style: { colors: "#94A3B8", fontSize: "12px" },
       },
     },
     tooltip: {
-      y: {
-        formatter: (value) => `${value.toFixed(0)}%`,
-      },
+      y: { formatter: (value) => formatValue(Number(value)) },
     },
   };
 
   return (
-    <div className="-ml-4 -mr-4 h-[360px]">
+    <div className="-ml-4 -mr-4" style={{ height }}>
       <Chart
         type="area"
-        height={360}
+        height={height}
         options={options}
         series={data.map((series) => ({
           name: series.clientName,

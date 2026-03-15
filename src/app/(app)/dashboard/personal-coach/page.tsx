@@ -50,7 +50,6 @@ export default async function PersonalCoachDashboardPage() {
                 value: item.value,
                 growthRate: item.trend,
               }}
-              // Icon={item.icon}
             />
           ))}
         </div>

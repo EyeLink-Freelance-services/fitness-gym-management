@@ -91,13 +91,13 @@ export function ProgressRecordsTable({ records }: ProgressRecordsTableProps) {
   return (
     <DataTable
       title="All Records"
-      description="Snapshot of computed outputs saved for each coaching session."
       data={records}
       columns={columns}
-      initialPageSize={8}
+      initialPageSize={4}
       getRowId={(row) => row.id}
       tableClassName="min-w-[940px]"
-      showFooter={false}
+      searchPlaceholder="Search records by ..."
+      emptyStateLabel="No records available."
     />
   );
 }

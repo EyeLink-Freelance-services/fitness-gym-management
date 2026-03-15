@@ -1,10 +1,10 @@
 import { DashboardSectionProps } from "@/types/dashboard";
 
-const CardTitle = ({ title, subtitle }: DashboardSectionProps) => {
+const CardTitle = ({ title, subtitle, className }: DashboardSectionProps) => {
   return (
     <div>
       <h2
-        className={`${!subtitle && "mb-4"} ml-1 text-body-2xlg font-bold text-dark dark:text-white`}
+        className={`${!subtitle && "mb-4"} ml-1 text-body-2xlg font-bold text-dark dark:text-white ${className}`}
       >
         {title}
       </h2>

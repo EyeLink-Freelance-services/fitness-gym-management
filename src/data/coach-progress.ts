@@ -3,144 +3,13 @@ import type {
   ClientRecordDraft,
   ClientRecordRow,
   ComputedMetric,
-  FormulaSnapshotPreview,
   ProgressSeries,
 } from "@/types/dashboard/client-records";
 
-const currentMetrics: ComputedMetric[] = [
-  {
-    id: "metric-bmi",
-    label: "BMI",
-    key: "bmi",
-    value: "25.1",
-    unit: "kg/m²",
-    delta: -0.3,
-    tone: "success",
-  },
-  {
-    id: "metric-bmr",
-    label: "BMR",
-    key: "bmr",
-    value: "1662",
-    unit: "kcal",
-    delta: 127,
-    tone: "success",
-  },
-  {
-    id: "metric-body-fat",
-    label: "Body Fat",
-    key: "body_fat_pct",
-    value: "14.1",
-    unit: "%",
-    delta: -4.7,
-    tone: "success",
-  },
-  {
-    id: "metric-fat-mass",
-    label: "Fat Mass",
-    key: "fat_mass",
-    value: "10.5",
-    unit: "kg",
-    delta: -3.5,
-    tone: "success",
-  },
-  {
-    id: "metric-lean-mass",
-    label: "Lean Mass",
-    key: "lean_mass",
-    value: "63.7",
-    unit: "kg",
-    delta: 3.1,
-    tone: "success",
-  },
-  {
-    id: "metric-calorie-target",
-    label: "Cal Target",
-    key: "calorie_target",
-    value: "2076",
-    unit: "kcal",
-    delta: -196,
-    tone: "primary",
-  },
-];
-
-const previousMetrics: ComputedMetric[] = [
-  {
-    id: "prev-bmi",
-    label: "BMI",
-    key: "bmi",
-    value: "25.4",
-    unit: "kg/m²",
-    tone: "neutral",
-  },
-  {
-    id: "prev-bmr",
-    label: "BMR",
-    key: "bmr",
-    value: "1789",
-    unit: "kcal",
-    tone: "neutral",
-  },
-  {
-    id: "prev-body-fat",
-    label: "Body Fat",
-    key: "body_fat_pct",
-    value: "18.8",
-    unit: "%",
-    tone: "neutral",
-  },
-  {
-    id: "prev-fat-mass",
-    label: "Fat Mass",
-    key: "fat_mass",
-    value: "14.0",
-    unit: "kg",
-    tone: "neutral",
-  },
-  {
-    id: "prev-lean-mass",
-    label: "Lean Mass",
-    key: "lean_mass",
-    value: "60.6",
-    unit: "kg",
-    tone: "neutral",
-  },
-  {
-    id: "prev-calorie-target",
-    label: "Cal Target",
-    key: "calorie_target",
-    value: "2272",
-    unit: "kcal",
-    tone: "neutral",
-  },
-];
-
-const formulaSnapshots: FormulaSnapshotPreview[] = [
-  {
-    id: "snapshot-bmi",
-    label: "BMI",
-    expression: "weight / (height / 100) ^ 2",
-    version: "v2",
-    result: "25.1 kg/m²",
-  },
-  {
-    id: "snapshot-body-fat",
-    label: "Body Fat %",
-    expression:
-      "495 / (1.0994921 - (0.0009929 * (chest_mm + abdominal_mm + thigh_mm)) + (0.0000023 * (chest_mm + abdominal_mm + thigh_mm) ^ 2) - (0.0001392 * age)) - 450",
-    version: "v2",
-    result: "14.1 %",
-  },
-  {
-    id: "snapshot-calories",
-    label: "Calorie Target",
-    expression: "(bmr * activity_multiplier) - 350",
-    version: "v1",
-    result: "2076 kcal",
-  },
-];
-
-export const COACH_RECORD_DRAFTS: Record<string, ClientRecordDraft> = {
+export const COACH_RECORD_DRAFTS: Record<
+  string,
+  Omit<ClientRecordDraft, "computedMetrics" | "previousMetrics" | "formulaSnapshots">
+> = {
   "client-wei-liang": {
     clientId: "client-wei-liang",
     clientName: "Wei Liang",
@@ -166,9 +35,6 @@ export const COACH_RECORD_DRAFTS: Record<string, ClientRecordDraft> = {
       non_eating_foods: "Dairy (lactose), Shellfish",
       activity_multiplier: "1.55",
     },
-    computedMetrics: currentMetrics,
-    previousMetrics,
-    formulaSnapshots,
   },
 };
 
@@ -250,7 +116,7 @@ export const COACH_PROGRESS_SERIES: ProgressSeries[] = [
   {
     id: "series-lean-mass",
     title: "Fat vs Lean Mass",
-    subtitle: "kg - stacked bars",
+    subtitle: "kg - weekly weigh-ins",
     accent: "bg-green",
     chartType: "stacked",
     unit: "kg",

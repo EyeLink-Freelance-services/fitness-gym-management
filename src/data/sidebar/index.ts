@@ -75,16 +75,6 @@ export const NAV_DATA: NavSection[] = [
             url: ROUTES.DASHBOARD.COMPANY.STAFF,
             permission: AuthPermission.dashboard.company
           },
-          {
-            title: "Schema Builder",
-            url: ROUTES.DASHBOARD.COMPANY.SCHEMA,
-            permission: AuthPermission.dashboard.company
-          },
-          {
-            title: "Formula Builder",
-            url: ROUTES.DASHBOARD.COMPANY.FORMULAS,
-            permission: AuthPermission.dashboard.company
-          },
         ],
         permission: AuthPermission.dashboard.company
       },
@@ -103,16 +93,6 @@ export const NAV_DATA: NavSection[] = [
             permission: AuthPermission.dashboard.personalCoach
           },
           {
-            title: "Data Entry",
-            url: ROUTES.DASHBOARD.PERSONAL_COACH.DATA_ENTRY,
-            permission: AuthPermission.dashboard.personalCoach
-          },
-          {
-            title: "Progress",
-            url: ROUTES.DASHBOARD.PERSONAL_COACH.PROGRESS,
-            permission: AuthPermission.dashboard.personalCoach
-          },
-          {
             title: "Schema Builder",
             url: ROUTES.DASHBOARD.PERSONAL_COACH.SCHEMA,
             permission: AuthPermission.dashboard.personalCoach
@@ -120,6 +100,16 @@ export const NAV_DATA: NavSection[] = [
           {
             title: "Formula Builder",
             url: ROUTES.DASHBOARD.PERSONAL_COACH.FORMULAS,
+            permission: AuthPermission.dashboard.personalCoach
+          },
+          {
+            title: "Data Entry",
+            url: ROUTES.DASHBOARD.PERSONAL_COACH.DATA_ENTRY,
+            permission: AuthPermission.dashboard.personalCoach
+          },
+          {
+            title: "Progress",
+            url: ROUTES.DASHBOARD.PERSONAL_COACH.PROGRESS,
             permission: AuthPermission.dashboard.personalCoach
           }
         ],

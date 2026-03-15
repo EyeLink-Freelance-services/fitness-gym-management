@@ -7,6 +7,7 @@ import { evaluateFormulaCollection } from "@/lib/formula/preview-engine";
 import type {
   ClientRecordDraft,
   ComputedMetric,
+  FormulaSnapshotPreview,
 } from "@/types/dashboard/client-records";
 import type { FormulaDefinition } from "@/types/dashboard/formula-builder";
 import { useMemo, useState } from "react";
@@ -38,30 +39,37 @@ export function DataEntryWorkspace({
   const [values, setValues] = useState<Record<string, string>>(draft.values);
   const [notes, setNotes] = useState(draft.notes);
 
-  const computedMetrics = useMemo<ComputedMetric[]>(() => {
+  const { computedMetrics, formulaSnapshots } = useMemo(() => {
+    const numericScope = getNumericScope(values);
+    const sorted = [...formulas].sort((a, b) => a.sortOrder - b.sortOrder);
+    let resolved: Record<string, number> = {};
     try {
-      const resolved = evaluateFormulaCollection(
-        formulas,
-        getNumericScope(values),
-      );
-
-      return draft.computedMetrics.map((metric) => {
-        const formula = formulas.find((item) => item.key === metric.key);
-
-        if (!formula || resolved[metric.key] === undefined) {
-          return metric;
-        }
-
-        return {
-          ...metric,
-          value: formatMetricValue(resolved[metric.key], formula.decimals),
-          unit: formula.unit,
-        };
-      });
+      resolved = evaluateFormulaCollection(formulas, numericScope);
     } catch {
-      return draft.computedMetrics;
+      // keep empty
     }
-  }, [draft.computedMetrics, formulas, values]);
+    const metrics: ComputedMetric[] = sorted.map((formula) => ({
+      id: `metric-${formula.key}`,
+      label: formula.label,
+      key: formula.key,
+      value:
+        resolved[formula.key] !== undefined
+          ? formatMetricValue(resolved[formula.key], formula.decimals)
+          : "—",
+      unit: formula.unit,
+    }));
+    const snapshots: FormulaSnapshotPreview[] = sorted.map((formula) => ({
+      id: `snapshot-${formula.key}`,
+      label: formula.label,
+      expression: formula.expression,
+      version: formula.activeVersion,
+      result:
+        resolved[formula.key] !== undefined
+          ? `${formatMetricValue(resolved[formula.key], formula.decimals)} ${formula.unit ?? ""}`.trim()
+          : "—",
+    }));
+    return { computedMetrics: metrics, formulaSnapshots: snapshots };
+  }, [formulas, values]);
 
   return (
     <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_350px]">
@@ -72,14 +80,9 @@ export function DataEntryWorkspace({
               <span className="flex h-10 w-10 items-center justify-center rounded-full bg-green/15 text-sm font-bold text-green">
                 WL
               </span>
-              <div>
-                <h2 className="text-lg font-bold text-dark dark:text-white">
-                  {draft.clientName}
-                </h2>
-                <p className="mt-0.5 text-xs text-dark-5 dark:text-dark-6">
-                  Male 32y 172cm Premium Schema v3
-                </p>
-              </div>
+              <h2 className="text-lg font-bold text-dark dark:text-white">
+                {draft.clientName}
+              </h2>
             </div>
             <div className="flex items-center gap-3">
               <p className="min-w-[120px] rounded-[10px] border border-stroke bg-transparent px-4 py-3 text-center text-sm text-dark dark:border-dark-3 dark:text-white">
@@ -110,26 +113,19 @@ export function DataEntryWorkspace({
           />
         ))}
 
-        <div className="flex items-center gap-3">
-          <Button
-            label="Save Draft"
-            variant="outlineDark"
-            size="small"
-            toastMessage="Draft storage will be connected in phase 2."
-          />
-          <Button
-            label="Save & Compute"
-            size="small"
-            toastMessage="Preview mode is active for this UI-first release."
-          />
-        </div>
+        <Button
+          label="Save"
+          variant="outlineDark"
+          size="small"
+          toastMessage="Draft storage will be connected in phase 2."
+        />
       </div>
 
       <div className="xl:sticky xl:top-20 xl:self-start">
         <ComputedResultsPanel
           metrics={computedMetrics}
           previousMetrics={draft.previousMetrics}
-          snapshots={draft.formulaSnapshots}
+          snapshots={formulaSnapshots}
         />
       </div>
     </div>

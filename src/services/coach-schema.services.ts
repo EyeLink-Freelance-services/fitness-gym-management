@@ -15,7 +15,6 @@ import {
 } from "@/data/coach-progress";
 import {
   PERSONAL_COACH_FIELD_GROUPS,
-  PERSONAL_COACH_FORMULA_VERSIONS,
   PERSONAL_COACH_FORMULAS,
   PERSONAL_COACH_SCHEMA_SUMMARY,
   PERSONAL_COACH_SCHEMA_VERSIONS,
@@ -71,10 +70,6 @@ export async function getPersonalCoachFormulas() {
   return withLatency(PERSONAL_COACH_FORMULAS);
 }
 
-export async function getPersonalCoachFormulaVersions() {
-  return withLatency(PERSONAL_COACH_FORMULA_VERSIONS);
-}
-
 export async function getPersonalCoachClients() {
   return withLatency(COACH_CLIENTS);
 }
@@ -82,7 +77,14 @@ export async function getPersonalCoachClients() {
 export async function getPersonalCoachRecordDraft(
   clientId = "client-wei-liang",
 ) {
-  return withLatency(COACH_RECORD_DRAFTS[clientId] ?? COACH_RECORD_DRAFTS["client-wei-liang"]);
+  const rawDraft =
+    COACH_RECORD_DRAFTS[clientId] ?? COACH_RECORD_DRAFTS["client-wei-liang"];
+  return withLatency({
+    ...rawDraft,
+    computedMetrics: [],
+    formulaSnapshots: [],
+    previousMetrics: [],
+  });
 }
 
 export async function getPersonalCoachProgressOverview() {

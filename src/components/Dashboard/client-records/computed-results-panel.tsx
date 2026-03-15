@@ -90,18 +90,21 @@ export function ComputedResultsPanel({
                 <div className="text-[10px] font-medium uppercase tracking-[0.16em] text-dark-5 dark:text-dark-6">
                   {metric.label}
                 </div>
-                <div className="mt-2 text-[15px] font-bold text-primary dark:text-white">
-                  {metric.value}
+                <div className="mt-2 flex justify-between text-[15px] font-bold text-primary dark:text-white">
+                  <p>
+                    {metric.value}
+                    {metric.unit && (
+                      <span className="text-[12px] text-dark-5 dark:text-dark-6">
+                        {metric.unit}
+                      </span>
+                    )}
+                  </p>
+
+                  <StatusBadge
+                    label={formatDelta(metric.delta)}
+                    tone={getDeltaTone(metric.delta)}
+                  />
                 </div>
-                {metric.unit && (
-                  <div className="mt-0.5 flex items-center justify-between text-[10px] text-dark-5 dark:text-dark-6">
-                    {metric.unit}
-                    <StatusBadge
-                      label={formatDelta(metric.delta)}
-                      tone={getDeltaTone(metric.delta)}
-                    />
-                  </div>
-                )}
               </div>
             ))}
           </div>

@@ -1,34 +1,42 @@
 import { FormulaBuilderWorkspace } from "@/components/Dashboard/formula-builder/workspace";
 import {
   getCompanyFieldGroups,
-  getCompanyFormulaVersions,
   getCompanyFormulas,
 } from "@/services/coach-schema.services";
+import type { FieldGroup } from "@/types/dashboard/coach-schema";
 
-const companyPreviewValues = {
-  weight: 74.2,
-  height: 172,
-  age: 32,
-  chest_mm: 12,
-  abdominal_mm: 18,
-  quad_mm: 16,
-  activity_multiplier: 1.55,
-};
+function buildSampleValuesFromSchema(groups: FieldGroup[]): Record<string, number> {
+  const values: Record<string, number> = {};
+  for (const group of groups) {
+    for (const field of group.fields) {
+      if (field.type === "number" && field.key) {
+        const min = field.validation?.min;
+        values[field.key] = typeof min === "number" ? min : 0;
+      }
+      if (field.type === "dropdown" && field.options?.[0]?.value) {
+        const v = field.options[0].value;
+        const num = Number(v);
+        if (!Number.isNaN(num)) values[field.key] = num;
+      }
+    }
+  }
+  return values;
+}
 
 export default async function CompanyFormulaPage() {
-  const [groups, formulas, versions] = await Promise.all([
+  const [groups, formulas] = await Promise.all([
     getCompanyFieldGroups(),
     getCompanyFormulas(),
-    getCompanyFormulaVersions(),
   ]);
+
+  const sampleValues = buildSampleValuesFromSchema(groups);
 
   return (
     <div>
       <FormulaBuilderWorkspace
         formulas={formulas}
-        versions={versions}
         fieldGroups={groups}
-        sampleValues={companyPreviewValues}
+        sampleValues={sampleValues}
       />
     </div>
   );
