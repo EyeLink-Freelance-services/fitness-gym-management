@@ -5,6 +5,7 @@ import { ArrowLeftIcon } from "@/assets/icons";
 import Link from "next/link";
 import { ROUTES } from "@/constants/route";
 import { TrainingPlanFormInput } from "@/lib/validation/schemas/training-plans";
+import { getTrainingPlanAction } from "../actions";
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -82,7 +83,7 @@ async function getTrainingPlan(id: string): Promise<TrainingPlanFormInput> {
 
 export default async function Page({ params }: PageProps) {
   const { id } = await params;
-  const trainingPlan = await getTrainingPlan(id);
+  const trainingPlan = await getTrainingPlanAction(id);
 
   return (
     <div>
@@ -91,7 +92,7 @@ export default async function Page({ params }: PageProps) {
       </Link>
       <Breadcrumb pageName="Training Plan" />
       <div className="min-h-screen bg-slate-50">
-        <TrainingPlanBuilder initialPlan={trainingPlan} />
+        <TrainingPlanBuilder initialPlan={trainingPlan.data} />
       </div>
     </div>
   );

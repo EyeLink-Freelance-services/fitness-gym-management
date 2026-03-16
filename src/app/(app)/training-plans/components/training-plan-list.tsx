@@ -10,7 +10,7 @@ import TrainingPlanCard from "./training-plan-card";
 import InputGroup from "@/components/FormElements/InputGroup";
 
 type Props = {
-  plans: TrainingPlan[];
+  plans?: TrainingPlan[];
 };
 
 const statusItems: { value: string; label: string }[] = [
@@ -29,7 +29,7 @@ export default function TrainingPlansList({ plans }: Props) {
   const filteredPlans = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
 
-    return plans.filter((plan) => {
+    return plans?.filter((plan) => {
       const matchesSearch =
         !normalizedSearch ||
         plan.title.toLowerCase().includes(normalizedSearch) ||
@@ -81,16 +81,16 @@ export default function TrainingPlansList({ plans }: Props) {
       </div>
 
       <div className="mb-4 text-sm text-dark-5 dark:text-dark-6">
-        {filteredPlans.length} {filteredPlans.length === 1 ? "plan" : "plans"} found
+        {filteredPlans?.length} {filteredPlans?.length === 1 ? "plan" : "plans"} found
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {filteredPlans.map((plan) => (
+        {filteredPlans?.map((plan) => (
           <TrainingPlanCard key={plan.id} plan={plan} />
         ))}
       </div>
 
-      {filteredPlans.length === 0 && (
+      {filteredPlans?.length === 0 && (
         <div className="mt-8 rounded-xl border border-dashed border-stroke bg-white px-6 py-10 text-center dark:border-dark-3 dark:bg-dark-2">
           <p className="text-sm text-dark-5 dark:text-dark-6">
             No training plans found.

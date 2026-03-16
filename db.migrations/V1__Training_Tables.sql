@@ -54,7 +54,7 @@ create index if not exists idx_training_exercises_session on public.training_ses
 alter table training_plans
 add column level int;
 alter table training_plans
-add column updated_by uuid not null references public.profiles(id);
+add column updated_by uuid references public.profiles(id);
 
 --===========================================
 
@@ -300,7 +300,7 @@ begin
 
   insert into public.training_plans (
     company_id,
-    name,
+    title,
     description,
     level,
     status,
@@ -308,9 +308,9 @@ begin
   )
   values (
     v_company_id,
-    p_payload->>'name',
+    p_payload->>'title',
     p_payload->>'description',
-    p_payload->>'level',
+    nullif(p_payload->>'level','')::int,
     p_payload->>'status',
     auth.uid()
   )
@@ -371,7 +371,182 @@ ALTER FUNCTION public.create_training_plan_with_sessions(jsonb) OWNER TO postgre
 REVOKE ALL ON FUNCTION public.create_training_plan_with_sessions(jsonb) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.create_training_plan_with_sessions(jsonb) TO authenticated;
 
+-- update training plan
+create or replace function public.update_training_plan_with_sessions(
+  p_payload jsonb
+)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_plan_id uuid;
+  v_company_id uuid;
+  v_session jsonb;
+  v_exercise jsonb;
+  v_session_id uuid;
+begin
+  v_plan_id := nullif(p_payload->>'id', '')::uuid;
+  v_company_id := nullif(p_payload->>'company_id', '')::uuid;
 
+  if v_plan_id is null then
+    raise exception 'plan id is required';
+  end if;
+
+  if v_company_id is null then
+    raise exception 'company_id is required';
+  end if;
+
+  if not exists (
+    select 1
+    from public.training_plans tp
+    where tp.id = v_plan_id
+      and tp.company_id = v_company_id
+  ) then
+    raise exception 'training plan not found';
+  end if;
+
+  if not (
+    public.is_company_owner(v_company_id)
+    or public.has_company_role(v_company_id, 'admin')
+    or public.has_company_role(v_company_id, 'staff')
+    or public.has_company_role(v_company_id, 'coach')
+  ) then
+    raise exception 'You do not have permission to update this training plan';
+  end if;
+
+  -- update parent plan
+  update public.training_plans
+  set
+    title = p_payload->>'title',
+    description = p_payload->>'description',
+    level = nullif(p_payload->>'level', '')::int,
+    status = p_payload->>'status',
+    updated_by = auth.uid(),
+    updated_at = now()
+  where id = v_plan_id;
+
+  -- delete exercises removed from payload
+  delete from public.training_session_exercises e
+  where e.session_id in (
+    select s.id
+    from public.training_plan_sessions s
+    where s.plan_id = v_plan_id
+  )
+  and not exists (
+    select 1
+    from jsonb_array_elements(coalesce(p_payload->'sessions', '[]'::jsonb)) as session_item
+    cross join jsonb_array_elements(coalesce(session_item->'exercises', '[]'::jsonb)) as exercise_item
+    where nullif(exercise_item->>'id', '')::uuid = e.id
+  );
+
+  -- delete sessions removed from payload
+  delete from public.training_plan_sessions s
+  where s.plan_id = v_plan_id
+  and not exists (
+    select 1
+    from jsonb_array_elements(coalesce(p_payload->'sessions', '[]'::jsonb)) as session_item
+    where nullif(session_item->>'id', '')::uuid = s.id
+  );
+
+  -- upsert sessions and exercises
+  for v_session in
+    select value
+    from jsonb_array_elements(coalesce(p_payload->'sessions', '[]'::jsonb))
+  loop
+    v_session_id := nullif(v_session->>'id', '')::uuid;
+
+    -- existing session
+    if v_session_id is not null and exists (
+      select 1
+      from public.training_plan_sessions s
+      where s.id = v_session_id
+        and s.plan_id = v_plan_id
+    ) then
+      update public.training_plan_sessions
+      set
+        day_index = nullif(v_session->>'day_index', '')::int,
+        title = v_session->>'title',
+        notes = v_session->>'notes',
+        order_index = coalesce((v_session->>'order_index')::int, 0)
+      where id = v_session_id;
+
+    -- new session
+    else
+      insert into public.training_plan_sessions (
+        plan_id,
+        day_index,
+        title,
+        notes,
+        order_index
+      )
+      values (
+        v_plan_id,
+        nullif(v_session->>'day_index', '')::int,
+        v_session->>'title',
+        v_session->>'notes',
+        coalesce((v_session->>'order_index')::int, 0)
+      )
+      returning id into v_session_id;
+    end if;
+
+    -- upsert exercises for this session
+    for v_exercise in
+      select value
+      from jsonb_array_elements(coalesce(v_session->'exercises', '[]'::jsonb))
+    loop
+      if nullif(v_exercise->>'id', '')::uuid is not null
+         and exists (
+           select 1
+           from public.training_session_exercises e
+           where e.id = nullif(v_exercise->>'id', '')::uuid
+             and e.session_id = v_session_id
+         )
+      then
+        update public.training_session_exercises
+        set
+          name = v_exercise->>'name',
+          sets = nullif(v_exercise->>'sets', '')::int,
+          reps = nullif(v_exercise->>'reps', '')::int,
+          weight = nullif(v_exercise->>'weight', '')::numeric(10,2),
+          rest_seconds = nullif(v_exercise->>'rest_seconds', '')::int,
+          tempo = v_exercise->>'tempo',
+          order_index = coalesce((v_exercise->>'order_index')::int, 0)
+        where id = nullif(v_exercise->>'id', '')::uuid
+          and session_id = v_session_id;
+      else
+        insert into public.training_session_exercises (
+          session_id,
+          name,
+          sets,
+          reps,
+          weight,
+          rest_seconds,
+          tempo,
+          order_index
+        )
+        values (
+          v_session_id,
+          v_exercise->>'name',
+          nullif(v_exercise->>'sets', '')::int,
+          nullif(v_exercise->>'reps', '')::int,
+          nullif(v_exercise->>'weight', '')::numeric(10,2),
+          nullif(v_exercise->>'rest_seconds', '')::int,
+          v_exercise->>'tempo',
+          coalesce((v_exercise->>'order_index')::int, 0)
+        );
+      end if;
+    end loop;
+  end loop;
+
+  return v_plan_id;
+end;
+$$;
+
+ALTER FUNCTION public.update_training_plan_with_sessions(jsonb) OWNER TO postgres;
+REVOKE ALL ON FUNCTION public.update_training_plan_with_sessions(jsonb) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.update_training_plan_with_sessions(jsonb) TO authenticated;
 
 --===========================================
 

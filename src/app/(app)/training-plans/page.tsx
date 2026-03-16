@@ -1,5 +1,6 @@
 import { TrainingPlan } from "@/types/training-plan";
 import TrainingPlansList from "./components/training-plan-list";
+import { listTrainingPlanAction } from "./actions";
 
 async function getPlans(): Promise<TrainingPlan[]> {
   return [
@@ -31,11 +32,11 @@ async function getPlans(): Promise<TrainingPlan[]> {
 }
 
 export default async function Page() {
-  const plans = await getPlans();
+  const plans = await listTrainingPlanAction();
 
   return (
     <div className="p-6">
-      <TrainingPlansList plans={plans} />
+      <TrainingPlansList plans={plans.data} />
     </div>
   );
 }

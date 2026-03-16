@@ -10,6 +10,10 @@ import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { TrainingPlanFormInput, TrainingPlanFormSchema } from "@/lib/validation/schemas/training-plans";
 import { useCompany } from "@/app/context/company-context";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { createTrainingPlanAction, saveTrainingPlanAction } from "../actions";
+import { useRouter } from "next/navigation";
+import { ROUTES } from "@/constants/route";
+import { toast } from "sonner";
 
 type Props = {
   initialPlan?: TrainingPlanFormInput;
@@ -17,6 +21,8 @@ type Props = {
 
 export default function TrainingPlanBuilder({ initialPlan }: Props) {
   const company = useCompany();
+  const router = useRouter();
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const methods = useForm<TrainingPlanFormInput>({
     mode: "onChange",
@@ -127,6 +133,15 @@ export default function TrainingPlanBuilder({ initialPlan }: Props) {
 
   const onSave = async (values: TrainingPlanFormInput) => {
     console.log("Saving plan", values);
+    const res = await saveTrainingPlanAction(values);  
+    if(!res.ok) {
+      setErrorMsg(res.message)
+    } else {
+      setErrorMsg(null);
+      toast.success('Training plan saved')
+      if(res.data)
+        router.push(`${ROUTES.TRAINING_PLANS.ID(res.data)}`);
+    }
   }
 
   const onError = (errors: any) => {
@@ -138,6 +153,10 @@ export default function TrainingPlanBuilder({ initialPlan }: Props) {
       <FormProvider {...methods}> 
         <form onSubmit={handleSubmit(onSave, onError)}>
           <TrainingPlanHeader />
+          
+          {errorMsg && (
+            <div className="mb-2 text-sm text-red-600">{errorMsg}</div>
+          )}
 
           <div className="grid flex-1 grid-cols-1 lg:grid-cols-[320px_minmax(0,1fr)]">
             <SessionSidebar
