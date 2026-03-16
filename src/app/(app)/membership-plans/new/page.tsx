@@ -22,7 +22,7 @@ export default function CreateMembershipPlanForm() {
   const form = useForm<MembershipPlanCreateInput>({
     resolver: zodResolver(MembershipPlanFormSchema),
     defaultValues: {
-      company_id: company.company_id,
+      company_id: company.id,
       name: "",
       price: 0,
       entree_fee: 0,

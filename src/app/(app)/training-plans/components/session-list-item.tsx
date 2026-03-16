@@ -3,9 +3,11 @@
 import { CSS } from "@dnd-kit/utilities";
 import { useSortable } from "@dnd-kit/sortable";
 import { TrainingPlanSession } from "@/types/training-plan";
+import { TrainingPlanSessionFormInput } from "@/lib/validation/schemas/training-plan-sessions";
+import { SessionField } from "./session-sidebar";
 
 type Props = {
-  session: TrainingPlanSession;
+  session: SessionField;
   isActive: boolean;
   onClick: () => void;
 };
@@ -23,7 +25,7 @@ export default function SessionListItem({
     transition,
     isDragging,
   } = useSortable({
-    id: session.id,
+    id: session.fieldId,
   });
 
   const style = {
@@ -31,7 +33,7 @@ export default function SessionListItem({
     transition,
   };
 
-  const dayLabel = session.day_index ?? session.order_index + 1;
+  const dayLabel = session.day_index as number ?? (session.order_index ? session.order_index + 1 : 1);
 
   return (
     <div

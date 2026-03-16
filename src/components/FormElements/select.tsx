@@ -29,7 +29,7 @@ export function Select({
   error,
   id: providedId,
 }: PropsType) {
-  const { className: selectClassName, onChange, ...restSelectProps } = selectProps ?? {};
+  const { className: selectClassName, onChange, value, ...restSelectProps } = selectProps ?? {};
   const autoId = useId();
   const id = providedId ?? restSelectProps.id ?? autoId;
   const isRequired = restSelectProps.required;
@@ -55,7 +55,7 @@ export function Select({
 
         <select
           id={id}
-          defaultValue={defaultFormValue}
+          defaultValue={defaultFormValue ?? value}
           onChange={(e) => {
             setIsOptionSelected(true);
             onChange?.(e);

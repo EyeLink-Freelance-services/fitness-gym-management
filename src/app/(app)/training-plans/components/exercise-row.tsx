@@ -2,18 +2,20 @@
 
 import { CSS } from "@dnd-kit/utilities";
 import { useSortable } from "@dnd-kit/sortable";
-import { TrainingSessionExercise } from "@/types/training-plan";
+import { ExerciseField } from "./session-editor";
+import { useFormContext } from "react-hook-form";
+import { TrainingPlanFormInput } from "@/lib/validation/schemas/training-plans";
+import { toast } from "sonner";
+import { preventNegativeKeyDown } from "@/lib/validation/helpers/check-number";
+import { useEffect, useRef } from "react";
 
 type Props = {
-  exercise: TrainingSessionExercise;
+  exercise: ExerciseField;
+  sessionIndex: number;
+  exerciseIndex: number;
   mode: "mobile" | "desktop";
-  onUpdate: (updates: Partial<TrainingSessionExercise>) => void;
   onDelete: () => void;
 };
-
-function numberValue(value: string) {
-  return value === "" ? null : Number(value);
-}
 
 function FieldLabel({ children }: { children: React.ReactNode }) {
   return (
@@ -37,8 +39,9 @@ function Input({
 
 export default function ExerciseRow({
   exercise,
+  sessionIndex,
+  exerciseIndex,
   mode,
-  onUpdate,
   onDelete,
 }: Props) {
   const {
@@ -49,13 +52,27 @@ export default function ExerciseRow({
     transition,
     isDragging,
   } = useSortable({
-    id: exercise.id,
+    id: exercise.fieldId,
   });
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
   };
+
+  const { register, formState: {errors} } = useFormContext<TrainingPlanFormInput>();
+
+  const basePath = `sessions.${sessionIndex}.exercises.${exerciseIndex}` as const;
+
+  const exerciseNameError = errors.sessions?.[sessionIndex]?.exercises?.[exerciseIndex]?.name?.message;
+
+  useEffect(() => {
+    if (exerciseNameError) {
+      toast.error(exerciseNameError, {
+        id: `exercise-name-${exerciseIndex}`,
+      });
+    }
+  }, [exerciseNameError, exerciseIndex]);
 
   if (mode === "mobile") {
     return (
@@ -89,8 +106,7 @@ export default function ExerciseRow({
           <div>
             <FieldLabel>Exercise</FieldLabel>
             <Input
-              value={exercise.name}
-              onChange={(e) => onUpdate({ name: e.target.value })}
+              {...register(`${basePath}.name`)}
               placeholder="Exercise name"
             />
           </div>
@@ -100,10 +116,8 @@ export default function ExerciseRow({
               <FieldLabel>Sets</FieldLabel>
               <Input
                 type="number"
-                value={exercise.sets ?? ""}
-                onChange={(e) =>
-                  onUpdate({ sets: numberValue(e.target.value) })
-                }
+                {...register(`${basePath}.sets`)}
+                onKeyDown={(e) => preventNegativeKeyDown(e, "sets")}
               />
             </div>
 
@@ -111,10 +125,8 @@ export default function ExerciseRow({
               <FieldLabel>Reps</FieldLabel>
               <Input
                 type="number"
-                value={exercise.reps ?? ""}
-                onChange={(e) =>
-                  onUpdate({ reps: numberValue(e.target.value) })
-                }
+                {...register(`${basePath}.reps`)}
+                onKeyDown={(e) => preventNegativeKeyDown(e, "reps")}
               />
             </div>
 
@@ -123,10 +135,9 @@ export default function ExerciseRow({
               <Input
                 type="number"
                 step="0.01"
-                value={exercise.weight ?? ""}
-                onChange={(e) =>
-                  onUpdate({ weight: numberValue(e.target.value) })
-                }
+                {...register(`${basePath}.weight`)}
+                placeholder="kg"
+                onKeyDown={(e) => preventNegativeKeyDown(e, "weight")}
               />
             </div>
 
@@ -134,10 +145,8 @@ export default function ExerciseRow({
               <FieldLabel>Rest (sec)</FieldLabel>
               <Input
                 type="number"
-                value={exercise.rest_seconds ?? ""}
-                onChange={(e) =>
-                  onUpdate({ rest_seconds: numberValue(e.target.value) })
-                }
+                {...register(`${basePath}.rest_seconds`)}
+                onKeyDown={(e) => preventNegativeKeyDown(e, "rest_seconds")}
               />
             </div>
           </div>
@@ -145,8 +154,8 @@ export default function ExerciseRow({
           <div>
             <FieldLabel>Tempo</FieldLabel>
             <Input
-              value={exercise.tempo ?? ""}
-              onChange={(e) => onUpdate({ tempo: e.target.value })}
+              type='text'
+              {...register(`${basePath}.tempo`)}
               placeholder="e.g. 3-1-1"
             />
           </div>
@@ -185,8 +194,7 @@ export default function ExerciseRow({
 
       <td className="px-4 py-3">
         <Input
-          value={exercise.name}
-          onChange={(e) => onUpdate({ name: e.target.value })}
+          {...register(`${basePath}.name`)}
           placeholder="Exercise name"
         />
       </td>
@@ -194,18 +202,18 @@ export default function ExerciseRow({
       <td className="px-4 py-3">
         <Input
           type="number"
-          value={exercise.sets ?? ""}
-          onChange={(e) => onUpdate({ sets: numberValue(e.target.value) })}
+          {...register(`${basePath}.sets`)}
           className="w-20"
+          onKeyDown={(e) => preventNegativeKeyDown(e, "sets")}
         />
       </td>
 
       <td className="px-4 py-3">
         <Input
           type="number"
-          value={exercise.reps ?? ""}
-          onChange={(e) => onUpdate({ reps: numberValue(e.target.value) })}
+          {...register(`${basePath}.reps`)}
           className="w-20"
+          onKeyDown={(e) => preventNegativeKeyDown(e, "reps")}
         />
       </td>
 
@@ -213,27 +221,27 @@ export default function ExerciseRow({
         <Input
           type="number"
           step="0.01"
-          value={exercise.weight ?? ""}
-          onChange={(e) => onUpdate({ weight: numberValue(e.target.value) })}
+          {...register(`${basePath}.weight`)}
+          placeholder="kg"
           className="w-24"
+          onKeyDown={(e) => preventNegativeKeyDown(e, "weight")}
         />
       </td>
 
       <td className="px-4 py-3">
         <Input
           type="number"
-          value={exercise.rest_seconds ?? ""}
-          onChange={(e) =>
-            onUpdate({ rest_seconds: numberValue(e.target.value) })
-          }
+          {...register(`${basePath}.rest_seconds`)}
+          placeholder="in seconds"
           className="w-24"
+          onKeyDown={(e) => preventNegativeKeyDown(e, "rest_seconds")}
         />
       </td>
 
       <td className="px-4 py-3">
         <Input
-          value={exercise.tempo ?? ""}
-          onChange={(e) => onUpdate({ tempo: e.target.value })}
+          {...register(`${basePath}.tempo`)}
+          placeholder="e.g. 3-1-1"
           className="w-24"
         />
       </td>

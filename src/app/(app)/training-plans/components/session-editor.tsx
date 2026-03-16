@@ -1,31 +1,92 @@
-import { TrainingPlanSession, TrainingSessionExercise } from "@/types/training-plan";
 import ExerciseTable from "./exercise-table";
 import InputGroup from "@/components/FormElements/InputGroup";
 import { TextAreaGroup } from "@/components/FormElements/InputGroup/text-area";
 import { Button } from "@/components/ui-elements/button";
+import { SessionField } from "./session-sidebar";
+import { useFieldArray, useFormContext } from "react-hook-form";
+import { TrainingPlanFormInput } from "@/lib/validation/schemas/training-plans";
+import { arrayMove } from "@dnd-kit/sortable";
+import { TrainingPlanExerciseFormInput } from "@/lib/validation/schemas/training_session_exercises";
+
+export type ExerciseField = TrainingPlanExerciseFormInput & {
+  fieldId: string;
+};
 
 type Props = {
-  session: TrainingPlanSession;
-  onUpdateSession: (updates: Partial<TrainingPlanSession>) => void;
+  session: SessionField;
+  sessionIndex: number;
   onDeleteSession: () => void;
-  onAddExercise: () => void;
-  onUpdateExercise: (
-    exerciseId: string,
-    updates: Partial<TrainingSessionExercise>
-  ) => void;
-  onDeleteExercise: (exerciseId: string) => void;
-  onReorderExercises: (activeId: string, overId: string) => void;
 };
 
 export default function SessionEditor({
   session,
-  onUpdateSession,
+  sessionIndex,
   onDeleteSession,
-  onAddExercise,
-  onUpdateExercise,
-  onDeleteExercise,
-  onReorderExercises,
 }: Props) {
+  const { control, register, watch, formState: {errors} } =
+    useFormContext<TrainingPlanFormInput>();
+
+  const {
+    fields: exercises,
+    append,
+    replace,
+  } = useFieldArray({
+    control,
+    name: `sessions.${sessionIndex}.exercises`,
+    keyName: "fieldId",
+  });
+
+  const watchedExercises =
+    watch(`sessions.${sessionIndex}.exercises`) ?? [];
+
+  const exercisesWithValues: ExerciseField[] = exercises.map((field, index) => ({
+    ...field,
+    ...watchedExercises[index],
+  }));
+
+  function onAddExercise() {
+    append({
+      id: undefined,
+      session_id: session.id ?? undefined,
+      name: "",
+      sets: undefined,
+      reps: undefined,
+      weight: undefined,
+      rest_seconds: undefined,
+      tempo: "",
+      order_index: exercises.length,
+    });
+  }
+
+  function removeExercise(exerciseIndex: number) {
+    const nextExercises = (watch(`sessions.${sessionIndex}.exercises`) ?? [])
+      .filter((_, index) => index !== exerciseIndex)
+      .map((exercise, index) => ({
+        ...exercise,
+        order_index: index,
+      }));
+
+    replace(nextExercises);
+  }
+
+  function reorderExercises(activeFieldId: string, overFieldId: string) {
+    const oldIndex = exercises.findIndex((e) => e.fieldId === activeFieldId);
+    const newIndex = exercises.findIndex((e) => e.fieldId === overFieldId);
+
+    if (oldIndex === -1 || newIndex === -1 || oldIndex === newIndex) return;
+
+    const reordered = arrayMove(
+      watch(`sessions.${sessionIndex}.exercises`) ?? [],
+      oldIndex,
+      newIndex
+    ).map((exercise, index) => ({
+      ...exercise,
+      order_index: index,
+    }));
+
+    replace(reordered);
+  }
+
   return (
     <div className="h-full overflow-auto bg-gray-1 dark:bg-dark">
       <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-6 px-4 py-5 md:px-6 lg:px-8">
@@ -50,13 +111,9 @@ export default function SessionEditor({
                     labelClassName="text-sm"
                     type="number"
                     placeholder="1"
-                    value={session.day_index?.toString() ?? ""}
-                    handleChange={(e) =>
-                      onUpdateSession({
-                        day_index: e.target.value ? Number(e.target.value) : null,
-                      })
-                    }
+                    error={errors.sessions && errors.sessions[sessionIndex]?.day_index?.message}
                     inputProps={{
+                      ...register(`sessions.${sessionIndex}.day_index`),
                       min: 1,
                     }}
                   />
@@ -66,10 +123,10 @@ export default function SessionEditor({
                     labelClassName="text-sm"
                     type="text"
                     placeholder="Upper body"
-                    value={session.title}
-                    handleChange={(e) =>
-                      onUpdateSession({ title: e.target.value })
-                    }
+                    error={errors.sessions && errors.sessions[sessionIndex]?.title?.message}
+                    inputProps={{
+                      ...register(`sessions.${sessionIndex}.title`),
+                    }}
                   />
                 </div>
 
@@ -77,11 +134,10 @@ export default function SessionEditor({
                   label="Notes"
                   labelClassName="text-sm"
                   placeholder="Session notes..."
+                  error={errors.sessions && errors.sessions[sessionIndex]?.notes?.message}
                   textareaProps={{
+                    ...register(`sessions.${sessionIndex}.notes`),
                     rows: 4,
-                    value: session.notes ?? "",
-                    onChange: (e) =>
-                      onUpdateSession({ notes: e.target.value }),
                     className: "resize-none",
                   }}
                 />
@@ -120,10 +176,10 @@ export default function SessionEditor({
 
           <div className="p-5">
             <ExerciseTable
-              exercises={session.exercises}
-              onUpdateExercise={onUpdateExercise}
-              onDeleteExercise={onDeleteExercise}
-              onReorderExercises={onReorderExercises}
+              sessionIndex={sessionIndex}
+              exercises={exercisesWithValues}
+              onDeleteExercise={removeExercise}
+              onReorderExercises={reorderExercises}
             />
           </div>
         </div>

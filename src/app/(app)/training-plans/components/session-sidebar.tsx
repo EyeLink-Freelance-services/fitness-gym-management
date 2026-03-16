@@ -14,26 +14,35 @@ import {
   verticalListSortingStrategy,
   sortableKeyboardCoordinates,
 } from "@dnd-kit/sortable";
-import { TrainingPlanSession } from "@/types/training-plan";
 import SessionListItem from "./session-list-item";
+import { TrainingPlanSessionFormInput } from "@/lib/validation/schemas/training-plan-sessions";
+import { useFormContext } from "react-hook-form";
+import { TrainingPlanFormInput } from "@/lib/validation/schemas/training-plans";
+
+export type SessionField = TrainingPlanSessionFormInput & {
+  fieldId: string;
+};
 
 type Props = {
-  sessions: TrainingPlanSession[];
-  selectedSessionId: string | null;
-  onSelectSession: (sessionId: string) => void;
+  sessions: SessionField[];
+  selectedSessionKey: string | null;
+  onSelectSessionKey: (fieldId: string) => void;
   onAddSession: () => void;
-  onReorderSessions: (activeId: string, overId: string) => void;
+  onReorderSessions: (activeFieldId: string, overFieldId: string) => void;
 };
 
 export default function SessionSidebar({
   sessions,
-  selectedSessionId,
-  onSelectSession,
+  selectedSessionKey,
+  onSelectSessionKey,
   onAddSession,
   onReorderSessions,
 }: Props) {
+
+  const {formState: {errors}} = useFormContext<TrainingPlanFormInput>();
+
   const sortedSessions = [...sessions].sort(
-    (a, b) => a.order_index - b.order_index
+    (a, b) => (a.order_index ?? 0) - (b.order_index ?? 0)
   );
 
   const sensors = useSensors(
@@ -72,7 +81,14 @@ export default function SessionSidebar({
           </button>
         </div>
 
+        {errors.sessions && (
+          <p className="text-body-xs text-red-500 dark:text-red-400">
+            {errors.sessions.message}
+          </p>
+        )}
+
         {sortedSessions.length === 0 ? (
+          
           <div className="rounded-2xl border border-dashed border-stroke bg-white p-5 text-sm text-dark-5 dark:border-dark-3 dark:bg-dark-2 dark:text-dark-6">
             No sessions yet.
           </div>
@@ -84,16 +100,16 @@ export default function SessionSidebar({
               onDragEnd={handleDragEnd}
             >
               <SortableContext
-                items={sortedSessions.map((session) => session.id)}
+                items={sortedSessions.map((session) => session.fieldId)}
                 strategy={verticalListSortingStrategy}
               >
                 <div className="space-y-2">
                   {sortedSessions.map((session) => (
                     <SessionListItem
-                      key={session.id}
+                      key={session.fieldId}
                       session={session}
-                      isActive={session.id === selectedSessionId}
-                      onClick={() => onSelectSession(session.id)}
+                      isActive={session.fieldId === selectedSessionKey}
+                      onClick={() => onSelectSessionKey(session.fieldId)}
                     />
                   ))}
                 </div>

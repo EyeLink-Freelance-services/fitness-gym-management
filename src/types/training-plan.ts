@@ -27,8 +27,10 @@ export type TrainingPlan = {
   id: string;
   company_id: string;
   created_by: string;
+  updated_by?: string;
   title: string;
   description: string | null;
+  level: number,
   status: TrainingPlanStatus;
   created_at: string;
   updated_at: string;

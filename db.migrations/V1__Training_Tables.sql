@@ -51,6 +51,11 @@ create index if not exists idx_training_exercises_session on public.training_ses
 --   created_at timestamptz not null default now()
 -- );
 
+alter table training_plans
+add column level int;
+alter table training_plans
+add column updated_by uuid not null references public.profiles(id);
+
 --===========================================
 
 -- Policies
@@ -284,6 +289,8 @@ begin
   end if;
 
   if not (
+    public.is_company_owner(v_company_id)
+    or
     public.has_company_role(v_company_id, 'admin')
     or public.has_company_role(v_company_id, 'staff')
     or public.has_company_role(v_company_id, 'coach')
@@ -295,12 +302,16 @@ begin
     company_id,
     name,
     description,
+    level,
+    status,
     created_by
   )
   values (
     v_company_id,
     p_payload->>'name',
     p_payload->>'description',
+    p_payload->>'level',
+    p_payload->>'status',
     auth.uid()
   )
   returning id into v_plan_id;

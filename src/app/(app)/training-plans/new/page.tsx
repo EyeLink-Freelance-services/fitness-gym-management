@@ -1,6 +1,6 @@
 'use client'
 
-import { TrainingPlanStatus } from "@/types/training-plan";
+import { TrainingPlan, TrainingPlanStatus } from "@/types/training-plan";
 import TrainingPlanBuilder from "../components/training-plan-builder";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import { ArrowLeftIcon } from "@/assets/icons";
@@ -14,6 +14,7 @@ function getTrainingPlan() {
 		created_by: "user-1",
 		title: "Fat Loss Beginner Program",
 		description: "A simple 3-day beginner plan focused on fat loss and consistency.",
+		level: 1,
 		status: "draft" as TrainingPlanStatus,
 		created_at: new Date().toISOString(),
 		updated_at: new Date().toISOString(),
@@ -72,13 +73,13 @@ function getTrainingPlan() {
 				],
 			},
 		],
-	};
+	} as TrainingPlan;
 }
 
 
 export default function NewTrainingPlanPage() {
 	const router = useRouter();
-	const initialPlan = getTrainingPlan();
+	// const initialPlan = getTrainingPlan();
 	return (
 		<div>
 			<ArrowLeftIcon onClick={() => router.back()} className="mb-2 cursor-pointer" />
@@ -86,7 +87,7 @@ export default function NewTrainingPlanPage() {
 				New Training Plan
 			</h2>
 			<div className="min-h-screen bg-slate-50">
-				<TrainingPlanBuilder initialPlan={initialPlan} />
+				<TrainingPlanBuilder />
 			</div>	
 		</div>
 	);

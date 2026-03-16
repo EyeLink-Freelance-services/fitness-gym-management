@@ -4,18 +4,21 @@ import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import { ArrowLeftIcon } from "@/assets/icons";
 import Link from "next/link";
 import { ROUTES } from "@/constants/route";
+import { TrainingPlanFormInput } from "@/lib/validation/schemas/training-plans";
 
 type PageProps = {
   params: Promise<{ id: string }>;
 };
 
-async function getTrainingPlan(id: string): Promise<TrainingPlan> {
+async function getTrainingPlan(id: string): Promise<TrainingPlanFormInput> {
   return {
     id,
     company_id: "company-1",
     created_by: "user-1",
+    updated_by: null,
     title: "Fat Loss Beginner Program",
     description: "A simple 3-day beginner plan focused on fat loss and consistency.",
+    level:1,
     status: "draft",
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
@@ -74,7 +77,7 @@ async function getTrainingPlan(id: string): Promise<TrainingPlan> {
         ],
       },
     ],
-  };
+  } as TrainingPlanFormInput;
 }
 
 export default async function Page({ params }: PageProps) {

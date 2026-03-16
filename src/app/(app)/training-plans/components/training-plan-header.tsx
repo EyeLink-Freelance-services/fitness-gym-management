@@ -2,7 +2,9 @@ import InputGroup from "@/components/FormElements/InputGroup";
 import { TextAreaGroup } from "@/components/FormElements/InputGroup/text-area";
 import { Select } from "@/components/FormElements/select";
 import { Button } from "@/components/ui-elements/button";
+import { TrainingPlanFormInput } from "@/lib/validation/schemas/training-plans";
 import { TrainingPlanStatus } from "@/types/training-plan";
+import { useFormContext } from "react-hook-form";
 
 type Props = {
   title: string;
@@ -26,15 +28,10 @@ const statusItems: { value: TrainingPlanStatus; label: string }[] = [
   { value: "archived", label: "Archived" },
 ];
 
-export default function TrainingPlanHeader({
-  title,
-  description,
-  status,
-  onChangeTitle,
-  onChangeDescription,
-  onChangeStatus,
-  onSave,
-}: Props) {
+export default function TrainingPlanHeader() {
+  const {register, setValue, watch, formState: {errors, isSubmitting}} = useFormContext<TrainingPlanFormInput>();
+  const status = watch("status")
+
   return (
     <div className="border-b border-stroke bg-white dark:border-dark-3 dark:bg-dark">
       <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-4 px-4 py-4 md:px-6 lg:px-8">
@@ -44,9 +41,9 @@ export default function TrainingPlanHeader({
               label=""
               type="text"
               placeholder="Training plan title"
-              value={title}
-              handleChange={(e) => onChangeTitle(e.target.value)}
+              error={errors.title?.message}
               inputProps={{
+                ...register('title'),
                 className: "text-xl font-semibold",
               }}
             />
@@ -54,10 +51,10 @@ export default function TrainingPlanHeader({
             <TextAreaGroup
               label=""
               placeholder="Add a short description..."
+              error={errors.description?.message}
               textareaProps={{
+                ...register('description'),
                 rows: 3,
-                value: description ?? "",
-                onChange: (e) => onChangeDescription(e.target.value),
                 className: "resize-none",
               }}
             />
@@ -71,7 +68,7 @@ export default function TrainingPlanHeader({
 
               <div className="mt-3 flex items-center gap-2">
                 <span
-                  className={`inline-flex rounded-full px-3 py-1 text-xs font-medium capitalize ${statusStyles[status]}`}
+                  className={`inline-flex rounded-full px-3 py-1 text-xs font-medium capitalize ${statusStyles[status as TrainingPlanStatus]}`}
                 >
                   {status}
                 </span>
@@ -82,17 +79,19 @@ export default function TrainingPlanHeader({
               label=""
               placeholder="Select status"
               items={statusItems}
+              error={errors.status?.message}
+              defaultValue={status}
               selectProps={{
-                value: status,
-                onChange: (e) =>
-                  onChangeStatus(e.target.value as TrainingPlanStatus),
+                onChange: (e) => {
+                  setValue('status', e.target.value as TrainingPlanStatus, {shouldValidate: true})
+                }
               }}
             />
 
             <Button
               type="submit"
-              onClick={onSave}
-              label="Save Plan"
+              disabled={isSubmitting}
+              label={isSubmitting ? 'Saving...' : 'Save Plan'}
               className="rounded-lg bg-primary text-md font-medium text-white transition hover:opacity-90"
             />
           </div>

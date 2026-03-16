@@ -11,204 +11,6 @@ begin
 end;
 $$;
 
--- set active_company_id after logged in
-DROP FUNCTION public.ensure_active_company_or_personal_workspace();
-create or replace function public.ensure_active_company_or_personal_workspace()
-returns jsonb
-language plpgsql
-security definer
-as $$
-declare
-  v_company uuid;
-  v_company_user_id uuid;
-  result jsonb;
-begin
-  -- 1) if already set on profile, use it
-  select p.active_company_id
-  into v_company
-  from public.profiles p
-  where p.id = auth.uid();
-
-  -- 2) otherwise pick best existing membership
-  if v_company is null then
-    select cu.company_id
-    into v_company
-    from public.company_user cu
-    where cu.user_id = auth.uid()
-    order by cu.is_owner desc, cu.joined_at desc
-    limit 1;
-  end if;
-
-  -- 3) if no company, create personal workspace + owner link
-  if v_company is null then
-    insert into public.companies(name, mode)
-    values ('Personal Workspace', 'personal')
-    returning id into v_company;
-
-    insert into public.company_user(user_id, company_id, is_owner)
-    values (auth.uid(), v_company, true)
-    returning id into v_company_user_id;
-  end if;
-
-  -- 4) ensure active company is stored on profile
-  update public.profiles
-  set active_company_id = v_company,
-      updated_at = now()
-  where id = auth.uid();
-
-  -- 5) get company_user id for that active company
-  if v_company_user_id is null then
-    select cu.id
-    into v_company_user_id
-    from public.company_user cu
-    where cu.user_id = auth.uid()
-      and cu.company_id = v_company
-    limit 1;
-  end if;
-
-  -- 6) return full auth/menu context
-  select jsonb_build_object(
-    'profile', jsonb_build_object(
-      'id', p.id,
-      'first_name', p.first_name,
-      'last_name', p.last_name,
-      'picture_url', p.picture_url,
-      'active_company_id', p.active_company_id
-    ),
-    'company', jsonb_build_object(
-      'id', c.id,
-      'name', c.name,
-      'mode', c.mode
-    ),
-    'company_user', jsonb_build_object(
-      'id', cu.id,
-      'user_id', cu.user_id,
-      'company_id', cu.company_id,
-      'is_owner', cu.is_owner,
-      'joined_at', cu.joined_at
-    ),
-    'roles', coalesce(roles_data.roles, '[]'::jsonb),
-    'permissions', coalesce(perms_data.permissions, '[]'::jsonb)
-  )
-  into result
-  from public.profiles p
-  join public.companies c
-    on c.id = v_company
-  join public.company_user cu
-    on cu.user_id = p.id
-   and cu.company_id = c.id
-  left join lateral (
-    select jsonb_agg(
-      distinct jsonb_build_object(
-        'id', cr.id,
-        'name', cr.name
-      )
-    ) as roles
-    from public.company_user_role cur
-    join public.company_role cr
-      on cr.id = cur.company_role_id
-    where cur.company_user_id = cu.id
-  ) roles_data on true
-  left join lateral (
-    select jsonb_agg(
-      distinct jsonb_build_object(
-        'role_id', cr.id,
-        'role_name', cr.name,
-        'module', crp.module,
-        'can_read', crp.can_read,
-        'can_write', crp.can_write,
-        'can_delete', crp.can_delete
-      )
-    ) as permissions
-    from public.company_user_role cur
-    join public.company_role cr
-      on cr.id = cur.company_role_id
-    join public.company_role_permission crp
-      on crp.company_role_id = cr.id
-    where cur.company_user_id = cu.id
-  ) perms_data on true
-  where p.id = auth.uid();
-
-  return result;
-end;
-$$;
-
-REVOKE ALL ON FUNCTION public.ensure_active_company_or_personal_workspace() FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION public.ensure_active_company_or_personal_workspace() TO authenticated;
-
--- Active company ids for current user (Optional)  NOT YET RAN (it is for SUPER ADMIN)
-create or replace function public.current_company_ids()
-returns uuid[]
-language sql
-stable
-as $$
-  select coalesce(array_agg(cu.company_id), '{}')::uuid[]
-  from public.company_user cu
-  where cu.user_id = auth.uid()
-$$;
-
--- Is current user in company?
-CREATE OR REPLACE FUNCTION public.is_company_member(
-  _company_id uuid
-)
-RETURNS boolean
-LANGUAGE sql
-STABLE
-SECURITY DEFINER
-SET search_path = public, auth
-AS $$
-  SELECT EXISTS (
-    SELECT 1
-    FROM public.company_user cu
-    WHERE cu.company_id = _company_id
-      AND cu.user_id = auth.uid()
-  );
-$$;
-
-ALTER FUNCTION public.is_company_member(uuid) OWNER TO postgres;
-REVOKE ALL ON FUNCTION public.is_company_member(uuid) FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION public.is_company_member(uuid) TO authenticated;
-
--- Does current user have a role in company?
-CREATE OR REPLACE FUNCTION public.has_company_role(
-  _company_id uuid,
-  _role text
-)
-RETURNS boolean
-LANGUAGE sql
-STABLE
-SECURITY DEFINER
-SET search_path = public, auth
-AS $$
-  SELECT EXISTS (
-    SELECT 1
-    FROM public.company_user cu
-    JOIN public.company_user_role cur
-      ON cur.company_user_id = cu.id
-    JOIN public.company_role cr
-      ON cr.id = cur.company_role_id
-    WHERE cu.company_id = _company_id
-      AND cu.user_id = auth.uid()
-      AND lower(cr.name) = lower(_role)
-  );
-$$;
-
-ALTER FUNCTION public.has_company_role(uuid, text) OWNER TO postgres;
-REVOKE ALL ON FUNCTION public.has_company_role(uuid, text) FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION public.has_company_role(uuid, text) TO authenticated;
-
--- =========================================================
-
--- TODO: Add Check constraint for enums
--- =========================================================
-do $$ begin
-  create type public.company_common_role as enum ('admin','staff','coach');
-exception when duplicate_object then null; end $$;
-
-do $$ begin
-  create type public.company_mode as enum ('personal','company');
-exception when duplicate_object then null; end $$;
-
 -- =========================================================
 
 create table public.profiles
@@ -439,6 +241,232 @@ with check (
       and public.has_company_role(cu.company_id, 'admin')
   )
 );
+
+-- set active_company_id after logged in
+DROP FUNCTION public.ensure_active_company_or_personal_workspace();
+create or replace function public.ensure_active_company_or_personal_workspace()
+returns jsonb
+language plpgsql
+security definer
+as $$
+declare
+  v_company uuid;
+  v_company_user_id uuid;
+  result jsonb;
+begin
+  -- 1) if already set on profile, use it
+  select p.active_company_id
+  into v_company
+  from public.profiles p
+  where p.id = auth.uid();
+
+  -- 2) otherwise pick best existing membership
+  if v_company is null then
+    select cu.company_id
+    into v_company
+    from public.company_user cu
+    where cu.user_id = auth.uid()
+    order by cu.is_owner desc, cu.joined_at desc
+    limit 1;
+  end if;
+
+  -- 3) if no company, create personal workspace + owner link
+  if v_company is null then
+    insert into public.companies(name, mode)
+    values ('Personal Workspace', 'personal')
+    returning id into v_company;
+
+    insert into public.company_user(user_id, company_id, is_owner)
+    values (auth.uid(), v_company, true)
+    returning id into v_company_user_id;
+  end if;
+
+  -- 4) ensure active company is stored on profile
+  update public.profiles
+  set active_company_id = v_company,
+      updated_at = now()
+  where id = auth.uid();
+
+  -- 5) get company_user id for that active company
+  if v_company_user_id is null then
+    select cu.id
+    into v_company_user_id
+    from public.company_user cu
+    where cu.user_id = auth.uid()
+      and cu.company_id = v_company
+    limit 1;
+  end if;
+
+  -- 6) return full auth/menu context
+  select jsonb_build_object(
+    'profile', jsonb_build_object(
+      'id', p.id,
+      'first_name', p.first_name,
+      'last_name', p.last_name,
+      'picture_url', p.picture_url,
+      'active_company_id', p.active_company_id
+    ),
+    'company', jsonb_build_object(
+      'id', c.id,
+      'name', c.name,
+      'mode', c.mode
+    ),
+    'company_user', jsonb_build_object(
+      'id', cu.id,
+      'user_id', cu.user_id,
+      'company_id', cu.company_id,
+      'is_owner', cu.is_owner,
+      'joined_at', cu.joined_at
+    ),
+    'roles', coalesce(roles_data.roles, '[]'::jsonb),
+    'permissions', coalesce(perms_data.permissions, '[]'::jsonb)
+  )
+  into result
+  from public.profiles p
+  join public.companies c
+    on c.id = v_company
+  join public.company_user cu
+    on cu.user_id = p.id
+   and cu.company_id = c.id
+  left join lateral (
+    select jsonb_agg(
+      distinct jsonb_build_object(
+        'id', cr.id,
+        'name', cr.name
+      )
+    ) as roles
+    from public.company_user_role cur
+    join public.company_role cr
+      on cr.id = cur.company_role_id
+    where cur.company_user_id = cu.id
+  ) roles_data on true
+  left join lateral (
+    select jsonb_agg(
+      distinct jsonb_build_object(
+        'role_id', cr.id,
+        'role_name', cr.name,
+        'module', crp.module,
+        'can_read', crp.can_read,
+        'can_write', crp.can_write,
+        'can_delete', crp.can_delete
+      )
+    ) as permissions
+    from public.company_user_role cur
+    join public.company_role cr
+      on cr.id = cur.company_role_id
+    join public.company_role_permission crp
+      on crp.company_role_id = cr.id
+    where cur.company_user_id = cu.id
+  ) perms_data on true
+  where p.id = auth.uid();
+
+  return result;
+end;
+$$;
+
+REVOKE ALL ON FUNCTION public.ensure_active_company_or_personal_workspace() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.ensure_active_company_or_personal_workspace() TO authenticated;
+
+-- Active company ids for current user (Optional)  NOT YET RAN (it is for SUPER ADMIN)
+create or replace function public.current_company_ids()
+returns uuid[]
+language sql
+stable
+as $$
+  select coalesce(array_agg(cu.company_id), '{}')::uuid[]
+  from public.company_user cu
+  where cu.user_id = auth.uid()
+$$;
+
+-- Is current user in company?
+CREATE OR REPLACE FUNCTION public.is_company_member(
+  _company_id uuid
+)
+RETURNS boolean
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public, auth
+AS $$
+  SELECT EXISTS (
+    SELECT 1
+    FROM public.company_user cu
+    WHERE cu.company_id = _company_id
+      AND cu.user_id = auth.uid()
+  );
+$$;
+
+ALTER FUNCTION public.is_company_member(uuid) OWNER TO postgres;
+REVOKE ALL ON FUNCTION public.is_company_member(uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.is_company_member(uuid) TO authenticated;
+
+-- Does current user have a role in company?
+CREATE OR REPLACE FUNCTION public.has_company_role(
+  _company_id uuid,
+  _role text
+)
+RETURNS boolean
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public, auth
+AS $$
+  SELECT EXISTS (
+    SELECT 1
+    FROM public.company_user cu
+    JOIN public.company_user_role cur
+      ON cur.company_user_id = cu.id
+    JOIN public.company_role cr
+      ON cr.id = cur.company_role_id
+    WHERE cu.company_id = _company_id
+      AND cu.user_id = auth.uid()
+      AND lower(cr.name) = lower(_role)
+  );
+$$;
+
+ALTER FUNCTION public.has_company_role(uuid, text) OWNER TO postgres;
+REVOKE ALL ON FUNCTION public.has_company_role(uuid, text) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.has_company_role(uuid, text) TO authenticated;
+
+-- is company owner?
+CREATE OR REPLACE FUNCTION public.is_company_owner(
+  _company_id uuid
+)
+RETURNS boolean
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public, auth
+AS $$
+  SELECT EXISTS (
+    SELECT 1
+    FROM public.company_user cu
+    WHERE cu.company_id = _company_id
+      AND cu.user_id = auth.uid()
+      AND cu.is_owner = true
+  );
+$$;
+
+ALTER FUNCTION public.is_company_owner(uuid) OWNER TO postgres;
+REVOKE ALL ON FUNCTION public.is_company_owner(uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.is_company_owner(uuid) TO authenticated;
+
+-- =========================================================
+
+-- TODO: Add Check constraint for enums
+-- =========================================================
+do $$ begin
+  create type public.company_common_role as enum ('admin','staff','coach');
+exception when duplicate_object then null; end $$;
+
+do $$ begin
+  create type public.company_mode as enum ('personal','company');
+exception when duplicate_object then null; end $$;
+
+--=============================================
+
+--GRANT
+--============================================
 
 GRANT USAGE ON SCHEMA public TO authenticated;
 GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO authenticated;

@@ -14,28 +14,29 @@ import {
   verticalListSortingStrategy,
   sortableKeyboardCoordinates,
 } from "@dnd-kit/sortable";
-
-import { TrainingSessionExercise } from "@/types/training-plan";
 import ExerciseRow from "./exercise-row";
+import { ExerciseField } from "./session-editor";
+import { useFormContext } from "react-hook-form";
+import { TrainingPlanFormInput } from "@/lib/validation/schemas/training-plans";
 
 type Props = {
-  exercises: TrainingSessionExercise[];
-  onUpdateExercise: (
-    exerciseId: string,
-    updates: Partial<TrainingSessionExercise>
-  ) => void;
-  onDeleteExercise: (exerciseId: string) => void;
+  sessionIndex: number;
+  exercises: ExerciseField[];
+  onDeleteExercise: (exerciseIndex: number) => void;
   onReorderExercises: (activeId: string, overId: string) => void;
 };
 
 export default function ExerciseTable({
+  sessionIndex,
   exercises,
-  onUpdateExercise,
   onDeleteExercise,
   onReorderExercises,
 }: Props) {
+
+  const { formState: {errors} } = useFormContext<TrainingPlanFormInput>();
+
   const sortedExercises = [...exercises].sort(
-    (a, b) => a.order_index - b.order_index
+    (a, b) => (a.order_index ?? 0) - (b.order_index ?? 0)
   );
 
   const sensors = useSensors(
@@ -47,7 +48,6 @@ export default function ExerciseTable({
 
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
-
     if (!over || active.id === over.id) return;
 
     onReorderExercises(String(active.id), String(over.id));
@@ -55,13 +55,18 @@ export default function ExerciseTable({
 
   return (
     <div className="overflow-hidden rounded-2xl border border-stroke bg-white shadow-sm dark:border-dark-3 dark:bg-dark-2">
+      {errors.sessions && errors.sessions[sessionIndex]?.exercises && (
+        <p className="pl-2 text-body-xs text-red-500 dark:text-red-400">
+          {errors.sessions[sessionIndex]?.exercises.message}
+        </p>
+      )}
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}
       >
         <SortableContext
-          items={sortedExercises.map((exercise) => exercise.id)}
+          items={sortedExercises.map((exercise) => exercise.fieldId)}
           strategy={verticalListSortingStrategy}
         >
           {sortedExercises.length === 0 ? (
@@ -77,22 +82,19 @@ export default function ExerciseTable({
             </div>
           ) : (
             <>
-              {/* Mobile */}
               <div className="divide-y divide-stroke dark:divide-dark-3 md:hidden">
-                {sortedExercises.map((exercise) => (
+                {sortedExercises.map((exercise, exerciseIndex) => (
                   <ExerciseRow
-                    key={exercise.id}
+                    key={exercise.fieldId}
                     exercise={exercise}
+                    exerciseIndex={exerciseIndex}
+                    sessionIndex={sessionIndex}
                     mode="mobile"
-                    onUpdate={(updates) =>
-                      onUpdateExercise(exercise.id, updates)
-                    }
-                    onDelete={() => onDeleteExercise(exercise.id)}
+                    onDelete={() => onDeleteExercise(exerciseIndex)}
                   />
                 ))}
               </div>
 
-              {/* Desktop */}
               <div className="hidden overflow-x-auto md:block">
                 <table className="w-full border-collapse">
                   <thead className="bg-gray-1 dark:bg-dark">
@@ -109,15 +111,14 @@ export default function ExerciseTable({
                   </thead>
 
                   <tbody className="divide-y divide-stroke dark:divide-dark-3">
-                    {sortedExercises.map((exercise) => (
+                    {sortedExercises.map((exercise, exerciseIndex) => (
                       <ExerciseRow
-                        key={exercise.id}
+                        key={exercise.fieldId}
                         exercise={exercise}
+                        exerciseIndex={exerciseIndex}
+                        sessionIndex={sessionIndex}
                         mode="desktop"
-                        onUpdate={(updates) =>
-                          onUpdateExercise(exercise.id, updates)
-                        }
-                        onDelete={() => onDeleteExercise(exercise.id)}
+                        onDelete={() => onDeleteExercise(exerciseIndex)}
                       />
                     ))}
                   </tbody>
