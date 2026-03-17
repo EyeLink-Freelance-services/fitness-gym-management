@@ -5,7 +5,7 @@ import { cva } from "class-variance-authority";
 import { toast } from "sonner";
 
 export const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2.5 text-center font-medium hover:bg-opacity-90 font-medium transition focus:outline-none",
+  "inline-flex items-center justify-center gap-2.5 text-center font-medium hover:bg-opacity-90 font-medium transition focus:outline-none disabled:cursor-not-allowed disabled:opacity-70 disabled:bg-gray-4 disabled:text-dark-5 dark:disabled:bg-dark-3 dark:disabled:text-dark-6 disabled:hover:bg-opacity-100",
   {
     variants: {
       variant: {

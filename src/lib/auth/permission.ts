@@ -19,8 +19,17 @@ function isPersonalOwner(auth?: IAuthContext) {
   return auth?.isOwner && auth?.company.mode === "personal";
 }
 
+function isCompanyCoach(auth?: IAuthContext) {
+  return (
+    auth?.company?.mode === "company" &&
+    auth?.permissions?.includes(AuthPermission.dashboard.companyCoach) &&
+    !auth?.permissions?.includes(AuthPermission.dashboard.company)
+  );
+}
+
 function canAccessItem(item: NavItem | SubItem, auth?: IAuthContext) {
   const personalOwner = isPersonalOwner(auth);
+  const companyCoachOnly = isCompanyCoach(auth);
 
   if (personalOwner) {
     const blockedPermissions = [
@@ -37,6 +46,11 @@ function canAccessItem(item: NavItem | SubItem, auth?: IAuthContext) {
     return true;
   }
 
+  // Company coach: hide company coach nav if they have full company access (admin)
+  if (companyCoachOnly && item.permission === AuthPermission.dashboard.company) {
+    return false;
+  }
+
   if (!item.permission) {
     return true;
   }
@@ -48,8 +62,6 @@ export function getAuthorizedNav(
   itemSections: NavSection[],
   auth: IAuthContext | undefined
 ): NavSection[] {
-  console.log("auth", auth);
-console.log("permissions", auth?.permissions);
   return itemSections
     .map((section) => ({
       ...section,
@@ -71,5 +83,24 @@ console.log("permissions", auth?.permissions);
         }),
     }))
     .filter((section) => section.items.length > 0);
+}
+
+export function getRedirectPathForAuth(auth: IAuthContext | null): string | null {
+  if (!auth) return null;
+
+  if (auth.permissions?.includes(AuthPermission.dashboard.companyCoach) && !auth.permissions?.includes(AuthPermission.dashboard.company)) {
+    return "/dashboard/company";
+  }
+  if (auth.permissions?.includes(AuthPermission.dashboard.personalCoach) && auth.company?.mode === "personal") {
+    return "/dashboard/personal-coach";
+  }
+  if (auth.permissions?.includes(AuthPermission.dashboard.superAdmin)) {
+    return "/dashboard/super-admin";
+  }
+  if (auth.permissions?.includes(AuthPermission.dashboard.company)) {
+    return "/dashboard/company";
+  }
+
+  return null;
 }
 

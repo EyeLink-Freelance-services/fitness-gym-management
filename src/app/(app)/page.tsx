@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { PaymentsOverview } from "@/components/Charts/payments-overview";
 import { UsedDevices } from "@/components/Charts/used-devices";
 import { WeeksProfit } from "@/components/Charts/weeks-profit";
@@ -11,6 +12,8 @@ import { OverviewCardsGroup } from "../../components/Dashboard/overview-cards";
 import { OverviewCardsSkeleton } from "../../components/Dashboard/overview-cards/skeleton";
 import { RegionLabels } from "../../components/Dashboard/region-labels";
 import { getTopChannels } from "@/data/superAdmin";
+import { getAuthContext } from "@/lib/auth/get-auth-context";
+import { getRedirectPathForAuth } from "@/lib/auth/permission";
 
 type PropsType = {
   searchParams: Promise<{
@@ -19,6 +22,12 @@ type PropsType = {
 };
 
 export default async function Home({ searchParams }: PropsType) {
+  const auth = await getAuthContext();
+  const redirectPath = getRedirectPathForAuth(auth);
+  if (redirectPath) {
+    redirect(redirectPath);
+  }
+
   const { selected_time_frame } = await searchParams;
   const extractTimeFrame = createTimeFrameExtractor(selected_time_frame);
 

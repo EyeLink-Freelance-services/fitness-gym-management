@@ -13,6 +13,7 @@ type PropsType = {
   selectProps?: React.ComponentPropsWithRef<"select">;
   error?: string;
   id?: string;
+  required?: boolean;
 } & (
   | { placeholder?: string; defaultValue: string }
   | { placeholder: string; defaultValue?: string }
@@ -28,11 +29,12 @@ export function Select({
   selectProps,
   error,
   id: providedId,
+  required,
 }: PropsType) {
   const { className: selectClassName, onChange, ...restSelectProps } = selectProps ?? {};
   const autoId = useId();
   const id = providedId ?? restSelectProps.id ?? autoId;
-  const isRequired = restSelectProps.required;
+  const isRequired = restSelectProps.required ?? required;
   const defaultFormValue = (restSelectProps.defaultValue ?? defaultValue) || "";
 
   const [isOptionSelected, setIsOptionSelected] = useState(false);
@@ -55,7 +57,9 @@ export function Select({
 
         <select
           id={id}
-          defaultValue={defaultFormValue}
+          {...(restSelectProps.value !== undefined
+            ? { value: restSelectProps.value ?? "" }
+            : { defaultValue: defaultFormValue })}
           onChange={(e) => {
             setIsOptionSelected(true);
             onChange?.(e);

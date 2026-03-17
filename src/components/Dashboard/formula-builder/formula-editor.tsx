@@ -7,6 +7,7 @@ import type {
   FormulaDefinition,
   FormulaValidationResult,
 } from "@/types/dashboard/formula-builder";
+
 type FormulaEditorProps = {
   formula: FormulaDefinition;
   expression: string;
@@ -28,9 +29,6 @@ export function FormulaEditor({
             <h3 className="text-body-2xlg font-bold text-dark dark:text-white">
               {formula.label}
             </h3>
-            <span className="rounded-full bg-green/10 px-3 py-1 text-xs font-medium text-green">
-              active
-            </span>
           </div>
           <p className="mt-2 text-sm text-dark-6 dark:text-dark-5">
             Key: `{formula.key}` {formula.unit ? `· Unit ${formula.unit}` : ""}
@@ -42,7 +40,6 @@ export function FormulaEditor({
           )}
         </div>
         <div className="flex gap-2">
-          <Button label="Duplicate" size="small" variant="outlineDark" />
           <Button label="Delete" size="small" variant="danger" />
         </div>
       </div>

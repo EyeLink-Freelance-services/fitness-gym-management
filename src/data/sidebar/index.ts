@@ -79,7 +79,29 @@ export const NAV_DATA: NavSection[] = [
         permission: AuthPermission.dashboard.company
       },
       {
-        title: "Dashboard",
+        title: "Coach Dashboard",
+        icon: Icons.HomeIcon,
+        items: [
+          {
+            title: "My Clients",
+            url: ROUTES.DASHBOARD.COMPANY.CLIENTS,
+            permission: AuthPermission.dashboard.companyCoach
+          },
+          {
+            title: "Data Entry",
+            url: ROUTES.DASHBOARD.COMPANY.DATA_ENTRY,
+            permission: AuthPermission.dashboard.companyCoach
+          },
+          {
+            title: "Progress",
+            url: ROUTES.DASHBOARD.COMPANY.PROGRESS,
+            permission: AuthPermission.dashboard.companyCoach
+          }
+        ],
+        permission: AuthPermission.dashboard.companyCoach
+      },
+      {
+        title: "Main Dashboard",
         icon: Icons.HomeIcon,
         items: [
           {

@@ -1,5 +1,3 @@
-import type { SchemaOwnerType } from "@/types/dashboard/coach-schema";
-
 export type FormulaVariableSource = "field" | "formula" | "constant";
 
 export interface FormulaVariableReference {
@@ -10,7 +8,6 @@ export interface FormulaVariableReference {
 
 export interface FormulaDefinition {
   id: string;
-  ownerType: SchemaOwnerType;
   label: string;
   key: string;
   unit?: string;
@@ -18,23 +15,6 @@ export interface FormulaDefinition {
   expression: string;
   description?: string;
   showPortal: boolean;
-  sortOrder: number;
-  activeVersion: string;
-  recordCount: number;
-  dependencies: string[];
-  detectedVariables: FormulaVariableReference[];
-}
-
-export interface FormulaVersionSummary {
-  id: string;
-  formulaId: string;
-  version: string;
-  expression: string;
-  note: string;
-  recordCount: number;
-  createdAt: string;
-  changedBy: string;
-  isActive: boolean;
 }
 
 export interface FormulaDependencyNode {

@@ -38,7 +38,6 @@ export interface FormulaSnapshotPreview {
   id: string;
   label: string;
   expression: string;
-  version: string;
   result: string;
 }
 

@@ -31,7 +31,7 @@ export function FieldGroupCard({ group }: FieldGroupCardProps) {
           label="+ Field"
           size="small"
           variant="outlineDark"
-          toastMessage="Field editing is prepared for phase 2."
+          toastMessage="To configure."
         />
       </div>
 
@@ -39,12 +39,6 @@ export function FieldGroupCard({ group }: FieldGroupCardProps) {
         {group.fields.map((field) => (
           <FieldRow key={field.id} field={field} />
         ))}
-        <button
-          type="button"
-          className="rounded-[10px] border border-dashed border-dark-3 px-4 py-3 text-left text-sm text-dark-5 transition-colors hover:border-primary hover:text-primary"
-        >
-          + Add field to this group
-        </button>
       </div>
     </section>
   );

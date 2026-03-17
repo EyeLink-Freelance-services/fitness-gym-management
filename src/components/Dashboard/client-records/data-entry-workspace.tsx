@@ -41,14 +41,13 @@ export function DataEntryWorkspace({
 
   const { computedMetrics, formulaSnapshots } = useMemo(() => {
     const numericScope = getNumericScope(values);
-    const sorted = [...formulas].sort((a, b) => a.sortOrder - b.sortOrder);
     let resolved: Record<string, number> = {};
     try {
       resolved = evaluateFormulaCollection(formulas, numericScope);
     } catch {
       // keep empty
     }
-    const metrics: ComputedMetric[] = sorted.map((formula) => ({
+    const metrics: ComputedMetric[] = formulas.map((formula) => ({
       id: `metric-${formula.key}`,
       label: formula.label,
       key: formula.key,
@@ -58,11 +57,10 @@ export function DataEntryWorkspace({
           : "—",
       unit: formula.unit,
     }));
-    const snapshots: FormulaSnapshotPreview[] = sorted.map((formula) => ({
+    const snapshots: FormulaSnapshotPreview[] = formulas.map((formula) => ({
       id: `snapshot-${formula.key}`,
       label: formula.label,
       expression: formula.expression,
-      version: formula.activeVersion,
       result:
         resolved[formula.key] !== undefined
           ? `${formatMetricValue(resolved[formula.key], formula.decimals)} ${formula.unit ?? ""}`.trim()

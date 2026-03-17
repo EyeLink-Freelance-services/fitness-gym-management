@@ -40,6 +40,7 @@ export interface CompanyBranchField {
 
 export interface CompanyFormData {
   companyName: string;
+  companyLogo?: FileList;
   brn: string;
   contactNumber: string;
   addressLine1: string;
@@ -77,6 +78,7 @@ export interface PersonalCoachFormData {
   hourlyRate: number;
   languages: string;
   bio: string;
+  profilePhoto?: FileList;
   availability: string;
 }
 

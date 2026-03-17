@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { useEffect } from "react";
 import type { StaffCoachFormData, StaffCoachFormProps } from "@/types/forms";
 import { COACH_ROLES, STAFF_ROLES } from "@/data/dashboardForm";
@@ -20,14 +20,21 @@ import Label from "../FormElements/common/label";
 export default function StaffCoachForm({
   onPersonalCoach,
 }: StaffCoachFormProps) {
-  const { register, handleSubmit, watch, setValue } =
-    useForm<StaffCoachFormData>({
-      defaultValues: {
-        userType: "staff",
-        gymBranch: "MyFit - Trianon",
-        accessLevel: "Viewer",
-      },
-    });
+  const {
+    register,
+    control,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors, isValid, isSubmitting },
+  } = useForm<StaffCoachFormData>({
+        mode: "all",
+    defaultValues: {
+      userType: "staff",
+      gymBranch: "MyFit - Trianon",
+      accessLevel: "Viewer",
+    },
+  });
 
   const userType = watch("userType");
 
@@ -127,16 +134,21 @@ export default function StaffCoachForm({
           })}
         />
 
-        <Select
-          label="Role / Position"
-          placeholder="Select a role"
-          items={(userType === "staff" ? STAFF_ROLES : COACH_ROLES).map(
-            (r) => ({
-              value: r,
-              label: r,
-            }),
+        <Controller
+          name="role"
+          control={control}
+          rules={{ required: "Role is required" }}
+          render={({ field }) => (
+            <Select
+              label="Role / Position"
+              placeholder="Select a role"
+              items={(userType === "staff" ? STAFF_ROLES : COACH_ROLES).map(
+                (r) => ({ value: r, label: r }),
+              )}
+              error={errors.role?.message}
+              selectProps={{ ...field, required: true }}
+            />
           )}
-          selectProps={register("role", { required: "Role is required" })}
         />
 
         <TextAreaGroup
@@ -145,7 +157,12 @@ export default function StaffCoachForm({
           textareaProps={register("notes")}
         />
 
-        <Button type="submit" label="Create User" className="w-full" />
+        <Button
+          type="submit"
+          label="Create User"
+          className="w-full"
+          disabled={!isValid || isSubmitting}
+        />
       </form>
     </div>
   );

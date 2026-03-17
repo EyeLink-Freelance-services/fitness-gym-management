@@ -12,6 +12,8 @@ export const ROUTES = {
       STAFF: "/dashboard/company/staff",
       SCHEMA: "/dashboard/company/schema",
       FORMULAS: "/dashboard/company/formulas",
+      DATA_ENTRY: "/dashboard/company/data-entry",
+      PROGRESS: "/dashboard/company/progress",
     },
     PERSONAL_COACH: {
       ROOT: "/dashboard/personal-coach",

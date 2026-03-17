@@ -43,18 +43,6 @@ export interface FieldGroup {
   fields: SchemaField[];
 }
 
-export interface SchemaVersionSummary {
-  id: string;
-  version: string;
-  note: string;
-  changedAt: string;
-  changedBy: string;
-  fieldCount: number;
-  formulaCount: number;
-  linkedClients: number;
-  isActive: boolean;
-}
-
 export interface SchemaSummary {
   id: string;
   ownerType: SchemaOwnerType;

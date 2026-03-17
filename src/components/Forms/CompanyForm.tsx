@@ -1,6 +1,6 @@
 "use client";
 
-import { useFieldArray, useForm } from "react-hook-form";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
 import type { CompanyFormData } from "@/types/forms";
 import { COMPANY_STATES } from "@/data/dashboardForm";
 import InputGroup from "../FormElements/InputGroup";
@@ -8,6 +8,7 @@ import { TextAreaGroup } from "../FormElements/InputGroup/text-area";
 import { Select } from "../FormElements/select";
 import { Checkbox } from "../FormElements/checkbox";
 import { Button } from "../ui-elements/button";
+import { ImageUpload } from "../FormElements/ImageUpload";
 import { validatePhone, validateRequired } from "@/lib/forms/formValidation";
 import Header from "../FormElements/common/header";
 import Label from "../FormElements/common/label";
@@ -17,12 +18,18 @@ export default function CompanyForm() {
     register,
     control,
     handleSubmit,
-    formState: { errors },
+    setValue,
+    watch,
+    formState: { errors, isValid, isSubmitting },
   } = useForm<CompanyFormData>({
+    mode: "all",
     defaultValues: {
       branches: [{ value: "MyFit- Trianon" }],
+      state: "",
     },
   });
+
+  watch();
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -61,28 +68,21 @@ export default function CompanyForm() {
           })}
         />
 
-        <div className="mb-5">
-          <Label value="Company Logo" />
-          <div
-            className="cursor-pointer rounded-lg border border-dashed border-stroke bg-gray-2 p-6 text-center transition hover:border-primary dark:border-dark-3 dark:bg-dark-2 dark:hover:border-primary"
-            onClick={(e) =>
-              (
-                e.currentTarget.querySelector("input") as HTMLInputElement
-              )?.click()
-            }
-          >
-            <input type="file" accept="image/*" className="hidden" />
-            <p className="text-body-sm text-dark-5 dark:text-dark-6">
+        <ImageUpload
+          label="Company Logo"
+          accept="image/*"
+          emptyStateText={
+            <>
               Drop your logo here or{" "}
               <strong className="text-dark dark:text-white">
                 browse files
               </strong>
-            </p>
-            <p className="mt-1 text-body-xs text-dark-5 dark:text-dark-6">
-              PNG, JPG, SVG — max 5MB
-            </p>
-          </div>
-        </div>
+            </>
+          }
+          hint="PNG, JPG, SVG - max 5MB"
+          registerReturn={register("companyLogo")}
+          setValue={setValue as (name: string, value?: FileList) => void}
+        />
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <InputGroup
@@ -152,12 +152,22 @@ export default function CompanyForm() {
           />
         </div>
 
-        <Select
-          label="District / Region"
-          placeholder="Select district"
-          items={COMPANY_STATES.map((s) => ({ value: s, label: s }))}
-          error={errors.state?.message}
-          selectProps={register("state", { required: "District is required" })}
+        <Controller
+          name="state"
+          control={control}
+          rules={{ required: "District is required" }}
+          render={({ field }) => (
+            <Select
+              label="District / Region"
+              placeholder="Select district"
+              items={COMPANY_STATES.map((s) => ({ value: s, label: s }))}
+              error={errors.state?.message}
+              selectProps={{
+                ...field,
+                required: true,
+              }}
+            />
+          )}
         />
 
         <div className="my-6 flex items-center gap-3">
@@ -215,7 +225,7 @@ export default function CompanyForm() {
 
         <div className="mb-5">
           <label className="mb-2 block text-body-sm font-medium text-dark dark:text-white">
-            Terms &amp; Conditions
+            Terms &amp; Conditions <span className="text-red">*</span>
           </label>
           <div className="max-h-32 overflow-y-auto rounded-lg border border-stroke bg-gray-2 p-4 text-body-sm leading-relaxed text-dark-5 dark:border-dark-3 dark:bg-dark-2 dark:text-dark-6">
             By registering on this platform, the company
@@ -237,7 +247,8 @@ export default function CompanyForm() {
                   and{" "}
                   <a href="#" className="text-primary hover:underline">
                     Privacy Policy
-                  </a>
+                  </a>{" "}
+                  <span className="text-red">*</span>
                 </span>
               }
               inputProps={register("agreeTerms", {
@@ -248,7 +259,12 @@ export default function CompanyForm() {
           </div>
         </div>
 
-        <Button type="submit" label="Register Company" className="w-full" />
+        <Button
+          type="submit"
+          label="Register Company"
+          className="w-full"
+          disabled={!isValid || isSubmitting}
+        />
       </form>
     </div>
   );

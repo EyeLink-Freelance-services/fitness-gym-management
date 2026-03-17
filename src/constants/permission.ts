@@ -1,6 +1,7 @@
 export const AuthPermission = {
   dashboard: {
     company: "dashboard.company.view",
+    companyCoach: "dashboard.company_coach.view",
     client: "dashboard.client.view",
     personalCoach: "dashboard.personal_coach.view",
     superAdmin: "dashboard.super_admin.view"

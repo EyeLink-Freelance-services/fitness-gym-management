@@ -1,6 +1,7 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
+import { ImageUpload } from "../FormElements/ImageUpload";
 import type { PersonalCoachFormData } from "@/types/forms";
 import { SPECIALIZATIONS, AVAILABILITY_OPTIONS } from "@/data/dashboardForm";
 import InputGroup from "../FormElements/InputGroup";
@@ -13,10 +14,18 @@ import {
   validateRequired,
 } from "@/lib/forms/formValidation";
 import Header from "../FormElements/common/header";
-import Label from "../FormElements/common/label";
 
 export default function PersonalCoachForm() {
-  const { register, handleSubmit } = useForm<PersonalCoachFormData>();
+  const {
+    register,
+    control,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors, isValid, isSubmitting },
+  } = useForm<PersonalCoachFormData>({ mode: "all" });
+
+  watch();
 
   const onSubmit = (data: PersonalCoachFormData) => {
     console.log(data);
@@ -71,14 +80,20 @@ export default function PersonalCoachForm() {
             validate: (v) => validateEmail(v),
           })}
         />
-        // Todo: Make it a multi-select
-        <Select
-          label="Specialization / Role"
-          placeholder="Select specialization"
-          items={SPECIALIZATIONS.map((s) => ({ value: s, label: s }))}
-          selectProps={register("specialization", {
-            required: "Specialization is required",
-          })}
+
+        <Controller
+          name="specialization"
+          control={control}
+          rules={{ required: "Specialization is required" }}
+          render={({ field }) => (
+            <Select
+              label="Specialization / Role"
+              placeholder="Select specialization"
+              items={SPECIALIZATIONS.map((s) => ({ value: s, label: s }))}
+              error={errors.specialization?.message}
+              selectProps={{ ...field, required: true }}
+            />
+          )}
         />
         <InputGroup
           type="text"
@@ -139,32 +154,40 @@ export default function PersonalCoachForm() {
           placeholder="Brief introduction about this coach's training philosophy, background, and approach..."
           textareaProps={register("bio", { required: "Bio is required" })}
         />
-        <div className="mb-5">
-          <Label value="Profile Photo" optional />
-          <div
-            className="cursor-pointer rounded-lg border border-dashed border-stroke bg-gray-2 p-6 text-center transition hover:border-primary dark:border-dark-3 dark:bg-dark-2 dark:hover:border-primary"
-            onClick={(e) =>
-              (
-                e.currentTarget.querySelector("input") as HTMLInputElement
-              )?.click()
-            }
-          >
-            <input type="file" accept="image/*" className="hidden" />
-            <p className="text-body-sm text-dark-5 dark:text-dark-6">
+        <ImageUpload
+          label="Profile Photo"
+          optional
+          accept="image/*"
+          emptyStateText={
+            <>
               Upload coach photo —{" "}
               <strong className="text-dark dark:text-white">browse</strong>
-            </p>
-          </div>
-        </div>
-        <Select
-          label="Availability"
-          placeholder="Select availability"
-          items={AVAILABILITY_OPTIONS.map((a) => ({ value: a, label: a }))}
-          selectProps={register("availability", {
-            required: "Availability is required",
-          })}
+            </>
+          }
+          hint="PNG, JPG, SVG — max 5MB"
+          registerReturn={register("profilePhoto")}
+          setValue={setValue as (name: string, value?: FileList) => void}
         />
-        <Button type="submit" label="Register" className="w-full" />
+        <Controller
+          name="availability"
+          control={control}
+          rules={{ required: "Availability is required" }}
+          render={({ field }) => (
+            <Select
+              label="Availability"
+              placeholder="Select availability"
+              items={AVAILABILITY_OPTIONS.map((a) => ({ value: a, label: a }))}
+              error={errors.availability?.message}
+              selectProps={{ ...field, required: true }}
+            />
+          )}
+        />
+        <Button
+          type="submit"
+          label="Register"
+          className="w-full"
+          disabled={!isValid || isSubmitting}
+        />
       </form>
     </div>
   );
