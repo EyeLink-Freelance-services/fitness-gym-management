@@ -1,9 +1,9 @@
 import TrainingPlanBuilder from "../components/training-plan-builder";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import { ArrowLeftIcon } from "@/assets/icons";
 import Link from "next/link";
 import { ROUTES } from "@/constants/route";
 import { getTrainingPlanAction } from "../actions";
+import { ArrowLeftIcon } from "@/components/IconsCollection/icons";
 
 type PageProps = {
   params: Promise<{ id: string }>;

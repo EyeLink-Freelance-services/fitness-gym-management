@@ -1,7 +1,7 @@
 'use client'
 
+import { ArrowLeftIcon } from "@/components/IconsCollection/icons";
 import TrainingPlanBuilder from "../components/training-plan-builder";
-import { ArrowLeftIcon } from "@/assets/icons";
 import { useRouter } from "next/navigation";
 
 export default function NewTrainingPlanPage() {
