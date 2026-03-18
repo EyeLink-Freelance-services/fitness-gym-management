@@ -12,7 +12,7 @@ const Label = ({
   const Comp = as;
 
   return (
-    <Comp
+    <Comp 
       {...(as === "label" ? { htmlFor } : {})}
       className={cn(
         "block text-body-sm font-medium tracking-widest text-dark dark:text-white",
