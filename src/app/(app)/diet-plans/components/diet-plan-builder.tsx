@@ -7,6 +7,8 @@ import { DietPlanFormInput, DietPlanFormSchema, DietPlanFormValues } from "@/lib
 import DietPlanHeader from "./diet-plan-header";
 import DietPlanGeneralSection from "./diet-plan-general-section";
 import DietPlanMealsSection from "./diet-plan-meals-section";
+import { ArrowLeftIcon } from "@/components/IconsCollection/icons";
+import { useRouter } from "next/navigation";
 
 type Props = {
   initialValues?: DietPlanFormInput;
@@ -21,6 +23,8 @@ export default function DietPlanBuilder({
   loading,
   readOnly = false,
 }: Props) {
+  const router = useRouter();
+
   const methods = useForm<DietPlanFormInput, unknown, DietPlanFormValues>({
     resolver: zodResolver(DietPlanFormSchema),
     defaultValues: initialValues,
@@ -32,19 +36,23 @@ export default function DietPlanBuilder({
     formState: { isSubmitting },
   } = methods;
 
+  const onSave = async (values: DietPlanFormValues) => {
+    console.log("valid submit values", values);
+    const rs = await onSubmit?.(values);
+    if(!rs.ok) {
+      console.log("server result", rs);
+    }
+  }
+
+  const onError = async (error: any) => {
+    console.log(error)
+  }
+
   return (
     <FormProvider {...methods}>
+      <ArrowLeftIcon onClick={() => router.back()} className="mb-2 cursor-pointer" />
       <form
-        onSubmit={handleSubmit(
-    async (values) => {
-      console.log("valid submit values", values);
-      const result = await onSubmit?.(values);
-      console.log("server result", result);
-    },
-    (errors) => {
-      console.log("form errors", errors);
-    }
-  )}
+        onSubmit={handleSubmit(onSave, onError)}
         className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100"
       >
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 lg:px-6">

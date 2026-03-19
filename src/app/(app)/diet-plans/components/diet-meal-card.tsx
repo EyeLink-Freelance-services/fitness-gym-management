@@ -5,6 +5,7 @@ import { createDefaultMealItem } from "../helpers/default-values";
 import DietMealItemRow from "./diet-meal-item-row";
 import { Button } from "@/components/ui-elements/button";
 import { DietPlanFormInput } from "@/lib/validation/schemas/diet-plans";
+import { CloseButton } from "@/components/ui-elements/close-button";
 
 type Props = {
   index: number;
@@ -87,7 +88,8 @@ export default function DietMealCard({
         </div>
 
         {!readOnly && (
-          <Button type="button" variant="danger" onClick={onRemove} label="Remove meal"/>
+          <CloseButton onClick={onRemove} variant="danger"/>
+          // <Button type="button" variant="danger" onClick={onRemove} label="Remove meal"/>
         )}
       </div>
 

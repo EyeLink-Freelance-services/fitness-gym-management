@@ -6,16 +6,6 @@ import { TrainingPlanFormInput } from "@/lib/validation/schemas/training-plans";
 import { TrainingPlanStatus } from "@/types/training-plan";
 import { useFormContext } from "react-hook-form";
 
-type Props = {
-  title: string;
-  description: string | null;
-  status: TrainingPlanStatus;
-  onChangeTitle: (value: string) => void;
-  onChangeDescription: (value: string) => void;
-  onChangeStatus: (value: TrainingPlanStatus) => void;
-  onSave: () => void;
-};
-
 const statusStyles: Record<TrainingPlanStatus, string> = {
   draft: "bg-amber-100 text-amber-700 ring-1 ring-inset ring-amber-200",
   published: "bg-emerald-100 text-emerald-700 ring-1 ring-inset ring-emerald-200",

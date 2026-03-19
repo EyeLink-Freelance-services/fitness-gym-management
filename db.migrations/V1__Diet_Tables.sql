@@ -394,7 +394,7 @@ begin
   end if;
 
   if not (
-    public.is_company_owner(v_company_id)
+    public.is_company_owner(v_existing_company_id)
     or
     public.has_company_role(v_existing_company_id, 'admin')
     or public.has_company_role(v_existing_company_id, 'staff')

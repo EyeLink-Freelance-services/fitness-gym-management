@@ -32,8 +32,8 @@ export const DietPlanFormSchema = z.object({
         }
       });
     }),
-  created_at: z.string().datetime().optional(),
-  updated_at: z.string().datetime().optional(),
+  created_at: z.string().optional(),
+  updated_at: z.string().optional(),
 });
 
 export type DietPlanFormInput = z.input<typeof DietPlanFormSchema>;

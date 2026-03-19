@@ -3,10 +3,17 @@
 import { useFormContext } from "react-hook-form";
 import { Button } from "@/components/ui-elements/button";
 import { DietPlanFormInput } from "@/lib/validation/schemas/diet-plans";
+import { DietPlanStatus } from "@/types/diet-plan";
 
 type Props = {
   loading?: boolean;
   readOnly?: boolean;
+};
+
+const statusStyles: Record<DietPlanStatus, string> = {
+  draft: "bg-amber-100 text-amber-700 ring-1 ring-inset ring-amber-200",
+  published: "bg-emerald-100 text-emerald-700 ring-1 ring-inset ring-emerald-200",
+  archived: "bg-slate-100 text-slate-700 ring-1 ring-inset ring-slate-200",
 };
 
 export default function DietPlanHeader({ loading, readOnly }: Props) {
@@ -22,7 +29,7 @@ export default function DietPlanHeader({ loading, readOnly }: Props) {
             {title?.trim() || "Untitled diet plan"}
           </h1>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            Status: <span className="font-medium capitalize">{status}</span>
+            <span className={`rounded-full px-3 py-1 text-xs font-medium capitalize ${statusStyles[status as DietPlanStatus]}`}>{status}</span>
           </p>
         </div>
 
