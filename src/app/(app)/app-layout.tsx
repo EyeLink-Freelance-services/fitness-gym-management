@@ -17,9 +17,14 @@ type LayoutProps = {
 export default function AppLayout({auth, children}: LayoutProps) {
     const pathname = usePathname();
 
-    const hideSidebar =
-        pathname.startsWith(ROUTES.TRAINING_PLANS.TEMPLATES) &&
-        pathname !== ROUTES.TRAINING_PLANS.TEMPLATES;
+    const hiddenSidebarBases = [
+      ROUTES.TRAINING_PLANS.TEMPLATES,
+      ROUTES.DIET_PLANS.TEMPLATES,
+    ];
+
+    const hideSidebar = hiddenSidebarBases.some(
+      (basePath) => pathname.startsWith(basePath) && pathname !== basePath
+    );
 
     const isMobile = useIsMobile();
 
