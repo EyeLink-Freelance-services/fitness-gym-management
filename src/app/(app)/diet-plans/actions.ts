@@ -8,6 +8,7 @@ import { revalidatePath } from "next/cache";
 export async function getDietPlanAction(id: string) {
   try {
     const dietPlan: DietPlanFormInput= await getDietPlan(id);
+    console.log(dietPlan, 'diet plan')
 
     return {
       ok: true,
@@ -17,7 +18,7 @@ export async function getDietPlanAction(id: string) {
   } catch (error: any) {
     return {
       ok: false,
-      message: error.message ?? 'failed to list diet plan'
+      message: error.message ?? 'failed to get diet plan'
     }
   }
 }

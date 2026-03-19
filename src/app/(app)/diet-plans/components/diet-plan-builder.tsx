@@ -10,7 +10,7 @@ import DietPlanMealsSection from "./diet-plan-meals-section";
 
 type Props = {
   initialValues?: DietPlanFormInput;
-  onSubmit: (values: DietPlanFormValues) => Promise<any> | void;
+  onSubmit?: (values: DietPlanFormValues) => Promise<any> | void;
   loading?: boolean;
   readOnly?: boolean;
 };
@@ -38,7 +38,7 @@ export default function DietPlanBuilder({
         onSubmit={handleSubmit(
     async (values) => {
       console.log("valid submit values", values);
-      const result = await onSubmit(values);
+      const result = await onSubmit?.(values);
       console.log("server result", result);
     },
     (errors) => {

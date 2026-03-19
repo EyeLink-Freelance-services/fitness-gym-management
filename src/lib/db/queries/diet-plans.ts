@@ -105,7 +105,6 @@ export async function getDietPlan(id: string) {
         id,
         diet_plan_id,
         day_index,
-        title,
         meal_type,
         notes,
         order_index,
