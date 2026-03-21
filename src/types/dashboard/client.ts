@@ -4,19 +4,16 @@ import type { JSX, SVGProps } from "react";
 export interface ClientOverviewItem {
   label: string;
   value: string;
-  trend: number;
-  icon: (props: SVGProps<SVGSVGElement>) => JSX.Element;
+  trend?: number;
+  icon?: (props: SVGProps<SVGSVGElement>) => JSX.Element;
 }
 
 export interface ClientMembershipSummary {
   planName: string;
   monthlyPrice: string;
-  renewalMode: string;
+  renewalMode?: string;
   memberSince: string;
-  currentPeriod: string;
   branch: string;
-  ptSessionsUsed: number;
-  ptSessionsTotal: number;
   daysRemaining: number;
   benefits: string[];
 }
@@ -26,7 +23,8 @@ export interface ClientCoachSummary {
   initials: string;
   title: string;
   location: string;
-  rating: string;
+  rating?: string;
+  picture?: string;
   experience: string;
   languages: string[];
   certifications: string[];

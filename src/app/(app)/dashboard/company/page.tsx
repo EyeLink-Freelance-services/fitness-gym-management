@@ -1,11 +1,11 @@
 import { DashboardSection } from "@/components/Dashboard/dashboard-section";
-import { ANNOUNCEMENTS } from "@/data/company";
 import { OverviewCard } from "@/components/Dashboard/overview-cards/card";
 import {
   getCompanyOverviewData,
   getExpiringSoonGyms,
   getGymCoachCLientAssign,
   getGymNewClient,
+  getPersonalCoachAnnouncements,
 } from "@/services/dashboard.services";
 import { PaymentsOverview } from "@/components/Charts/payments-overview";
 import { createTimeFrameExtractor } from "@/utils/timeframe-extractor";
@@ -13,102 +13,27 @@ import { SearchType } from "@/types/dashboard/dashboard-shared";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/Tables/skeleton";
 import { TableUI } from "@/components/Tables";
-import type { CompanyClientRow } from "@/types/dashboard/company-directory";
-import type { TableUIColumn } from "@/types/shared";
-
-function formatDate(date?: string) {
-  if (!date) {
-    return "—";
-  }
-
-  return new Date(date).toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
-}
-
-const expiringSoonColumns: TableUIColumn<CompanyClientRow>[] = [
-  {
-    key: "name",
-    label: "Member",
-    align: "left",
-    headClassName: "min-w-[180px]",
-  },
-  {
-    key: "plan",
-    label: "Plan",
-    align: "left",
-    headClassName: "min-w-[120px]",
-  },
-  {
-    key: "expiresAt",
-    label: "Expires At",
-    render: (row) => formatDate(row.expiresAt),
-    headClassName: "min-w-[140px]",
-  },
-];
-
-const coachAssignmentColumns: TableUIColumn<CompanyClientRow>[] = [
-  {
-    key: "name",
-    label: "Client Name",
-    align: "left",
-    headClassName: "min-w-[180px]",
-  },
-  {
-    key: "coach",
-    label: "Coach Name",
-    align: "left",
-    render: (row) => row.coach ?? "Unassigned",
-    headClassName: "min-w-[160px]",
-  },
-  {
-    key: "status",
-    label: "Status",
-    headClassName: "min-w-[120px]",
-  },
-  {
-    key: "assignedOn",
-    label: "Assigned On",
-    render: (row) => formatDate(row.assignedOn),
-    headClassName: "min-w-[140px]",
-  },
-];
-
-const newSignupColumns: TableUIColumn<CompanyClientRow>[] = [
-  {
-    key: "name",
-    label: "Client Name",
-    align: "left",
-    headClassName: "min-w-[180px]",
-  },
-  {
-    key: "contact",
-    label: "Contact",
-    align: "left",
-    headClassName: "min-w-[140px]",
-  },
-  {
-    key: "plan",
-    label: "Plan",
-    align: "left",
-    headClassName: "min-w-[120px]",
-  },
-  {
-    key: "joinedAt",
-    label: "Joined At",
-    render: (row) => formatDate(row.joinedAt),
-    headClassName: "min-w-[140px]",
-  },
-];
+import Link from "next/link";
+import { Button } from "@/components/ui-elements/button";
+import { ROUTES } from "@/constants/route";
+import { announcementColumns } from "@/components/Dashboard/table-column/personal-coach-preview-columns";
+import {
+  coachAssignmentColumns,
+  expiringSoonColumns,
+  newSignupColumns,
+} from "@/components/Dashboard/table-column/company-client-columns";
 
 export default async function CompanyDashboardPage({
   searchParams,
 }: SearchType) {
   const { selected_time_frame } = await searchParams;
   const extractTimeFrame = createTimeFrameExtractor(selected_time_frame);
-  const overviewData = await getCompanyOverviewData();
+
+  const [overviewData, announcements] = await Promise.all([
+    getCompanyOverviewData(),
+    getPersonalCoachAnnouncements(4),
+  ]);
+
   return (
     <div>
       <DashboardSection title="Overview">
@@ -156,7 +81,7 @@ export default async function CompanyDashboardPage({
             data={getGymCoachCLientAssign(5)}
             columns={coachAssignmentColumns}
             buttonLabel="View All"
-            buttonPath="/dashboard/company/clientCoachAssign"
+            buttonPath="/dashboard/company/client-coach-assign"
           />
         </Suspense>
         <Suspense fallback={<Skeleton />}>
@@ -170,27 +95,19 @@ export default async function CompanyDashboardPage({
         </Suspense>{" "}
       </div>
 
-      <div>
-        <DashboardSection
-          title="Announcements"
-          buttonLabel="Create"
-          buttonPath="/dashboard/company"
-          buttonToast="Need to create an announcement form"
-        >
-          <ul className="space-y-2 rounded-[10px] bg-white p-4 shadow-1 dark:bg-gray-dark">
-            {ANNOUNCEMENTS.map((a) => (
-              <li
-                key={a.title}
-                className="flex flex-col gap-2 text-sm text-dark dark:text-white"
-              >
-                <span className="font-medium">{a.title}</span>
-                <span className="ml-2 text-dark-6">{a.desc}</span>
-                <span className="ml-2 text-dark-6">- {a.time}</span>
-              </li>
-            ))}
-          </ul>
-        </DashboardSection>
-      </div>
+      <TableUI
+        title="Announcements"
+        description="Recent client communications and scheduled updates."
+        data={announcements}
+        columns={announcementColumns}
+        rowKey={(row) => row.id}
+        className="col-span-12 xl:col-span-5"
+        headerActions={
+          <Link href={ROUTES.DASHBOARD.COMPANY.ANNOUNCEMENT}>
+            <Button label="View All" size="small" />
+          </Link>
+        }
+      />
     </div>
   );
 }

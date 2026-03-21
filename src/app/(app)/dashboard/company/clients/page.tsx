@@ -1,18 +1,16 @@
 "use client";
 
+import { FormModalTrigger } from "@/components/Dashboard/form-modal-trigger";
 import { DataTable } from "@/components/Tables";
-import { Button } from "@/components/ui-elements/button";
-import { GYM_CLIENTS } from "@/data/company";
+import { StatusBadge } from "@/components/ui-elements/status-badge";
+import { COMPANY_CLIENT_ROWS } from "@/data/company";
 import type { CompanyClientRow } from "@/types/dashboard/company-directory";
-import { buildCompanyClientRows } from "@/utils/dashboard/company-client-rows";
 import type { ColumnDef } from "@tanstack/react-table";
-
-const companyClientRows = buildCompanyClientRows(GYM_CLIENTS);
 
 const columns: ColumnDef<CompanyClientRow>[] = [
   {
     accessorKey: "name",
-    header: "Name",
+    header: "Client Name",
     cell: ({ row }) => (
       <span className="font-medium text-dark dark:text-white">
         {row.original.name}
@@ -20,7 +18,7 @@ const columns: ColumnDef<CompanyClientRow>[] = [
     ),
     meta: {
       align: "left",
-      headClassName: "min-w-[220px]",
+      headClassName: "min-w-[140px]",
     },
   },
   {
@@ -29,7 +27,7 @@ const columns: ColumnDef<CompanyClientRow>[] = [
     cell: ({ row }) => row.original.contact ?? "N/A",
     meta: {
       align: "left",
-      headClassName: "min-w-[180px]",
+      headClassName: "min-w-[140px]",
     },
   },
   {
@@ -41,15 +39,28 @@ const columns: ColumnDef<CompanyClientRow>[] = [
     },
   },
   {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => (
+      <StatusBadge
+        label={row.original.status ?? "Unknown"}
+        tone={row.original.statusTone ?? "neutral"}
+      />
+    ),
+    meta: {
+      headClassName: "min-w-[140px]",
+    },
+  },
+  {
     accessorKey: "joinedAt",
-    header: "Joined",
+    header: "Joined At",
     cell: ({ row }) => {
       if (!row.original.joinedAt) {
-        return <span className="text-dark-6 dark:text-dark-5">—</span>;
+        return <span className="text-dark-6 dark:text-dark-6">—</span>;
       }
 
       return (
-        <span className="text-dark-6 dark:text-dark-5">
+        <span className="text-dark-6 dark:text-dark-6">
           {new Date(row.original.joinedAt).toLocaleDateString("en-GB", {
             day: "2-digit",
             month: "short",
@@ -63,7 +74,7 @@ const columns: ColumnDef<CompanyClientRow>[] = [
     accessorKey: "expiresAt",
     header: "Expires At",
     cell: ({ row }) => (
-      <span className="text-dark-6 dark:text-dark-5">
+      <span className="text-dark-6 dark:text-dark-6">
         {row.original.expiresAt
           ? new Date(row.original.expiresAt).toLocaleDateString("en-GB", {
               day: "2-digit",
@@ -79,18 +90,18 @@ const columns: ColumnDef<CompanyClientRow>[] = [
 export default function CompanyClientsPage() {
   return (
     <>
-      <div className="flex">
-        <Button
-          label="Add Member"
-          className="mb-4 ml-auto"
-          toastMessage="Form not yet created"
+      <div className="mb-7 flex items-center justify-end">
+        <FormModalTrigger
+          buttonLabel="+ Add Client"
+          formType="client"
+          size="small"
         />
       </div>
 
       <DataTable
         title="Clients"
         description="Recently joined clients from the shared company dataset."
-        data={companyClientRows}
+        data={COMPANY_CLIENT_ROWS}
         columns={columns}
         getRowId={(row) => row.id}
         tableClassName="min-w-[780px]"

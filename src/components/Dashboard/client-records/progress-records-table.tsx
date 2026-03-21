@@ -78,7 +78,7 @@ export function ProgressRecordsTable({ records }: ProgressRecordsTableProps) {
         cell: () => (
           <button
             type="button"
-            className="rounded-[8px] border border-dark-3 px-3 py-1.5 text-xs font-medium text-dark-6 hover:border-primary hover:text-primary dark:text-dark-5"
+            className="rounded-[8px] border border-dark-3 px-3 py-1.5 text-xs font-medium text-dark-6 hover:border-primary hover:text-primary dark:text-dark-6"
           >
             View
           </button>

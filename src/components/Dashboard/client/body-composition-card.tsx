@@ -14,7 +14,7 @@ export function BodyCompositionCard({ data }: Props) {
         <h2 className="text-body-2xlg font-bold text-dark dark:text-white">
           Body Composition
         </h2>
-        <p className="mt-1 text-sm text-dark-6 dark:text-dark-5">
+        <p className="mt-1 text-sm text-dark-6 dark:text-dark-6">
           Follow how body fat and muscle mass change over time.
         </p>
       </div>

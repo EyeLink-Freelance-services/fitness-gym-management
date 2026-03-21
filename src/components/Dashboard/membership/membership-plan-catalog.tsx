@@ -10,7 +10,7 @@ export function MembershipPlanCatalog({ plans }: MembershipPlanCatalogProps) {
           <h2 className="text-body-2xlg font-bold text-dark dark:text-white">
             Plan Catalog
           </h2>
-          <p className="mt-1 text-sm text-dark-6 dark:text-dark-5">
+          <p className="mt-1 text-sm text-dark-6 dark:text-dark-6">
             Configure pricing, features and access levels for each plan.
           </p>
         </div>

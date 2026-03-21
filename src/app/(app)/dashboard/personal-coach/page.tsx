@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { DashboardSection } from "@/components/Dashboard/dashboard-section";
 import { ClientProgressCard } from "@/components/Dashboard/personal-coach/client-progress-card";
+import { FormModalTrigger } from "@/components/Dashboard/form-modal-trigger";
 import { OverviewCard } from "@/components/Dashboard/overview-cards/card";
 import { SessionsCard } from "@/components/Dashboard/personal-coach/sessions-card";
 import { DataTable, TableUI } from "@/components/Tables";
@@ -16,10 +17,9 @@ import {
   getPersonalCoachTodaySessions,
 } from "@/services/dashboard.services";
 import {
-  announcementColumns,
-  clientProgressColumns,
   medicalNoteColumns,
 } from "@/components/Dashboard/table-column/personal-coach";
+import { clientProgressPreviewColumns,announcementColumns } from "@/components/Dashboard/table-column/personal-coach-preview-columns";
 
 export default async function PersonalCoachDashboardPage() {
   const [
@@ -33,7 +33,7 @@ export default async function PersonalCoachDashboardPage() {
     getPersonalCoachOverviewData(),
     getPersonalCoachTodaySessions(6),
     getPersonalCoachProgressSeries(),
-    getPersonalCoachClientProgress(4),
+    getPersonalCoachClientProgress(5),
     getPersonalCoachAnnouncements(4),
     getPersonalCoachMedicalNotes(3),
   ]);
@@ -70,7 +70,7 @@ export default async function PersonalCoachDashboardPage() {
           title="My Clients"
           description="Manage current clients, goals, and active program progress."
           data={clientProgress}
-          columns={clientProgressColumns}
+          columns={clientProgressPreviewColumns}
           rowKey={(row) => row.id}
           className="col-span-12 xl:col-span-7"
           headerActions={
@@ -88,11 +88,9 @@ export default async function PersonalCoachDashboardPage() {
           rowKey={(row) => row.id}
           className="col-span-12 xl:col-span-5"
           headerActions={
-            <Button
-              label="View All"
-              size="small"
-              toastMessage="Promo creation is not connected yet."
-            />
+            <Link href={ROUTES.DASHBOARD.PERSONAL_COACH.ANNOUNCEMENTS}>
+              <Button label="View All" size="small" />
+            </Link>
           }
         />
       </div>
@@ -108,10 +106,10 @@ export default async function PersonalCoachDashboardPage() {
           initialPageSize={4}
           emptyStateLabel="No client assignments available."
           headerActions={
-            <Button
-              label="Add Medical Notes"
+            <FormModalTrigger
+              buttonLabel="Add Medical Notes"
+              formType="medicalNotes"
               size="small"
-              toastMessage="Promo creation is not connected yet."
             />
           }
         />

@@ -23,30 +23,11 @@ export type PersonalCoachSessionProps = {
   sessions: PersonalCoachSessionRow[];
 };
 
-export interface PersonalCoachProgressPoint {
-  label: string;
-  value: number;
-}
-
-export interface PersonalCoachClientProgressRow {
-  id: string;
-  clientName: string;
-  goal: string;
-  progress: number;
-  nextReviewAt: string;
-  adherence: string;
-}
-
-export interface PersonalCoachProgressSeries {
-  id: string;
-  clientName: string;
-  color: string;
-  points: PersonalCoachProgressPoint[];
-}
-
 export type PersonalCoachProgressProps = {
-  data: PersonalCoachProgressSeries[];
+  data: import("@/types/dashboard/client-records").ClientProgressSeries[];
 };
+
+export type MedicalNoteSeverity = "high" | "moderate" | "low";
 
 export interface PersonalCoachMedicalNoteRow {
   id: string;

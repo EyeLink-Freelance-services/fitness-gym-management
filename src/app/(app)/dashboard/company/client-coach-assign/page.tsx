@@ -1,18 +1,15 @@
 "use client";
 
+import { FormModalTrigger } from "@/components/Dashboard/form-modal-trigger";
 import { DataTable } from "@/components/Tables";
-import { Button } from "@/components/ui-elements/button";
 import { StatusBadge } from "@/components/ui-elements/status-badge";
-import { GYM_CLIENTS } from "@/data/company";
+import { COMPANY_CLIENT_ROWS } from "@/data/company";
 import type { CompanyClientRow } from "@/types/dashboard/company-directory";
-import { buildCompanyClientRows } from "@/utils/dashboard/company-client-rows";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 
 const filterInputClasses =
   "h-11 rounded-[10px] border border-stroke bg-transparent px-4 text-sm text-dark outline-none focus:border-primary dark:border-dark-3 dark:text-white";
-
-const companyClientRows = buildCompanyClientRows(GYM_CLIENTS);
 const unassignedCoachOption = "Unassigned";
 
 const columns: ColumnDef<CompanyClientRow>[] = [
@@ -74,11 +71,11 @@ const columns: ColumnDef<CompanyClientRow>[] = [
     header: "Joined At",
     cell: ({ row }) => {
       if (!row.original.joinedAt) {
-        return <span className="text-dark-6 dark:text-dark-5">—</span>;
+        return <span className="text-dark-6 dark:text-dark-6">—</span>;
       }
 
       return (
-        <span className="text-dark-6 dark:text-dark-5">
+        <span className="text-dark-6 dark:text-dark-6">
           {new Date(row.original.joinedAt).toLocaleDateString("en-GB", {
             day: "2-digit",
             month: "short",
@@ -99,7 +96,7 @@ export default function ClientCoachAssignPage() {
       "All Coaches",
       ...Array.from(
         new Set(
-          companyClientRows.map((row) => row.coach ?? unassignedCoachOption),
+          COMPANY_CLIENT_ROWS.map((row) => row.coach ?? unassignedCoachOption),
         ),
       ),
     ],
@@ -111,9 +108,9 @@ export default function ClientCoachAssignPage() {
       "All Statuses",
       ...Array.from(
         new Set(
-          companyClientRows
-            .map((row) => row.status)
-            .filter((status): status is string => Boolean(status)),
+          COMPANY_CLIENT_ROWS.map((row) => row.status).filter(
+            (status): status is string => Boolean(status),
+          ),
         ),
       ),
     ],
@@ -122,7 +119,7 @@ export default function ClientCoachAssignPage() {
 
   const filteredRows = useMemo(
     () =>
-      companyClientRows.filter((row) => {
+      COMPANY_CLIENT_ROWS.filter((row) => {
         const matchesCoach =
           selectedCoach === "All Coaches"
             ? true
@@ -139,11 +136,11 @@ export default function ClientCoachAssignPage() {
 
   return (
     <>
-      <div className="flex">
-        <Button
-          label="Add Member"
-          className="mb-4 ml-auto"
-          toastMessage="Form not yet created"
+      <div className="mb-7 flex items-center justify-end">
+        <FormModalTrigger
+          buttonLabel="+ Assign Client"
+          formType="assignClient"
+          size="small"
         />
       </div>
 

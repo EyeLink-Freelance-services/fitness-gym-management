@@ -18,7 +18,7 @@ const columns: ColumnDef<AnnouncementMetricRow>[] = [
         <p className="font-medium text-dark dark:text-white">
           {row.original.title}
         </p>
-        <p className="text-sm text-dark-6 dark:text-dark-5">
+        <p className="text-sm text-dark-6 dark:text-dark-6">
           {row.original.deliveryLabel}
         </p>
       </div>
@@ -43,14 +43,14 @@ const columns: ColumnDef<AnnouncementMetricRow>[] = [
   {
     id: "channels",
     accessorFn: (row) =>
-      row.channels.map((channel) => channel.label).join(", "),
+      row?.channels?.map((channel) => channel.label).join(", "),
     header: "Channels",
     cell: ({ row }) => (
       <div className="flex flex-wrap gap-2">
-        {row.original.channels.map((channel) => (
+        {row?.original?.channels?.map((channel) => (
           <span
             key={`${row.original.id}-${channel.code}`}
-            className="inline-flex rounded-full bg-gray-1 px-2.5 py-1 text-xs font-semibold tracking-[0.16em] text-dark-5 dark:bg-dark-2 dark:text-dark-5"
+            className="inline-flex rounded-full bg-gray-1 px-2.5 py-1 text-xs font-semibold tracking-[0.16em] text-dark-5 dark:bg-dark-2 dark:text-dark-6"
             title={channel.label}
           >
             {channel.code}
@@ -62,16 +62,6 @@ const columns: ColumnDef<AnnouncementMetricRow>[] = [
       align: "left",
       headClassName: "min-w-[150px]",
     },
-  },
-  {
-    accessorKey: "priority",
-    header: "Priority",
-    cell: ({ row }) => (
-      <StatusBadge
-        label={row.original.priority}
-        tone={row.original.priorityTone}
-      />
-    ),
   },
   {
     accessorKey: "reach",

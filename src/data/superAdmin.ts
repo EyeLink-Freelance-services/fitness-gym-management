@@ -295,7 +295,7 @@ export const DUMMY_COACHES = [
     location: "New York, USA",
   },
   {
-    name: "Alex",
+    name: "Tom",
     logo: logos.x,
     specialization: "Strength Training",
     clients: 356,
@@ -303,7 +303,7 @@ export const DUMMY_COACHES = [
     location: "New York, USA",
   },
   {
-    name: "Alex",
+    name: "Cat",
     logo: logos.github,
     specialization: "Cardio",
     clients: 456,
@@ -311,7 +311,7 @@ export const DUMMY_COACHES = [
     location: "New York, USA",
   },
   {
-    name: "Alex",
+    name: "Bat",
     logo: logos.vimeo,
     specialization: "Training",
     clients: 3456,
@@ -319,7 +319,7 @@ export const DUMMY_COACHES = [
     location: "New York, USA",
   },
   {
-    name: "Alex",
+    name: "Dat",
     logo: logos.facebook,
     specialization: "Strength",
     clients: 3450,
@@ -330,25 +330,25 @@ export const DUMMY_COACHES = [
 
 export const OVERVIEW_SUPER_ADMIN_DATA = [
   {
-    name: "users",
+    name: "Users",
     value: 3456,
     growthRate: -0.95,
     icon: Users,
   },
   {
-    name: "company",
+    name: "Company",
     value: 3456,
     growthRate: 0.43,
     icon: Gym,
   },
   {
-    name: "coach",
+    name: "Coach",
     value: 4220,
     growthRate: 4.35,
     icon: Trainer,
   },
   {
-    name: "revenue",
+    name: "Revenue",
     value: 3456,
     growthRate: 2.59,
     icon: Profit,
@@ -402,7 +402,7 @@ export const DUMMY_GYMS = [
     createdAt: "2024-07-10",
   },
   {
-    id: 5,
+    id: 6,
     name: "MyFit",
     logo: logos.facebook,
     clients: 3456,

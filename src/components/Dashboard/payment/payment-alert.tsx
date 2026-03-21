@@ -7,7 +7,7 @@ export function PaymentAlert({ alert }: PaymentAlertProps) {
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="space-y-1">
           <p className="text-sm font-semibold text-red">{alert.title}</p>
-          <p className="text-sm text-dark-6 dark:text-dark-5">
+          <p className="text-sm text-dark-6 dark:text-dark-6">
             {alert.description}
           </p>
         </div>

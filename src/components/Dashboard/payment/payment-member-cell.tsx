@@ -24,7 +24,7 @@ export function PaymentMemberCell({ member }: PaymentMemberCellProps) {
         <p className="truncate font-medium text-dark dark:text-white">
           {member.name}
         </p>
-        <p className="truncate text-xs text-dark-6 dark:text-dark-5">
+        <p className="truncate text-xs text-dark-6 dark:text-dark-6">
           {member.email}
         </p>
       </div>

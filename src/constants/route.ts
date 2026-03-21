@@ -17,6 +17,7 @@ export const ROUTES = {
     },
     PERSONAL_COACH: {
       ROOT: "/dashboard/personal-coach",
+      ANNOUNCEMENTS: "/dashboard/personal-coach/announcements",
       CLIENTS: "/dashboard/personal-coach/clients",
       DATA_ENTRY: "/dashboard/personal-coach/data-entry",
       PROGRESS: "/dashboard/personal-coach/progress",

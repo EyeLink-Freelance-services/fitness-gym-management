@@ -22,9 +22,9 @@ export function OverviewCard({ label, data, Icon }: OverviewCardProps) {
           </li>
         </ul>
 
-        {Icon && <Icon width={40} height={40} />}
+        {/* {Icon && <Icon width={40} height={40} />} */}
 
-        {showIndicator && (
+        {/* {showIndicator && (
           <div
             className={cn("font-bold", isDecreasing ? "text-red" : "text-green")}
           >
@@ -37,7 +37,7 @@ export function OverviewCard({ label, data, Icon }: OverviewCardProps) {
               )}
             </p>
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );

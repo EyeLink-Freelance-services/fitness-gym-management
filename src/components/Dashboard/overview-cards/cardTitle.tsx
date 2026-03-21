@@ -9,7 +9,7 @@ const CardTitle = ({ title, subtitle, className }: DashboardSectionProps) => {
         {title}
       </h2>
 
-      <p className="mt-1 text-sm text-dark-6 dark:text-dark-5">{subtitle}</p>
+      <p className="mt-1 text-sm text-dark-6 dark:text-dark-6">{subtitle}</p>
     </div>
   );
 };

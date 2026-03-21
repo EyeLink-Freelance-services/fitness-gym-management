@@ -1,19 +1,8 @@
-import { TableUI } from "@/components/Tables";
-import { Skeleton } from "@/components/Tables/skeleton";
-import { Suspense } from "react";
-import { FormModalTrigger } from "@/components/Dashboard/form-modal-trigger";
 import { getAllGyms } from "@/services/dashboard.services";
+import CompanyTableClient from "@/components/Dashboard/super-admin/company-table-client";
 
-export default function CompanyCoachesPage() {
-  return (
-    <div className="flex flex-col gap-4">
-      <div className="flex justify-end">
-        <FormModalTrigger buttonLabel="Add Company" formType="company" />
-      </div>
+export default async function SuperAdminCompanyPage() {
+  const allGyms = await getAllGyms();
 
-      <Suspense fallback={<Skeleton />}>
-        <TableUI title="Companies" data={getAllGyms()} />
-      </Suspense>
-    </div>
-  );
+  return <CompanyTableClient data={allGyms} />;
 }

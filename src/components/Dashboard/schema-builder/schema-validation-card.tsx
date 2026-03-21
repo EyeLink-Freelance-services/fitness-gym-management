@@ -16,7 +16,7 @@ export function SchemaValidationCard({ rules }: SchemaValidationCardProps) {
             <div className="font-medium text-dark dark:text-white">
               {rule.title}
             </div>
-            <div className="mt-1 text-dark-6 dark:text-dark-5">
+            <div className="mt-1 text-dark-6 dark:text-dark-6">
               {rule.value}
             </div>
           </div>

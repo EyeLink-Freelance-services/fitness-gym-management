@@ -95,7 +95,7 @@ export function MembershipMemberDistributionChart({
                 <span>{item.label}</span>
               </div>
 
-              <span className="text-dark-6 dark:text-dark-5">
+              <span className="text-dark-6 dark:text-dark-6">
                 {item.value} ({share}%)
               </span>
             </div>

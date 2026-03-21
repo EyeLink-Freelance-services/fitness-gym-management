@@ -102,7 +102,7 @@ export function DataTable<TData extends RowData>({
             {title ?? "Data Table"}
           </h2>
           {description && (
-            <p className="mt-1 text-sm text-dark-6 dark:text-dark-5">
+            <p className="mt-1 text-sm text-dark-6 dark:text-dark-6">
               {description}
             </p>
           )}
@@ -213,13 +213,13 @@ export function DataTable<TData extends RowData>({
 
       {showFooter && (
         <div className="mt-5 flex flex-col gap-3 border-t border-stroke pt-4 text-sm dark:border-dark-3 lg:flex-row lg:items-center lg:justify-between">
-          <div className="text-dark-6 dark:text-dark-5">
+          <div className="text-dark-6 dark:text-dark-6">
             Showing {rows.length} of {filteredRowCount} result
             {filteredRowCount === 1 ? "" : "s"}
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            <label className="flex items-center gap-2 text-dark-6 dark:text-dark-5">
+            <label className="flex items-center gap-2 text-dark-6 dark:text-dark-6">
               <span>Rows</span>
               <select
                 value={table.getState().pagination.pageSize}
@@ -229,14 +229,18 @@ export function DataTable<TData extends RowData>({
                 className={cn(inputClasses, "h-10 min-w-[84px] px-3 py-0")}
               >
                 {pageSizeOptions.map((option) => (
-                  <option key={option} value={option}>
+                  <option
+                    key={option}
+                    value={option}
+                    className="dark:bg-[#122031] dark:text-white"
+                  >
                     {option}
                   </option>
                 ))}
               </select>
             </label>
 
-            <span className="text-dark-6 dark:text-dark-5">
+            <span className="text-dark-6 dark:text-dark-6">
               Page {table.getState().pagination.pageIndex + 1} of{" "}
               {Math.max(table.getPageCount(), 1)}
             </span>

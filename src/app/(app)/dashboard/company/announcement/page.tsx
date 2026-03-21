@@ -1,5 +1,4 @@
 import { AnnouncementList } from "@/components/Dashboard/announcement/announcement-list";
-import { AnnouncementMetricsTable } from "@/components/Dashboard/announcement/announcement-metrics-table";
 import { DashboardSection } from "@/components/Dashboard/dashboard-section";
 import { OverviewCard } from "@/components/Dashboard/overview-cards/card";
 import {
@@ -31,9 +30,9 @@ export default async function CompanyAnnouncementPage() {
                 }}
                 Icon={item.Icon}
               />
-              <p className="px-2 text-sm text-dark-6 dark:text-dark-5">
+              {/* <p className="px-2 text-sm text-dark-6 dark:text-dark-6">
                 {item.note}
-              </p>
+              </p> */}
             </div>
           ))}
         </div>
@@ -41,7 +40,7 @@ export default async function CompanyAnnouncementPage() {
 
       <AnnouncementList announcements={announcements} filters={filters} />
 
-      <AnnouncementMetricsTable rows={metrics} />
+      {/* <AnnouncementMetricsTable rows={metrics} /> */}
     </div>
   );
 }

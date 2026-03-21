@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui-elements/button";
+import { FormModalTrigger } from "@/components/Dashboard/form-modal-trigger";
 import { cn } from "@/lib/utils";
 import type { ClientCardsGridProps } from "@/types/dashboard/client-records";
 import { getAccent, getStatusTone, initials } from "@/utils/dashboard/shared";
@@ -52,7 +52,11 @@ export function ClientCardsGrid({ clients }: ClientCardsGridProps) {
             placeholder="Search..."
             className="h-11 rounded-[10px] border border-stroke bg-transparent px-4 text-sm text-dark outline-none placeholder:text-dark-5 focus:border-primary dark:border-dark-3 dark:text-white"
           />
-          <Button label="+ Add Client" size="small" />
+          <FormModalTrigger
+            buttonLabel="+ Add Client"
+            formType="client"
+            size="small"
+          />
         </div>
       </div>
 
@@ -138,7 +142,7 @@ export function ClientCardsGrid({ clients }: ClientCardsGridProps) {
                   year: "numeric",
                 })}
               </span>
-              <span
+              {/* <span
                 className={cn(
                   "font-semibold",
                   client.status === "Due Entry"
@@ -147,7 +151,7 @@ export function ClientCardsGrid({ clients }: ClientCardsGridProps) {
                 )}
               >
                 {client.progressNote}
-              </span>
+              </span> */}
             </div>
           </div>
         ))}

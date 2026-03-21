@@ -1,6 +1,6 @@
 "use client";
 
-import type { PersonalCoachProgressSeries } from "@/types/dashboard/personal-coach";
+import type { ClientProgressSeries } from "@/types/dashboard/client-records";
 import type { ApexOptions } from "apexcharts";
 import dynamic from "next/dynamic";
 
@@ -11,7 +11,7 @@ const Chart = dynamic(() => import("react-apexcharts"), {
 const DEFAULT_COLOR = "#5750F1";
 
 type Props = {
-  data: PersonalCoachProgressSeries[];
+  data: ClientProgressSeries[];
   height?: number;
   unit?: string;
   showLegend?: boolean;
@@ -25,8 +25,10 @@ export function ClientProgressChart({
 }: Props) {
   const categories = data[0]?.points.map((point) => point.label) ?? [];
   const allValues = data.flatMap((s) => s.points.map((p) => p.value));
-  const dataMin = Math.min(...allValues, 0);
-  const dataMax = Math.max(...allValues);
+  const dataMin =
+    allValues.length > 0 ? Math.min(...allValues, 0) : 0;
+  const dataMax =
+    allValues.length > 0 ? Math.max(...allValues) : 100;
 
   const isPercent = unit === "%";
   const yMin = isPercent ? 0 : Math.floor(dataMin - (dataMax - dataMin) * 0.1);
@@ -49,12 +51,7 @@ export function ClientProgressChart({
     stroke: { curve: "smooth", width: 3 },
     dataLabels: { enabled: false },
     legend: {
-      show: showLegend ?? data.length > 1,
-      position: "top",
-      horizontalAlign: "center",
-      fontSize: "13px",
-      labels: { colors: "#64748B" },
-      markers: { size: 6 },
+      show: false,
     },
     fill: {
       type: "gradient",

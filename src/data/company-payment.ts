@@ -3,11 +3,31 @@ import type {
   CompanyPaymentAlert,
   PaymentCollectionBucket,
   PaymentCollectionsTimeFrame,
+  PaymentMemberSummary,
   PaymentRenewalRow,
   PaymentTableFilters,
   PaymentTransactionRow,
 } from "@/types/dashboard/payment";
 import { DashboardOverviewItem } from "@/types/shared";
+import { GYM_CLIENTS } from "@/data/company";
+
+function toPaymentMember(client: { name: string; contact?: string }): PaymentMemberSummary {
+  const initials = client.name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+  return {
+    name: client.name,
+    email: `${client.name.toLowerCase().replace(/\s/g, ".")}@example.com`,
+    initials: initials || "—",
+    avatarTone: "emerald",
+  };
+}
+
+const SINGLE_CLIENT = GYM_CLIENTS[0];
+const MEMBER = SINGLE_CLIENT ? toPaymentMember(SINGLE_CLIENT) : null;
 
 export const COMPANY_PAYMENT_OVERVIEW: DashboardOverviewItem[] = [
   {
@@ -83,192 +103,68 @@ export const COMPANY_PAYMENT_TABLE_FILTERS: PaymentTableFilters = {
   months: ["March 2026", "February 2026", "January 2026"],
 };
 
-export const COMPANY_PAYMENT_TRANSACTIONS: PaymentTransactionRow[] = [
-  {
-    invoice: "#INV-2026-0341",
-    member: {
-      name: "Wei Liang",
-      email: "wei@gymmail.com",
-      initials: "WL",
-      avatarTone: "emerald",
-    },
-    plan: "Premium",
-    amount: "Rs 250.00",
-    method: "Online",
-    date: "1 Mar 2026",
-    autoRenew: true,
-    status: "Paid",
-    statusTone: "success",
-    actionLabel: "Invoice",
-    actionVariant: "outlineDark",
-    actionToast: "Invoice preview is not available yet.",
-  },
-  {
-    invoice: "#INV-2026-0340",
-    member: {
-      name: "Nurul Ain",
-      email: "nurul@gymmail.com",
-      initials: "NA",
-      avatarTone: "rose",
-    },
-    plan: "Standard",
-    amount: "Rs 150.00",
-    method: "Card",
-    date: "1 Mar 2026",
-    autoRenew: true,
-    status: "Paid",
-    statusTone: "success",
-    actionLabel: "Invoice",
-    actionVariant: "outlineDark",
-    actionToast: "Invoice preview is not available yet.",
-  },
-  {
-    invoice: "#INV-2026-0335",
-    member: {
-      name: "Marcus T.",
-      email: "marcus@gymmail.com",
-      initials: "MT",
-      avatarTone: "sky",
-    },
-    plan: "Elite",
-    amount: "Rs 399.00",
-    method: "Cash",
-    date: "12 Feb 2026",
-    autoRenew: false,
-    status: "Overdue 18d",
-    statusTone: "danger",
-    actionLabel: "Remind",
-    actionVariant: "outlinePrimary",
-    actionToast: "Reminder flow is not connected yet.",
-  },
-  {
-    invoice: "#INV-2026-0338",
-    member: {
-      name: "Kevin Y.",
-      email: "kevin@gymmail.com",
-      initials: "KY",
-      avatarTone: "violet",
-    },
-    plan: "Standard",
-    amount: "Rs 150.00",
-    method: "Online",
-    date: "28 Feb 2026",
-    autoRenew: true,
-    status: "Pending",
-    statusTone: "warning",
-    actionLabel: "Mark Paid",
-    actionVariant: "outlineGreen",
-    actionToast: "Mark-paid flow is not connected yet.",
-  },
-  {
-    invoice: "#INV-2026-0337",
-    member: {
-      name: "James Lim",
-      email: "james@gymmail.com",
-      initials: "JL",
-      avatarTone: "amber",
-    },
-    plan: "Basic",
-    amount: "Rs 80.00",
-    method: "Card",
-    date: "2 Mar 2026",
-    autoRenew: true,
-    status: "Paid",
-    statusTone: "success",
-    actionLabel: "Invoice",
-    actionVariant: "outlineDark",
-    actionToast: "Invoice preview is not available yet.",
-  },
-  {
-    invoice: "#INV-2026-0336",
-    member: {
-      name: "Priya G.",
-      email: "priya@gymmail.com",
-      initials: "PG",
-      avatarTone: "emerald",
-    },
-    plan: "Standard",
-    amount: "Rs 112.50",
-    method: "Online",
-    date: "1 Mar 2026",
-    autoRenew: false,
-    status: "Promo Applied",
-    statusTone: "primary",
-    actionLabel: "Invoice",
-    actionVariant: "outlineDark",
-    actionToast: "Invoice preview is not available yet.",
-  },
-  {
-    invoice: "#INV-2026-0330",
-    member: {
-      name: "Ravi K.",
-      email: "ravi@gymmail.com",
-      initials: "RK",
-      avatarTone: "violet",
-    },
-    plan: "Premium",
-    amount: "Rs 250.00",
-    method: "Cash",
-    date: "18 Feb 2026",
-    autoRenew: false,
-    status: "Overdue 12d",
-    statusTone: "danger",
-    actionLabel: "Remind",
-    actionVariant: "outlinePrimary",
-    actionToast: "Reminder flow is not connected yet.",
-  },
-];
+/** Payment transactions derived from GYM_CLIENTS (single source of truth). */
+export const COMPANY_PAYMENT_TRANSACTIONS: PaymentTransactionRow[] = MEMBER && SINGLE_CLIENT
+  ? [
+      {
+        invoice: "#INV-2026-0341",
+        member: MEMBER,
+        plan: SINGLE_CLIENT.plan ?? "Premium",
+        amount: "Rs 250.00",
+        method: "Online",
+        date: "1 Mar 2026",
+        autoRenew: true,
+        status: "Paid",
+        statusTone: "success",
+        actionLabel: "Invoice",
+        actionVariant: "outlineDark",
+        actionToast: "Invoice preview is not available yet.",
+      },
+      {
+        invoice: "#INV-2026-0338",
+        member: MEMBER,
+        plan: SINGLE_CLIENT.plan ?? "Premium",
+        amount: "Rs 250.00",
+        method: "Card",
+        date: "1 Feb 2026",
+        autoRenew: true,
+        status: "Pending",
+        statusTone: "warning",
+        actionLabel: "Mark Paid",
+        actionVariant: "outlineGreen",
+        actionToast: "Mark-paid flow is not connected yet.",
+      },
+      {
+        invoice: "#INV-2026-0330",
+        member: MEMBER,
+        plan: SINGLE_CLIENT.plan ?? "Premium",
+        amount: "Rs 250.00",
+        method: "Cash",
+        date: "1 Jan 2026",
+        autoRenew: false,
+        status: "Overdue 12d",
+        statusTone: "danger",
+        actionLabel: "Remind",
+        actionVariant: "outlinePrimary",
+        actionToast: "Reminder flow is not connected yet.",
+      },
+    ]
+  : [];
 
-export const COMPANY_PAYMENT_RENEWALS: PaymentRenewalRow[] = [
-  {
-    member: {
-      name: "Wei Liang",
-      email: "wei@gymmail.com",
-      initials: "WL",
-      avatarTone: "emerald",
-    },
-    plan: "Premium",
-    amountDue: "Rs 250.00",
-    dueDate: "1 Apr 2026",
-    daysLeft: "29 days",
-    daysLeftTone: "success",
-    autoRenew: true,
-    actionLabel: "Remind",
-    actionVariant: "outlineDark",
-    actionToast: "Reminder flow is not connected yet.",
-  },
-  {
-    member: {
-      name: "Nurul Ain",
-      email: "nurul@gymmail.com",
-      initials: "NA",
-      avatarTone: "rose",
-    },
-    plan: "Standard",
-    amountDue: "Rs 150.00",
-    dueDate: "8 Mar 2026",
-    daysLeft: "5 days",
-    daysLeftTone: "warning",
-    autoRenew: true,
-    actionLabel: "Remind",
-    actionVariant: "outlineDark",
-    actionToast: "Reminder flow is not connected yet.",
-  },
-  {
-    member: {
-      name: "James Lim",
-      email: "james@gymmail.com",
-      initials: "JL",
-      avatarTone: "amber",
-    },
-    plan: "Basic",
-    amountDue: "Rs 80.00",
-    dueDate: "6 Mar 2026",
-    daysLeft: "3 days",
-    daysLeftTone: "danger",
-    autoRenew: false,
-    actionLabel: "Remind",
-    actionVariant: "primary",
-    actionToast: "Reminder flow is not connected yet.",
-  },
-];
+/** Payment renewals derived from GYM_CLIENTS (single source of truth). */
+export const COMPANY_PAYMENT_RENEWALS: PaymentRenewalRow[] = MEMBER && SINGLE_CLIENT
+  ? [
+      {
+        member: MEMBER,
+        plan: SINGLE_CLIENT.plan ?? "Premium",
+        amountDue: "Rs 250.00",
+        dueDate: SINGLE_CLIENT.expiresAt ?? "2026-03-20",
+        daysLeft: "29 days",
+        daysLeftTone: "success",
+        autoRenew: true,
+        actionLabel: "Remind",
+        actionVariant: "outlineDark",
+        actionToast: "Reminder flow is not connected yet.",
+      },
+    ]
+  : [];

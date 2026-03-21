@@ -52,18 +52,18 @@ export interface AnnouncementFilters {
 export interface AnnouncementMetricRow {
   id: string;
   title: string;
-  audience: string;
-  channels: AnnouncementChannelTag[];
-  priority: string;
-  priorityTone: StatusTone;
+  audience?: string;
+  channels?: AnnouncementChannelTag[];
+  priority?: string;
+  priorityTone?: StatusTone;
   status: DashboardCampaignStatus;
   statusTone: StatusTone;
-  reach: string;
-  opened: string;
-  deliveryLabel: string;
-  actionLabel: string;
-  actionVariant: ButtonColorVariant;
-  actionToast: string;
+  reach?: string;
+  opened?: string;
+  deliveryLabel?: string;
+  actionLabel?: string;
+  actionVariant?: ButtonColorVariant;
+  actionToast?: string;
 }
 
 export interface AnnouncementCardProps {
@@ -78,3 +78,5 @@ export interface AnnouncementListProps {
 export interface AnnouncementMetricsTableProps {
   rows: AnnouncementMetricRow[];
 }
+
+export type AnnouncementSendType = "now" | "schedule";

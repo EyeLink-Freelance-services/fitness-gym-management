@@ -20,6 +20,25 @@ export interface ClientListRow {
   daysSinceEntry?: number;
 }
 
+/** Chart series for a single client's progress over time */
+export interface ClientProgressSeries {
+  id: string;
+  clientName: string;
+  color: string;
+  points: ProgressPoint[];
+}
+
+/**
+ * Coach client with optional progress. New clients have no progress.
+ */
+export interface CoachClient extends ClientListRow {
+  progress?: number;
+  nextReviewAt?: string;
+  /** Adherence label (e.g. "Strong", "Needs support"). */
+  adherence?: string;
+  progressSeries?: ClientProgressSeries;
+}
+
 export type ClientCardsGridProps = {
   clients: ClientListRow[];
 };

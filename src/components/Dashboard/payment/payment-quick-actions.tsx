@@ -8,7 +8,7 @@ export function PaymentQuickActions({ actions }: PaymentQuickActionsProps) {
         <h2 className="text-body-2xlg font-bold text-dark dark:text-white">
           Quick Actions
         </h2>
-        <p className="mt-1 text-sm text-dark-6 dark:text-dark-5">
+        <p className="mt-1 text-sm text-dark-6 dark:text-dark-6">
           Common finance tasks for the front desk and admin team.
         </p>
       </div>
@@ -24,7 +24,7 @@ export function PaymentQuickActions({ actions }: PaymentQuickActionsProps) {
                 <p className="font-medium text-dark dark:text-white">
                   {action.label}
                 </p>
-                <p className="mt-1 text-sm text-dark-6 dark:text-dark-5">
+                <p className="mt-1 text-sm text-dark-6 dark:text-dark-6">
                   {action.description}
                 </p>
               </div>

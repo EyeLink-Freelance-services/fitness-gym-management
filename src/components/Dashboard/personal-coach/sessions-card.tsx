@@ -7,8 +7,12 @@ import CardTitle from "../overview-cards/cardTitle";
 
 export function SessionsCard({ sessions }: PersonalCoachSessionProps) {
   const groupedSessions = {
-    Today: sessions.filter((session) => session.dayLabel === "Today").slice(0, 2),
-    Tomorrow: sessions.filter((session) => session.dayLabel === "Tomorrow").slice(0, 2),
+    Today: sessions
+      .filter((session) => session.dayLabel === "Today")
+      .slice(0, 2),
+    Tomorrow: sessions
+      .filter((session) => session.dayLabel === "Tomorrow")
+      .slice(0, 2),
   };
 
   return (
@@ -19,10 +23,10 @@ export function SessionsCard({ sessions }: PersonalCoachSessionProps) {
         </div>
 
         <Button
-          label="+ Book"
+          label="Manage"
           size="small"
           className="px-4"
-          toastMessage="Booking flow not yet created"
+          toastMessage="Send to manage booking page"
         />
       </div>
 
@@ -37,45 +41,49 @@ export function SessionsCard({ sessions }: PersonalCoachSessionProps) {
             </p>
 
             <div className="space-y-4">
-              {rows.map((session) => {
-                const time = formatTimeParts(session.startsAt);
+              {rows.length === 0 ? (
+                <p className="text-sm italic text-dark-5">No sessions</p>
+              ) : (
+                rows.map((session) => {
+                  const time = formatTimeParts(session.startsAt);
 
-                return (
-                  <div
-                    key={session.id}
-                    className="flex items-center gap-4 border-b border-stroke pb-4 last:border-b-0 last:pb-0 dark:border-dark-3"
-                  >
-                    <div className="min-w-[58px] text-center">
-                      <p className="text-lg font-bold text-primary">
-                        {time.hourMinute}
-                      </p>
-                      <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-dark-5">
-                        {time.meridiem}
-                      </p>
-                    </div>
-
-                    <div className="h-10 w-px bg-stroke dark:bg-dark-3" />
-
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate font-medium text-dark dark:text-white">
-                        {session.clientName}
-                      </p>
-                      <p className="text-sm text-dark-6 dark:text-dark-5">
-                        {session.sessionType} . {session.durationMinutes} min
-                      </p>
-                    </div>
-
-                    <span
-                      className={cn(
-                        "shrink-0 text-sm font-medium",
-                        statusClassNames[session.status],
-                      )}
+                  return (
+                    <div
+                      key={session.id}
+                      className="flex items-center gap-4 border-b border-stroke pb-4 last:border-b-0 last:pb-0 dark:border-dark-3"
                     >
-                      {session.status}
-                    </span>
-                  </div>
-                );
-              })}
+                      <div className="min-w-[58px] text-center">
+                        <p className="text-lg font-bold text-primary">
+                          {time.hourMinute}
+                        </p>
+                        <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-dark-5">
+                          {time.meridiem}
+                        </p>
+                      </div>
+
+                      <div className="h-10 w-px bg-stroke dark:bg-dark-3" />
+
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate font-medium text-dark dark:text-white">
+                          {session.clientName}
+                        </p>
+                        <p className="text-sm text-dark-6 dark:text-dark-6">
+                          {session.sessionType} · {session.durationMinutes} min
+                        </p>
+                      </div>
+
+                      <span
+                        className={cn(
+                          "shrink-0 text-sm font-medium",
+                          statusClassNames[session.status],
+                        )}
+                      >
+                        {session.status}
+                      </span>
+                    </div>
+                  );
+                })
+              )}
             </div>
           </div>
         ))}

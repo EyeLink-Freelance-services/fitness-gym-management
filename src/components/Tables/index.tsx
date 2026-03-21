@@ -219,7 +219,7 @@ export async function TableUI<TData extends TableRowData = TableRowData>({
                       key={`${key}-${rowIndex}`}
                       className={cn(
                         alignmentClasses[alignment].cell,
-                        "text-dark-6 dark:text-dark-5",
+                        "text-dark-6 dark:text-dark-6",
                         isNumericColumn(key) &&
                           "font-medium text-dark dark:text-white",
                         column.cellClassName,

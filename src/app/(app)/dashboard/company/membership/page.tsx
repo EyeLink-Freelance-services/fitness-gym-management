@@ -46,7 +46,7 @@ export default async function CompanyMembershipPage({
                 }}
                 Icon={item.Icon}
               />
-              <p className="px-2 text-sm text-dark-6 dark:text-dark-5">
+              <p className="px-2 text-sm text-dark-6 dark:text-dark-6">
                 {item.note}
               </p>
             </div>
@@ -63,7 +63,7 @@ export default async function CompanyMembershipPage({
               <h2 className="text-body-2xlg font-bold text-dark dark:text-white">
                 Plan Revenue Breakdown
               </h2>
-              <p className="mt-1 text-sm text-dark-6 dark:text-dark-5">
+              <p className="mt-1 text-sm text-dark-6 dark:text-dark-6">
                 Monthly revenue contribution by plan.
               </p>
             </div>
@@ -83,7 +83,7 @@ export default async function CompanyMembershipPage({
             <h2 className="text-body-2xlg font-bold text-dark dark:text-white">
               Member Distribution
             </h2>
-            <p className="mt-1 text-sm text-dark-6 dark:text-dark-5">
+            <p className="mt-1 text-sm text-dark-6 dark:text-dark-6">
               Active member split across plans.
             </p>
           </div>

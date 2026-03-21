@@ -2,7 +2,11 @@
 
 import { useEffect, useId, useState } from "react";
 import { createPortal } from "react-dom";
+import AnnouncementForm from "@/components/Forms/AnnouncementForm";
+import AssignClientForm from "@/components/Forms/AssignClientForm";
+import ClientForm from "@/components/Forms/ClientForm";
 import CompanyForm from "@/components/Forms/CompanyForm";
+import MedicalNotesForm from "@/components/Forms/MedicalNotesForm";
 import PersonalCoachForm from "@/components/Forms/PersonalCoachForm";
 import { Button } from "@/components/ui-elements/button";
 import { FormModalTriggerProps } from "@/types/forms";
@@ -10,6 +14,7 @@ import { FormModalTriggerProps } from "@/types/forms";
 export function FormModalTrigger({
   buttonLabel,
   formType,
+  size,
 }: FormModalTriggerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -43,6 +48,7 @@ export function FormModalTrigger({
       <Button
         type="button"
         label={buttonLabel}
+        size={size}
         onClick={() => setIsOpen(true)}
       />
 
@@ -60,8 +66,20 @@ export function FormModalTrigger({
               >
                 <div className="w-full max-w-4xl overflow-hidden rounded-2xl bg-white shadow-xl dark:bg-dark-2">
                   <div className="max-h-[85vh] overflow-y-auto p-4">
+                    {formType === "client" && (
+                      <ClientForm onSuccess={close} />
+                    )}
+                    {formType === "assignClient" && (
+                      <AssignClientForm onSuccess={close} />
+                    )}
                     {formType === "company" && <CompanyForm />}
                     {formType === "personal" && <PersonalCoachForm />}
+                    {formType === "announcement" && (
+                      <AnnouncementForm onSuccess={close} />
+                    )}
+                    {formType === "medicalNotes" && (
+                      <MedicalNotesForm onSuccess={close} />
+                    )}
                   </div>
                 </div>
               </div>,

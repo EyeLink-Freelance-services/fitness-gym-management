@@ -10,13 +10,12 @@ import {
   CLIENT_WEIGHT_TREND,
   CLIENT_WORKOUT_PLAN,
 } from "@/data/client";
-import { DUMMY_KPIS, GYM_CLIENTS } from "@/data/company";
+import { COMPANY_CLIENT_ROWS, DUMMY_KPIS } from "@/data/company";
+import { COACH_CLIENTS } from "@/data/coach-clients";
 import {
-  PERSONAL_COACH_ANNOUNCEMENTS,
-  PERSONAL_COACH_CLIENT_PROGRESS,
+  ANNOUNCEMENTS,
   PERSONAL_COACH_MEDICAL_NOTES,
   PERSONAL_COACH_OVERVIEW,
-  PERSONAL_COACH_PROGRESS_SERIES,
   PERSONAL_COACH_TODAY_SESSIONS,
 } from "@/data/personal-coach";
 import {
@@ -32,6 +31,10 @@ import {
   COMPANY_MEMBERSHIP_PROMOTIONS,
   COMPANY_MEMBERSHIP_REVENUE,
 } from "@/data/company-membership";
+import type {
+  StatusOpt,
+  SuperAdminCompanyRow,
+} from "@/types/dashboard/super-admin";
 import type { PaymentCollectionsTimeFrame } from "@/types/dashboard/payment";
 import type { MembershipRevenueTimeFrame } from "@/types/dashboard/membership";
 import {
@@ -46,17 +49,26 @@ import {
   DUMMY_GYMS,
   OVERVIEW_SUPER_ADMIN_DATA,
 } from "@/data/superAdmin";
-import { buildCompanyClientRows } from "@/utils/dashboard/company-client-rows";
-
-const COMPANY_CLIENT_ROWS = buildCompanyClientRows(GYM_CLIENTS);
-
 // Gyms
-export async function getAllGyms() {
+export async function getAllGyms(){
   // const res = await fetch("/api/gyms");
   // return res.json();
 
   await new Promise((r) => setTimeout(r, 200));
-  return DUMMY_GYMS;
+  return DUMMY_GYMS.map((gym) => ({
+    id: String(gym.id),
+    company_name: gym.name,
+    company_logo: gym.logo,
+    business_reg_no: `BRN-${gym.id}`,
+    contact_number: "+1 555-000-0000",
+    address_line_1: gym.location,
+    city: "",
+    postcode: "",
+    district: "",
+    branches: [],
+    disclaimer_text: "",
+    terms_and_conditions: "",
+  }));
 }
 
 export async function getTopGyms(limit = 5) {
@@ -75,7 +87,26 @@ export async function getTopGyms(limit = 5) {
 // Coaches
 export async function getAllCoaches() {
   await new Promise((r) => setTimeout(r, 200));
-  return DUMMY_COACHES;
+
+  return DUMMY_COACHES.map((coach, i) => ({
+    id: `coach-${i + 1}`,
+    first_name: coach.name.split(" ")[0] ?? coach.name,
+    last_name: coach.name.split(" ").slice(1).join(" ") || "—",
+    phone_num: "+1 555-000-0000",
+    email: `${coach.name.toLowerCase().replace(/\s/g, ".")}@example.com`,
+    specialization: coach.specialization,
+    location: coach.location,
+    qualifications: "Certified",
+    certifications: ["ACE-CPT"],
+    years_of_experience: 5,
+    hourly_rate: 75,
+    languages_spoken: ["English"],
+    bio: "",
+    profile_photo: coach.logo,
+    availability: ["Mon", "Wed", "Fri"],
+    clients: coach.clients,
+    statusTone: (coach.status === "Active" ? "Active" : "Not Active") as StatusOpt,
+  }));
 }
 
 export async function getTopCoaches(limit = 5) {
@@ -114,15 +145,19 @@ export async function getPersonalCoachTodaySessions(limit = 5) {
   return sorted.slice(0, limit);
 }
 
+/** Returns clients with progress series for the chart. New clients (no progress) are excluded. */
 export async function getPersonalCoachProgressSeries() {
   await new Promise((r) => setTimeout(r, 200));
-  return PERSONAL_COACH_PROGRESS_SERIES;
+  return COACH_CLIENTS.filter(
+    (c): c is typeof c & { progressSeries: NonNullable<typeof c.progressSeries> } =>
+      !!c.progressSeries?.points?.length,
+  ).map((c) => c.progressSeries!);
 }
 
+/** Returns coach clients for My Clients table. Same source as clients page. */
 export async function getPersonalCoachClientProgress(limit = 5) {
   await new Promise((r) => setTimeout(r, 200));
-
-  return PERSONAL_COACH_CLIENT_PROGRESS.slice(0, limit);
+  return COACH_CLIENTS.slice(0, limit);
 }
 
 export async function getPersonalCoachMedicalNotes(limit = 5) {
@@ -138,7 +173,7 @@ export async function getPersonalCoachMedicalNotes(limit = 5) {
 export async function getPersonalCoachAnnouncements(limit = 5) {
   await new Promise((r) => setTimeout(r, 200));
 
-  const sorted = [...PERSONAL_COACH_ANNOUNCEMENTS].sort(
+  const sorted = [...ANNOUNCEMENTS].sort(
     (a, b) => new Date(b.publishAt).getTime() - new Date(a.publishAt).getTime(),
   );
 

@@ -117,6 +117,29 @@ export interface StaffCoachFormProps {
 
 export type FormModalId = "client" | "company" | "personal" | "staff";
 
+export interface AnnouncementFormData {
+  title: string;
+  message: string;
+  sendType: "now" | "schedule";
+  scheduledDate?: string | null;
+}
+
+export interface MedicalNoteFormData {
+  clientId: string;
+  condition: string;
+  restrictionNotes: string;
+  severity: "high" | "moderate" | "low";
+}
+
+/** Client-coach assignment status for Assign Client form */
+export type AssignClientStatus = "assigned" | "pending" | "unassigned";
+
+export interface AssignClientFormData {
+  clientId: string;
+  coachId: string;
+  status: AssignClientStatus;
+}
+
 export type ValidateResult = true | string;
 
 /* Recover Password */
@@ -146,9 +169,16 @@ export type RecoveryCodeProps = {
 
 // Dashboard form
 
-type FormType = "company" | "personal";
+type FormType =
+  | "client"
+  | "company"
+  | "personal"
+  | "announcement"
+  | "medicalNotes"
+  | "assignClient";
 
 export type FormModalTriggerProps = {
   buttonLabel: string;
   formType: FormType;
+  size?: "default" | "small" | "xs";
 };

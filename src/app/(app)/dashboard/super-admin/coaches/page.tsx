@@ -1,19 +1,8 @@
-import { TableUI } from "@/components/Tables";
-import { Skeleton } from "@/components/Tables/skeleton";
-import { Suspense } from "react";
-import { FormModalTrigger } from "@/components/Dashboard/form-modal-trigger";
+import { CoachesTableClient } from "@/components/Dashboard/super-admin/coaches-table-client";
 import { getAllCoaches } from "@/services/dashboard.services";
 
-export default function CompanyCoachesPage() {
-  return (
-    <div className="flex flex-col gap-4">
-      <div className="flex justify-end">
-        <FormModalTrigger buttonLabel="Add Personal Coach" formType="personal" />
-      </div>
+export default async function SuperAdminCoachesPage() {
+  const allCoaches = await getAllCoaches();
 
-      <Suspense fallback={<Skeleton />}>
-        <TableUI title="Coaches" data={getAllCoaches()} />
-      </Suspense>
-    </div>
-  );
+  return <CoachesTableClient data={allCoaches} />;
 }

@@ -97,7 +97,7 @@ export function MembershipPlanCard({ plan }: MembershipPlanCardProps) {
           >
             {plan.price}
           </span>
-          <span className="pb-1 text-sm text-dark-6 dark:text-dark-5">
+          <span className="pb-1 text-sm text-dark-6 dark:text-dark-6">
             {plan.billingLabel}
           </span>
         </div>
@@ -119,7 +119,7 @@ export function MembershipPlanCard({ plan }: MembershipPlanCardProps) {
             className="flex items-center gap-3 text-sm text-dark dark:text-white"
           >
             <FeatureStateIcon included={feature.included} />
-            <span className={cn(!feature.included && "text-dark-6 dark:text-dark-5")}>
+            <span className={cn(!feature.included && "text-dark-6 dark:text-dark-6")}>
               {feature.label}
             </span>
           </li>
@@ -131,14 +131,14 @@ export function MembershipPlanCard({ plan }: MembershipPlanCardProps) {
           <p className="text-[28px] font-bold leading-none text-dark dark:text-white">
             {plan.members}
           </p>
-          <p className="mt-2 text-xs text-dark-6 dark:text-dark-5">Members</p>
+          <p className="mt-2 text-xs text-dark-6 dark:text-dark-6">Members</p>
         </div>
 
         <div className="rounded-[12px] bg-gray-1 px-4 py-3 dark:bg-dark-2">
           <p className="text-[28px] font-bold leading-none text-dark dark:text-white">
             {plan.revenue}
           </p>
-          <p className="mt-2 text-xs text-dark-6 dark:text-dark-5">This month</p>
+          <p className="mt-2 text-xs text-dark-6 dark:text-dark-6">This month</p>
         </div>
       </div>
 

@@ -1,5 +1,7 @@
-import type { PersonalCoachProgressSeries } from "@/types/dashboard/personal-coach";
-import type { ProgressSeries } from "@/types/dashboard/client-records";
+import type {
+  ClientProgressSeries,
+  ProgressSeries,
+} from "@/types/dashboard/client-records";
 import { BarChart } from "@/components/Dashboard/charts/bar-chart";
 import { ClientProgressChart } from "@/components/Dashboard/personal-coach/client-progress-chart";
 
@@ -14,7 +16,7 @@ const strokeColorMap: Record<string, string> = {
   "bg-yellow-400": "#facc15",
 };
 
-function toChartData(series: ProgressSeries): PersonalCoachProgressSeries[] {
+function toChartData(series: ProgressSeries): ClientProgressSeries[] {
   return [
     {
       id: series.id,
@@ -33,7 +35,7 @@ export function ProgressSeriesCard({ series }: ProgressSeriesCardProps) {
           <h3 className="text-lg font-semibold text-dark dark:text-white">
             {series.title}
           </h3>
-          <p className="mt-1 text-sm text-dark-6 dark:text-dark-5">
+          <p className="mt-1 text-sm text-dark-6 dark:text-dark-6">
             {series.subtitle}
           </p>
         </div>
@@ -56,7 +58,7 @@ export function ProgressSeriesCard({ series }: ProgressSeriesCardProps) {
         <h3 className="text-lg font-semibold text-dark dark:text-white">
           {series.title}
         </h3>
-        <p className="mt-1 text-sm text-dark-6 dark:text-dark-5">
+        <p className="mt-1 text-sm text-dark-6 dark:text-dark-6">
           {series.subtitle}
         </p>
       </div>

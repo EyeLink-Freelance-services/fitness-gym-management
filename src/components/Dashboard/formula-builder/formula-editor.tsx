@@ -30,11 +30,11 @@ export function FormulaEditor({
               {formula.label}
             </h3>
           </div>
-          <p className="mt-2 text-sm text-dark-6 dark:text-dark-5">
+          <p className="mt-2 text-sm text-dark-6 dark:text-dark-6">
             Key: `{formula.key}` {formula.unit ? `· Unit ${formula.unit}` : ""}
           </p>
           {formula.description && (
-            <p className="mt-2 text-sm text-dark-6 dark:text-dark-5">
+            <p className="mt-2 text-sm text-dark-6 dark:text-dark-6">
               {formula.description}
             </p>
           )}

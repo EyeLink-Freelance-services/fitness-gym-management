@@ -27,7 +27,7 @@ const columns: MembershipPromotionsTableColumn[] = [
     render: (row: MembershipPromotionRow) => (
       <div className="space-y-1">
         <p className="font-medium text-dark dark:text-white">{row.title}</p>
-        <p className="text-sm text-dark-6 dark:text-dark-5">{row.description}</p>
+        <p className="text-sm text-dark-6 dark:text-dark-6">{row.description}</p>
       </div>
     ),
   },
@@ -42,7 +42,7 @@ const columns: MembershipPromotionsTableColumn[] = [
     key: "limit",
     label: "Limit",
     render: (row: MembershipPromotionRow) => (
-      <span className="text-dark-6 dark:text-dark-5">
+      <span className="text-dark-6 dark:text-dark-6">
         {row.limit === null ? "∞" : row.limit}
       </span>
     ),

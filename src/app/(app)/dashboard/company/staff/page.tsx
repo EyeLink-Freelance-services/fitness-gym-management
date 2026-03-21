@@ -3,11 +3,16 @@
 import { DataTable } from "@/components/Tables";
 import { Button } from "@/components/ui-elements/button";
 import { StatusBadge } from "@/components/ui-elements/status-badge";
-import { COMPANY_MEMBER_ROWS } from "@/data/company-members";
-import type { CompanyMemberRow } from "@/types/dashboard/company-directory";
+import { COMPANY_CLIENT_ROWS } from "@/data/company";
+import type { CompanyClientRow } from "@/types/dashboard/company-directory";
 import type { ColumnDef } from "@tanstack/react-table";
 
-const columns: ColumnDef<CompanyMemberRow>[] = [
+const memberRows = COMPANY_CLIENT_ROWS.filter(
+  (c): c is CompanyClientRow & { plan: string; expiresAt: string } =>
+    Boolean(c.plan && c.expiresAt),
+);
+
+const columns: ColumnDef<CompanyClientRow>[] = [
   {
     accessorKey: "name",
     header: "Name",
@@ -32,20 +37,25 @@ const columns: ColumnDef<CompanyMemberRow>[] = [
     accessorKey: "expiresAt",
     header: "Expires",
     cell: ({ row }) => (
-      <span className="text-dark-6 dark:text-dark-5">
-        {new Date(row.original.expiresAt).toLocaleDateString("en-GB", {
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-        })}
+      <span className="text-dark-6 dark:text-dark-6">
+        {row.original.expiresAt
+          ? new Date(row.original.expiresAt).toLocaleDateString("en-GB", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+            })
+          : "—"}
       </span>
     ),
   },
   {
-    accessorKey: "status",
+    accessorKey: "membershipStatus",
     header: "Status",
     cell: ({ row }) => (
-      <StatusBadge label={row.original.status} tone={row.original.statusTone} />
+      <StatusBadge
+        label={row.original.membershipStatus ?? "—"}
+        tone={row.original.membershipStatusTone ?? "neutral"}
+      />
     ),
   },
 ];
@@ -63,8 +73,8 @@ export default function CompanyMembersPage() {
 
       <DataTable
         title="Members"
-        description="Membership records sourced from the shared company dataset."
-        data={COMPANY_MEMBER_ROWS}
+        description="Membership records from the shared company client dataset."
+        data={memberRows}
         columns={columns}
         getRowId={(row) => row.id}
         tableClassName="min-w-[720px]"

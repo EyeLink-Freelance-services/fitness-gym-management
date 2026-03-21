@@ -1,14 +1,5 @@
 import type { StatusTone } from "@/types/shared";
 
-export interface CompanyMemberRow {
-  id: string;
-  name: string;
-  plan: string;
-  expiresAt: string;
-  status: string;
-  statusTone: StatusTone;
-}
-
 export interface CompanyCoachRow {
   id: string;
   name: string;
@@ -27,6 +18,10 @@ export interface CompanyClientRow {
   expiresAt?: string;
   coach?: string | null;
   assignedOn?: string;
+  /** Coach assignment: Assigned | Pending | Unassigned */
   status?: string;
   statusTone?: StatusTone;
+  /** Membership: Active | Expiring | Expired */
+  membershipStatus?: string;
+  membershipStatusTone?: StatusTone;
 }

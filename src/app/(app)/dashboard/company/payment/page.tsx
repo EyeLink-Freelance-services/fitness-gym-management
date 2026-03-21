@@ -45,7 +45,7 @@ export default async function CompanyPaymentPage({ searchParams }: SearchType) {
                 }}
                 Icon={item.Icon}
               />
-              <p className="px-2 text-sm text-dark-6 dark:text-dark-5">
+              <p className="px-2 text-sm text-dark-6 dark:text-dark-6">
                 {item.note}
               </p>
             </div>
@@ -62,7 +62,7 @@ export default async function CompanyPaymentPage({ searchParams }: SearchType) {
               <h2 className="text-body-2xlg font-bold text-dark dark:text-white">
                 Monthly Collections
               </h2>
-              <p className="mt-1 text-sm text-dark-6 dark:text-dark-5">
+              <p className="mt-1 text-sm text-dark-6 dark:text-dark-6">
                 Collected vs expected payments, with overdue exposure.
               </p>
             </div>

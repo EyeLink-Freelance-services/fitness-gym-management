@@ -14,40 +14,52 @@ import type {
 
 export const CLIENT_OVERVIEW: ClientOverviewItem[] = [
   {
-    label: "Current Weight",
-    value: "74.2 kg",
+    label: "Current Weight (kg)",
+    value: "74.2",
     trend: -4.3,
     icon: Icons.Gym,
   },
   {
-    label: "Body Fat",
-    value: "18.4%",
+    label: "Body Fat (%)",
+    value: "18.4",
     trend: -2.1,
     icon: Icons.Product,
   },
   {
-    label: "Lean Muscle",
-    value: "57.6 kg",
+    label: "Lean Muscle (kg)",
+    value: "57.6",
     trend: 1.4,
     icon: Icons.Users,
   },
   {
-    label: "Goal Completion",
-    value: "72%",
+    label: "Goal Completion(%)",
+    value: "72",
     trend: 8,
     icon: Icons.Profit,
+  },
+  {
+    label: "Member Since",
+    value: "January 2025",
+  },
+  {
+    label: "Renewal (days)",
+    value: "29",
+  },
+  {
+    label: "Monthly Price",
+    value: "250.00",
+  },
+  {
+    label: "Branch",
+    value: "KL Sentral (all access)",
   },
 ];
 
 export const CLIENT_MEMBERSHIP_SUMMARY: ClientMembershipSummary = {
   planName: "Premium",
-  monthlyPrice: "RM 250.00 / month",
-  renewalMode: "Auto-renew On",
+  monthlyPrice: "250.00",
   memberSince: "January 2025",
-  currentPeriod: "1 Mar - 31 Mar 2026",
   branch: "KL Sentral (all access)",
-  ptSessionsUsed: 6,
-  ptSessionsTotal: 8,
   daysRemaining: 29,
   benefits: [
     "Full gym access - all branches",
@@ -60,10 +72,10 @@ export const CLIENT_MEMBERSHIP_SUMMARY: ClientMembershipSummary = {
 
 export const CLIENT_COACH_SUMMARY: ClientCoachSummary = {
   name: "Siti Nurhaliza",
+  picture: "https://cdn.pixabay.com/photo/2012/04/14/14/32/skull-34133_1280.png",
   initials: "SK",
   title: "Strength & Conditioning Coach",
   location: "Klang Valley, KL Sentral",
-  rating: "4.9 / 5.0",
   experience: "8 years experience",
   languages: ["English", "Bahasa Melayu"],
   certifications: ["ACE-CPT", "NASM Certified"],
