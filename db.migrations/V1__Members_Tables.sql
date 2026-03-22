@@ -242,13 +242,13 @@ using (public.is_company_member(company_id) and deleted_at is null);
 drop policy if exists "members_write_staff_admin" on public.members;
 create policy "members_write_staff_admin"
 on public.members for insert
-with check (public.has_company_role(company_id,'admin') or public.has_company_role(company_id,'staff'));
+with check (public.has_company_role(company_id,'admin') or public.has_company_role(company_id,'staff') or public.is_company_owner(company_id));
 
 drop policy if exists "members_update_staff_admin" on public.members;
 create policy "members_update_staff_admin"
 on public.members for update
-using (public.has_company_role(company_id,'admin') or public.has_company_role(company_id,'staff'))
-with check (public.has_company_role(company_id,'admin') or public.has_company_role(company_id,'staff'));
+using (public.has_company_role(company_id,'admin') or public.has_company_role(company_id,'staff') or public.is_company_owner(company_id))
+with check (public.has_company_role(company_id,'admin') or public.has_company_role(company_id,'staff') or public.is_company_owner(company_id));
 
 -- -- coach can update members only if assigned (optional)
 -- drop policy if exists "members_update_coach_assigned" on public.members;

@@ -49,7 +49,8 @@ as $$
     from public.members m
     where m.id = p_member_id
       and (
-        public.has_company_role(m.company_id, 'admin')
+        public.is_company_owner(m.company_id)
+        or public.has_company_role(m.company_id, 'admin')
         or public.has_company_role(m.company_id, 'staff')
         or (public.has_company_role(m.company_id, 'coach') and m.assigned_coach_id = auth.uid())
       )
@@ -75,19 +76,23 @@ drop policy if exists "membership_plans_write_staff_admin" on public.membership_
 create policy "membership_plans_write_staff_admin"
 on public.membership_plans for insert
 with check (
-  public.has_company_role(company_id,'admin')
+  public.is_company_owner(company_id)
+  or public.has_company_role(company_id,'admin')
   or public.has_company_role(company_id,'staff')
 );
 
+drop policy if exists "membership_plans_update_admin_staff" on public.membership_plans;
 create policy "membership_plans_update_admin_staff"
 on public.membership_plans
 for update
 using (
-  public.has_company_role(company_id, 'admin')
+  public.is_company_owner(company_id)
+  or public.has_company_role(company_id, 'admin')
   or public.has_company_role(company_id, 'staff')
 )
 with check (
-  public.has_company_role(company_id, 'admin')
+  public.is_company_owner(company_id)
+  or public.has_company_role(company_id, 'admin')
   or public.has_company_role(company_id, 'staff')
 );
 
@@ -100,7 +105,11 @@ drop policy if exists "member_memberships_insert_staff_admin" on public.member_m
 create policy "member_memberships_insert_staff_admin"
 on public.member_memberships for insert
 with check (
-  (public.has_company_role(company_id,'admin') or public.has_company_role(company_id,'staff'))
+  (
+    public.has_company_role(company_id,'admin') 
+    or public.is_company_owner(company_id)
+    or public.has_company_role(company_id,'staff')
+  )
   and created_by = auth.uid()
 );
 

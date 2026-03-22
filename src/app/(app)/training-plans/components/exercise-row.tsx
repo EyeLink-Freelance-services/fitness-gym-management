@@ -8,6 +8,7 @@ import { TrainingPlanFormInput } from "@/lib/validation/schemas/training-plans";
 import { toast } from "sonner";
 import { preventNegativeKeyDown } from "@/lib/validation/helpers/check-number";
 import { useEffect, useRef } from "react";
+import { FieldLabel, Input } from "@/components/FormElements/Input/input";
 
 type Props = {
   exercise: ExerciseField;
@@ -16,26 +17,6 @@ type Props = {
   mode: "mobile" | "desktop";
   onDelete: () => void;
 };
-
-function FieldLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <label className="mb-1 block text-xs font-medium text-dark-5 dark:text-dark-6">
-      {children}
-    </label>
-  );
-}
-
-function Input({
-  className = "",
-  ...props
-}: React.InputHTMLAttributes<HTMLInputElement>) {
-  return (
-    <input
-      {...props}
-      className={`w-full rounded-lg border border-stroke bg-white px-3 py-2 text-sm text-dark outline-none transition focus:border-primary dark:border-dark-3 dark:bg-dark dark:text-white dark:focus:border-primary ${className}`}
-    />
-  );
-}
 
 export default function ExerciseRow({
   exercise,
@@ -180,7 +161,7 @@ export default function ExerciseRow({
       style={style}
       className={`${isDragging ? "opacity-60" : ""}`}
     >
-      <td className="px-4 py-3">
+      <td className="px-3 py-3">
         <button
           type="button"
           className="cursor-grab rounded-md px-2 py-2 text-dark-5 transition hover:bg-gray-1 hover:text-dark active:cursor-grabbing dark:text-dark-6 dark:hover:bg-white/5 dark:hover:text-white"
@@ -192,65 +173,66 @@ export default function ExerciseRow({
         </button>
       </td>
 
-      <td className="px-4 py-3">
+      <td className="px-4 py-3 min-w-[240px]">
         <Input
           {...register(`${basePath}.name`)}
           placeholder="Exercise name"
+          className="w-full min-w-0"
         />
       </td>
 
-      <td className="px-4 py-3">
+      <td className="px-2 py-3">
         <Input
           type="number"
           {...register(`${basePath}.sets`)}
-          className="w-20"
+          className="w-20 no-spinner"
           onKeyDown={(e) => preventNegativeKeyDown(e, "sets")}
         />
       </td>
 
-      <td className="px-4 py-3">
+      <td className="px-2 py-3">
         <Input
           type="number"
           {...register(`${basePath}.reps`)}
-          className="w-20"
+          className="w-20 no-spinner"
           onKeyDown={(e) => preventNegativeKeyDown(e, "reps")}
         />
       </td>
 
-      <td className="px-4 py-3">
+      <td className="px-2 py-3">
         <Input
           type="number"
           step="0.01"
           {...register(`${basePath}.weight`)}
           placeholder="kg"
-          className="w-24"
+          className="w-24 no-spinner"
           onKeyDown={(e) => preventNegativeKeyDown(e, "weight")}
         />
       </td>
 
-      <td className="px-4 py-3">
+      <td className="px-2 py-3">
         <Input
           type="number"
           {...register(`${basePath}.rest_seconds`)}
-          placeholder="in seconds"
-          className="w-24"
+          placeholder="sec"
+          className="w-24 no-spinner"
           onKeyDown={(e) => preventNegativeKeyDown(e, "rest_seconds")}
         />
       </td>
 
-      <td className="px-4 py-3">
+      <td className="px-2 py-3">
         <Input
           {...register(`${basePath}.tempo`)}
-          placeholder="e.g. 3-1-1"
+          placeholder="3-1-1"
           className="w-24"
         />
       </td>
 
-      <td className="px-4 py-3 text-right">
+      <td className="px-3 py-3 text-right">
         <button
           type="button"
           onClick={onDelete}
-          className="rounded-lg border border-rose-300 bg-white px-3 py-2 text-sm font-medium text-rose-600 transition hover:bg-rose-50 dark:border-rose-500/30 dark:bg-dark dark:text-rose-400 dark:hover:bg-rose-500/10"
+          className="rounded-lg border border-rose-300 bg-white px-2.5 py-2 text-sm font-medium text-rose-600 transition hover:bg-rose-50 dark:border-rose-500/30 dark:bg-dark dark:text-rose-400 dark:hover:bg-rose-500/10"
         >
           Delete
         </button>

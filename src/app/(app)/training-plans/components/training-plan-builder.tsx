@@ -158,7 +158,7 @@ export default function TrainingPlanBuilder({ initialPlan }: Props) {
             <div className="mb-2 text-sm text-red-600">{errorMsg}</div>
           )}
 
-          <div className="grid flex-1 grid-cols-1 lg:grid-cols-[320px_minmax(0,1fr)]">
+          <div className="grid flex-1 grid-cols-1 lg:grid-cols-[310px_minmax(0,1fr)]">
             <SessionSidebar
               sessions={sessionsWithValues}
               selectedSessionKey={selectedSessionKey}
@@ -167,20 +167,24 @@ export default function TrainingPlanBuilder({ initialPlan }: Props) {
               onReorderSessions={reorderSessions}
             />
 
-            <div className="min-w-0 border-t border-slate-200 bg-white lg:border-l lg:border-t-0">
-              {selectedSession ? (
-                <SessionEditor
-                  key={selectedSession.fieldId}
-                  session={selectedSession}
-                  sessionIndex={selectedSessionIndex}
-                  onDeleteSession={() => removeSession(selectedSessionIndex)}
-                />
-              ) : (
-                <EmptyState
-                  title="No session selected"
-                  description="Create a session to start building this training plan."
-                />
-              )}
+            <div className="min-w-0 bg-transparent">
+              <div className="h-full bg-white shadow-sm dark:border-dark-3 dark:bg-dark-2">
+                {selectedSession ? (
+                  <SessionEditor
+                    key={selectedSession.fieldId}
+                    session={selectedSession}
+                    sessionIndex={selectedSessionIndex}
+                    onDeleteSession={() => removeSession(selectedSessionIndex)}
+                  />
+                ) : (
+                  <div className="flex h-full items-center justify-center p-8">
+                    <EmptyState
+                      title="No session selected"
+                      description="Create a session to start building this training plan."
+                    />
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </form>

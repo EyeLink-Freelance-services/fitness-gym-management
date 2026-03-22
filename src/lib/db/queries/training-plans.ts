@@ -93,7 +93,7 @@ export async function getTrainingPlan(id: string) {
   const supabase = await supabaseServer();
   
   const { data, error } = await supabase
-    .from("training_plans")
+    .from(TABLE)
     .select(`
       id,
       company_id,

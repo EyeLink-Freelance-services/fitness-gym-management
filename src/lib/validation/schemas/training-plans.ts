@@ -16,8 +16,8 @@ export const TrainingPlanFormSchema = z.object({
     .min(1, "At least one session is required"),
   updated_by: z.string().uuid().nullable(),
   created_by: z.string().uuid().optional(),
-  created_at: z.string().uuid().optional(),
-  updated_at: z.string().uuid().optional()
+  created_at: z.string().datetime().optional(),
+  updated_at: z.string().datetime().optional(),
 });
 
 export type TrainingPlanFormInput = z.input<typeof TrainingPlanFormSchema>;

@@ -1,0 +1,72 @@
+"use client";
+
+import { FormProvider, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import { DietPlanFormInput, DietPlanFormSchema, DietPlanFormValues } from "@/lib/validation/schemas/diet-plans";
+import DietPlanHeader from "./diet-plan-header";
+import DietPlanGeneralSection from "./diet-plan-general-section";
+import DietPlanMealsSection from "./diet-plan-meals-section";
+import { ArrowLeftIcon } from "@/components/IconsCollection/icons";
+import { useRouter } from "next/navigation";
+
+type Props = {
+  initialValues?: DietPlanFormInput;
+  onSubmit?: (values: DietPlanFormValues) => Promise<any> | void;
+  loading?: boolean;
+  readOnly?: boolean;
+};
+
+export default function DietPlanBuilder({
+  initialValues,
+  onSubmit,
+  loading,
+  readOnly = false,
+}: Props) {
+
+  const methods = useForm<DietPlanFormInput, unknown, DietPlanFormValues>({
+    resolver: zodResolver(DietPlanFormSchema),
+    defaultValues: initialValues,
+    mode: "onChange",
+  });
+
+  const {
+    handleSubmit,
+    formState: { isSubmitting },
+  } = methods;
+
+  const onSave = async (values: DietPlanFormValues) => {
+    console.log("valid submit values", values);
+    const rs = await onSubmit?.(values);
+    if(!rs.ok) {
+      console.log("server result", rs);
+    }
+  }
+
+  const onError = async (error: any) => {
+    console.log(error)
+  }
+
+  return (
+    <FormProvider {...methods}>
+      <form
+        onSubmit={handleSubmit(onSave, onError)}
+        className="min-h-screen  text-slate-900  dark:text-slate-100"
+      >
+        <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-2 lg:px-6">
+          <DietPlanHeader
+            loading={loading || isSubmitting}
+            readOnly={readOnly}
+          />
+
+          <div className="grid grid-cols-1 gap-6 xl:grid-cols-[360px_minmax(0,1fr)]">
+            <div className="xl:sticky xl:top-30 self-start">
+              <DietPlanGeneralSection readOnly={readOnly} />
+            </div>
+            <DietPlanMealsSection readOnly={readOnly} />
+          </div>
+        </div>
+      </form>
+    </FormProvider>
+  );
+}
