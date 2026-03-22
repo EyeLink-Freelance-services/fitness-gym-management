@@ -78,12 +78,28 @@ export async function listDietPlan() {
   const supabase = await supabaseServer();
 
   const { data, error } = await supabase
-    .from(TABLE)
-    .select("*")
-    .order("created_at", { ascending: false });
+    .from("diet_plans")
+    .select(`
+      id,
+      title,
+      description,
+      status,
+      created_at,
+      meals:diet_plan_meals(id)
+    `);
 
   if (error) throw error;
-  return data ?? [];
+
+  const rs = data?.map((plan) => ({
+        id: plan.id,
+        title: plan.title,
+        description: plan.description,
+        status: plan.status,
+        created_at: plan.created_at,
+        meals_count: plan.meals?.length ?? 0,
+      })) ?? [];
+
+  return rs;
 }
 
 export async function getDietPlan(id: string) {

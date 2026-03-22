@@ -8,6 +8,7 @@ import { ROUTES } from "@/constants/route";
 import { TrainingPlan, TrainingPlanStatus } from "@/types/training-plan";
 import TrainingPlanCard from "./training-plan-card";
 import InputGroup from "@/components/FormElements/InputGroup";
+import { Button } from "@/components/ui-elements/button";
 
 type Props = {
   plans?: TrainingPlan[];
@@ -50,12 +51,11 @@ export default function TrainingPlansList({ plans }: Props) {
           subtitle="Manage workout programs"
         />
 
-        <button
+        <Button
           onClick={() => router.push(ROUTES.TRAINING_PLANS.NEW_TEMPLATES)}
-          className="rounded-lg bg-black px-4 py-2 text-white hover:bg-gray-800"
-        >
-          Create Plan
-        </button>
+          label="Create Training Plan"
+        />
+       
       </div>
 
       <div className="mb-6 grid gap-4 md:grid-cols-2">

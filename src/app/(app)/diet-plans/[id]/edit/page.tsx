@@ -1,7 +1,5 @@
-// import DietPlanBuilder from "@/features/diet-plans/components/diet-plan-builder";
-// import { getDietPlanByIdAction, updateDietPlanAction } from "@/features/diet-plans/server/actions";
 import { getDietPlanAction, saveDietPlanAction } from "../../actions";
-import DietPlanBuilder from "../../components/diet-plan-builder";
+import DietPlanClient from "../../components/diet-plan-client";
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -12,8 +10,9 @@ export default async function EditDietPlanPage({ params }: PageProps) {
   const plan = await getDietPlanAction(id);
 
   return (
-    <DietPlanBuilder
-      initialValues={plan.data}
+    <DietPlanClient 
+      initialPlan={plan.data} 
+      title="Edit Diet Plan"
       onSubmit={saveDietPlanAction}
     />
   );

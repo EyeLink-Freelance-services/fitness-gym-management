@@ -51,6 +51,29 @@ create index if not exists idx_training_exercises_session on public.training_ses
 --   created_at timestamptz not null default now()
 -- );
 
+create table if not exists public.training_plan_assignments (
+  id uuid primary key default gen_random_uuid(),
+  company_id uuid not null references public.companies(id) on delete cascade,
+  plan_id uuid not null references public.training_plans(id) on delete cascade,
+  member_id uuid not null references public.members(id) on delete cascade,
+  assigned_by uuid not null references public.profiles(id),
+  start_date date,
+  status text not null default 'active' check (status in ('active','completed','cancelled')),
+  -- pdf_doc_id uuid references public.documents(id) on delete set null,
+  created_at timestamptz not null default now(),
+  unique (plan_id, member_id, created_at)
+);
+
+create index if not exists idx_training_assignments_member on public.training_plan_assignments(member_id, created_at desc);
+create index if not exists idx_training_assignments_company on public.training_plan_assignments(company_id);
+
+alter table public.training_plan_assignments
+drop constraint if exists training_plan_assignments_plan_id_member_id_created_at_key;
+
+alter table public.training_plan_assignments
+add constraint training_plan_assignments_plan_member_unique
+unique (plan_id, member_id);
+
 alter table training_plans
 add column level int;
 alter table training_plans
@@ -63,6 +86,21 @@ add column updated_by uuid references public.profiles(id);
 alter table public.training_plans enable row level security;
 alter table public.training_plan_sessions enable row level security;
 alter table public.training_session_exercises enable row level security;
+alter table public.training_plan_assignments enable row level security;
+
+-- Assignments: allow admin/staff, and coaches only for their members
+drop policy if exists "training_assignments_select_access" on public.training_plan_assignments;
+create policy "training_assignments_select_access"
+on public.training_plan_assignments for select
+using (public.can_access_member(member_id));
+
+drop policy if exists "training_assignments_insert_access" on public.training_plan_assignments;
+create policy "training_assignments_insert_access"
+on public.training_plan_assignments for insert
+with check (
+  public.can_access_member(member_id)
+  and assigned_by = auth.uid()
+);
 
 
 -- training_plans
@@ -562,4 +600,8 @@ TO authenticated;
 
 GRANT SELECT, INSERT, UPDATE, DELETE
 ON public.training_session_exercises
+TO authenticated;
+
+GRANT SELECT, INSERT, UPDATE, DELETE
+ON public.training_plan_assignments
 TO authenticated;

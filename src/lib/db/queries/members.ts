@@ -11,6 +11,40 @@ const TABLE = "members";
  * members: id (uuid), first_name, last_name, email, phone, status, created_at
  * Use RLS policies to restrict by workspace/tenant as needed.
  */
+export async function listMembersByAssignCoach(
+  assignCoachId: string | null,
+  idCompany: string,
+  search?: string
+) {
+  await requirePermission(AuthPermission.members.view);
+
+  const supabase = await supabaseServer();
+
+  let query = supabase
+    .from(TABLE)
+    .select("*")
+    .eq("company_id", idCompany);
+
+  if (assignCoachId) {
+    query = query.or(
+      `assigned_coach_id.eq.${assignCoachId},assigned_coach_id.is.null`
+    );
+  }
+
+  if (search) {
+    query = query.or(
+      `first_name.ilike.%${search}%,last_name.ilike.%${search}%,email.ilike.%${search}%`
+    );
+  }
+
+  const { data, error } = await query.order("created_at", {
+    ascending: false,
+  });
+
+  if (error) throw error;
+  return data ?? [];
+}
+
 export async function listMembers() {
   const auth = await requirePermission(AuthPermission.members.view)
   const supabase = await supabaseServer();

@@ -1,5 +1,5 @@
 import { getDietPlanAction } from "../actions";
-import DietPlanBuilder from "../components/diet-plan-builder";
+import DietPlanClient from "../components/diet-plan-client";
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -11,9 +11,10 @@ export default async function DietPlanDetailsPage({ params }: PageProps) {
   console.log(plan, 'plan')
 
   return (
-    <DietPlanBuilder
-      initialValues={plan.data}
-      readOnly
+    <DietPlanClient 
+      title="Diet Plan"
+      initialPlan={plan.data} 
+      readOnly 
     />
   );
 }

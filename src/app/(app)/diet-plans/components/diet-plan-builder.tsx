@@ -23,7 +23,6 @@ export default function DietPlanBuilder({
   loading,
   readOnly = false,
 }: Props) {
-  const router = useRouter();
 
   const methods = useForm<DietPlanFormInput, unknown, DietPlanFormValues>({
     resolver: zodResolver(DietPlanFormSchema),
@@ -50,19 +49,20 @@ export default function DietPlanBuilder({
 
   return (
     <FormProvider {...methods}>
-      <ArrowLeftIcon onClick={() => router.back()} className="mb-2 cursor-pointer" />
       <form
         onSubmit={handleSubmit(onSave, onError)}
-        className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100"
+        className="min-h-screen  text-slate-900  dark:text-slate-100"
       >
-        <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 lg:px-6">
+        <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-2 lg:px-6">
           <DietPlanHeader
             loading={loading || isSubmitting}
             readOnly={readOnly}
           />
 
           <div className="grid grid-cols-1 gap-6 xl:grid-cols-[360px_minmax(0,1fr)]">
-            <DietPlanGeneralSection readOnly={readOnly} />
+            <div className="xl:sticky xl:top-30 self-start">
+              <DietPlanGeneralSection readOnly={readOnly} />
+            </div>
             <DietPlanMealsSection readOnly={readOnly} />
           </div>
         </div>

@@ -1,10 +1,26 @@
 "use server"
 
 import { getMembershipPlanByMemberIdAndCompanyId } from "@/lib/db/queries/member-membership";
-import { createMember, createMemberWithMembershipPlan } from "@/lib/db/queries/members";
+import { createMember, createMemberWithMembershipPlan, listMembersByAssignCoach } from "@/lib/db/queries/members";
 import { MemberCreateInput, MemberCreateSchema } from "@/lib/validation/schemas/member";
 import { MemberMembershipCreateInput, MemberMembershipPlan, MemberMembershipTransactionSchema } from "@/lib/validation/schemas/member-membership";
 import { revalidatePath } from "next/cache";
+
+export async function getMembersByAssignCoachId(idAssignCoachId: string, idCompany: string, search?: string) {
+	try {
+		const members: any = await listMembersByAssignCoach(idAssignCoachId, idCompany, search);
+
+		return {
+			ok: true,
+			data: members
+		};
+	} catch (error: any) {
+		return {
+			ok: false,
+			message: error.message ?? 'failed to get member by assign coach'
+		}
+	}
+}
 
 export async function getMembershipPlanAction(idMember: string, idCompany: string) {
   try {

@@ -12,9 +12,8 @@ export default async function DietPlansPage() {
   const plans = res?.data ?? [];
 
   return (
-    <div className="flex min-h-screen flex-col gap-6 bg-slate-50 p-4 dark:bg-slate-950 lg:p-6">
+    <div className="flex min-h-screen flex-col gap-6 p-4  lg:p-6">
       
-      {/* Header */}
       <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <Header
           label="- Overview"
@@ -29,7 +28,6 @@ export default async function DietPlansPage() {
         </Link>
       </div>
 
-      {/* List */}
       <DietPlansList plans={plans} />
     </div>
   );

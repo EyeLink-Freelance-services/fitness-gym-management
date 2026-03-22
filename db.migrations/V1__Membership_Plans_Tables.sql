@@ -49,7 +49,8 @@ as $$
     from public.members m
     where m.id = p_member_id
       and (
-        public.has_company_role(m.company_id, 'admin')
+        public.is_company_owner(m.company_id)
+        or public.has_company_role(m.company_id, 'admin')
         or public.has_company_role(m.company_id, 'staff')
         or (public.has_company_role(m.company_id, 'coach') and m.assigned_coach_id = auth.uid())
       )

@@ -1,66 +1,83 @@
 "use client";
 
+import InputGroup from "@/components/FormElements/InputGroup";
+import { TextAreaGroup } from "@/components/FormElements/InputGroup/text-area";
+import { Select } from "@/components/FormElements/select";
+import SectionHeader from "@/components/ui/section-header";
 import { DietPlanFormInput } from "@/lib/validation/schemas/diet-plans";
+import { DietPlanStatus } from "@/types/diet-plan";
 import { useFormContext } from "react-hook-form";
 
 type Props = {
   readOnly?: boolean;
 };
 
+const statusItems: { value: DietPlanStatus; label: string }[] = [
+  { value: "draft", label: "Draft" },
+  { value: "published", label: "Published" },
+  { value: "archived", label: "Archived" },
+];
+
 export default function DietPlanGeneralSection({ readOnly }: Props) {
   const {
     register,
+    watch,
+    setValue,
     formState: { errors },
   } = useFormContext<DietPlanFormInput>();
 
+  const status = watch("status");
+
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-      <h2 className="mb-4 text-lg font-semibold">General information</h2>
+    <div className="overflow-hidden rounded-[24px] border border-stroke/70 bg-white/80 shadow-sm backdrop-blur-sm dark:border-dark-3 dark:bg-dark-2/80">
+      <SectionHeader
+        badge="General Information"
+        title="Diet Plan Details"
+        description="Set the title, description, and status."
+      />
 
-      <div className="space-y-4">
-        <div>
-          <label className="mb-2 block text-sm font-medium">Title</label>
-          <input
-            {...register("title")}
-            readOnly={readOnly}
-            className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-primary dark:border-slate-700 dark:bg-slate-950"
-            placeholder="e.g. Lean muscle meal plan"
+      <div className="p-5 md:px-6">
+        <div className="space-y-4">
+          <InputGroup
+            label="Title"
+            labelClassName="text-sm font-medium"
+            type="text"
+            placeholder="e.g. Lean Muscle Meal Plan"
+            error={errors.title?.message}
+            inputProps={{
+              ...register("title"),
+              readOnly,
+            }}
           />
-          {errors.title && (
-            <p className="mt-1 text-sm text-red-500">{errors.title.message}</p>
-          )}
-        </div>
 
-        <div>
-          <label className="mb-2 block text-sm font-medium">Description</label>
-          <textarea
-            {...register("description")}
-            readOnly={readOnly}
-            rows={5}
-            className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-primary dark:border-slate-700 dark:bg-slate-950"
-            placeholder="Optional description"
+          <TextAreaGroup
+            label="Description"
+            labelClassName="text-sm font-medium"
+            placeholder="Add a short description for this diet plan..."
+            error={errors.description?.message}
+            textareaProps={{
+              ...register("description"),
+              readOnly,
+              rows: 5,
+              className: "resize-none",
+            }}
           />
-          {errors.description && (
-            <p className="mt-1 text-sm text-red-500">
-              {errors.description.message}
-            </p>
-          )}
-        </div>
 
-        <div>
-          <label className="mb-2 block text-sm font-medium">Status</label>
-          <select
-            {...register("status")}
-            disabled={readOnly}
-            className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-primary dark:border-slate-700 dark:bg-slate-950"
-          >
-            <option value="draft">Draft</option>
-            <option value="published">Published</option>
-            <option value="archived">Archived</option>
-          </select>
-          {errors.status && (
-            <p className="mt-1 text-sm text-red-500">{errors.status.message}</p>
-          )}
+          <Select
+            label="Status"
+            placeholder="Select status"
+            items={statusItems}
+            error={errors.status?.message}
+            defaultValue={status}
+            selectProps={{
+              disabled: readOnly,
+              onChange: (e) => {
+                setValue("status", e.target.value as DietPlanStatus, {
+                  shouldValidate: true,
+                });
+              },
+            }}
+          />
         </div>
       </div>
     </div>

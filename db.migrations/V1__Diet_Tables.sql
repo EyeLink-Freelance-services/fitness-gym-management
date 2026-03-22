@@ -39,6 +39,24 @@ create table if not exists public.diet_meal_items (
 
 create index if not exists idx_diet_items_meal on public.diet_meal_items(meal_id, order_index);
 
+create table if not exists public.diet_plan_assignments (
+  id uuid primary key default gen_random_uuid(),
+  company_id uuid not null references public.companies(id) on delete cascade,
+  diet_plan_id uuid not null references public.diet_plans(id) on delete cascade,
+  member_id uuid not null references public.members(id) on delete cascade,
+  assigned_by uuid not null references public.profiles(id),
+  start_date date,
+  status text not null default 'active' check (status in ('active','completed','cancelled')),
+  -- pdf_doc_id uuid references public.documents(id) on delete set null,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists idx_diet_assignments_member on public.diet_plan_assignments(member_id, created_at desc);
+
+alter table public.diet_plan_assignments
+add constraint diet_plan_assignments_plan_member_unique
+unique (diet_plan_id, member_id);
+
 --===========================================
 
 -- Policies
@@ -46,6 +64,20 @@ create index if not exists idx_diet_items_meal on public.diet_meal_items(meal_id
 alter table public.diet_plans enable row level security;
 alter table public.diet_plan_meals enable row level security;
 alter table public.diet_meal_items enable row level security;
+alter table public.diet_plan_assignments enable row level security;
+
+drop policy if exists "diet_assignments_select_access" on public.diet_plan_assignments;
+create policy "diet_assignments_select_access"
+on public.diet_plan_assignments for select
+using (public.can_access_member(member_id));
+
+drop policy if exists "diet_assignments_insert_access" on public.diet_plan_assignments;
+create policy "diet_assignments_insert_access"
+on public.diet_plan_assignments for insert
+with check (
+  public.can_access_member(member_id)
+  and assigned_by = auth.uid()
+);
 
 
 drop policy if exists "diet_plans_select_company" on public.diet_plans;
@@ -477,4 +509,8 @@ TO authenticated;
 
 GRANT SELECT, INSERT, UPDATE, DELETE
 ON public.diet_meal_items
+TO authenticated;
+
+GRANT SELECT, INSERT, UPDATE, DELETE
+ON public.diet_plan_assignments
 TO authenticated;
