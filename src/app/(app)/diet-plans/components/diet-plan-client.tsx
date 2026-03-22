@@ -46,6 +46,8 @@ export default function DietPlanClient({ initialPlan, title, readOnly=false, onS
         onClose={() => setOpenAssignMemberModal(false)}
       >
         <AssignMembersContent 
+          type="diet"
+          planId={initialPlan.id}
           assignedCoachId={auth.userId}
           companyId={company.id}
           onClose={() => setOpenAssignMemberModal(false)}

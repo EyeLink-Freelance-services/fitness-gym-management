@@ -29,7 +29,7 @@ export function Modal({
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-xl overflow-hidden rounded-[28px] border border-stroke/70 bg-white/90 shadow-[0_20px_60px_rgba(15,23,42,0.25)] backdrop-blur-xl dark:border-dark-3 dark:bg-dark-2/90"
+        className="relative flex max-h-[90vh] w-full max-w-xl flex-col overflow-hidden rounded-[28px] border border-stroke/70 bg-white/90 shadow-[0_20px_60px_rgba(15,23,42,0.25)] backdrop-blur-xl dark:border-dark-3 dark:bg-dark-2/90"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-primary/10 to-transparent" />
@@ -60,7 +60,7 @@ export function Modal({
           </div>
         </div>
 
-        <div className="relative px-5 py-5 text-dark dark:text-dark-6">
+        <div className="relative flex min-h-0 flex-1 flex-col px-5 py-5 text-dark dark:text-dark-6">
           {children}
         </div>
       </div>

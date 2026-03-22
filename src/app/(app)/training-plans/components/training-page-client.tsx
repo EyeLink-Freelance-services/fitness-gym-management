@@ -42,6 +42,8 @@ export default function TrainingPlanPageClient({ initialPlan }: Props) {
         onClose={() => setOpenAssignMemberModal(false)}
       >
         <AssignMembersContent 
+          type="training"
+          planId={initialPlan.id}
           assignedCoachId={auth.userId}
           companyId={company.id}
           onClose={() => setOpenAssignMemberModal(false)}
