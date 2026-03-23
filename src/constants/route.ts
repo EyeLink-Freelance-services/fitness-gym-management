@@ -19,8 +19,12 @@ export const ROUTES = {
       ROOT: "/dashboard/personal-coach",
       ANNOUNCEMENTS: "/dashboard/personal-coach/announcements",
       CLIENTS: "/dashboard/personal-coach/clients",
+      TRAINING_PLAN: "/dashboard/personal-coach/training-plan",
+      DIET_PLAN: "/dashboard/personal-coach/diet-plan",
       DATA_ENTRY: "/dashboard/personal-coach/data-entry",
       PROGRESS: "/dashboard/personal-coach/progress",
+      PROGRESS_CLIENT: (clientId: string) =>
+        `/dashboard/personal-coach/progress/${clientId}`,
       SCHEMA: "/dashboard/personal-coach/schema",
       FORMULAS: "/dashboard/personal-coach/formulas",
     },
@@ -28,6 +32,10 @@ export const ROUTES = {
       ROOT: "/dashboard/super-admin",
       COACHES: "/dashboard/super-admin/coaches",
       COMPANY: "/dashboard/super-admin/company"
+    },
+    CLIENT: {
+      ROOT: "/dashboard/client",
+      WEEKLY_CALENDAR: "/calendar"
     },
   },
   LOGIN: "/auth/sign-in",

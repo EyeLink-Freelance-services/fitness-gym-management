@@ -5,6 +5,8 @@ import { cn } from "@/lib/utils";
 import type { ClientCardsGridProps } from "@/types/dashboard/client-records";
 import { getAccent, getStatusTone, initials } from "@/utils/dashboard/shared";
 import { useMemo, useState } from "react";
+import Link from "next/link";
+import { ROUTES } from "@/constants/route";
 import CardTitle from "../overview-cards/cardTitle";
 
 export function ClientCardsGrid({ clients }: ClientCardsGridProps) {
@@ -62,9 +64,10 @@ export function ClientCardsGrid({ clients }: ClientCardsGridProps) {
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {filteredClients.map((client, index) => (
-          <div
+          <Link
             key={client.id}
-            className="rounded-[14px] border border-stroke/70 bg-white p-4 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card"
+            href={ROUTES.DASHBOARD.PERSONAL_COACH.PROGRESS_CLIENT(client.id)}
+            className="rounded-[14px] border border-stroke/70 bg-white p-4 shadow-1 transition-shadow hover:shadow-md dark:border-dark-3 dark:bg-gray-dark dark:shadow-card dark:hover:shadow-md"
           >
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-center gap-3">
@@ -153,7 +156,7 @@ export function ClientCardsGrid({ clients }: ClientCardsGridProps) {
                 {client.progressNote}
               </span> */}
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </div>

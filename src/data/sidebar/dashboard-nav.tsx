@@ -1,110 +1,191 @@
 import { NavSection } from "@/types/dashboard/dashboard-shared";
 import * as Icons from "../../components/IconsCollection/icons";
 import { section } from "@/utils/dashboard-nav";
+import { ROUTES } from "@/constants/route";
 
+/** 1. Super Admin */
 export const SUPER_ADMIN_NAV: NavSection[] = [
   section("SUPER ADMIN", [
     {
-      title: "Home",
-      url: "/dashboard/super-admin",
-      icon: Icons.User,
+      title: "Overview",
+      url: ROUTES.DASHBOARD.SUPER_ADMIN.ROOT,
+      icon: Icons.HomeIcon,
       items: [],
     },
     {
       title: "Companies",
-      url: "/dashboard/super-admin/company",
+      url: ROUTES.DASHBOARD.SUPER_ADMIN.COMPANY,
       icon: Icons.User,
       items: [],
     },
     {
       title: "Personal Coaches",
-      url: "/dashboard/super-admin/coaches",
-      icon: Icons.TrainingIcon,
+      url: ROUTES.DASHBOARD.SUPER_ADMIN.COACHES,
+      icon: Icons.User,
       items: [],
     },
   ]),
 ];
 
+/** 2. Company (Gym) */
 export const COMPANY_NAV: NavSection[] = [
   section("COMPANY", [
     {
-      title: "Home",
-      url: "/dashboard/company",
+      title: "Overview",
+      url: ROUTES.DASHBOARD.COMPANY.ROOT,
       icon: Icons.HomeIcon,
       items: [],
     },
     {
-      title: "Members",
-      icon: Icons.User,
-      items: [
-        {
-          title: "Staff",
-          url: "/dashboard/company/staff",
-          icon: Icons.User,
-        },
-        {
-          title: "Coaches",
-          url: "/dashboard/company/coaches",
-          icon: Icons.TrainingIcon,
-        },
-        {
-          title: "Client",
-          url: "/dashboard/company/clients",
-          icon: Icons.TrainingIcon,
-        },
-      ],
-    },
-    {
-      title: "Client & Coach",
-      url: "/dashboard/company/clientCoachAssign",
+      title: "Clients",
+      url: ROUTES.DASHBOARD.COMPANY.CLIENTS,
       icon: Icons.User,
       items: [],
     },
     {
-      title: "Membership Plans",
-      url: "/dashboard/company/membership",
-      icon: Icons.PaymentsIcon,
+      title: "Coaches",
+      url: ROUTES.DASHBOARD.COMPANY.COACHES,
+      icon: Icons.User,
+      items: [],
+    },
+
+    {
+      title: "Coach Assignments",
+      url: ROUTES.DASHBOARD.COMPANY.CLIENT_COACH_ASSIGN,
+      icon: Icons.User,
       items: [],
     },
     {
-      title: "Payment Records",
-      url: "/dashboard/company/payment",
-      icon: Icons.PaymentsIcon,
+      title: "Schema Builder",
+      url: ROUTES.DASHBOARD.COMPANY.SCHEMA,
+      icon: Icons.FourCircle,
+      items: [],
+    },
+    {
+      title: "Formula Builder",
+      url: ROUTES.DASHBOARD.COMPANY.FORMULAS,
+      icon: Icons.FourCircle,
       items: [],
     },
     {
       title: "Announcements",
-      url: "/dashboard/company/announcement",
+      url: ROUTES.DASHBOARD.COMPANY.ANNOUNCEMENT,
       icon: Icons.Alphabet,
       items: [],
     },
   ]),
 ];
 
+/** 3. Company Coach */
+export const COMPANY_COACH_NAV: NavSection[] = [
+  section("COMPANY COACH", [
+    {
+      title: "Overview",
+      url: ROUTES.DASHBOARD.COMPANY.ROOT,
+      icon: Icons.HomeIcon,
+      items: [],
+    },
+    {
+      title: "Clients",
+      url: ROUTES.DASHBOARD.COMPANY.CLIENTS,
+      icon: Icons.User,
+      items: [],
+    },
+    {
+      title: "Data Entry",
+      url: ROUTES.DASHBOARD.COMPANY.DATA_ENTRY,
+      icon: Icons.FourCircle,
+      items: [],
+    },
+    {
+      title: "Specific Client Progress",
+      url: ROUTES.DASHBOARD.COMPANY.PROGRESS,
+      icon: Icons.TrainingIcon,
+      items: [],
+    },
+    {
+      title: "Training Plan",
+      url: ROUTES.TRAINING_PLANS.TEMPLATES,
+      icon: Icons.TrainingIcon,
+      items: [],
+    },
+    {
+      title: "Diet Plan",
+      url: ROUTES.DIET_PLANS.TEMPLATES,
+      icon: Icons.DietPlanIcon,
+      items: [],
+    },
+  ]),
+];
+
+/** 4. Personal Coach */
 export const PERSONAL_COACH_NAV: NavSection[] = [
   section("PERSONAL COACH", [
-    { title: "Clients", url: "/members", icon: Icons.User, items: [] },
-    { title: "Sessions", url: "/calendar", icon: Icons.Calendar, items: [] },
     {
-      title: "Diet Plans",
-      url: "/diet-plans",
+      title: "Overview",
+      url: ROUTES.DASHBOARD.PERSONAL_COACH.ROOT,
+      icon: Icons.HomeIcon,
+      items: [],
+    },
+    {
+      title: "Clients",
+      url: ROUTES.DASHBOARD.PERSONAL_COACH.CLIENTS,
+      icon: Icons.User,
+      items: [],
+    },
+    {
+      title: "Training Plan",
+      url: ROUTES.DASHBOARD.PERSONAL_COACH.TRAINING_PLAN,
+      icon: Icons.TrainingIcon,
+      items: [],
+    },
+    {
+      title: "Diet Plan",
+      url: ROUTES.DASHBOARD.PERSONAL_COACH.DIET_PLAN,
       icon: Icons.DietPlanIcon,
       items: [],
     },
     {
-      title: "Communication & Announcements",
-      url: "/announcement",
+      title: "Data Entry",
+      url: ROUTES.DASHBOARD.PERSONAL_COACH.DATA_ENTRY,
+      icon: Icons.FourCircle,
+      items: [],
+    },
+    {
+      title: "Schema Builder",
+      url: ROUTES.DASHBOARD.PERSONAL_COACH.SCHEMA,
+      icon: Icons.FourCircle,
+      items: [],
+    },
+    {
+      title: "Formula Builder",
+      url: ROUTES.DASHBOARD.PERSONAL_COACH.FORMULAS,
+      icon: Icons.FourCircle,
+      items: [],
+    },
+    {
+      title: "Announcements",
+      url: ROUTES.DASHBOARD.PERSONAL_COACH.ANNOUNCEMENTS,
       icon: Icons.Alphabet,
       items: [],
     },
   ]),
 ];
 
+/** 5. Client */
 export const CLIENT_NAV: NavSection[] = [
-  section("COACH (GYM)", [
-    { title: "Clients", url: "/members", icon: Icons.User, items: [] },
-    { title: "Sessions", url: "/calendar", icon: Icons.Calendar, items: [] },
-    { title: "Classes", url: "/calendar", icon: Icons.TrainingIcon, items: [] },
-    { title: "Medical notes", url: "/members", icon: Icons.User, items: [] },
+  section("CLIENT", [
+    {
+      title: "Overview",
+      url: ROUTES.DASHBOARD.CLIENT.ROOT,
+      icon: Icons.HomeIcon,
+      items: [],
+    },
+    {
+      title: "Weekly Calendar",
+      url: ROUTES.DASHBOARD.CLIENT.WEEKLY_CALENDAR,
+      icon: Icons.Calendar,
+      items: [],
+    },
   ]),
 ];

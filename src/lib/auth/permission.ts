@@ -100,6 +100,9 @@ export function getRedirectPathForAuth(auth: IAuthContext | null): string | null
   if (auth.permissions?.includes(AuthPermission.dashboard.company)) {
     return "/dashboard/company";
   }
+  if (auth.permissions?.includes(AuthPermission.dashboard.client)) {
+    return "/dashboard/client";
+  }
 
   return null;
 }

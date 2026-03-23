@@ -1,18 +1,21 @@
-import { DataEntryWorkspace } from "@/components/Dashboard/client-records/data-entry-workspace";
+import { PersonalCoachDataEntry } from "@/components/Dashboard/personal-coach/data-entry";
 import {
   getPersonalCoachFormulas,
   getPersonalCoachRecordDraft,
 } from "@/services/coach-schema.services";
 
-export default async function PersonalCoachDataEntryPage() {
+type PageProps = {
+  searchParams: Promise<{ clientId?: string }>;
+};
+
+export default async function PersonalCoachDataEntryPage({
+  searchParams,
+}: PageProps) {
+  const { clientId } = await searchParams;
   const [draft, formulas] = await Promise.all([
-    getPersonalCoachRecordDraft(),
+    getPersonalCoachRecordDraft(clientId),
     getPersonalCoachFormulas(),
   ]);
 
-  return (
-    <div>
-      <DataEntryWorkspace draft={draft} formulas={formulas} />
-    </div>
-  );
+  return <PersonalCoachDataEntry draft={draft} formulas={formulas} />;
 }

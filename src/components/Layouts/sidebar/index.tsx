@@ -3,27 +3,23 @@
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ReactNode, useEffect, useState } from "react";
-import { NAV_DATA } from "../../../data/sidebar";
+import { useState } from "react";
 import { ArrowLeftIcon, ChevronUp } from "../../IconsCollection/icons";
 import { MenuItem } from "./menu-item";
 import { useSidebarContext } from "./sidebar-context";
 import { getDashboardNav } from "@/utils/dashboard-nav";
 import { IAuthContext } from "@/types/auth-context";
-import { getAuthorizedNav } from "@/lib/auth/permission";
 
 interface sidebarProps {
-  auth?: IAuthContext
+  auth?: IAuthContext | null;
 }
 
-export function Sidebar({auth}: sidebarProps) {
+export function Sidebar({ auth }: sidebarProps) {
   const pathname = usePathname();
   const { setIsOpen, isOpen, isMobile, toggleSidebar } = useSidebarContext();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
 
-  const navData = getAuthorizedNav(NAV_DATA , auth);
-  // const isDashboard = pathname.startsWith("/dashboard/");
-  // const navData = isDashboard ? getDashboardNav(pathname) : NAV_DATA;
+  const navData = getDashboardNav(pathname, auth);
 
   const toggleExpanded = (title: string) => {
     setExpandedItems((prev) => (prev.includes(title) ? [] : [title]));

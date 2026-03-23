@@ -73,8 +73,12 @@ export async function getPersonalCoachRecordDraft(
   });
 }
 
-export async function getPersonalCoachProgressOverview() {
+export async function getPersonalCoachProgressOverview(clientId?: string) {
+  const client = clientId
+    ? COACH_CLIENTS.find((c) => c.id === clientId)
+    : COACH_CLIENTS[0];
   return withLatency({
+    client,
     summaryCards: COACH_PROGRESS_SUMMARY,
     series: COACH_PROGRESS_SERIES,
     records: COACH_PROGRESS_RECORDS,

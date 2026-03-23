@@ -128,11 +128,6 @@ export const NAV_DATA: NavSection[] = [
             title: "Data Entry",
             url: ROUTES.DASHBOARD.PERSONAL_COACH.DATA_ENTRY,
             permission: AuthPermission.dashboard.personalCoach
-          },
-          {
-            title: "Progress",
-            url: ROUTES.DASHBOARD.PERSONAL_COACH.PROGRESS,
-            permission: AuthPermission.dashboard.personalCoach
           }
         ],
         permission: AuthPermission.dashboard.personalCoach
