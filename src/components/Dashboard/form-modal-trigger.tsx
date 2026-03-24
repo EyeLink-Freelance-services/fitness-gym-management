@@ -72,7 +72,7 @@ export function FormModalTrigger({
                     {formType === "assignClient" && (
                       <AssignClientForm onSuccess={close} />
                     )}
-                    {formType === "company" && <CompanyForm />}
+                    {formType === "company" && <CompanyForm onSuccess={close} />}
                     {formType === "personal" && <PersonalCoachForm />}
                     {formType === "announcement" && (
                       <AnnouncementForm onSuccess={close} />

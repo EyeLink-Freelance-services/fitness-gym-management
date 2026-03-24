@@ -4,17 +4,17 @@ import { useForm } from "react-hook-form";
 import type { LoginFormData, LoginFormProps } from "@/types/forms";
 import { Button } from "../ui-elements/button";
 import InputGroup from "../FormElements/InputGroup";
-import { GoogleIcon } from "@/components/IconsCollection/icons";
-import { validateEmail } from "@/lib/forms/formValidation";
 import Header from "../FormElements/common/header";
 import { useState } from "react";
 import { LOGIN_ENDPOINT } from "@/constants/urls";
 import { useRouter } from "next/navigation";
 import { ROUTES } from "@/constants/route";
+import { validateEmail } from "@/lib/forms/formValidation";
 
 export default function LoginForm({ onForgotPassword }: LoginFormProps) {
-  const[errorMsg, setErrorMsg] = useState<string | null>(null)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const router = useRouter();
+
   const {
     register,
     handleSubmit,
@@ -23,27 +23,29 @@ export default function LoginForm({ onForgotPassword }: LoginFormProps) {
 
   const onSubmit = async (data: LoginFormData) => {
     setErrorMsg(null);
-		console.log(data, 'data')
-		try {
-			const res = await fetch(LOGIN_ENDPOINT, {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(data),
-			});
-			const json = await res.json();
-			if (!res.ok) {
-				setErrorMsg(json.message);
-			} else {
-				router.push(ROUTES.HOME);
+
+    try {
+      const res = await fetch(LOGIN_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      const json = await res.json();
+
+      if (!res.ok) {
+        setErrorMsg(json.message);
+      } else {
+        router.push(ROUTES.HOME);
         router.refresh();
-			}
-		} catch (err: any) {
-			setErrorMsg(err.message);
-		}
+      }
+    } catch (err: any) {
+      setErrorMsg(err.message);
+    }
   };
 
   return (
-    <div className="form-panel space-y-4 bg-white/80 px-8 py-12 shadow-lg backdrop-blur-sm">
+    <div className="form-panel space-y-4 rounded-2xl bg-white/80 px-8 py-12 shadow-lg backdrop-blur-sm transition-colors duration-300 dark:bg-slate-900/80 dark:shadow-black/40">
       <Header
         label="- Authentication"
         title="Welcome back"
@@ -75,7 +77,9 @@ export default function LoginForm({ onForgotPassword }: LoginFormProps) {
         />
 
         {errorMsg && (
-          <div className="mb-2 text-sm text-red-600">{errorMsg}</div>
+          <div className="mb-2 text-sm text-red-600 dark:text-red-400">
+            {errorMsg}
+          </div>
         )}
 
         <div className="-mt-2 text-right">
@@ -84,7 +88,7 @@ export default function LoginForm({ onForgotPassword }: LoginFormProps) {
             label="Forgot password?"
             variant="outlineDark"
             size="small"
-            className="w-auto border-0 bg-transparent !px-0 !py-0 text-primary hover:bg-transparent hover:underline"
+            className="w-auto border-0 bg-transparent !px-0 !py-0 text-primary hover:bg-transparent hover:underline dark:text-blue-400"
             onClick={onForgotPassword}
           />
         </div>

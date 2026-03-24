@@ -1,44 +1,71 @@
 "use client";
 
-import { Controller, useFieldArray, useForm } from "react-hook-form";
-import type { CompanyFormData } from "@/types/forms";
+import { Controller, useForm } from "react-hook-form";
+import { useTransition } from "react";
 import { COMPANY_STATES } from "@/data/dashboardForm";
 import InputGroup from "../FormElements/InputGroup";
 import { TextAreaGroup } from "../FormElements/InputGroup/text-area";
 import { Select } from "../FormElements/select";
-import { Checkbox } from "../FormElements/checkbox";
 import { Button } from "../ui-elements/button";
 import { ImageUpload } from "../FormElements/ImageUpload";
-import { validatePhone, validateRequired } from "@/lib/forms/formValidation";
 import Header from "../FormElements/common/header";
-import Label from "../FormElements/common/label";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import { ROUTES } from "@/constants/route";
+import { CompanyCreateInput, CompanyCreateSchema } from "@/lib/validation/schemas/company";
+import { createCompanyAction } from "@/app/(app)/dashboard/super-admin/company/action";
+import { toast } from "sonner";
 
-export default function CompanyForm() {
-  const {
-    register,
-    control,
-    handleSubmit,
-    setValue,
-    watch,
-    formState: { errors, isValid, isSubmitting },
-  } = useForm<CompanyFormData>({
-    mode: "all",
+type Props = {
+  onSuccess?: () => void;
+};
+
+export default function CompanyForm({ onSuccess }: Props) {
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
+
+  const method = useForm<CompanyCreateInput>({
+    mode: "onChange",
+    resolver: zodResolver(CompanyCreateSchema),
     defaultValues: {
-      branches: [{ value: "MyFit- Trianon" }],
-      state: "",
+      name: "",
+      mode: "company",
+      logo_url: "",
+      brn: "",
+      address: "",
+      city: "",
+      post_code: "",
+      region: "",
+      contact_email: "",
+      contact_phone: "",
+      terms: "",
+      disclaimer: "",
     },
   });
 
-  watch();
+  const { handleSubmit, control, register, formState: { errors, isSubmitting }, setValue } = method;
 
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "branches",
-  });
-
-  const onSubmit = (data: CompanyFormData) => {
-    console.log(data);
+  const onSubmit = (data: CompanyCreateInput) => {
+    console.log(data, 'data');
+    startTransition(async () => {
+      const res = await createCompanyAction(
+        data
+      );
+      if (!res.ok) {
+        toast.error(res.message)
+      } else {
+        onSuccess?.();
+        toast.success(res.message)
+        if (!onSuccess) {
+          router.push(ROUTES.DASHBOARD.SUPER_ADMIN.COMPANY);
+        }
+      }
+    });
   };
+
+  const onError = (error: any) => {
+    console.log(error, " errors");
+  }
 
   return (
     <div className="form-panel space-y-4">
@@ -48,7 +75,7 @@ export default function CompanyForm() {
         subtitle="Set up your organization to get started"
       />
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-7">
+      <form onSubmit={handleSubmit(onSubmit, onError)} className="space-y-7">
         <div className="my-6 flex items-center gap-3">
           <div className="h-px flex-1 bg-stroke dark:bg-dark-3" />
           <span className="text-body-xs font-medium uppercase tracking-wider text-dark-5 dark:text-dark-6">
@@ -62,10 +89,8 @@ export default function CompanyForm() {
           label="Company Name"
           placeholder="MyFit Gym"
           required
-          error={errors.companyName?.message}
-          inputProps={register("companyName", {
-            validate: (v) => validateRequired(v, "Company name is required"),
-          })}
+          error={errors.name?.message}
+          inputProps={register("name")}
         />
 
         <ImageUpload
@@ -80,7 +105,7 @@ export default function CompanyForm() {
             </>
           }
           hint="PNG, JPG, SVG - max 5MB"
-          registerReturn={register("companyLogo")}
+          registerReturn={register("logo_url")}
           setValue={setValue as (name: string, value?: FileList) => void}
         />
 
@@ -91,24 +116,25 @@ export default function CompanyForm() {
             placeholder="202401234567"
             required
             error={errors.brn?.message}
-            inputProps={register("brn", {
-              validate: (v) => validateRequired(v, "BRN is required"),
-            })}
+            inputProps={register("brn")}
           />
           <InputGroup
             type="tel"
             label="Contact Number"
             placeholder="+230 5XXX XXXX"
             required
-            error={errors.contactNumber?.message}
-            inputProps={register("contactNumber", {
-              validate: (v) =>
-                validateRequired(v, "Contact number is required") === true
-                  ? validatePhone(String(v))
-                  : "Contact number is required",
-            })}
+            error={errors.contact_phone?.message}
+            inputProps={register("contact_phone")}
           />
         </div>
+        <InputGroup
+          type="email"
+          label="Email Address"
+          placeholder="member@email.com"
+          required
+          inputProps={register("contact_email")}
+          error={errors?.contact_email?.message}
+        />
 
         <div className="my-6 flex items-center gap-3">
           <div className="h-px flex-1 bg-stroke dark:bg-dark-3" />
@@ -120,13 +146,11 @@ export default function CompanyForm() {
 
         <InputGroup
           type="text"
-          label="Address Line 1"
+          label="Address"
           placeholder="123 Trianon Avenue"
           required
-          error={errors.addressLine1?.message}
-          inputProps={register("addressLine1", {
-            validate: (v) => validateRequired(v, "Address is required"),
-          })}
+          error={errors.address?.message}
+          inputProps={register("address")}
         />
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -136,24 +160,19 @@ export default function CompanyForm() {
             placeholder="Port Louis"
             required
             error={errors.city?.message}
-            inputProps={register("city", {
-              validate: (v) => validateRequired(v, "City is required"),
-            })}
+            inputProps={register("city")}
           />
           <InputGroup
             type="text"
             label="Postcode"
             placeholder="00000"
-            required
-            error={errors.postcode?.message}
-            inputProps={register("postcode", {
-              validate: (v) => validateRequired(v, "Postcode is required"),
-            })}
+            error={errors.post_code?.message}
+            inputProps={register("post_code")}
           />
         </div>
 
         <Controller
-          name="state"
+          name="region"
           control={control}
           rules={{ required: "District is required" }}
           render={({ field }) => (
@@ -161,52 +180,13 @@ export default function CompanyForm() {
               label="District / Region"
               placeholder="Select district"
               items={COMPANY_STATES.map((s) => ({ value: s, label: s }))}
-              error={errors.state?.message}
+              error={errors.region?.message}
               selectProps={{
                 ...field,
                 required: true,
               }}
             />
           )}
-        />
-
-        <div className="my-6 flex items-center gap-3">
-          <div className="h-px flex-1 bg-stroke dark:bg-dark-3" />
-          <Label value="Multi-Branch" optional />
-          <div className="h-px flex-1 bg-stroke dark:bg-dark-3" />
-        </div>
-
-        <div className="space-y-2">
-          {fields.map((field, i) => (
-            <div key={field.id} className="flex items-center gap-2">
-              <input
-                type="text"
-                placeholder={
-                  i === 0
-                    ? "Branch name (e.g. HQ — KL Sentral)"
-                    : "Branch name (e.g. Petaling Jaya)"
-                }
-                className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5.5 py-3 text-dark outline-none transition placeholder:text-dark-6 focus:border-primary dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary"
-                {...register(`branches.${i}.value` as const)}
-              />
-              <Button
-                type="button"
-                label="✕"
-                variant="outlineDark"
-                size="small"
-                className="shrink-0 !px-3 !py-2 text-red-500 hover:bg-red-500/10"
-                onClick={() => fields.length > 1 && remove(i)}
-                aria-label={`Remove branch ${i + 1}`}
-              />
-            </div>
-          ))}
-        </div>
-        <Button
-          type="button"
-          label="+ Add Another Branch"
-          variant="outlineDark"
-          className="w-full border-dashed text-dark-5 hover:border-primary hover:text-primary dark:text-dark-6 dark:hover:text-primary"
-          onClick={() => append({ value: "" })}
         />
 
         <div className="my-6 flex items-center gap-3">
@@ -223,7 +203,7 @@ export default function CompanyForm() {
           textareaProps={register("disclaimer")}
         />
 
-        <div className="mb-5">
+        {/* <div className="mb-5">
           <label className="mb-2 block text-body-sm font-medium text-dark dark:text-white">
             Terms &amp; Conditions <span className="text-red">*</span>
           </label>
@@ -251,19 +231,19 @@ export default function CompanyForm() {
                   <span className="text-red">*</span>
                 </span>
               }
-              inputProps={register("agreeTerms", {
+              inputProps={register("terms", {
                 validate: (v) => (v ? true : "You must agree to the terms"),
               })}
               error={errors.agreeTerms?.message}
             />
           </div>
-        </div>
+        </div> */}
 
         <Button
           type="submit"
-          label="Register Company"
+          label={isPending ? "Saving..." : "Register Client"}
           className="w-full"
-          disabled={!isValid || isSubmitting}
+          disabled={ isSubmitting }
         />
       </form>
     </div>

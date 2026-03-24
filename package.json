@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "gen:types:dev": "node scripts/gen-supabase-types.js .env.local",
+    "gen:types:prod": "node scripts/gen-supabase-types.js .env.production"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -40,11 +42,14 @@
     "@types/react": "19.0.8",
     "@types/react-dom": "19.0.3",
     "autoprefixer": "^10.4.20",
+    "cross-env": "^10.1.0",
+    "dotenv-cli": "^11.0.0",
     "eslint": "^9",
     "eslint-config-next": "15.1.6",
     "postcss": "^8",
     "prettier": "^3.4.2",
     "prettier-plugin-tailwindcss": "^0.6.11",
+    "supabase": "^2.83.0",
     "tailwindcss": "^3.4.16",
     "typescript": "^5"
   }

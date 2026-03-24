@@ -1,6 +1,5 @@
 import { supabaseServer } from "@/lib/supabase/server";
 import { DietPlanFormInput } from "@/lib/validation/schemas/diet-plans";
-import { TrainingPlanFormInput } from "@/lib/validation/schemas/training-plans";
 
 const TABLE = "diet_plans";
 
