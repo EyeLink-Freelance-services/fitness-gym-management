@@ -9,14 +9,6 @@ export const InviteCreateSchema = z.object({
   expires_in_days: z.coerce.number().int().min(1).max(30).default(7),
   terms_version: z.string().trim().min(1).default("v1"),
   privacy_version: z.string().trim().min(1).default("v1"),
-}).superRefine((values, ctx) => {
-  if (values.invitation_type === "company" && !values.company_name?.trim()) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: ["company_name"],
-      message: "Company name is required for company invitations",
-    });
-  }
 });
 
 export type InviteCreateInput = z.input<typeof InviteCreateSchema>;
@@ -39,8 +31,9 @@ export const OnboardingProfileSchema = z.object({
   token: z.string().trim().min(1),
   first_name: z.string().trim().min(1, "First name is required").max(255),
   last_name: z.string().trim().min(1, "Last name is required").max(255),
+  picture_url: z.any().optional(),
   phone: z.string().trim().max(20).optional().or(z.literal("")),
-  company_name: z.string().trim().max(255).optional().or(z.literal("")),
+  company_name: z.string().trim().min(1, "Company name is required").max(255),
   company_logo_url: z.string().trim().url("Invalid logo URL").optional().or(z.literal("")),
   company_brn: z
     .string()

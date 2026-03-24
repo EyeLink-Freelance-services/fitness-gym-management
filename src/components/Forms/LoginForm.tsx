@@ -7,13 +7,16 @@ import InputGroup from "../FormElements/InputGroup";
 import Header from "../FormElements/common/header";
 import { useState } from "react";
 import { LOGIN_ENDPOINT } from "@/constants/urls";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ROUTES } from "@/constants/route";
 import { validateEmail } from "@/lib/forms/formValidation";
 
 export default function LoginForm({ onForgotPassword }: LoginFormProps) {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const next = searchParams.get("next") || ROUTES.HOME;
 
   const {
     register,
@@ -36,7 +39,7 @@ export default function LoginForm({ onForgotPassword }: LoginFormProps) {
       if (!res.ok) {
         setErrorMsg(json.message);
       } else {
-        router.push(ROUTES.HOME);
+        router.push(next);
         router.refresh();
       }
     } catch (err: any) {

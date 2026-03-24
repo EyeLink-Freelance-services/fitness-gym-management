@@ -1,5 +1,5 @@
 import { ROUTES } from "@/constants/route";
-import { RESET_PASSWORD_ENDPOINT } from "@/constants/urls";
+import { CALLBACK_ENDPOINT } from "@/constants/urls";
 import { createSupabaseRouteClient } from "@/lib/supabase/route";
 import { RecoveryRegisteredEmailFormData } from "@/types/forms";
 import { NextRequest, NextResponse } from "next/server";
@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
 
 		const supabase = await createSupabaseRouteClient(req, response);
 
-		const redirectTo = new URL(`${RESET_PASSWORD_ENDPOINT}?next=${ROUTES.RESET_PASSWORD.NEW_PASSWORD}`, req.url).toString()
+		const redirectTo = new URL(`${CALLBACK_ENDPOINT}?next=${ROUTES.RESET_PASSWORD.NEW_PASSWORD}`, req.url).toString()
     await supabase.auth.resetPasswordForEmail(body.email, {redirectTo});
 		
 		return response;

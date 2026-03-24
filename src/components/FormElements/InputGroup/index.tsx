@@ -6,7 +6,7 @@ type InputGroupProps = {
   className?: string;
   labelClassName?: string;
   label: React.ReactNode;
-  placeholder: string;
+  placeholder?: string;
   type: HTMLInputTypeAttribute;
   fileStyleVariant?: "style1" | "style2";
   required?: boolean;

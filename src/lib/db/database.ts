@@ -803,12 +803,111 @@ export type Database = {
           },
         ]
       }
+      onboarding_invite_acceptance: {
+        Row: {
+          accepted_at: string
+          accepted_privacy: boolean
+          accepted_terms: boolean
+          id: string
+          invite_id: string
+          ip_address: string | null
+          privacy_version: string
+          terms_version: string
+          user_agent: string | null
+        }
+        Insert: {
+          accepted_at?: string
+          accepted_privacy?: boolean
+          accepted_terms?: boolean
+          id?: string
+          invite_id: string
+          ip_address?: string | null
+          privacy_version: string
+          terms_version: string
+          user_agent?: string | null
+        }
+        Update: {
+          accepted_at?: string
+          accepted_privacy?: boolean
+          accepted_terms?: boolean
+          id?: string
+          invite_id?: string
+          ip_address?: string | null
+          privacy_version?: string
+          terms_version?: string
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "onboarding_invite_acceptance_invite_id_fkey"
+            columns: ["invite_id"]
+            isOneToOne: false
+            referencedRelation: "onboarding_invites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      onboarding_invites: {
+        Row: {
+          accepted_at: string | null
+          accepted_by: string | null
+          company_name: string | null
+          created_at: string
+          created_by: string
+          email: string
+          expires_at: string
+          id: string
+          invitation_type: string
+          note: string | null
+          privacy_version: string | null
+          status: string
+          terms_version: string | null
+          token: string
+          updated_at: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          accepted_by?: string | null
+          company_name?: string | null
+          created_at?: string
+          created_by: string
+          email: string
+          expires_at: string
+          id?: string
+          invitation_type: string
+          note?: string | null
+          privacy_version?: string | null
+          status?: string
+          terms_version?: string | null
+          token: string
+          updated_at?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          accepted_by?: string | null
+          company_name?: string | null
+          created_at?: string
+          created_by?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          invitation_type?: string
+          note?: string | null
+          privacy_version?: string | null
+          status?: string
+          terms_version?: string | null
+          token?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           active_company_id: string | null
           created_at: string
           first_name: string
           id: string
+          is_super_admin: boolean
           last_name: string
           phone: string | null
           picture_url: string | null
@@ -819,6 +918,7 @@ export type Database = {
           created_at?: string
           first_name: string
           id: string
+          is_super_admin?: boolean
           last_name: string
           phone?: string | null
           picture_url?: string | null
@@ -829,6 +929,7 @@ export type Database = {
           created_at?: string
           first_name?: string
           id?: string
+          is_super_admin?: boolean
           last_name?: string
           phone?: string | null
           picture_url?: string | null
@@ -1091,6 +1192,27 @@ export type Database = {
     }
     Functions: {
       can_access_member: { Args: { p_member_id: string }; Returns: boolean }
+      complete_onboarding: {
+        Args: {
+          p_company_address?: string
+          p_company_brn?: string
+          p_company_city?: string
+          p_company_disclaimer?: string
+          p_company_email: string
+          p_company_logo_url?: string
+          p_company_name: string
+          p_company_phone?: string
+          p_company_post_code?: string
+          p_company_region?: string
+          p_company_terms?: string
+          p_first_name: string
+          p_last_name: string
+          p_phone?: string
+          p_picture_url?: string
+          p_token: string
+        }
+        Returns: Json
+      }
       create_diet_plan_with_meals: {
         Args: { p_payload: Json }
         Returns: string
@@ -1136,6 +1258,11 @@ export type Database = {
       }
       is_company_member: { Args: { _company_id: string }; Returns: boolean }
       is_company_owner: { Args: { _company_id: string }; Returns: boolean }
+      is_super_admin: { Args: never; Returns: boolean }
+      seed_default_company_role_permissions: {
+        Args: { p_company_id: string }
+        Returns: undefined
+      }
       update_diet_plan_with_meals: {
         Args: { p_payload: Json }
         Returns: string

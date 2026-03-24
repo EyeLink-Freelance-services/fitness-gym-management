@@ -21,6 +21,12 @@ export interface LoginFormData {
   password: string;
 }
 
+export type RegisterFormData = {
+  email: string;
+  password: string;
+  confirmPassword: string;
+};
+
 export interface RecoveryRegisteredEmailFormData {
   email: string;
 }

@@ -548,7 +548,7 @@ exception when duplicate_object then null; end $$;
 --GRANT
 --============================================
 
-GRANT USAGE ON SCHEMA public TO authenticated;
+GRANT USAGE ON SCHEMA public TO anon, authenticated;
 GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO authenticated;
 
 GRANT SELECT, INSERT, UPDATE, DELETE
