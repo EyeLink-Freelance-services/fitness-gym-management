@@ -1,50 +1,73 @@
 export const ROUTES = {
-  HOME: "/",
-  DASHBOARD: {
-    COMPANY: {
-      ROOT: "/dashboard/company",
-      ANNOUNCEMENT: "/dashboard/company/announcement",
-      CLIENT_COACH_ASSIGN: "/dashboard/company/client-coach-assign",
-      CLIENTS: "/dashboard/company/clients",
-      COACHES: "/dashboard/company/coaches",
-      MEMBERSHIP: "/dashboard/company/membership",
-      PAYMENT: "/dashboard/company/payment",
-      STAFF: "/dashboard/company/staff",
-      SCHEMA: "/dashboard/company/schema",
-      FORMULAS: "/dashboard/company/formulas",
-      DATA_ENTRY: "/dashboard/company/data-entry",
-      PROGRESS: "/dashboard/company/progress",
-    },
-    PERSONAL_COACH: {
-      ROOT: "/dashboard/personal-coach",
-      ANNOUNCEMENTS: "/dashboard/personal-coach/announcements",
-      CLIENTS: "/dashboard/personal-coach/clients",
-      TRAINING_PLAN: "/dashboard/personal-coach/training-plan",
-      DIET_PLAN: "/dashboard/personal-coach/diet-plan",
-      DATA_ENTRY: "/dashboard/personal-coach/data-entry",
-      PROGRESS: "/dashboard/personal-coach/progress",
-      PROGRESS_CLIENT: (clientId: string) =>
-        `/dashboard/personal-coach/progress/${clientId}`,
-      SCHEMA: "/dashboard/personal-coach/schema",
-      FORMULAS: "/dashboard/personal-coach/formulas",
-    },
-    SUPER_ADMIN: {
-      ROOT: "/dashboard/super-admin",
-      COACHES: "/dashboard/super-admin/coaches",
-      COMPANY: "/dashboard/super-admin/company"
-    },
-    CLIENT: {
-      ROOT: "/dashboard/client",
-      WEEKLY_CALENDAR: "/calendar"
-    },
+  /** PUBLIC */
+  ONBOARDING: {
+    ACCEPT: "/onboarding/accept",
+    AUTH: "/onboarding/auth",
+    PROFILE: "/onboarding/profile",
+    SUCCESS: "/onboarding/success"
   },
   LOGIN: "/auth/sign-in",
+  REGISTER: "/auth/register",
   FORGOT_PASSWORD: "/auth/forgot-password",
   RESET_PASSWORD: {
     NEW_PASSWORD: "/auth/reset-password",
     NO_CODE_ERROR: "/reset?error=missing_code",
     INVALID_OR_EXPIRED: "/reset?error=invalid_or_expired"
   },
+
+  /** PROTECTED */
+  HOME: "/",
+  DASHBOARD: {
+    COMPANY: {
+      ROOT: "/dashboard/company",
+      // CLIENT_COACH_ASSIGN: "/dashboard/company/client-coach-assign",
+      MEMBERSHIP: "/dashboard/company/membership",
+      PAYMENT: "/dashboard/company/payment",
+      COACH: "/dashboard/company/coach"
+    },
+    PERSONAL_COACH: {
+      ROOT: "/dashboard/personal-coach",
+      // ANNOUNCEMENTS: "/dashboard/personal-coach/announcements",
+      // CLIENTS: "/dashboard/personal-coach/clients",
+      // PROGRESS: "/dashboard/personal-coach/progress",
+      // PROGRESS_CLIENT: (clientId: string) =>
+      //   `/dashboard/personal-coach/progress/${clientId}`,
+      // SCHEMA: "/dashboard/personal-coach/schema",
+      // FORMULAS: "/dashboard/personal-coach/formulas",
+    },
+    SUPER_ADMIN: {
+      ROOT: "/dashboard/super-admin",
+    },
+    CLIENT: {
+      ROOT: "/dashboard/client",
+      WEEKLY_CALENDAR: "/calendar"
+    },
+  },
+
+  /** SUPER ADMIN */
+  COMPANIES: "/companies",
+  PERSONAL_COACHES: "/personal-coaches",
+  SEND_ONBOARDING: "/send-onboarding",
+
+  /** COMPANY */
+  CLIENTS: {
+    LIST_CLIENT: "/clients",
+    ID: (id: string | number) => `/clients/${id}`
+  },
+  COACHES: {
+    LIST_COACH: "/coaches",
+    ID: (id: string | number) => `/coaches/${id}`
+  },
+  STAFF: {
+    LIST_STAFF: "/staff",
+    ID: (id: string | number) => `/staff/${id}`
+  },
+
+  /** COMPANY AND COACH */
+  SCHEMA: "/schema",
+  FORMULAS: "/formulas",
+  // DATA_ENTRY: "/dashboard/company/data-entry",
+  // PROGRESS: "/dashboard/company/progress",
   MEMBERS: {
     LIST_MEMBER: '/members',
     NEW_MEMBER: '/members/new',
@@ -69,6 +92,7 @@ export const ROUTES = {
     ID: (id: string | number) => `/diet-plans/${id}`
   },
   CALENDAR: '/calendar',
+  ANNOUNCEMENT: "/announcement",
   PAYMENTS: {
     LIST_PAYMENTS: '/payments',
     NEW_PAYMENT: '/payments/new',

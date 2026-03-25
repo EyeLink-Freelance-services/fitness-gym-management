@@ -24,7 +24,8 @@ export interface IProfile {
   first_name: string,
   last_name: string,
   picture_url: string,
-  active_company_id: string
+  active_company_id: string,
+  is_super_admin: boolean;
 }
 
 export interface IRole {

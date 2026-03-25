@@ -185,13 +185,13 @@ begin
           'first_name', p.first_name,
           'last_name', p.last_name,
           'picture_url', p.picture_url,
-          'active_company_id', null
+          'active_company_id', null,
+          'is_super_admin', true
         ),
         'company', null,
         'company_user', null,
         'roles', '[]'::jsonb,
-        'permissions', '[]'::jsonb,
-        'is_super_admin', true
+        'permissions', '[]'::jsonb
       )
       into result
       from public.profiles p
@@ -232,7 +232,8 @@ begin
       'first_name', p.first_name,
       'last_name', p.last_name,
       'picture_url', p.picture_url,
-      'active_company_id', p.active_company_id
+      'active_company_id', p.active_company_id,
+      'is_super_admin', v_is_super_admin
     ),
     'company', jsonb_build_object(
       'id', c.id,
@@ -250,8 +251,7 @@ begin
       )
     end,
     'roles', coalesce(roles_data.roles, '[]'::jsonb),
-    'permissions', coalesce(perms_data.permissions, '[]'::jsonb),
-    'is_super_admin', v_is_super_admin
+    'permissions', coalesce(perms_data.permissions, '[]'::jsonb)
   )
   into result
   from public.profiles p

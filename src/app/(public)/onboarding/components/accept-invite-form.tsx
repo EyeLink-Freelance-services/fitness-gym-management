@@ -12,6 +12,7 @@ import {
 
 import { acceptInviteTermsAction } from "../actions";
 import { OnboardingInviteRow } from "@/lib/db/types";
+import { ROUTES } from "@/constants/route";
 
 type Props = {
   rawToken: string;
@@ -42,7 +43,7 @@ export default function AcceptInviteTermsForm({ rawToken, invite }: Props) {
       return;
     }
 
-    router.push(`/onboarding/auth?token=${rawToken}`);
+    router.push(`${ROUTES.ONBOARDING.AUTH}?token=${rawToken}`);
   };
 
   const onError = (error: any) => {

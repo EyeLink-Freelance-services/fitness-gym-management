@@ -15,7 +15,7 @@ export default async function OnboardingProfilePage({ searchParams }: Props) {
   const invite = await getInviteByToken(token);
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-2xl flex-col justify-center p-6">
+    <div className="mx-auto flex min-h-screen max-w-3xl flex-col justify-center p-6">
       <OnboardingProfileForm token={token} invite={invite[0]} />
     </div>
   );

@@ -74,7 +74,7 @@ export default async function PersonalCoachDashboardPage() {
           rowKey={(row) => row.id}
           className="col-span-12 xl:col-span-7"
           headerActions={
-            <Link href={ROUTES.DASHBOARD.PERSONAL_COACH.CLIENTS}>
+            <Link href={ROUTES.CLIENTS.LIST_CLIENT}>
               <Button label="View All" size="small" />
             </Link>
           }
@@ -88,7 +88,7 @@ export default async function PersonalCoachDashboardPage() {
           rowKey={(row) => row.id}
           className="col-span-12 xl:col-span-5"
           headerActions={
-            <Link href={ROUTES.DASHBOARD.PERSONAL_COACH.ANNOUNCEMENTS}>
+            <Link href={ROUTES.ANNOUNCEMENT}>
               <Button label="View All" size="small" />
             </Link>
           }

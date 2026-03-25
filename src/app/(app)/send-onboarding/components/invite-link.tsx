@@ -1,11 +1,12 @@
 "use client";
 
+import { ROUTES } from "@/constants/route";
 import { useState } from "react";
 
 export default function InviteLink({ result }: any) {
   const [copied, setCopied] = useState(false);
 
-  const link = `${process.env.NEXT_PUBLIC_APP_URL}/onboarding/accept?token=${result.rawtoken}`;
+  const link = `${process.env.NEXT_PUBLIC_APP_URL}${ROUTES.ONBOARDING.ACCEPT}?token=${result.rawtoken}`;
 
   const handleCopy = async () => {
     try {

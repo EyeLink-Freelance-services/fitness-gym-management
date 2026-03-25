@@ -103,7 +103,7 @@ export default async function CompanyDashboardPage({
         rowKey={(row) => row.id}
         className="col-span-12 xl:col-span-5"
         headerActions={
-          <Link href={ROUTES.DASHBOARD.COMPANY.ANNOUNCEMENT}>
+          <Link href={ROUTES.ANNOUNCEMENT}>
             <Button label="View All" size="small" />
           </Link>
         }

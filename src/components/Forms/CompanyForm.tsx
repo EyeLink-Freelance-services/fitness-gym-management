@@ -13,7 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { ROUTES } from "@/constants/route";
 import { CompanyCreateInput, CompanyCreateSchema } from "@/lib/validation/schemas/company";
-import { createCompanyAction } from "@/app/(app)/dashboard/super-admin/company/action";
+import { createCompanyAction } from "@/app/(app)/companies/action";
 import { toast } from "sonner";
 
 type Props = {

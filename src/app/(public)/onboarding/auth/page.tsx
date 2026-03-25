@@ -1,3 +1,4 @@
+import { ROUTES } from "@/constants/route";
 import Link from "next/link";
 
 type Props = {
@@ -21,14 +22,14 @@ export default async function OnboardingAuthPage({ searchParams }: Props) {
 
         <div className="grid gap-3">
           <Link
-            href={`/auth/sign-in?next=${encodeURIComponent(`/onboarding/profile?token=${token}`)}`}
+            href={`${ROUTES.LOGIN}?next=${encodeURIComponent(`${ROUTES.ONBOARDING.PROFILE}?token=${token}`)}`}
             className="rounded-lg bg-primary px-4 py-3 text-center text-white"
           >
             Sign In
           </Link>
 
           <Link
-            href={`/auth/register?next=${encodeURIComponent(`/onboarding/profile?token=${token}`)}`}
+            href={`${ROUTES.REGISTER}?next=${encodeURIComponent(`${ROUTES.ONBOARDING.PROFILE}?token=${token}`)}`}
             className="rounded-lg border border-stroke px-4 py-3 text-center"
           >
             Sign Up

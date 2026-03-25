@@ -438,7 +438,9 @@ begin
     (v_admin_role_id, 'coach', true, true, true),
     (v_admin_role_id, 'schema_builder', true, true, true),
     (v_admin_role_id, 'formula_builder', true, true, true),
-    (v_admin_role_id, 'diet_plans', true, false, true),
+    (v_admin_role_id, 'data_entry', true, true, true)
+    (v_admin_role_id, 'training_plans', true, true, true),
+    (v_admin_role_id, 'diet_plans', true, true, true),
     (v_admin_role_id, 'membership_plans', true, true, true),
     (v_admin_role_id, 'payments', true, true, true),
     (v_admin_role_id, 'calendar', true, true, true),
@@ -466,6 +468,7 @@ begin
     (v_coach_role_id, 'members', true, false, false),
     (v_coach_role_id, 'schema_builder', true, true, true),
     (v_coach_role_id, 'formula_builder', true, true, true),
+    (v_coach_role_id, 'data_entry', true, true, true)
     (v_coach_role_id, 'training_plans', true, true, false),
     (v_coach_role_id, 'diet_plans', true, true, false),
     (v_coach_role_id, 'calendar', true, true, false),

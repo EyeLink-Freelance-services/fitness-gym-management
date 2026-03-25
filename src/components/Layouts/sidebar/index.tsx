@@ -7,42 +7,35 @@ import { useState } from "react";
 import { ArrowLeftIcon, ChevronUp } from "../../IconsCollection/icons";
 import { MenuItem } from "./menu-item";
 import { useSidebarContext } from "./sidebar-context";
-import { getDashboardNav } from "@/utils/dashboard-nav";
 import { IAuthContext } from "@/types/auth-context";
+import { getAuthorizedNav, NAV_DATA } from "@/data/sidebar";
+import { NavSection } from "@/types/dashboard";
+import { SUPER_ADMIN_NAV } from "@/data/sidebar/dashboard-nav";
 
 interface sidebarProps {
   auth?: IAuthContext | null;
 }
 
+const isPathActive = (pathname: string, href: string) => {
+  if (href === "/") return pathname === "/";
+  return pathname === href || pathname.startsWith(`${href}/`);
+};
+
 export function Sidebar({ auth }: sidebarProps) {
   const pathname = usePathname();
+  console.log(pathname, 'pathname')
   const { setIsOpen, isOpen, isMobile, toggleSidebar } = useSidebarContext();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
+  let navData: NavSection[];
 
-  const navData = getDashboardNav(pathname, auth);
+  if (auth?.profile.is_super_admin)
+    navData = SUPER_ADMIN_NAV;
+  else
+    navData = getAuthorizedNav(NAV_DATA, auth);
 
   const toggleExpanded = (title: string) => {
     setExpandedItems((prev) => (prev.includes(title) ? [] : [title]));
   };
-
-  // useEffect(() => {
-  //   const data = pathname.startsWith("/dashboard/")
-  //     ? getDashboardNav(pathname)
-  //     : NAV_DATA;
-  //   data.some((section) =>
-  //     section.items.some((item) =>
-  //       item.items.some((subItem) => {
-  //         if (subItem.url === pathname) {
-  //           setExpandedItems((prev) =>
-  //             prev.includes(item.title) ? prev : [...prev, item.title],
-  //           );
-  //           return true;
-  //         }
-  //         return false;
-  //       }),
-  //     ),
-  //   );
-  // }, [pathname]);
 
   return (
     <>
@@ -104,7 +97,7 @@ export function Sidebar({ auth }: sidebarProps) {
                           <div>
                             <MenuItem
                               isActive={item.items.some(
-                                ({ url }) => url.includes(pathname),
+                                ({ url }) => isPathActive(pathname, url),
                               )}
                               onClick={() => toggleExpanded(item.title)}
                             >
@@ -135,7 +128,7 @@ export function Sidebar({ auth }: sidebarProps) {
                                     <MenuItem
                                       as="link"
                                       href={subItem.url}
-                                      isActive={pathname.includes(subItem.url)}
+                                      isActive={isPathActive(pathname, subItem.url)}
                                     >
                                       <div className="flex gap-2">
                                       {subItem.icon && (
@@ -165,11 +158,7 @@ export function Sidebar({ auth }: sidebarProps) {
                                 className="flex items-center gap-3 py-3"
                                 as="link"
                                 href={href}
-                                isActive={
-                                  href === "/"
-                                    ? pathname === "/"
-                                    : pathname === href || pathname.startsWith(`${href}/`)
-                                }
+                                isActive={isPathActive(pathname, href)}
                               >
                                 <item.icon
                                   className="size-6 shrink-0"

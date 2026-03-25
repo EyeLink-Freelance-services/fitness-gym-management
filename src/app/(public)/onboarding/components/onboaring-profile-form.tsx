@@ -16,6 +16,7 @@ import { COMPANY_STATES } from "@/data/dashboardForm";
 import { Select } from "@/components/FormElements/select";
 import { ImageUpload } from "@/components/FormElements/ImageUpload";
 import { OnboardingInviteRow } from "@/lib/db/types";
+import { ROUTES } from "@/constants/route";
 
 type Props = {
   token: string;
@@ -62,7 +63,7 @@ export default function OnboardingProfileForm({ token, invite }: Props) {
       return;
     }
 
-    router.push("/onboarding/success");
+    router.push(ROUTES.ONBOARDING.SUCCESS);
   };
 
   return (

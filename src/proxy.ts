@@ -47,6 +47,7 @@ export async function proxy(req: NextRequest) {
 	const user = data.user;
 	
 	console.log(user, 'user');
+	console.log(req.nextUrl.pathname, 'req.nextUrl.pathname')
 	const pathname = req.nextUrl.pathname;
 
 	// Protect private routes in (app)
