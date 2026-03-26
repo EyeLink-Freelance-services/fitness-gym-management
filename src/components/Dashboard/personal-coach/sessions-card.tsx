@@ -1,8 +1,10 @@
 import { Button } from "@/components/ui-elements/button";
+import { ROUTES } from "@/constants/route";
 import { statusClassNames } from "@/data/personal-coach-schema";
 import { cn } from "@/lib/utils";
 import type { PersonalCoachSessionProps } from "@/types/dashboard/personal-coach";
 import { formatTimeParts } from "@/utils/dashboard/shared";
+import Link from "next/link";
 import CardTitle from "../overview-cards/cardTitle";
 
 export function SessionsCard({ sessions }: PersonalCoachSessionProps) {
@@ -22,12 +24,9 @@ export function SessionsCard({ sessions }: PersonalCoachSessionProps) {
           <CardTitle title="Sessions" />
         </div>
 
-        <Button
-          label="Manage"
-          size="small"
-          className="px-4"
-          toastMessage="Send to manage booking page"
-        />
+        <Link href={ROUTES.DASHBOARD.PERSONAL_COACH.SESSIONS}>
+          <Button label="Manage" size="small" className="px-4" />
+        </Link>
       </div>
 
       <div className="space-y-5">
