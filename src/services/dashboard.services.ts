@@ -91,7 +91,7 @@ export async function getAllCoaches() {
   return DUMMY_COACHES.map((coach, i) => ({
     id: `coach-${i + 1}`,
     first_name: coach.name.split(" ")[0] ?? coach.name,
-    last_name: coach.name.split(" ").slice(1).join(" ") || "—",
+    last_name: coach.name.split(" ").slice(1).join(" ") || "-",
     phone_num: "+1 555-000-0000",
     email: `${coach.name.toLowerCase().replace(/\s/g, ".")}@example.com`,
     specialization: coach.specialization,
@@ -145,7 +145,6 @@ export async function getPersonalCoachTodaySessions(limit = 5) {
   return sorted.slice(0, limit);
 }
 
-/** Returns clients with progress series for the chart. New clients (no progress) are excluded. */
 export async function getPersonalCoachProgressSeries() {
   await new Promise((r) => setTimeout(r, 200));
   return COACH_CLIENTS.filter(

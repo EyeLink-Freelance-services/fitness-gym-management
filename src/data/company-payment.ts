@@ -21,7 +21,7 @@ function toPaymentMember(client: { name: string; contact?: string }): PaymentMem
   return {
     name: client.name,
     email: `${client.name.toLowerCase().replace(/\s/g, ".")}@example.com`,
-    initials: initials || "—",
+    initials: initials || "-",
     avatarTone: "emerald",
   };
 }
@@ -103,7 +103,6 @@ export const COMPANY_PAYMENT_TABLE_FILTERS: PaymentTableFilters = {
   months: ["March 2026", "February 2026", "January 2026"],
 };
 
-/** Payment transactions derived from GYM_CLIENTS (single source of truth). */
 export const COMPANY_PAYMENT_TRANSACTIONS: PaymentTransactionRow[] = MEMBER && SINGLE_CLIENT
   ? [
       {
@@ -151,7 +150,6 @@ export const COMPANY_PAYMENT_TRANSACTIONS: PaymentTransactionRow[] = MEMBER && S
     ]
   : [];
 
-/** Payment renewals derived from GYM_CLIENTS (single source of truth). */
 export const COMPANY_PAYMENT_RENEWALS: PaymentRenewalRow[] = MEMBER && SINGLE_CLIENT
   ? [
       {

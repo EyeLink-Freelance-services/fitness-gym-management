@@ -1,8 +1,6 @@
-import CardTitle from "@/components/Dashboard/overview-cards/cardTitle";
-import { FieldGroupCard } from "@/components/Dashboard/schema-builder/field-group-card";
+import { ClientDataSchemaClient } from "@/components/Dashboard/schema-builder/client-data-schema-client";
 import { SchemaSummaryCard } from "@/components/Dashboard/schema-builder/schema-summary-card";
 import { SchemaValidationCard } from "@/components/Dashboard/schema-builder/schema-validation-card";
-import { Button } from "@/components/ui-elements/button";
 import {
   getPersonalCoachFieldGroups,
   getPersonalCoachSchemaOverview,
@@ -22,19 +20,7 @@ export default async function PersonalCoachSchemaPage() {
     <div>
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
         <div className="grid gap-6">
-          <div className="flex items-center justify-between gap-3">
-            <CardTitle title="Client Data Configuration" className="mb-0" />
-
-            <Button
-              size="small"
-              variant="outlinePrimary"
-              label="+ Group"
-              toastMessage="To configure"
-            />
-          </div>
-          {groups.map((group) => (
-            <FieldGroupCard key={group.id} group={group} />
-          ))}
+          <ClientDataSchemaClient initialGroups={groups} />
         </div>
 
         <div className="flex flex-col gap-6">

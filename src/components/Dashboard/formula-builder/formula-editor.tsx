@@ -10,37 +10,56 @@ import type {
 
 type FormulaEditorProps = {
   formula: FormulaDefinition;
-  expression: string;
-  onExpressionChange: (expression: string) => void;
+  isNew: boolean;
+  onFormulaChange: (patch: Partial<FormulaDefinition>) => void;
+  onSave: () => void;
   validation: FormulaValidationResult;
 };
 
 export function FormulaEditor({
   formula,
-  expression,
-  onExpressionChange,
+  isNew,
+  onFormulaChange,
+  onSave,
   validation,
 }: FormulaEditorProps) {
+  const title =
+    isNew && !formula.label.trim()
+      ? "New formula"
+      : formula.label.trim() || "Untitled";
+
   return (
     <div className="rounded-[14px] border border-stroke/70 bg-white p-6 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card">
       <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div>
           <div className="flex flex-wrap items-center gap-3">
             <h3 className="text-body-2xlg font-bold text-dark dark:text-white">
-              {formula.label}
+              {title}
             </h3>
           </div>
           <p className="mt-2 text-sm text-dark-6 dark:text-dark-6">
-            Key: `{formula.key}` {formula.unit ? `· Unit ${formula.unit}` : ""}
+            {formula.key.trim() ? (
+              <>
+                Key: `{formula.key}` {formula.unit ? `· Unit ${formula.unit}` : ""}
+              </>
+            ) : (
+              <>
+                {formula.unit ? `Unit ${formula.unit}` : ""}
+                {formula.unit ? " · " : ""}
+                The variable key is assigned when you save.
+              </>
+            )}
           </p>
-          {formula.description && (
+          {formula.description?.trim() ? (
             <p className="mt-2 text-sm text-dark-6 dark:text-dark-6">
               {formula.description}
             </p>
-          )}
+          ) : null}
         </div>
         <div className="flex gap-2">
-          <Button label="Delete" size="small" variant="danger" />
+          {!isNew && (
+            <Button label="Delete" size="small" variant="danger" />
+          )}
         </div>
       </div>
 
@@ -52,8 +71,9 @@ export function FormulaEditor({
             </span>
             <input
               value={formula.label}
-              readOnly
-              className="rounded-[10px] border border-stroke bg-transparent px-4 py-3 text-sm text-dark dark:border-dark-3 dark:text-white"
+              onChange={(e) => onFormulaChange({ label: e.target.value })}
+              placeholder="Display name"
+              className="rounded-[10px] border border-stroke bg-transparent px-4 py-3 text-sm text-dark outline-none focus:border-primary dark:border-dark-3 dark:text-white"
             />
           </div>
           <div className="grid gap-2">
@@ -62,8 +82,9 @@ export function FormulaEditor({
             </span>
             <input
               value={formula.unit ?? ""}
-              readOnly
-              className="rounded-[10px] border border-stroke bg-transparent px-4 py-3 text-sm text-dark dark:border-dark-3 dark:text-white"
+              onChange={(e) => onFormulaChange({ unit: e.target.value })}
+              placeholder="e.g. kg"
+              className="rounded-[10px] border border-stroke bg-transparent px-4 py-3 text-sm text-dark outline-none focus:border-primary dark:border-dark-3 dark:text-white"
             />
           </div>
           <div className="grid gap-2">
@@ -71,9 +92,19 @@ export function FormulaEditor({
               Decimals
             </span>
             <input
-              value={String(formula.decimals)}
-              readOnly
-              className="rounded-[10px] border border-stroke bg-transparent px-4 py-3 text-sm text-dark dark:border-dark-3 dark:text-white"
+              type="number"
+              min={0}
+              max={10}
+              value={formula.decimals}
+              onChange={(e) => {
+                const n = Number.parseInt(e.target.value, 10);
+                if (!Number.isNaN(n)) {
+                  onFormulaChange({
+                    decimals: Math.min(10, Math.max(0, n)),
+                  });
+                }
+              }}
+              className="rounded-[10px] border border-stroke bg-transparent px-4 py-3 text-sm text-dark outline-none focus:border-primary dark:border-dark-3 dark:text-white"
             />
           </div>
           <div className="grid gap-2">
@@ -85,7 +116,8 @@ export function FormulaEditor({
                 { label: "No", value: "no" },
                 { label: "Yes", value: "yes" },
               ]}
-              defaultValue={formula.showPortal ? "yes" : "no"}
+              value={formula.showPortal ? "yes" : "no"}
+              onChange={(v) => onFormulaChange({ showPortal: v === "yes" })}
             />
           </div>
         </div>
@@ -95,8 +127,8 @@ export function FormulaEditor({
             Expression
           </label>
           <textarea
-            value={expression}
-            onChange={(event) => onExpressionChange(event.target.value)}
+            value={formula.expression}
+            onChange={(e) => onFormulaChange({ expression: e.target.value })}
             rows={6}
             className="w-full rounded-[10px] border border-stroke bg-transparent px-4 py-3 text-sm text-dark outline-none focus:border-primary dark:border-dark-3 dark:text-white"
           />
@@ -136,12 +168,13 @@ export function FormulaEditor({
           </label>
           <input
             value={formula.description ?? ""}
-            readOnly
-            className="w-full rounded-[10px] border border-stroke bg-transparent px-4 py-3 text-sm text-dark dark:border-dark-3 dark:text-white"
+            onChange={(e) => onFormulaChange({ description: e.target.value })}
+            placeholder="Optional help text"
+            className="w-full rounded-[10px] border border-stroke bg-transparent px-4 py-3 text-sm text-dark outline-none focus:border-primary dark:border-dark-3 dark:text-white"
           />
         </div>
 
-        <Button label="Save Formula" className="w-full" />
+        <Button label="Save Formula" className="w-full" onClick={onSave} />
       </div>
     </div>
   );

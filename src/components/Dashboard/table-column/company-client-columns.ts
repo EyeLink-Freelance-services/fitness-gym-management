@@ -2,7 +2,7 @@ import type { CompanyClientRow } from "@/types/dashboard/company-directory";
 import type { TableUIColumn } from "@/types/shared";
 
 function formatDate(date?: string) {
-  if (!date) return "—";
+  if (!date) return "-";
   return new Date(date).toLocaleDateString("en-GB", {
     day: "2-digit",
     month: "short",

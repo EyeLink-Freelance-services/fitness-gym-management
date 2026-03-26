@@ -107,7 +107,7 @@ export function ClientCardsGrid({ clients }: ClientCardsGridProps) {
                   Weight
                 </div>
                 <div className="mt-2 text-xl font-bold text-primary">
-                  {client.weight?.toFixed(1) ?? "—"}
+                  {client.weight?.toFixed(1) ?? "-"}
                 </div>
               </div>
               <div className="rounded-[10px] bg-dark-2/60 p-3">
@@ -115,7 +115,7 @@ export function ClientCardsGrid({ clients }: ClientCardsGridProps) {
                   Body Fat
                 </div>
                 <div className="mt-2 text-xl font-bold text-orange-400">
-                  {client.bodyFat?.toFixed(1) ?? "—"}%
+                  {client.bodyFat?.toFixed(1) ?? "-"}%
                 </div>
               </div>
               <div className="rounded-[10px] bg-dark-2/60 p-3">
@@ -123,7 +123,7 @@ export function ClientCardsGrid({ clients }: ClientCardsGridProps) {
                   Lean
                 </div>
                 <div className="mt-2 text-xl font-bold text-green">
-                  {client.leanMass?.toFixed(1) ?? "—"}
+                  {client.leanMass?.toFixed(1) ?? "-"}
                 </div>
               </div>
               <div className="rounded-[10px] bg-dark-2/60 p-3">
@@ -131,7 +131,7 @@ export function ClientCardsGrid({ clients }: ClientCardsGridProps) {
                   BMI
                 </div>
                 <div className="mt-2 text-xl font-bold text-primary">
-                  {client.bmi?.toFixed(1) ?? "—"}
+                  {client.bmi?.toFixed(1) ?? "-"}
                 </div>
               </div>
             </div>

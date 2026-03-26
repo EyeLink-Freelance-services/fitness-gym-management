@@ -183,7 +183,7 @@ export default function CompanyForm() {
                 type="text"
                 placeholder={
                   i === 0
-                    ? "Branch name (e.g. HQ — KL Sentral)"
+                    ? "Branch name (e.g. HQ - KL Sentral)"
                     : "Branch name (e.g. Petaling Jaya)"
                 }
                 className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5.5 py-3 text-dark outline-none transition placeholder:text-dark-6 focus:border-primary dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary"
