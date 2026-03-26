@@ -3,7 +3,8 @@
 import { revalidatePath } from "next/cache";
 import {
   AcceptTermsSchema,
-  OnboardingProfileSchema,
+  OnboardingSchemaCompany,
+  OnboardingSchemaPersonal,
 } from "@/lib/validation/schemas/onboarding";
 import { acceptInviteTerms, completeOnboarding, createOnboardingInvite } from "@/lib/db/queries/onboarding";
 
@@ -33,8 +34,13 @@ export async function acceptInviteTermsAction(values: unknown) {
   }
 }
 
-export async function completeOnboardingAction(values: unknown) {
-  const parsed = OnboardingProfileSchema.safeParse(values);
+export async function completeOnboardingAction(values: unknown, inviteType: "personal" | "company") {
+  let parsed;
+
+  if(inviteType === "company") 
+    parsed = OnboardingSchemaCompany.safeParse(values);
+  else
+    parsed = OnboardingSchemaPersonal.safeParse(values);
 
   if (!parsed.success) {
     return {

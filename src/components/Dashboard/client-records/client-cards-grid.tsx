@@ -66,7 +66,7 @@ export function ClientCardsGrid({ clients }: ClientCardsGridProps) {
         {filteredClients.map((client, index) => (
           <Link
             key={client.id}
-            href={ROUTES.DASHBOARD.PERSONAL_COACH.PROGRESS_CLIENT(client.id)}
+            href={ROUTES.CLIENTS.ID(client.id)}
             className="rounded-[14px] border border-stroke/70 bg-white p-4 shadow-1 transition-shadow hover:shadow-md dark:border-dark-3 dark:bg-gray-dark dark:shadow-card dark:hover:shadow-md"
           >
             <div className="flex items-start justify-between gap-3">

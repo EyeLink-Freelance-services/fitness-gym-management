@@ -1,39 +1,24 @@
+'use client'
+
 import { redirect } from "next/navigation";
-import { PaymentsOverview } from "@/components/Charts/payments-overview";
-import { UsedDevices } from "@/components/Charts/used-devices";
-import { WeeksProfit } from "@/components/Charts/weeks-profit";
-import { TableUI } from "@/components/Tables";
-import { Skeleton } from "@/components/Tables/skeleton";
-import { createTimeFrameExtractor } from "@/utils/timeframe-extractor";
-import { Suspense } from "react";
-import { ChatsCard } from "../../components/Dashboard/chats-card";
 import { FormsTesting } from "../../components/Dashboard/FormsTesting";
-import { OverviewCardsGroup } from "../../components/Dashboard/overview-cards";
-import { OverviewCardsSkeleton } from "../../components/Dashboard/overview-cards/skeleton";
-import { RegionLabels } from "../../components/Dashboard/region-labels";
-import { getTopChannels } from "@/data/superAdmin";
-import { getAuthContext } from "@/lib/auth/get-auth-context";
+
 import { getRedirectPathForAuth } from "@/lib/auth/permission";
+import { useAuth } from "../context/auth-context";
 
-type PropsType = {
-  searchParams: Promise<{
-    selected_time_frame?: string;
-  }>;
-};
 
-export default async function Home({ searchParams }: PropsType) {
-  const auth = await getAuthContext();
+export default function Home() {
+  const auth = useAuth();
   const redirectPath = getRedirectPathForAuth(auth);
   if (redirectPath) {
     redirect(redirectPath);
   }
 
-  const { selected_time_frame } = await searchParams;
-  const extractTimeFrame = createTimeFrameExtractor(selected_time_frame);
-
   return (
     <>
+      
       <FormsTesting />
+      
 
       {/* Measurement Testing */}
 

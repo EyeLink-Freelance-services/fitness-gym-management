@@ -27,14 +27,22 @@ export const AcceptTermsSchema = z.object({
 export type AcceptTermsInput = z.input<typeof AcceptTermsSchema>;
 export type AcceptTermsValues = z.infer<typeof AcceptTermsSchema>;
 
-export const OnboardingProfileSchema = z.object({
+const phoneSchema = z.string().refine(
+  (value) => isValidPhoneNumber(value),
+  { message: "Invalid international phone number" }
+);
+
+const BaseOnboardingProfileSchema = z.object({
   token: z.string().trim().min(1),
   first_name: z.string().trim().min(1, "First name is required").max(255),
   last_name: z.string().trim().min(1, "Last name is required").max(255),
   picture_url: z.any().optional(),
-  phone: z.string().trim().max(20).optional().or(z.literal("")),
+  phone: phoneSchema,
+});
+
+const CompanyOnboardingFieldsSchema = z.object({
   company_name: z.string().trim().min(1, "Company name is required").max(255),
-  company_logo_url: z.string().trim().url("Invalid logo URL").optional().or(z.literal("")),
+  company_logo_url: z.any().optional(),
   company_brn: z
     .string()
     .trim()
@@ -45,13 +53,37 @@ export const OnboardingProfileSchema = z.object({
   company_post_code: z.string().trim().optional(),
   company_region: z.string().trim().min(1, "District / Region is required"),
   company_contact_email: z.string().trim().email("Invalid email"),
-  company_contact_phone: z.string().refine(
-    (value) => isValidPhoneNumber(value),
-    { message: "Invalid international phone number" }
-  ),
+  company_contact_phone: phoneSchema,
   company_terms: z.string().trim().optional(),
   company_disclaimer: z.string().trim().optional(),
 });
 
-export type OnboardingProfileInput = z.input<typeof OnboardingProfileSchema>;
-export type OnboardingProfileValues = z.infer<typeof OnboardingProfileSchema>;
+const OptionalCompanyFieldsSchema = z.object({
+  company_name: z.string().trim().optional().or(z.literal("")),
+  company_logo_url: z.any().optional(),
+  company_brn: z.string().trim().optional().or(z.literal("")),
+  company_address: z.string().trim().optional().or(z.literal("")),
+  company_city: z.string().trim().optional().or(z.literal("")),
+  company_post_code: z.string().trim().optional().or(z.literal("")),
+  company_region: z.string().trim().optional().or(z.literal("")),
+  company_contact_email: z.string().trim().optional().or(z.literal("")),
+  company_contact_phone: z.string().trim().optional().or(z.literal("")),
+  company_terms: z.string().trim().optional(),
+  company_disclaimer: z.string().trim().optional(),
+});
+
+export const OnboardingSchemaCompany = BaseOnboardingProfileSchema.merge(CompanyOnboardingFieldsSchema)
+export const OnboardingSchemaPersonal = BaseOnboardingProfileSchema.merge(OptionalCompanyFieldsSchema);
+
+export const getOnboardingProfileSchema = (
+  invitationType: "personal" | "company"
+) => {
+  return invitationType === "company"
+    ? OnboardingSchemaCompany
+    : OnboardingSchemaPersonal
+
+};
+
+export type OnboardingProfileFormValues = z.infer<
+  ReturnType<typeof getOnboardingProfileSchema>
+>;

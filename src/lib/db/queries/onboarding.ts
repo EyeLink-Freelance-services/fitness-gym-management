@@ -1,7 +1,7 @@
 import { supabaseServer } from "@/lib/supabase/server";
 import type {
   InviteCreateValues,
-  OnboardingProfileValues,
+  OnboardingProfileFormValues,
 } from "@/lib/validation/schemas/onboarding";
 import { OnboardingInviteRow } from "../types";
 import { generateToken, hashToken } from "@/lib/security/token";
@@ -85,7 +85,7 @@ export async function acceptInviteTerms(input: {
   return data;
 }
 
-export async function completeOnboarding(payload: OnboardingProfileValues) {
+export async function completeOnboarding(payload: OnboardingProfileFormValues) {
   const supabase = await supabaseServer();
 
   const hashedToken = hashToken(payload.token);

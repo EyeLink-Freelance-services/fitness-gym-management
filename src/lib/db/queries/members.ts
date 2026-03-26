@@ -16,7 +16,7 @@ export async function listMembersByAssignCoach(
   idCompany: string,
   search?: string
 ) {
-  await requirePermission(AuthPermission.members.view);
+  await requirePermission(AuthPermission.clients.view);
 
   const supabase = await supabaseServer();
 
@@ -46,7 +46,7 @@ export async function listMembersByAssignCoach(
 }
 
 export async function listMembers() {
-  const auth = await requirePermission(AuthPermission.members.view)
+  const auth = await requirePermission(AuthPermission.clients.view)
   const supabase = await supabaseServer();
 
   const { data, error } = await supabase

@@ -57,7 +57,7 @@ export default function CompanyForm({ onSuccess }: Props) {
         onSuccess?.();
         toast.success(res.message)
         if (!onSuccess) {
-          router.push(ROUTES.DASHBOARD.SUPER_ADMIN.COMPANY);
+          router.push(ROUTES.DASHBOARD.SUPER_ADMIN.ROOT);
         }
       }
     });

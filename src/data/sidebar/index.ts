@@ -2,30 +2,6 @@ import { AuthPermission } from "@/constants/permission";
 import * as Icons from "../../components/IconsCollection/icons";
 import type { NavSection } from "@/types/dashboard/dashboard-shared";
 import { ROUTES } from "@/constants/route";
-import { IAuthContext } from "@/types/auth-context";
-
-export function getAuthorizedNav(
-  itemSections: NavSection[],
-  auth: IAuthContext | null | undefined
-): NavSection[] {
-  return itemSections
-    .map((section) => ({
-      ...section,
-      items: section.items.filter((item) => {
-        // parent without permission -> keep it
-        if (!item.permission) {
-          // if it has children, optionally filter children too
-          if (item.items?.length) {
-            return true;
-          }
-          return true;
-        }
-
-        return auth?.permissions?.includes(item.permission);
-      }),
-    }))
-    .filter((section) => section.items.length > 0);
-}
 
 export const NAV_DATA: NavSection[] = [
   {
@@ -64,12 +40,41 @@ export const NAV_DATA: NavSection[] = [
           },
           // {
           //   title: "My earnings",
-          //   url: ROUTES.DASHBOARD.COMPANY.PROGRESS,
+          //   url: ROUTES.DASHBOARD.PERSONAL_COACH.ROOT,
           //   permission: AuthPermission.dashboard.companyCoach
           // },
+          {
+            title: "Overview",
+            url: ROUTES.DASHBOARD.PERSONAL_COACH.ROOT,
+            permission: AuthPermission.dashboard.personalCoach
+          },
         ],
-        permission: AuthPermission.dashboard.companyCoach
+        permission: AuthPermission.dashboard.personalCoach || AuthPermission.dashboard.companyCoach
+ 
       },
+      // {
+      //   title: "Staff Dashboard",
+      //   icon: Icons.HomeIcon,
+      //   items: [
+      //     {
+      //       title: "Operations Overview",
+      //       url: ROUTES.DASHBOARD.COMPANY,
+      //       permission: AuthPermission.dashboard.companyStaff
+      //     },
+      //     // {
+      //     //   title: "My earnings",
+      //     //   url: ROUTES.DASHBOARD.PERSONAL_COACH.ROOT,
+      //     //   permission: AuthPermission.dashboard.companyCoach
+      //     // },
+      //     {
+      //       title: "Overview",
+      //       url: ROUTES.DASHBOARD.PERSONAL_COACH.ROOT,
+      //       permission: AuthPermission.dashboard.personalCoach
+      //     },
+      //   ],
+      //   permission: AuthPermission.dashboard.personalCoach || AuthPermission.dashboard.companyCoach
+ 
+      // },
       // {
       //   title: "Progress",
       //   url: ROUTES.DASHBOARD.COMPANY.PROGRESS,
@@ -153,6 +158,7 @@ export const NAV_DATA: NavSection[] = [
             permission: AuthPermission.staff.view
           },
         ],
+        permission: AuthPermission.dashboard.company
       },
       {
         title: "Membership Plans",

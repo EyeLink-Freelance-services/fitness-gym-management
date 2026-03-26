@@ -8,12 +8,13 @@ import { ArrowLeftIcon, ChevronUp } from "../../IconsCollection/icons";
 import { MenuItem } from "./menu-item";
 import { useSidebarContext } from "./sidebar-context";
 import { IAuthContext } from "@/types/auth-context";
-import { getAuthorizedNav, NAV_DATA } from "@/data/sidebar";
+import { NAV_DATA } from "@/data/sidebar";
 import { NavSection } from "@/types/dashboard";
 import { SUPER_ADMIN_NAV } from "@/data/sidebar/dashboard-nav";
+import { getAuthorizedNav } from "@/lib/auth/permission";
 
 interface sidebarProps {
-  auth?: IAuthContext | null;
+  auth?: IAuthContext;
 }
 
 const isPathActive = (pathname: string, href: string) => {
@@ -23,9 +24,9 @@ const isPathActive = (pathname: string, href: string) => {
 
 export function Sidebar({ auth }: sidebarProps) {
   const pathname = usePathname();
-  console.log(pathname, 'pathname')
   const { setIsOpen, isOpen, isMobile, toggleSidebar } = useSidebarContext();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
+  
   let navData: NavSection[];
 
   if (auth?.profile.is_super_admin)

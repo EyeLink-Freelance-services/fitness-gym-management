@@ -5,11 +5,6 @@ import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import InputGroup from "@/components/FormElements/InputGroup";
 import { Button } from "@/components/ui-elements/button";
-import {
-  OnboardingProfileSchema,
-  type OnboardingProfileInput,
-  type OnboardingProfileValues,
-} from "@/lib/validation/schemas/onboarding";
 import { completeOnboardingAction } from "../actions";
 import { TextAreaGroup } from "@/components/FormElements/InputGroup/text-area";
 import { COMPANY_STATES } from "@/data/dashboardForm";
@@ -17,6 +12,7 @@ import { Select } from "@/components/FormElements/select";
 import { ImageUpload } from "@/components/FormElements/ImageUpload";
 import { OnboardingInviteRow } from "@/lib/db/types";
 import { ROUTES } from "@/constants/route";
+import { getOnboardingProfileSchema, OnboardingProfileFormValues } from "@/lib/validation/schemas/onboarding";
 
 type Props = {
   token: string;
@@ -25,6 +21,8 @@ type Props = {
 
 export default function OnboardingProfileForm({ token, invite }: Props) {
   const router = useRouter();
+  const inviteType = invite.invitation_type as ("personal" | "company")
+  const schema = getOnboardingProfileSchema(invite.invitation_type as ("personal" | "company"));
 
   const {
     register,
@@ -32,9 +30,9 @@ export default function OnboardingProfileForm({ token, invite }: Props) {
     control,
     setValue,
     formState: { errors, isSubmitting },
-  } = useForm<OnboardingProfileInput, unknown, OnboardingProfileValues>({
+  } = useForm<OnboardingProfileFormValues>({
     mode:"onChange",
-    resolver: zodResolver(OnboardingProfileSchema),
+    resolver: zodResolver(schema),
     defaultValues: {
       token,
       first_name: "",
@@ -55,8 +53,8 @@ export default function OnboardingProfileForm({ token, invite }: Props) {
     },
   });
 
-  const onSubmit = async (values: OnboardingProfileValues) => {
-    const res = await completeOnboardingAction(values);
+  const onSubmit = async (values: OnboardingProfileFormValues) => {
+    const res = await completeOnboardingAction(values, inviteType);
 
     if (!res.ok) {
       console.error(res.message);
@@ -66,6 +64,10 @@ export default function OnboardingProfileForm({ token, invite }: Props) {
     router.push(ROUTES.ONBOARDING.SUCCESS);
   };
 
+  const onError = (error: any) => {
+    console.log(error, 'error')
+  }
+
   return (
     <div className="rounded-2xl border border-stroke bg-white p-6 shadow-theme-sm 
       dark:border-dark-3 dark:bg-gray-dark">
@@ -74,7 +76,7 @@ export default function OnboardingProfileForm({ token, invite }: Props) {
         Complete your onboarding
       </h1>
 
-      <form className="grid gap-4" onSubmit={handleSubmit(onSubmit)}>
+      <form className="grid gap-4" onSubmit={handleSubmit(onSubmit, onError)}>
 
         {/* PERSONAL INFO */}
         <InputGroup
@@ -92,8 +94,9 @@ export default function OnboardingProfileForm({ token, invite }: Props) {
         />
 
         <InputGroup
-          type="text"
+          type="tel"
           label="Phone"
+          placeholder="+230 5XXX XXXX"
           inputProps={register("phone")}
           error={errors.phone?.message}
         />
@@ -201,7 +204,6 @@ export default function OnboardingProfileForm({ token, invite }: Props) {
             <Controller
               name="company_region"
               control={control}
-              rules={{ required: "District is required" }}
               render={({ field }) => (
                 <Select
                   label="District / Region"
@@ -210,7 +212,7 @@ export default function OnboardingProfileForm({ token, invite }: Props) {
                   error={errors.company_region?.message}
                   selectProps={{
                     ...field,
-                    required: true,
+                    required: invite.invitation_type === "company",
                   }}
                 />
               )}

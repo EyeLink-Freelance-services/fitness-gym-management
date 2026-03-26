@@ -2,13 +2,16 @@ import { IAuthContext } from "@/types/auth-context";
 import { getAuthContext } from "./get-auth-context";
 import { NavItem, NavSection, SubItem } from "@/types/dashboard/dashboard-shared";
 import { AuthPermission } from "@/constants/permission";
+import { ROUTES } from "@/constants/route";
 
 export async function requirePermission(permission: string) {
   const auth = await getAuthContext();
 
   if(auth?.isOwner) return auth;
 
-  if (!auth || !auth.permissions.includes(permission)) {
+  const authPermissions = new Set(auth?.permissions as string[]);
+  
+  if (!auth || !authPermissions.has(permission)) {
     throw new Error("UNAUTHORIZED");
   }
 
@@ -19,43 +22,34 @@ function isPersonalOwner(auth?: IAuthContext) {
   return auth?.isOwner && auth?.company.mode === "personal";
 }
 
-function isCompanyCoach(auth?: IAuthContext) {
-  return (
-    auth?.company?.mode === "company" &&
-    auth?.permissions?.includes(AuthPermission.dashboard.companyCoach) &&
-    !auth?.permissions?.includes(AuthPermission.dashboard.company)
-  );
-}
-
 function canAccessItem(item: NavItem | SubItem, auth?: IAuthContext) {
+  const authPermissions = new Set(auth?.permissions as string[]);
   const personalOwner = isPersonalOwner(auth);
-  const companyCoachOnly = isCompanyCoach(auth);
 
+  // Need to block some permissions nav because of role admin has full access <> Personal coach has admin role when created 
   if (personalOwner) {
-    const blockedPermissions = [
+    const blockedPermissions = new Set([
       AuthPermission.tasks.view,
-      AuthPermission.tasks.edit,
       AuthPermission.dashboard.company,
       AuthPermission.dashboard.superAdmin,
-    ] as string[];
+      AuthPermission.dashboard.companyCoach,
+      AuthPermission.coach.view,
+      AuthPermission.staff.view,
+    ] as string[]);
 
-    if (item.permission && blockedPermissions.includes(item.permission)) {
+    if (item.permission && blockedPermissions.has(item.permission)) {
       return false;
     }
 
     return true;
   }
 
-  // Company coach: hide company coach nav if they have full company access (admin)
-  if (companyCoachOnly && item.permission === AuthPermission.dashboard.company) {
-    return false;
-  }
-
+  // no permission restriction -> display it
   if (!item.permission) {
     return true;
   }
 
-  return auth?.permissions?.includes(item.permission) ?? false;
+  return authPermissions.has(item.permission) ?? false;
 }
 
 export function getAuthorizedNav(
@@ -85,23 +79,29 @@ export function getAuthorizedNav(
     .filter((section) => section.items.length > 0);
 }
 
-export function getRedirectPathForAuth(auth: IAuthContext | null): string | null {
-  if (!auth) return null;
+export function getRedirectPathForAuth(auth: IAuthContext | undefined): string | null {
+  const permissions = new Set(auth?.permissions ?? []);
 
-  if (auth.permissions?.includes(AuthPermission.dashboard.companyCoach) && !auth.permissions?.includes(AuthPermission.dashboard.company)) {
-    return "/dashboard/company";
+  console.log(permissions, 'permissions');
+
+  if (auth?.profile?.is_super_admin) {
+    return ROUTES.DASHBOARD.SUPER_ADMIN.ROOT;
   }
-  if (auth.permissions?.includes(AuthPermission.dashboard.personalCoach) && auth.company?.mode === "personal") {
-    return "/dashboard/personal-coach";
+
+  if (permissions.has(AuthPermission.dashboard.company)) {
+    return ROUTES.DASHBOARD.COMPANY.ROOT;
   }
-  if (auth.permissions?.includes(AuthPermission.dashboard.superAdmin)) {
-    return "/dashboard/super-admin";
+
+  if (permissions.has(AuthPermission.dashboard.companyCoach)) {
+    return ROUTES.DASHBOARD.COMPANY.COACH;
   }
-  if (auth.permissions?.includes(AuthPermission.dashboard.company)) {
-    return "/dashboard/company";
+
+  if (auth?.company?.mode === "personal") {
+    return ROUTES.DASHBOARD.PERSONAL_COACH.ROOT;
   }
-  if (auth.permissions?.includes(AuthPermission.dashboard.client)) {
-    return "/dashboard/client";
+
+  if (permissions.has(AuthPermission.dashboard.client)) {
+    return ROUTES.DASHBOARD.CLIENT.ROOT;
   }
 
   return null;

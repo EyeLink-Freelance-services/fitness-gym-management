@@ -194,8 +194,94 @@ $$;
 revoke all on function public.accept_onboarding_invite_terms(text, boolean, boolean, text, text) from public;
 grant execute on function public.accept_onboarding_invite_terms(text, boolean, boolean, text, text) to anon, authenticated;
 
+-- default admin staff coach permission
+drop function if exists  public.seed_default_company_role_permissions(uuid,text);
+create or replace function public.seed_default_company_role_permissions(
+  p_company_id uuid,
+  p_mode text
+)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_admin_role_id uuid;
+  v_staff_role_id uuid;
+  v_coach_role_id uuid;
+begin
+  select id into v_admin_role_id
+  from public.company_role
+  where company_id = p_company_id and name = 'admin';
+
+  select id into v_staff_role_id
+  from public.company_role
+  where company_id = p_company_id and name = 'staff';
+
+  select id into v_coach_role_id
+  from public.company_role
+  where company_id = p_company_id and name = 'coach';
+
+  if v_admin_role_id is not null then
+    insert into public.company_role_permission (company_role_id, module, can_read, can_write, can_delete)
+    values
+      (v_admin_role_id, concat('dashboard', '.', p_mode), true, true, true),
+      (v_admin_role_id, 'members', true, true, true),
+      (v_admin_role_id, 'staff', true, true, true),
+      (v_admin_role_id, 'coach', true, true, true),
+      (v_admin_role_id, 'schema_builder', true, true, true),
+      (v_admin_role_id, 'formula_builder', true, true, true),
+      (v_admin_role_id, 'data_entry', true, true, true),
+      (v_admin_role_id, 'training_plans', true, true, true),
+      (v_admin_role_id, 'diet_plans', true, true, true),
+      (v_admin_role_id, 'membership_plans', true, true, true),
+      (v_admin_role_id, 'payments', true, true, true),
+      (v_admin_role_id, 'calendar', true, true, true),
+      (v_admin_role_id, 'announcements', true, true, true),
+      (v_admin_role_id, 'services', true, true, true),
+      (v_admin_role_id, 'settings', true, true, true)
+    on conflict do nothing;
+  end if;
+
+  if v_staff_role_id is not null then
+    insert into public.company_role_permission (company_role_id, module, can_read, can_write, can_delete)
+    values
+      (v_staff_role_id, concat('dashboard', '.', p_mode, '.', 'staff'), true, false, false),
+      (v_staff_role_id, 'members', true, true, false),
+      (v_staff_role_id, 'training_plans', true, false, false),
+      (v_staff_role_id, 'diet_plans', true, false, false),
+      (v_staff_role_id, 'membership_plans', true, false, false),
+      (v_staff_role_id, 'payments', true, true, false),
+      (v_staff_role_id, 'calendar', true, true, false),
+      (v_staff_role_id, 'announcements', true, true, true),
+      (v_staff_role_id, 'services', true, true, false)
+    on conflict do nothing;
+  end if;
+
+  if v_coach_role_id is not null then
+    insert into public.company_role_permission (company_role_id, module, can_read, can_write, can_delete)
+    values
+      (v_coach_role_id, concat('dashboard', '.', p_mode, '.', 'coach'), true, false, false),
+      (v_coach_role_id, 'members', true, false, false),
+      (v_coach_role_id, 'schema_builder', true, true, true),
+      (v_coach_role_id, 'formula_builder', true, true, true),
+      (v_coach_role_id, 'data_entry', true, true, true),
+      (v_coach_role_id, 'training_plans', true, true, false),
+      (v_coach_role_id, 'diet_plans', true, true, false),
+      (v_coach_role_id, 'calendar', true, true, false),
+      (v_coach_role_id, 'announcements', true, false, false)
+    on conflict do nothing;
+  end if;
+end;
+$$;
+
+alter function public.seed_default_company_role_permissions(uuid) owner to postgres;
+revoke all on function public.seed_default_company_role_permissions(uuid) from public;
+grant execute on function public.seed_default_company_role_permissions(uuid) to authenticated;
+
 
 -- create profile, create company or personal coach
+drop function if exists public.complete_onboarding(text,text,text,text,text,text,text,text,text,text,text,text,text,text,text,text);
 create or replace function public.complete_onboarding(
   p_token text,
   p_first_name text,
@@ -329,7 +415,7 @@ begin
       (v_company_id, 'staff'),
       (v_company_id, 'coach');
 
-    perform public.seed_default_company_role_permissions(v_company_id);
+    perform public.seed_default_company_role_permissions(v_company_id, v_invite.invitation_type);
 
     select id into v_admin_role_id
     from public.company_role
@@ -366,11 +452,9 @@ begin
 
     insert into public.company_role (company_id, name)
     values
-      (v_company_id, 'admin'),
-      (v_company_id, 'staff'),
-      (v_company_id, 'coach');
+      (v_company_id, 'admin');
 
-    perform public.seed_default_company_role_permissions(v_company_id);
+    perform public.seed_default_company_role_permissions(v_company_id, v_invite.invitation_type);
 
     select id into v_admin_role_id
     from public.company_role
@@ -404,82 +488,6 @@ alter function public.complete_onboarding(text,text,text,text,text,text,text,tex
 revoke all on function public.complete_onboarding(text,text,text,text,text,text,text,text,text,text,text,text,text,text,text,text) from public;
 grant execute on function complete_onboarding(text,text,text,text,text,text,text,text,text,text,text,text,text,text,text,text) to authenticated;
 
--- default admin staff coach permission
-create or replace function public.seed_default_company_role_permissions(
-  p_company_id uuid
-)
-returns void
-language plpgsql
-security definer
-set search_path = public
-as $$
-declare
-  v_admin_role_id uuid;
-  v_staff_role_id uuid;
-  v_coach_role_id uuid;
-begin
-  select id into v_admin_role_id
-  from public.company_role
-  where company_id = p_company_id and name = 'admin';
-
-  select id into v_staff_role_id
-  from public.company_role
-  where company_id = p_company_id and name = 'staff';
-
-  select id into v_coach_role_id
-  from public.company_role
-  where company_id = p_company_id and name = 'coach';
-
-  insert into public.company_role_permission (company_role_id, module, can_read, can_write, can_delete)
-  values
-    (v_admin_role_id, 'dashboard.company', true, true, true),
-    (v_admin_role_id, 'members', true, true, true),
-    (v_admin_role_id, 'staff', true, true, true),
-    (v_admin_role_id, 'coach', true, true, true),
-    (v_admin_role_id, 'schema_builder', true, true, true),
-    (v_admin_role_id, 'formula_builder', true, true, true),
-    (v_admin_role_id, 'data_entry', true, true, true)
-    (v_admin_role_id, 'training_plans', true, true, true),
-    (v_admin_role_id, 'diet_plans', true, true, true),
-    (v_admin_role_id, 'membership_plans', true, true, true),
-    (v_admin_role_id, 'payments', true, true, true),
-    (v_admin_role_id, 'calendar', true, true, true),
-    (v_admin_role_id, 'announcements', true, true, true),
-    (v_admin_role_id, 'services', true, true, true),
-    (v_admin_role_id, 'settings', true, true, true)
-  on conflict do nothing;
-
-  insert into public.company_role_permission (company_role_id, module, can_read, can_write, can_delete)
-  values
-    (v_staff_role_id, 'dashboard.company.operational', true, false, false),
-    (v_staff_role_id, 'members', true, true, false),
-    (v_staff_role_id, 'training_plans', true, false, false),
-    (v_staff_role_id, 'diet_plans', true, false, false),
-    (v_staff_role_id, 'membership_plans', true, false, false),
-    (v_staff_role_id, 'payments', true, true, false),
-    (v_staff_role_id, 'calendar', true, true, false),
-    (v_staff_role_id, 'announcements', true, true, true),
-    (v_staff_role_id, 'services', true, true, false)
-  on conflict do nothing;
-
-  insert into public.company_role_permission (company_role_id, module, can_read, can_write, can_delete)
-  values
-    (v_coach_role_id, 'dashboard.company.coach', true, false, false),
-    (v_coach_role_id, 'members', true, false, false),
-    (v_coach_role_id, 'schema_builder', true, true, true),
-    (v_coach_role_id, 'formula_builder', true, true, true),
-    (v_coach_role_id, 'data_entry', true, true, true)
-    (v_coach_role_id, 'training_plans', true, true, false),
-    (v_coach_role_id, 'diet_plans', true, true, false),
-    (v_coach_role_id, 'calendar', true, true, false),
-    (v_coach_role_id, 'announcements', true, false, false)
-  on conflict do nothing;
-end;
-$$;
-
-alter function public.seed_default_company_role_permissions(uuid) owner to postgres;
-revoke all on function public.seed_default_company_role_permissions(uuid) from public;
-grant execute on function public.seed_default_company_role_permissions(uuid) to authenticated;
 
 GRANT SELECT, INSERT, UPDATE, DELETE
 ON public.onboarding_invites
