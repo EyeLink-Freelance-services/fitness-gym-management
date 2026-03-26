@@ -17,13 +17,13 @@ export default function CompanyTableClient({ data }: CompanyTableClientProps) {
       </div>
 
       <DataTable
-        title="Coaches"
-        description="Personal coaches across all locations."
+        title="Companies"
+        description="Companies across all locations."
         data={data}
         columns={superAdminCompanyColumns}
-        searchPlaceholder="Search coach, email, specialization..."
+        searchPlaceholder="Search company, email, specialization..."
         initialPageSize={10}
-        emptyStateLabel="No coaches available."
+        emptyStateLabel="No companies available."
         getRowId={(row) => row.id}
         tableClassName="min-w-[760px]"
       />
