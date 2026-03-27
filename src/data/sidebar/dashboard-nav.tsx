@@ -109,6 +109,12 @@ export const SUPER_ADMIN_NAV: NavSection[] = [
 //       icon: Icons.TrainingIcon,
 //       items: [],
 //     },
+//         {
+//       title: "Sessions",
+//       url: ROUTES.DASHBOARD.COMPANY.SESSIONS,
+//       icon: Icons.Calendar,
+//       items: [],
+//     },
 //     {
 //       title: "Training Plan",
 //       url: ROUTES.TRAINING_PLANS.TEMPLATES,
@@ -137,6 +143,12 @@ export const SUPER_ADMIN_NAV: NavSection[] = [
 //       title: "Clients",
 //       url: ROUTES.DASHBOARD.PERSONAL_COACH.CLIENTS,
 //       icon: Icons.User,
+//       items: [],
+//     },
+//     {
+//       title: "Sessions",
+//       url: ROUTES.DASHBOARD.PERSONAL_COACH.SESSIONS,
+//       icon: Icons.Calendar,
 //       items: [],
 //     },
 //     {
@@ -188,8 +200,8 @@ export const CLIENT_NAV: NavSection[] = [
       items: [],
     },
     {
-      title: "Weekly Calendar",
-      url: ROUTES.DASHBOARD.CLIENT.WEEKLY_CALENDAR,
+      title: "Sessions",
+      url: ROUTES.DASHBOARD.CLIENT.SESSIONS,
       icon: Icons.Calendar,
       items: [],
     },

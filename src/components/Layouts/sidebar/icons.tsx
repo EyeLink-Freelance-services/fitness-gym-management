@@ -18,7 +18,7 @@ export function TrainingIcon(props: PropsType) {
 }
 
 /**
- * DietPlanIcon — apple
+ * DietPlanIcon - apple
  * fill style, simple and readable at 24px
  */
 export function DietPlanIcon(props: PropsType) {
@@ -45,7 +45,7 @@ export function DietPlanIcon(props: PropsType) {
 }
 
 /**
- * PaymentsIcon — card + coin
+ * PaymentsIcon - card + coin
  */
 export function PaymentsIcon(props: PropsType) {
   return (

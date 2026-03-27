@@ -9,6 +9,7 @@ type Option = {
 
 type CustomSelectProps = {
   options: Option[];
+  value?: string | number;
   defaultValue?: string | number;
   onChange?: (value: string) => void;
   className?: string;
@@ -18,23 +19,30 @@ type CustomSelectProps = {
 
 const CustomSelect = ({
   options,
+  value,
   defaultValue,
   onChange,
   className,
   placeholder = "Select an option",
   disabled,
 }: CustomSelectProps) => {
+  const controlled = value !== undefined;
+
   return (
     <div className="relative">
       <select
-        defaultValue={defaultValue}
+        {...(controlled
+          ? { value: String(value) }
+          : { defaultValue })}
         disabled={disabled}
         onChange={(e) => onChange?.(e.target.value)}
         className="h-11 w-full appearance-none rounded-[10px] border border-stroke bg-transparent px-4 text-sm text-dark outline-none focus:border-primary dark:border-dark-3 dark:text-white"
       >
-        <option value="" disabled hidden className="dark:text-green">
-          {placeholder}
-        </option>
+        {(controlled ? String(value) === "" : !controlled) && (
+          <option value="" disabled hidden className="dark:text-green">
+            {placeholder}
+          </option>
+        )}
 
         {options.map((opt) => (
           <option key={opt.value} value={opt.value} className="dark:text-dark">

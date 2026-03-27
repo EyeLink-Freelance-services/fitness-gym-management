@@ -1,6 +1,6 @@
 export type SchemaOwnerType = "company" | "personal_coach";
 
-export type FieldType = "number" | "text" | "boolean" | "dropdown" | "date";
+export type FieldType = "number" | "text" | "dropdown";
 
 export interface FieldOption {
   label: string;

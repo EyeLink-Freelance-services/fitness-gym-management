@@ -13,7 +13,11 @@ function buildSampleValuesFromSchema(groups: FieldGroup[]): Record<string, numbe
         const min = field.validation?.min;
         values[field.key] = typeof min === "number" ? min : 0;
       }
-      if (field.type === "dropdown" && field.options?.[0]?.value) {
+      if (
+        field.type === "dropdown" &&
+        field.key &&
+        field.options?.[0]?.value
+      ) {
         const v = field.options[0].value;
         const num = Number(v);
         if (!Number.isNaN(num)) values[field.key] = num;

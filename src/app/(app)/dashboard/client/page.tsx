@@ -9,6 +9,7 @@ import {
 import { bodyMeasurementColumns, mealPlanColumns, upcomingSessionColumns, workoutPlanColumns } from "@/components/Dashboard/table-column/personal-coach-preview-columns";
 import { DataTable, TableUI } from "@/components/Tables";
 import { Button } from "@/components/ui-elements/button";
+import { ROUTES } from "@/constants/route";
 import { StatusBadge } from "@/components/ui-elements/status-badge";
 import {
   getClientBodyComposition,
@@ -23,6 +24,7 @@ import {
   getClientWorkoutPlan,
 } from "@/services/dashboard.services";
 import Image from "next/image";
+import Link from "next/link";
 
 export default async function ClientDashboardPage() {
   const [
@@ -197,11 +199,9 @@ export default async function ClientDashboardPage() {
           rowKey={(row) => row.id}
           className="col-span-12 xl:col-span-7"
           headerActions={
-            <Button
-              label="View Calendar"
-              size="small"
-              toastMessage="Calendar page is not connected yet."
-            />
+            <Link href={ROUTES.DASHBOARD.CLIENT.SESSIONS}>
+              <Button label="View Calendar" size="small" />
+            </Link>
           }
         />
 

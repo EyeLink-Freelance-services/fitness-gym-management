@@ -19,7 +19,7 @@ export const paymentHistoryColumns: ColumnDef<ClientPaymentRow, unknown>[] = [
   },
   {
     accessorKey: "amount",
-    header: "Amount",
+    header: "Amount (Rs)",
     cell: ({ row }) => (
       <span className="font-medium text-dark dark:text-white">
         {row.original.amount}

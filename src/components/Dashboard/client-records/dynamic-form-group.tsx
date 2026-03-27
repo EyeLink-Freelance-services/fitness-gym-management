@@ -20,10 +20,11 @@ function renderInput(
   const value = values[field.key] ?? "";
 
   if (field.type === "dropdown") {
+    const options = field.options ?? [];
     return (
       <CustomSelect
-        options={field.options ?? []}
-        defaultValue={value}
+        options={options}
+        value={value}
         onChange={(val) => onChange(field.key, val)}
         placeholder="Select option"
         className={baseClassName}
@@ -31,30 +32,9 @@ function renderInput(
     );
   }
 
-  if (field.type === "boolean") {
-    return (
-      <label className="flex items-center gap-3 rounded-[10px] border border-stroke px-4 py-3 dark:border-dark-3">
-        <input
-          type="checkbox"
-          checked={value === "true"}
-          onChange={(event) =>
-            onChange(field.key, String(event.target.checked))
-          }
-        />
-        <span className="text-sm text-dark dark:text-white">{field.label}</span>
-      </label>
-    );
-  }
-
   return (
     <input
-      type={
-        field.type === "date"
-          ? "date"
-          : field.type === "number"
-            ? "number"
-            : "text"
-      }
+      type={field.type === "number" ? "number" : "text"}
       value={value}
       readOnly={field.readOnly}
       onChange={(event) => onChange(field.key, event.target.value)}
@@ -97,19 +77,16 @@ export function DynamicFormGroup({
             className={cn(
               "grid w-full gap-1.5",
               field.type === "text" && "md:col-span-2 xl:col-span-6",
-              field.type === "boolean" && "md:col-span-2 xl:col-span-2",
               isLifestyleGroup &&
                 field.type === "dropdown" &&
                 /sleep|stress|activity/i.test(field.label) &&
                 "xl:col-span-2",
             )}
           >
-            {field.type !== "boolean" && (
-              <span className="text-[10px] font-medium uppercase tracking-[0.16em] text-dark-5 dark:text-dark-6">
-                {field.label}
-                {field.unit ? ` · ${field.unit}` : ""}
-              </span>
-            )}
+            <span className="text-[10px] font-medium uppercase tracking-[0.16em] text-dark-5 dark:text-dark-6">
+              {field.label}
+              {field.unit ? ` · ${field.unit}` : ""}
+            </span>
             {renderInput(field, values, onChange)}
           </label>
         ))}

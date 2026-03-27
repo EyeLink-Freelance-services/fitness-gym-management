@@ -44,7 +44,7 @@ const columns: ColumnDef<CompanyClientRow>[] = [
               month: "short",
               year: "numeric",
             })
-          : "—"}
+          : "-"}
       </span>
     ),
   },
@@ -53,7 +53,7 @@ const columns: ColumnDef<CompanyClientRow>[] = [
     header: "Status",
     cell: ({ row }) => (
       <StatusBadge
-        label={row.original.membershipStatus ?? "—"}
+        label={row.original.membershipStatus ?? "-"}
         tone={row.original.membershipStatusTone ?? "neutral"}
       />
     ),

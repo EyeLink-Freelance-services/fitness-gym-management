@@ -7,7 +7,7 @@ import { buildVariableReferences } from "@/lib/formula/variable-utils";
 import { validateFormulaExpression } from "@/lib/formula/preview-engine";
 import type { FieldGroup } from "@/types/dashboard/coach-schema";
 import type { FormulaDefinition } from "@/types/dashboard/formula-builder";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 type FormulaBuilderWorkspaceProps = {
   formulas: FormulaDefinition[];
@@ -15,25 +15,41 @@ type FormulaBuilderWorkspaceProps = {
   sampleValues: Record<string, number>;
 };
 
+function emptyFormula(): FormulaDefinition {
+  return {
+    id: "",
+    label: "",
+    key: "",
+    decimals: 2,
+    expression: "",
+    description: "",
+    showPortal: true,
+  };
+}
+
 export function FormulaBuilderWorkspace({
   formulas,
   fieldGroups,
   sampleValues,
 }: FormulaBuilderWorkspaceProps) {
-  const [selectedFormulaId, setSelectedFormulaId] = useState(
-    formulas[0]?.id ?? "",
+  const [selectedFormulaId, setSelectedFormulaId] = useState("");
+  const selectedFormula = formulas.find(
+    (formula) => formula.id === selectedFormulaId,
   );
-  const selectedFormula =
-    formulas.find((formula) => formula.id === selectedFormulaId) ?? formulas[0];
-  const [expression, setExpression] = useState(
-    selectedFormula?.expression ?? "",
-  );
+  const [formula, setFormula] = useState<FormulaDefinition>(emptyFormula);
+  const lastLoadedIdRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (selectedFormula) {
-      setExpression(selectedFormula.expression);
-    }
-  }, [selectedFormula]);
+    if (lastLoadedIdRef.current === selectedFormulaId) return;
+    lastLoadedIdRef.current = selectedFormulaId;
+    const fromList = formulas.find((f) => f.id === selectedFormulaId);
+    if (fromList) setFormula({ ...fromList });
+    else setFormula(emptyFormula());
+  }, [selectedFormulaId, formulas]);
+
+  const onFormulaChange = useCallback((patch: Partial<FormulaDefinition>) => {
+    setFormula((current) => ({ ...current, ...patch }));
+  }, []);
 
   const variableReferences = useMemo(
     () =>
@@ -45,56 +61,58 @@ export function FormulaBuilderWorkspace({
   );
 
   const validation = useMemo(() => {
-    if (!selectedFormula) {
-      return {
-        valid: false,
-        detectedVariables: [],
-        unknownVariables: [],
-        circularDependencies: [],
-        error: "Select a formula.",
-      };
-    }
-
     return validateFormulaExpression(
-      expression,
+      formula.expression,
       variableReferences.map((item) => item.key),
-      formulas.map((formula) => ({
-        key: formula.key,
+      formulas.map((f) => ({
+        key: f.key,
         expression:
-          formula.id === selectedFormula.id ? expression : formula.expression,
+          selectedFormula && f.id === selectedFormula.id
+            ? formula.expression
+            : f.expression,
       })),
       sampleValues,
     );
-  }, [expression, formulas, sampleValues, selectedFormula, variableReferences]);
+  }, [
+    formula.expression,
+    formulas,
+    sampleValues,
+    selectedFormula,
+    variableReferences,
+  ]);
 
-  if (!selectedFormula) {
-    return null;
-  }
+  const formulasForPreview = useMemo(
+    () =>
+      formulas.map((f) =>
+        selectedFormula && f.id === selectedFormula.id ? { ...formula } : f,
+      ),
+    [formula, formulas, selectedFormula],
+  );
 
   return (
     <div className="grid gap-6 xl:grid-cols-[230px_minmax(0,1fr)_280px]">
       <FormulaList
         formulas={formulas}
-        selectedFormulaId={selectedFormula.id}
+        selectedFormulaId={selectedFormulaId}
         onSelect={setSelectedFormulaId}
+        onNewFormula={() => setSelectedFormulaId("")}
       />
 
       <FormulaEditor
-        formula={selectedFormula}
-        expression={expression}
-        onExpressionChange={setExpression}
+        formula={formula}
+        isNew={!selectedFormulaId}
+        onFormulaChange={onFormulaChange}
+        onSave={() => {
+          console.log(formula);
+        }}
         validation={validation}
       />
 
       <div className="grid gap-6">
         <FormulaTestPanel
-          formula={selectedFormula}
-          expression={expression}
-          formulas={formulas.map((formula) =>
-            formula.id === selectedFormula.id
-              ? { ...formula, expression }
-              : formula,
-          )}
+          formula={formula}
+          expression={formula.expression}
+          formulas={formulasForPreview}
           sampleValues={sampleValues}
           variableReferences={variableReferences}
         />

@@ -54,7 +54,7 @@ export function DataEntryWorkspace({
       value:
         resolved[formula.key] !== undefined
           ? formatMetricValue(resolved[formula.key], formula.decimals)
-          : "—",
+          : "-",
       unit: formula.unit,
     }));
     const snapshots: FormulaSnapshotPreview[] = formulas.map((formula) => ({
@@ -64,7 +64,7 @@ export function DataEntryWorkspace({
       result:
         resolved[formula.key] !== undefined
           ? `${formatMetricValue(resolved[formula.key], formula.decimals)} ${formula.unit ?? ""}`.trim()
-          : "—",
+          : "-",
     }));
     return { computedMetrics: metrics, formulaSnapshots: snapshots };
   }, [formulas, values]);

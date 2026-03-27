@@ -8,12 +8,14 @@ type FormulaListProps = {
   formulas: FormulaDefinition[];
   selectedFormulaId: string;
   onSelect: (formulaId: string) => void;
+  onNewFormula: () => void;
 };
 
 export function FormulaList({
   formulas,
   selectedFormulaId,
   onSelect,
+  onNewFormula,
 }: FormulaListProps) {
   return (
     <div className="rounded-xl border border-stroke/70 bg-white p-3 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card">
@@ -24,8 +26,8 @@ export function FormulaList({
       <Button
         label="+ New Formula"
         size="xs"
-        toastMessage="To develop"
         className="mb-3 w-full py-2"
+        onClick={onNewFormula}
       />
 
       <div className="grid gap-3">

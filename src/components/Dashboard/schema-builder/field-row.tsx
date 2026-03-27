@@ -3,11 +3,28 @@ import type { SchemaField } from "@/types/dashboard/coach-schema";
 
 type FieldRowProps = {
   field: SchemaField;
+  onEdit?: () => void;
 };
 
-export function FieldRow({ field }: FieldRowProps) {
+export function FieldRow({ field, onEdit }: FieldRowProps) {
   return (
-    <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-[10px] border border-stroke/70 px-4 py-3 dark:border-dark-3">
+    <div
+      role={onEdit ? "button" : undefined}
+      tabIndex={onEdit ? 0 : undefined}
+      onClick={onEdit}
+      onKeyDown={(e) => {
+        if (!onEdit) return;
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onEdit();
+        }
+      }}
+      className={`grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-[10px] border border-stroke/70 px-4 py-3 dark:border-dark-3 ${
+        onEdit
+          ? "cursor-pointer transition hover:border-primary/40 hover:bg-gray-1/80 dark:hover:bg-dark-2/80"
+          : ""
+      }`}
+    >
       <div className="flex items-center gap-3">
         <p className="text-sm font-semibold text-dark dark:text-white">
           {field.label}{" "}
@@ -25,8 +42,23 @@ export function FieldRow({ field }: FieldRowProps) {
           <span className="text-[11px]">max {field.validation.max}</span>
         )}
 
-        <Button label="Edit" size="xs" variant="green" />
-        <Button label="Delete" size="xs" variant="danger" />
+        <Button
+          type="button"
+          label="Edit"
+          size="xs"
+          variant="green"
+          onClick={(e) => {
+            e.stopPropagation();
+            onEdit?.();
+          }}
+        />
+        <Button
+          type="button"
+          label="Delete"
+          size="xs"
+          variant="danger"
+          onClick={(e) => e.stopPropagation()}
+        />
       </div>
     </div>
   );

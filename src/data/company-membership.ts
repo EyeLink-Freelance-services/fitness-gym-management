@@ -31,8 +31,8 @@ export const COMPANY_MEMBERSHIP_OVERVIEW: DashboardOverviewItem[] = [
     Icon: Icons.Gym,
   },
   {
-    label: "Plan Revenue / Month",
-    value: "RM 38.2K",
+    label: "Plan Revenue / Mo (Rs)",
+    value: "38.2K",
     trend: 5.3,
     note: "+5.3% vs last month",
     Icon: Icons.Profit,
@@ -157,7 +157,7 @@ export const COMPANY_MEMBERSHIP_PROMOTIONS: MembershipPromotionRow[] = [
   },
   {
     code: "REFER50",
-    title: "Referral - RM 50 credit on next renewal",
+    title: "Referral - Rs 50 credit on next renewal",
     description: "All plans. No expiry. Referral programme.",
     used: 22,
     limit: 100,

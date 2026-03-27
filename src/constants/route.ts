@@ -23,10 +23,12 @@ export const ROUTES = {
       // CLIENT_COACH_ASSIGN: "/dashboard/company/client-coach-assign",
       MEMBERSHIP: "/dashboard/company/membership",
       PAYMENT: "/dashboard/company/payment",
-      COACH: "/dashboard/company/coach"
+      COACH: "/dashboard/company/coach",
+      SESSIONS: "/dashboard/company/sessions",
     },
     PERSONAL_COACH: {
       ROOT: "/dashboard/personal-coach",
+      SESSIONS: "/dashboard/personal-coach/sessions",
       // ANNOUNCEMENTS: "/dashboard/personal-coach/announcements",
       // CLIENTS: "/dashboard/personal-coach/clients",
       // PROGRESS: "/dashboard/personal-coach/progress",
@@ -40,7 +42,8 @@ export const ROUTES = {
     },
     CLIENT: {
       ROOT: "/dashboard/client",
-      WEEKLY_CALENDAR: "/calendar"
+      SESSIONS: "/dashboard/client/sessions",
+      WEEKLY_CALENDAR: "/dashboard/client/sessions",
     },
   },
 

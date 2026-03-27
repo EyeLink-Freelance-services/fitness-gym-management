@@ -7,6 +7,7 @@ import Label from "@/components/FormElements/common/label";
 
 type PropsType = {
   label: React.ReactNode;
+  labelClassName?: string;
   items: { value: string | undefined; label: string }[];
   prefixIcon?: React.ReactNode;
   className?: string;
@@ -22,6 +23,7 @@ type PropsType = {
 export function Select({
   items,
   label,
+  labelClassName,
   defaultValue,
   placeholder,
   prefixIcon,
@@ -46,6 +48,7 @@ export function Select({
         htmlFor={id}
         value={label}
         required={Boolean(isRequired)}
+        className={labelClassName}
       />
 
       <div className="relative">

@@ -2,16 +2,16 @@ import { ClientDataSchemaClient } from "@/components/Dashboard/schema-builder/cl
 import { SchemaSummaryCard } from "@/components/Dashboard/schema-builder/schema-summary-card";
 import { SchemaValidationCard } from "@/components/Dashboard/schema-builder/schema-validation-card";
 import {
-  getCompanyFieldGroups,
-  getCompanySchemaOverview,
-  getCompanySchemaValidationRules,
+  getPersonalCoachFieldGroups,
+  getPersonalCoachSchemaOverview,
+  getPersonalCoachSchemaValidationRules,
 } from "@/services/coach-schema.services";
 
-export default async function CompanySchemaPage() {
+export default async function PersonalCoachSchemaPage() {
   const [summary, groups, rules] = await Promise.all([
-    getCompanySchemaOverview(),
-    getCompanyFieldGroups(),
-    getCompanySchemaValidationRules(),
+    getPersonalCoachSchemaOverview(),
+    getPersonalCoachFieldGroups(),
+    getPersonalCoachSchemaValidationRules(),
   ]);
 
   const { totalFields, totalFormulas, linkedClients } = summary;

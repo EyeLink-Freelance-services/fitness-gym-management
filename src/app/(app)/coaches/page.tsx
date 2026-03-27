@@ -1,5 +1,6 @@
 "use client";
 
+import { FormModalTrigger } from "@/components/Dashboard/form-modal-trigger";
 import { DataTable } from "@/components/Tables";
 import { Button } from "@/components/ui-elements/button";
 import { StatusBadge } from "@/components/ui-elements/status-badge";
@@ -45,11 +46,11 @@ const columns: ColumnDef<CompanyCoachRow>[] = [
 export default function CompanyCoachesPage() {
   return (
     <>
-      <div className="flex">
-        <Button
-          label="Add Member"
-          className="mb-4 ml-auto"
-          toastMessage="Form not yet created"
+      <div className="mb-7 flex items-center justify-end">
+        <FormModalTrigger
+          buttonLabel="+ Add Coach"
+          formType="personal"
+          size="small"
         />
       </div>
 

@@ -112,12 +112,15 @@ export function FormulaTestPanel({
 
         <div className="rounded-[10px] border border-stroke/70 bg-dark-2/30 p-4 text-center dark:border-dark-3 dark:bg-dark-2/70">
           <div className="text-[11px] font-medium uppercase tracking-[0.2em] text-dark-5">
-            {formula.label} Result | {formula.unit ?? ""}
+            {formula.label.trim() ? `${formula.label} Result` : "Preview"}{" "}
+            {formula.unit ? `| ${formula.unit}` : ""}
           </div>
           <div className="mt-3 text-3xl font-bold text-primary">
             {result.valid && typeof result.value === "number"
-              ? `${formatNumber(result.value, formula.decimals)}${formula.unit ? ` ${formula.unit}` : ""}`
-              : "—"}
+              ? `${formatNumber(result.value, formula.decimals)}${
+                  formula.unit ? ` ${formula.unit}` : ""
+                }`
+              : "-"}
           </div>
 
           {!result.valid && (

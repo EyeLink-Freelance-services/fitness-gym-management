@@ -38,7 +38,7 @@ const columns: ColumnDef<CompanyClientRow>[] = [
   {
     accessorKey: "plan",
     header: "Plan",
-    cell: ({ row }) => row.original.plan ?? "—",
+    cell: ({ row }) => row.original.plan ?? "-",
     meta: {
       align: "left",
       headClassName: "min-w-[140px]",
@@ -71,7 +71,7 @@ const columns: ColumnDef<CompanyClientRow>[] = [
     header: "Joined At",
     cell: ({ row }) => {
       if (!row.original.joinedAt) {
-        return <span className="text-dark-6 dark:text-dark-6">—</span>;
+        return <span className="text-dark-6 dark:text-dark-6">-</span>;
       }
 
       return (

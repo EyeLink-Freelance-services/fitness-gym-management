@@ -160,11 +160,11 @@ export default function PersonalCoachForm() {
           accept="image/*"
           emptyStateText={
             <>
-              Upload coach photo —{" "}
+              Upload coach photo -{" "}
               <strong className="text-dark dark:text-white">browse</strong>
             </>
           }
-          hint="PNG, JPG, SVG — max 5MB"
+          hint="PNG, JPG, SVG - max 5MB"
           registerReturn={register("profilePhoto")}
           setValue={setValue as (name: string, value?: FileList) => void}
         />
