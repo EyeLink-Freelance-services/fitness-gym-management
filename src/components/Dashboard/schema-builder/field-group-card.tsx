@@ -4,16 +4,24 @@ import type { FieldGroup, SchemaField } from "@/types/dashboard/coach-schema";
 
 type FieldGroupCardProps = {
   group: FieldGroup;
+  isDirty?: boolean;
   onAddField?: () => void;
   onEditGroup?: () => void;
   onEditField?: (field: SchemaField) => void;
+  onResetGroup?: (group: FieldGroup) => void;
+  onResetField?: (field: SchemaField, groupId: string) => void;
+  isFieldDirty?: (fieldId: string) => boolean;
 };
 
 export function FieldGroupCard({
   group,
+  isDirty,
   onAddField,
   onEditGroup,
   onEditField,
+  onResetGroup,
+  onResetField,
+  isFieldDirty,
 }: FieldGroupCardProps) {
   return (
     <section className="rounded-[14px] border border-stroke/70 bg-white p-4 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card">
@@ -36,6 +44,15 @@ export function FieldGroupCard({
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          {isDirty && (
+            <Button
+              type="button"
+              label="Reset Group"
+              size="small"
+              variant="dark"
+              onClick={() => onResetGroup?.(group)}
+            />
+          )}
           {onEditGroup && (
             <Button
               type="button"
@@ -60,7 +77,9 @@ export function FieldGroupCard({
           <FieldRow
             key={field.id}
             field={field}
+            isDirty={isFieldDirty?.(field.id)}
             onEdit={onEditField ? () => onEditField(field) : undefined}
+            onResetField={() => onResetField?.(field, group.id)}
           />
         ))}
       </div>

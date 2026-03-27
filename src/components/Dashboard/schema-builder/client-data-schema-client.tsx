@@ -13,6 +13,55 @@ type ClientDataSchemaClientProps = {
   pageTitle?: string;
 };
 
+function normalizeField(field: SchemaField) {
+  return {
+    id: field.id,
+    groupId: field.groupId,
+    label: field.label,
+    key: field.key,
+    type: field.type,
+    unit: field.unit ?? "",
+    placeholder: field.placeholder ?? "",
+    description: field.description ?? "",
+    required: field.required,
+    readOnly: field.readOnly ?? false,
+    showPortal: field.showPortal ?? false,
+    archived: field.archived ?? false,
+    sortOrder: field.sortOrder,
+    options: (field.options ?? []).map((option) => ({
+      label: option.label,
+      value: option.value,
+    })),
+    validation: {
+      min: field.validation?.min ?? null,
+      max: field.validation?.max ?? null,
+      pattern: field.validation?.pattern ?? "",
+      helperText: field.validation?.helperText ?? "",
+    },
+  };
+}
+
+function normalizeGroup(group: FieldGroup) {
+  return {
+    id: group.id,
+    name: group.name,
+    description: group.description ?? "",
+    accentColor: group.accentColor ?? "",
+    iconKey: group.iconKey ?? "",
+    unitHint: group.unitHint ?? "",
+    sortOrder: group.sortOrder,
+    fields: [...group.fields]
+      .map(normalizeField)
+      .sort((a, b) => a.sortOrder - b.sortOrder),
+  };
+}
+
+function normalizeGroups(groups: FieldGroup[]) {
+  return groups
+    .map(normalizeGroup)
+    .sort((a, b) => a.sortOrder - b.sortOrder);
+}
+
 export function ClientDataSchemaClient({
   initialGroups,
   pageTitle = "Client Data Configuration",
@@ -28,6 +77,13 @@ export function ClientDataSchemaClient({
   const [groupModalOpen, setGroupModalOpen] = useState(false);
   const [groupModalMode, setGroupModalMode] = useState<"add" | "edit">("add");
   const [editingGroup, setEditingGroup] = useState<FieldGroup | null>(null);
+
+  const showSaveResetChangesBtn = useMemo(() => {
+    const current = JSON.stringify(normalizeGroups(groups));
+    const initial = JSON.stringify(normalizeGroups(initialGroups));
+
+    return current !== initial;
+  }, [groups, initialGroups]);
 
   const existingKeys = useMemo(() => {
     const keys = new Set<string>();
@@ -51,6 +107,66 @@ export function ClientDataSchemaClient({
         : Math.max(...groups.map((g) => g.sortOrder)) + 10,
     [groups],
   );
+
+  const getInitialGroupById = (groupId: string) => {
+    return initialGroups.find((g) => g.id === groupId);
+  };
+
+  const getCurrentGroupById = (groupId: string) => {
+    return groups.find((g) => g.id === groupId);
+  };
+
+  const getInitialFieldById = (fieldId: string) => {
+    for (const group of initialGroups) {
+      const field = group.fields.find((f) => f.id === fieldId);
+      if (field) return field;
+    }
+    return undefined;
+  };
+
+  const getCurrentFieldById = (fieldId: string) => {
+    for (const group of groups) {
+      const field = group.fields.find((f) => f.id === fieldId);
+      if (field) return field;
+    }
+    return undefined;
+  };
+
+  const isGroupDirty = (groupId: string) => {
+    const currentGroup = getCurrentGroupById(groupId);
+    const initialGroup = getInitialGroupById(groupId);
+
+    // Newly added group
+    if (currentGroup && !initialGroup) return true;
+
+    // Deleted group (future-safe)
+    if (!currentGroup && initialGroup) return true;
+
+    if (!currentGroup || !initialGroup) return false;
+
+    return (
+      JSON.stringify(normalizeGroup(currentGroup)) !==
+      JSON.stringify(normalizeGroup(initialGroup))
+    );
+  };
+
+  const isFieldDirty = (fieldId: string) => {
+    const currentField = getCurrentFieldById(fieldId);
+    const initialField = getInitialFieldById(fieldId);
+
+    // Newly added field
+    if (currentField && !initialField) return true;
+
+    // Deleted field (future-safe)
+    if (!currentField && initialField) return true;
+
+    if (!currentField || !initialField) return false;
+
+    return (
+      JSON.stringify(normalizeField(currentField)) !==
+      JSON.stringify(normalizeField(initialField))
+    );
+  };
 
   const openAddField = (groupId: string) => {
     setModalMode("add");
@@ -112,27 +228,109 @@ export function ClientDataSchemaClient({
     }
   };
 
+  const onResetGroup = (group: FieldGroup) => {
+    const initialGroup = getInitialGroupById(group.id);
+
+    setGroups((prev) => {
+      // If group did not exist initially, it was newly added -> remove it
+      if (!initialGroup) {
+        return prev.filter((g) => g.id !== group.id);
+      }
+
+      // Otherwise restore original group
+      return prev.map((g) => (g.id === group.id ? initialGroup : g));
+    });
+  }
+
+
+  const onResetField = (field: SchemaField, groupId: string) => {
+    const initialGroupContainingField = initialGroups.find((g) =>
+      g.fields.some((f) => f.id === field.id),
+    );
+
+    const initialField = initialGroupContainingField?.fields.find(
+      (f) => f.id === field.id,
+    );
+
+    setGroups((prev) => {
+      // Remove this field from all current groups first
+      const stripped = prev.map((g) => ({
+        ...g,
+        fields: g.fields.filter((f) => f.id !== field.id),
+      }));
+
+      // If field did not exist initially, it was newly added -> just remove it
+      if (!initialField || !initialGroupContainingField) {
+        return stripped;
+      }
+
+      // Restore field to its original group
+      return stripped.map((g) => {
+        if (g.id !== initialGroupContainingField.id) return g;
+
+        return {
+          ...g,
+          fields: [...g.fields, initialField].sort(
+            (a, b) => a.sortOrder - b.sortOrder,
+          ),
+        };
+      });
+    });
+  }
+
+  const onResetChanges = () => {
+    setGroups(initialGroups);
+  }
+
+  const onSaveChanges = () => {
+    const current = JSON.stringify(normalizeGroups(groups))
+    console.log(current, 'current');
+  };
+
   return (
     <>
       <div className="flex items-center justify-between gap-3">
         <CardTitle title={pageTitle} className="mb-0" />
-
-        <Button
-          type="button"
-          size="small"
-          variant="outlinePrimary"
-          label="+ Group"
-          onClick={openAddGroup}
-        />
+        <div className="flex gap-3">
+          { showSaveResetChangesBtn &&
+            <div className="flex gap-3">
+              <Button
+                type="button"
+                size="small"
+                variant="dark"
+                label="Reset Changes"
+                onClick={onResetChanges}
+              />
+              <Button
+                type="button"
+                size="small"
+                variant="primary"
+                label="Save Changes"
+                onClick={onSaveChanges}
+              />
+            </div>
+          }
+          <Button
+            type="button"
+            size="small"
+            variant="outlinePrimary"
+            label="+ Group"
+            onClick={openAddGroup}
+          />
+        </div>
       </div>
 
       {groups.map((group) => (
         <FieldGroupCard
           key={group.id}
           group={group}
+          isDirty={isGroupDirty(group.id)}
           onAddField={() => openAddField(group.id)}
           onEditGroup={() => openEditGroup(group)}
           onEditField={(field) => openEditField(field, group.id)}
+          onResetGroup={() => onResetGroup(group)}
+          onResetField={(field) => onResetField(field, group.id)}
+          isFieldDirty={isFieldDirty}
         />
       ))}
 

@@ -174,7 +174,6 @@ export default function CompanyForm({ onSuccess }: Props) {
         <Controller
           name="region"
           control={control}
-          rules={{ required: "District is required" }}
           render={({ field }) => (
             <Select
               label="District / Region"

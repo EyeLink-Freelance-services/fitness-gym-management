@@ -3,10 +3,12 @@ import type { SchemaField } from "@/types/dashboard/coach-schema";
 
 type FieldRowProps = {
   field: SchemaField;
+  isDirty?: boolean;
   onEdit?: () => void;
+  onResetField?: () => void;
 };
 
-export function FieldRow({ field, onEdit }: FieldRowProps) {
+export function FieldRow({ field, isDirty, onEdit, onResetField }: FieldRowProps) {
   return (
     <div
       role={onEdit ? "button" : undefined}
@@ -42,6 +44,18 @@ export function FieldRow({ field, onEdit }: FieldRowProps) {
           <span className="text-[11px]">max {field.validation.max}</span>
         )}
 
+        {isDirty && (
+          <Button
+            type="button"
+            label="Reset"
+            size="xs"
+            variant="dark"
+            onClick={(e) => {
+              e.stopPropagation();
+              onResetField?.();
+            }}
+          />
+        )}
         <Button
           type="button"
           label="Edit"
