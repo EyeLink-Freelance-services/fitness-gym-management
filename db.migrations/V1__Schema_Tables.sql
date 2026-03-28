@@ -112,7 +112,9 @@ on public.client_data_schema_groups
 for select
 to authenticated
 using (
-  public.is_company_member(company_id)
+  public.is_company_owner(company_id)
+  or public.has_company_role(company_id, 'admin')
+  or public.has_company_role(company_id, 'coach')
 );
 
 drop policy if exists "schema_groups_insert"
@@ -124,7 +126,6 @@ to authenticated
 with check (
   public.is_company_owner(company_id)
   or public.has_company_role(company_id, 'admin')
-  or public.has_company_role(company_id, 'staff')
   or public.has_company_role(company_id, 'coach')
 );
 
@@ -137,13 +138,11 @@ to authenticated
 using (
   public.is_company_owner(company_id)
   or public.has_company_role(company_id, 'admin')
-  or public.has_company_role(company_id, 'staff')
   or public.has_company_role(company_id, 'coach')
 )
 with check (
   public.is_company_owner(company_id)
   or public.has_company_role(company_id, 'admin')
-  or public.has_company_role(company_id, 'staff')
   or public.has_company_role(company_id, 'coach')
 );
 
@@ -155,7 +154,6 @@ to authenticated
 using (
   public.is_company_owner(company_id)
   or public.has_company_role(company_id, 'admin')
-  or public.has_company_role(company_id, 'staff')
   or public.has_company_role(company_id, 'coach')
 );
 
@@ -168,13 +166,11 @@ to authenticated
 using (
   public.is_company_owner(company_id)
   or public.has_company_role(company_id, 'admin')
-  or public.has_company_role(company_id, 'staff')
   or public.has_company_role(company_id, 'coach')
 )
 with check (
   public.is_company_owner(company_id)
   or public.has_company_role(company_id, 'admin')
-  or public.has_company_role(company_id, 'staff')
   or public.has_company_role(company_id, 'coach')
 );
 
@@ -187,7 +183,6 @@ to authenticated
 using (
   public.is_company_owner(company_id)
   or public.has_company_role(company_id, 'admin')
-  or public.has_company_role(company_id, 'staff')
   or public.has_company_role(company_id, 'coach')
 );
 
@@ -209,7 +204,6 @@ to authenticated
 with check (
   public.is_company_owner(company_id)
   or public.has_company_role(company_id, 'admin')
-  or public.has_company_role(company_id, 'staff')
   or public.has_company_role(company_id, 'coach')
 );
 
@@ -221,13 +215,11 @@ to authenticated
 using (
   public.is_company_owner(company_id)
   or public.has_company_role(company_id, 'admin')
-  or public.has_company_role(company_id, 'staff')
   or public.has_company_role(company_id, 'coach')
 )
 with check (
   public.is_company_owner(company_id)
   or public.has_company_role(company_id, 'admin')
-  or public.has_company_role(company_id, 'staff')
   or public.has_company_role(company_id, 'coach')
 );
 
@@ -239,7 +231,6 @@ to authenticated
 using (
   public.is_company_owner(company_id)
   or public.has_company_role(company_id, 'admin')
-  or public.has_company_role(company_id, 'staff')
   or public.has_company_role(company_id, 'coach')
 );
 
