@@ -4,6 +4,8 @@ import {
   getCompanyFormulas,
 } from "@/services/coach-schema.services";
 import type { FieldGroup } from "@/types/dashboard/coach-schema";
+import { getGroupsFormulasDataAction } from "./actions";
+import { FullFormulas } from "@/types/dashboard";
 
 function buildSampleValuesFromSchema(groups: FieldGroup[]): Record<string, number> {
   const values: Record<string, number> = {};
@@ -27,17 +29,21 @@ function buildSampleValuesFromSchema(groups: FieldGroup[]): Record<string, numbe
   return values;
 }
 
-export default async function CompanyFormulaPage() {
-  const [groups, formulas] = await Promise.all([
-    getCompanyFieldGroups(),
-    getCompanyFormulas(),
-  ]);
+export default async function FormulaPage() {
+  // const [groups, formulas] = await Promise.all([
+  //   getCompanyFieldGroups(),
+  //   getCompanyFormulas(),
+  // ]);
+  const res = await getGroupsFormulasDataAction();
 
+  console.log(res, 'res');
+  const { groups, formulas, mode } = res.data as FullFormulas;
   const sampleValues = buildSampleValuesFromSchema(groups);
 
   return (
     <div>
       <FormulaBuilderWorkspace
+        mode={mode}
         formulas={formulas}
         fieldGroups={groups}
         sampleValues={sampleValues}

@@ -3,3 +3,7 @@ export function emptyToNull(value?: string) {
   const trimmed = value.trim();
   return trimmed === "" ? null : trimmed;
 }
+
+export function mapById<T extends { id: string }>(items: T[]) {
+  return new Map(items.map((item) => [item.id, item]));
+}

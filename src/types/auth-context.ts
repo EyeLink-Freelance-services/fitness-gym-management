@@ -6,7 +6,7 @@ export interface IAuthContext {
   companyId: string | null;
   company: ICompany;
   isOwner: boolean;
-  roles: IRole[];
+  roles: string[];
   permissions: string[];
 };
 

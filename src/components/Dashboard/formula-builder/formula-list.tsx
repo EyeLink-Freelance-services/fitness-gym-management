@@ -1,10 +1,12 @@
 "use client";
 
 import { Button } from "@/components/ui-elements/button";
+import { SchemaMode } from "@/lib/db/helpers/resolve-schema-mode";
 import { cn } from "@/lib/utils";
 import type { FormulaDefinition } from "@/types/dashboard/formula-builder";
 
 type FormulaListProps = {
+  mode: SchemaMode;
   formulas: FormulaDefinition[];
   selectedFormulaId: string;
   onSelect: (formulaId: string) => void;
@@ -13,6 +15,7 @@ type FormulaListProps = {
 
 export function FormulaList({
   formulas,
+  mode,
   selectedFormulaId,
   onSelect,
   onNewFormula,
@@ -22,13 +25,14 @@ export function FormulaList({
       <div className="mb-3 px-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-dark-6">
         Formulas
       </div>
-
-      <Button
-        label="+ New Formula"
-        size="xs"
-        className="mb-3 w-full py-2"
-        onClick={onNewFormula}
-      />
+      { mode === 'company_or_personal' &&
+        <Button
+          label="+ New Formula"
+          size="xs"
+          className="mb-3 w-full py-2"
+          onClick={onNewFormula}
+        />
+      }
 
       <div className="grid gap-3">
         {formulas.map((formula) => {

@@ -165,7 +165,8 @@ export function SchemaFieldModal({
     }
 
     const next: SchemaField = {
-      id: field?.id ?? `schema-field-${key}-${Date.now()}`,
+      id: field?.id ?? crypto.randomUUID(),
+      isNew: field?.id ? false : true,
       groupId: values.groupId,
       label: trimmed,
       key,

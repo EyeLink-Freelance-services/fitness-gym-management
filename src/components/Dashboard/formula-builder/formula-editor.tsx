@@ -11,6 +11,7 @@ import type {
 type FormulaEditorProps = {
   formula: FormulaDefinition;
   isNew: boolean;
+  isPending: boolean;
   onFormulaChange: (patch: Partial<FormulaDefinition>) => void;
   onSave: () => void;
   validation: FormulaValidationResult;
@@ -20,6 +21,7 @@ export function FormulaEditor({
   formula,
   isNew,
   onFormulaChange,
+  isPending,
   onSave,
   validation,
 }: FormulaEditorProps) {
@@ -174,7 +176,7 @@ export function FormulaEditor({
           />
         </div>
 
-        <Button label="Save Formula" className="w-full" onClick={onSave} />
+        <Button label={isPending ? "Saving..." : "Save Formula"} className="w-full" onClick={onSave} />
       </div>
     </div>
   );

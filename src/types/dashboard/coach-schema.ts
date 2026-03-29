@@ -1,13 +1,21 @@
-export type SchemaOwnerType = "company" | "personal_coach";
+import { SchemaMode } from "@/lib/db/helpers/resolve-schema-mode";
+
+export type SchemaOwnerType = "company" | "personal";
 
 export type FieldType = "number" | "text" | "dropdown";
 
+export interface FullSchema {
+  mode: SchemaMode;
+  summary: SchemaSummary;
+  groups: FieldGroup[];
+  rules: SchemaValidationRuleSummary[];
+}
 export interface FieldOption {
   label: string;
   value: string;
 }
 
-export interface FieldValidationRule {
+export interface FieldValidationRule extends Record<string, unknown> {
   min?: number;
   max?: number;
   pattern?: string;
@@ -16,6 +24,7 @@ export interface FieldValidationRule {
 
 export interface SchemaField {
   id: string;
+  isNew?: boolean;
   groupId: string;
   label: string;
   key: string;
@@ -34,6 +43,7 @@ export interface SchemaField {
 
 export interface FieldGroup {
   id: string;
+  isNew?: boolean;
   name: string;
   description?: string;
   accentColor?: string;

@@ -1,248 +1,528 @@
--- optional extension if not already enabled
-create extension if not exists pgcrypto;
-
 -- =========================================================
 -- TABLE
 -- =========================================================
-drop table if exists public.formulas;
-create table if not exists public.formulas (
-  id uuid primary key default gen_random_uuid(),
 
-  company_id uuid not null
-    references public.companies(id) on delete cascade,
+DROP TABLE IF EXISTS public.coach_formulas_overrides CASCADE;
+DROP TABLE IF EXISTS public.formulas CASCADE;
 
-  label text not null,
-  key text not null,
-  expression text not null,
+CREATE TABLE IF NOT EXISTS public.formulas (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+
+  company_id uuid NOT NULL
+    REFERENCES public.companies(id) ON DELETE CASCADE,
+
+  label text NOT NULL,
+  key text NOT NULL,
+  expression text NOT NULL,
 
   unit text,
-  decimals integer not null default 2,
+  decimals integer NOT NULL DEFAULT 2,
   description text,
-  show_portal boolean not null default true,
+  show_portal boolean NOT NULL DEFAULT true,
 
   created_by uuid
-    references auth.users(id) on delete set null,
+    REFERENCES auth.users(id) ON DELETE SET NULL,
   updated_by uuid
-    references auth.users(id) on delete set null,
+    REFERENCES auth.users(id) ON DELETE SET NULL,
 
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now(),
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now(),
 
-  constraint formulas_label_not_blank check (btrim(label) <> ''),
-  constraint formulas_key_not_blank check (btrim(key) <> ''),
-  constraint formulas_expression_not_blank check (btrim(expression) <> ''),
-  constraint formulas_decimals_check check (decimals >= 0 and decimals <= 8)
+  CONSTRAINT formulas_label_not_blank CHECK (btrim(label) <> ''),
+  CONSTRAINT formulas_key_not_blank CHECK (btrim(key) <> ''),
+  CONSTRAINT formulas_expression_not_blank CHECK (btrim(expression) <> ''),
+  CONSTRAINT formulas_decimals_check CHECK (decimals >= 0 AND decimals <= 8)
 );
 
--- unique formula key inside one company
-create unique index if not exists uq_formulas_company_key
-  on public.formulas(company_id, lower(key));
+-- UNIQUE FORMULA KEY INSIDE ONE COMPANY
+DROP INDEX IF EXISTS uq_formulas_company_key;
+CREATE UNIQUE INDEX IF NOT EXISTS uq_formulas_company_key
+  ON public.formulas(company_id, lower(key));
 
--- optional: prevent same label twice in same company
-create unique index if not exists uq_formulas_company_label
-  on public.formulas(company_id, lower(label));
+-- OPTIONAL: PREVENT SAME LABEL TWICE IN SAME COMPANY
+DROP INDEX IF EXISTS uq_formulas_company_label;
+CREATE UNIQUE INDEX IF NOT EXISTS uq_formulas_company_label
+  ON public.formulas(company_id, lower(label));
 
--- useful indexes
-create index if not exists idx_formulas_company_id
-  on public.formulas(company_id);
+-- USEFUL INDEXES
+DROP INDEX IF EXISTS idx_formulas_company_id;
+CREATE INDEX IF NOT EXISTS idx_formulas_company_id
+  ON public.formulas(company_id);
 
-create index if not exists idx_formulas_created_by
-  on public.formulas(created_by);
+DROP INDEX IF EXISTS idx_formulas_created_by;
+CREATE INDEX IF NOT EXISTS idx_formulas_created_by
+  ON public.formulas(created_by);
 
-create index if not exists idx_formulas_updated_at
-  on public.formulas(updated_at desc);
+DROP INDEX IF EXISTS idx_formulas_updated_at;
+CREATE INDEX IF NOT EXISTS idx_formulas_updated_at
+  ON public.formulas(updated_at DESC);
 
-drop table if exists public.coach_formulas_overrides;
-create table if not exists public.coach_formulas_overrides (
-  id uuid primary key default gen_random_uuid(),
-  company_formula_id uuid not null 
-    references public.formulas(id) on delete cascade,
-  company_id uuid not null
-    references public.companies(id) on delete cascade,
-  coach_user_id uuid not null 
-    references auth.users(id) on delete cascade,
-  label text not null,
-  key text not null,
-  expression text not null,
+CREATE TABLE IF NOT EXISTS public.coach_formulas_overrides (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  company_formula_id uuid NOT NULL 
+    REFERENCES public.formulas(id) ON DELETE CASCADE,
+  company_id uuid NOT NULL
+    REFERENCES public.companies(id) ON DELETE CASCADE,
+  coach_user_id uuid NOT NULL 
+    REFERENCES auth.users(id) ON DELETE CASCADE,
+  label text NOT NULL,
+  key text NOT NULL,
+  expression text NOT NULL,
   unit text,
-  decimals integer not null default 2,
+  decimals integer NOT NULL DEFAULT 2,
   description text,
-  show_portal boolean not null default true,
+  show_portal boolean NOT NULL DEFAULT true,
   created_by uuid
-    references auth.users(id) on delete set null,
+    REFERENCES auth.users(id) ON DELETE SET NULL,
   updated_by uuid
-    references auth.users(id) on delete set null,
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now(),
+    REFERENCES auth.users(id) ON DELETE SET NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now(),
 
-  constraint coach_formulas_overrides_label_not_blank check (btrim(label) <> ''),
-  constraint coach_formulas_overrides_key_not_blank check (btrim(key) <> ''),
-  constraint coach_formulas_overrides_expression_not_blank check (btrim(expression) <> ''),
-  constraint coach_formulas_overrides_decimals_check check (decimals >= 0 and decimals <= 8)
+  CONSTRAINT coach_formulas_overrides_label_not_blank CHECK (btrim(label) <> ''),
+  CONSTRAINT coach_formulas_overrides_key_not_blank CHECK (btrim(key) <> ''),
+  CONSTRAINT coach_formulas_overrides_expression_not_blank CHECK (btrim(expression) <> ''),
+  CONSTRAINT coach_formulas_overrides_decimals_check CHECK (decimals >= 0 AND decimals <= 8)
 );
 
-create unique index if not exists uq_coach_formulas_overrides_unique
-  on public.coach_formulas_overrides(company_formula_id, coach_user_id);
+DROP INDEX IF EXISTS uq_coach_formulas_overrides_unique;
+CREATE UNIQUE INDEX IF NOT EXISTS uq_coach_formulas_overrides_unique
+  ON public.coach_formulas_overrides(company_formula_id, coach_user_id);
 
-create index if not exists idx_coach_formulas_overrides_company_coach
-  on public.coach_formulas_overrides(company_id, coach_user_id);
+DROP INDEX IF EXISTS idx_coach_formulas_overrides_company_coach;
+CREATE INDEX IF NOT EXISTS idx_coach_formulas_overrides_company_coach
+  ON public.coach_formulas_overrides(company_id, coach_user_id);
 
 -- =========================================================
 -- TRIGGER
 -- =========================================================
-drop trigger if exists trg_formulas_set_updated_at on public.formulas;
 
-create trigger trg_formulas_set_updated_at
-before update on public.formulas
-for each row
-execute function public.set_updated_at();
+DROP TRIGGER IF EXISTS trg_formulas_set_updated_at ON public.formulas;
+CREATE TRIGGER trg_formulas_set_updated_at
+BEFORE UPDATE ON public.formulas
+FOR EACH ROW
+EXECUTE FUNCTION public.set_updated_at();
 
-drop trigger if exists trg_coach_formulas_overrides_set_updated_at on public.coach_formulas_overrides;
-
-create trigger trg_coach_formulas_overrides_set_updated_at
-before update on public.coach_formulas_overrides
-for each row
-execute function public.set_updated_at();
+DROP TRIGGER IF EXISTS trg_coach_formulas_overrides_set_updated_at ON public.coach_formulas_overrides;
+CREATE TRIGGER trg_coach_formulas_overrides_set_updated_at
+BEFORE UPDATE ON public.coach_formulas_overrides
+FOR EACH ROW
+EXECUTE FUNCTION public.set_updated_at();
 
 -- =========================================================
 -- ENABLE RLS
 -- =========================================================
-alter table public.formulas enable row level security;
-alter table public.coach_formulas_overrides enable row level security;
+
+ALTER TABLE public.formulas ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.coach_formulas_overrides ENABLE ROW LEVEL SECURITY;
 
 -- =========================================================
 -- POLICIES
 -- =========================================================
--- SELECT: admin, owner or coach can read
-drop policy if exists "formulas_select_company_member" on public.formulas;
-create policy "formulas_select_company_member"
-on public.formulas
-for select
-to authenticated
-using (
+
+-- SELECT: ADMIN, OWNER OR COACH CAN READ
+DROP POLICY IF EXISTS "formulas_select_company_member" ON public.formulas;
+CREATE POLICY "formulas_select_company_member"
+ON public.formulas
+FOR SELECT
+TO authenticated
+USING (
   public.is_company_owner(company_id)
-	or public.has_company_role(company_id, 'admin')
-	or public.has_company_role(company_id, 'coach')
+  OR public.has_company_role(company_id, 'admin')
+  OR public.has_company_role(company_id, 'coach')
 );
 
--- INSERT: admin/coach/owner can create
-drop policy if exists "formulas_insert_company_roles" on public.formulas;
-create policy "formulas_insert_company_roles"
-on public.formulas
-for insert
-to authenticated
-with check (
+-- INSERT: ADMIN/COACH/OWNER CAN CREATE
+DROP POLICY IF EXISTS "formulas_insert_company_roles" ON public.formulas;
+CREATE POLICY "formulas_insert_company_roles"
+ON public.formulas
+FOR INSERT
+TO authenticated
+WITH CHECK (
   public.is_company_member(company_id)
-  and (
+  AND (
     public.is_company_owner(company_id)
-    or public.has_company_role(company_id, 'admin')
-    or public.has_company_role(company_id, 'coach')
+    OR public.has_company_role(company_id, 'admin')
+    OR public.has_company_role(company_id, 'coach')
   )
 );
 
--- UPDATE: admin/coach/owner can update
-drop policy if exists "formulas_update_company_roles" on public.formulas;
-create policy "formulas_update_company_roles"
-on public.formulas
-for update
-to authenticated
-using (
+-- UPDATE: ADMIN/COACH/OWNER CAN UPDATE
+DROP POLICY IF EXISTS "formulas_update_company_roles" ON public.formulas;
+CREATE POLICY "formulas_update_company_roles"
+ON public.formulas
+FOR UPDATE
+TO authenticated
+USING (
   public.is_company_member(company_id)
-  and (
+  AND (
     public.is_company_owner(company_id)
-    or public.has_company_role(company_id, 'admin')
-    or public.has_company_role(company_id, 'coach')
+    OR public.has_company_role(company_id, 'admin')
+    OR public.has_company_role(company_id, 'coach')
   )
 )
-with check (
+WITH CHECK (
   public.is_company_member(company_id)
-  and (
+  AND (
     public.is_company_owner(company_id)
-    or public.has_company_role(company_id, 'admin')
-    or public.has_company_role(company_id, 'coach')
+    OR public.has_company_role(company_id, 'admin')
+    OR public.has_company_role(company_id, 'coach')
   )
 );
 
--- DELETE: usually restrict a bit more
-drop policy if exists "formulas_delete_admin_owner" on public.formulas;
-create policy "formulas_delete_admin_owner"
-on public.formulas
-for delete
-to authenticated
-using (
+-- DELETE: USUALLY RESTRICT A BIT MORE
+DROP POLICY IF EXISTS "formulas_delete_admin_owner" ON public.formulas;
+CREATE POLICY "formulas_delete_admin_owner"
+ON public.formulas
+FOR DELETE
+TO authenticated
+USING (
   public.is_company_member(company_id)
-  and (
+  AND (
     public.is_company_owner(company_id)
-    or public.has_company_role(company_id, 'admin')
+    OR public.has_company_role(company_id, 'admin')
   )
 );
 
-
--- SELECT: admin, owner or coach can read
-drop policy if exists "coach_formulas_overrides_select_company_member" on public.coach_formulas_overrides;
-create policy "coach_formulas_overrides_select_company_member"
-on public.coach_formulas_overrides
-for select
-to authenticated
-using (
+-- SELECT: ADMIN, OWNER OR COACH CAN READ
+DROP POLICY IF EXISTS "coach_formulas_overrides_select_company_member" ON public.coach_formulas_overrides;
+CREATE POLICY "coach_formulas_overrides_select_company_member"
+ON public.coach_formulas_overrides
+FOR SELECT
+TO authenticated
+USING (
   public.is_company_owner(company_id)
-	or public.has_company_role(company_id, 'admin')
-	or auth.uid() = coach_user_id
+  OR public.has_company_role(company_id, 'admin')
+  OR auth.uid() = coach_user_id
 );
 
--- INSERT: coach can create
-drop policy if exists "coach_formulas_overrides_insert_company_roles" on public.coach_formulas_overrides;
-create policy "coach_formulas_overrides_insert_company_roles"
-on public.coach_formulas_overrides
-for insert
-to authenticated
-with check (
+-- INSERT: COACH CAN CREATE
+DROP POLICY IF EXISTS "coach_formulas_overrides_insert_company_roles" ON public.coach_formulas_overrides;
+CREATE POLICY "coach_formulas_overrides_insert_company_roles"
+ON public.coach_formulas_overrides
+FOR INSERT
+TO authenticated
+WITH CHECK (
   public.is_company_member(company_id)
-  and (
-   auth.uid() = coach_user_id
-  )
-);
-
--- UPDATE: coach can update
-drop policy if exists "coach_formulas_overrides_update_company_roles" on public.coach_formulas_overrides;
-create policy "coach_formulas_overrides_update_company_roles"
-on public.coach_formulas_overrides
-for update
-to authenticated
-using (
-  public.is_company_member(company_id)
-  and (
-    auth.uid() = coach_user_id
-  )
-)
-with check (
-  public.is_company_member(company_id)
-  and (
-   auth.uid() = coach_user_id
-  )
-);
-
--- DELETE: usually restrict a bit more
-drop policy if exists "coach_formulas_overrides_delete_company_roles" on public.coach_formulas_overrides;
-create policy "coach_formulas_overrides_delete_company_roles"
-on public.coach_formulas_overrides
-for delete
-to authenticated
-using (
-  public.is_company_member(company_id)
-  and (
+  AND (
     auth.uid() = coach_user_id
   )
 );
+
+-- UPDATE: COACH CAN UPDATE
+DROP POLICY IF EXISTS "coach_formulas_overrides_update_company_roles" ON public.coach_formulas_overrides;
+CREATE POLICY "coach_formulas_overrides_update_company_roles"
+ON public.coach_formulas_overrides
+FOR UPDATE
+TO authenticated
+USING (
+  public.is_company_member(company_id)
+  AND (
+    auth.uid() = coach_user_id
+  )
+)
+WITH CHECK (
+  public.is_company_member(company_id)
+  AND (
+    auth.uid() = coach_user_id
+  )
+);
+
+-- DELETE: USUALLY RESTRICT A BIT MORE
+DROP POLICY IF EXISTS "coach_formulas_overrides_delete_company_roles" ON public.coach_formulas_overrides;
+CREATE POLICY "coach_formulas_overrides_delete_company_roles"
+ON public.coach_formulas_overrides
+FOR DELETE
+TO authenticated
+USING (
+  public.is_company_member(company_id)
+  AND (
+    auth.uid() = coach_user_id
+  )
+);
+
+-- VIEW
+DROP VIEW IF EXISTS public.v_effective_client_data_schema_formulas;
+CREATE OR REPLACE VIEW public.v_effective_client_data_schema_formulas AS
+SELECT
+  f.id,
+  f.company_id,
+  cfo.coach_user_id,
+  COALESCE(cfo.label, f.label) AS label,
+  f.key,
+  COALESCE(cfo.expression, f.expression) AS expression,
+  COALESCE(cfo.unit, f.unit) AS unit,
+  COALESCE(cfo.decimals, f.decimals) AS decimals,
+  COALESCE(cfo.description, f.description) AS description,
+  COALESCE(cfo.show_portal, f.show_portal) AS show_portal,
+  f.created_at,
+  GREATEST(f.updated_at, COALESCE(cfo.updated_at, f.updated_at)) AS updated_at,
+  f.id AS base_formula_id,
+  cfo.id AS coach_formula_override_id
+FROM public.formulas f
+LEFT JOIN public.coach_formulas_overrides cfo
+  ON cfo.company_formula_id = f.id;
+
+create or replace function public.get_effective_schema_formulas(
+  p_company_id uuid
+)
+returns table (
+  id uuid,
+  company_id uuid,
+  base_formula_id uuid,
+  coach_formula_override_id uuid,
+  label text,
+  key text,
+  expression text,
+  unit text,
+  decimals int,
+  description text,
+  show_portal boolean,
+  created_at timestamptz,
+  updated_at timestamptz
+)
+language sql
+security definer
+set search_path = public, auth
+stable
+as $$
+  select
+    f.id,
+    f.company_id,
+    f.id as base_formula_id,
+    cfo.id as coach_formula_override_id,
+    coalesce(cfo.label, f.label) as label,
+    f.key,
+    coalesce(cfo.expression, f.expression) as expression,
+    coalesce(cfo.unit, f.unit) as unit,
+    coalesce(cfo.decimals, f.decimals) as decimals,
+    coalesce(cfo.description, f.description) as description,
+    coalesce(cfo.show_portal, f.show_portal) as show_portal,
+    f.created_at,
+    greatest(f.updated_at, coalesce(cfo.updated_at, f.updated_at)) as updated_at
+  from public.formulas f
+  left join public.coach_formulas_overrides cfo
+    on cfo.company_formula_id = f.id
+   and cfo.company_id = f.company_id
+   and cfo.coach_user_id = auth.uid()
+  where f.company_id = p_company_id
+    and public.is_company_member(p_company_id)
+  order by f.created_at;
+$$;
+
+alter function public.get_effective_schema_formulas(uuid) owner to postgres;
+revoke all on function public.get_effective_schema_formulas(uuid) from public;
+grant execute on function public.get_effective_schema_formulas(uuid) to authenticated;
+
 
 -- =========================================================
 -- GRANTS
 -- =========================================================
 
-grant select, insert, update, delete
-on public.formulas
-to authenticated;
+GRANT SELECT
+ON public.v_effective_client_data_schema_formulas
+TO authenticated;
 
-grant select, insert, update, delete
-on public.coach_formulas_overrides
-to authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE
+ON public.formulas
+TO authenticated;
+
+GRANT SELECT, INSERT, UPDATE, DELETE
+ON public.coach_formulas_overrides
+TO authenticated;
+
+CREATE OR REPLACE FUNCTION public.save_company_formula_bundle(
+  p_payload jsonb
+)
+RETURNS jsonb
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, auth
+AS $$
+DECLARE
+  v_company_id uuid;
+  v_user_id uuid;
+  v_formula jsonb;
+  v_formula_id uuid;
+  v_input_formula_id uuid;
+  v_formula_count int := 0;
+BEGIN
+  v_user_id := auth.uid();
+  v_company_id := public.try_parse_uuid(p_payload->>'company_id');
+
+  IF v_company_id IS NULL THEN
+    RAISE EXCEPTION 'company_id is required';
+  END IF;
+
+  IF NOT (
+    public.is_company_owner(v_company_id)
+    OR public.has_company_role(v_company_id, 'admin')
+    OR public.has_company_role(v_company_id, 'staff')
+  ) THEN
+    RAISE EXCEPTION 'You do not have permission to save this schema';
+  END IF;
+
+  -- =====================================================
+  -- FORMULA
+  -- =====================================================
+  IF jsonb_typeof(p_payload->'formula') = 'object' THEN
+    v_formula := p_payload->'formula';
+    v_input_formula_id := public.try_parse_uuid(v_formula->>'id');
+
+    IF v_input_formula_id IS NOT NULL THEN
+      UPDATE public.formulas
+      SET
+        label = trim(v_formula->>'label'),
+        key = trim(v_formula->>'key'),
+        expression = trim(v_formula->>'expression'),
+        unit = nullif(trim(coalesce(v_formula->>'unit', '')), ''),
+        decimals = coalesce((v_formula->>'decimals')::int, 2),
+        description = nullif(trim(coalesce(v_formula->>'description', '')), ''),
+        show_portal = coalesce((v_formula->>'show_portal')::boolean, true),
+        updated_by = v_user_id
+      WHERE id = v_input_formula_id
+        AND company_id = v_company_id
+      RETURNING id INTO v_formula_id;
+
+      IF v_formula_id IS NULL THEN
+        RAISE EXCEPTION 'Formula % was not found for this company', v_input_formula_id;
+      END IF;
+    ELSE
+      INSERT INTO public.formulas (
+        company_id,
+        label,
+        key,
+        expression,
+        unit,
+        decimals,
+        description,
+        show_portal,
+        created_by,
+        updated_by
+      )
+      VALUES (
+        v_company_id,
+        trim(v_formula->>'label'),
+        trim(v_formula->>'key'),
+        trim(v_formula->>'expression'),
+        nullif(trim(coalesce(v_formula->>'unit', '')), ''),
+        coalesce((v_formula->>'decimals')::int, 2),
+        nullif(trim(coalesce(v_formula->>'description', '')), ''),
+        coalesce((v_formula->>'show_portal')::boolean, true),
+        v_user_id,
+        v_user_id
+      )
+      RETURNING id INTO v_formula_id;
+    END IF;
+
+    v_formula_count := 1;
+  END IF;
+
+  RETURN jsonb_build_object(
+    'ok', true,
+    'company_id', v_company_id,
+    'formulas_saved', v_formula_count,
+    'formula_id', v_formula_id
+  );
+END;
+$$;
+
+alter function public.save_company_formula_bundle(jsonb) owner to postgres;
+revoke all on function public.save_company_formula_bundle(jsonb) from public;
+grant execute on function public.save_company_formula_bundle(jsonb) to authenticated;
+
+CREATE OR REPLACE FUNCTION public.save_coach_formula_override_bundle(
+  p_payload jsonb
+)
+RETURNS jsonb
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, auth
+AS $$
+DECLARE
+  v_company_id uuid;
+  v_user_id uuid;
+
+  v_formula jsonb;
+
+  v_formula_id uuid;
+
+  v_formula_count int := 0;
+BEGIN
+  v_user_id := auth.uid();
+  v_company_id := public.try_parse_uuid(p_payload->>'company_id');
+
+  IF v_company_id IS NULL THEN
+    RAISE EXCEPTION 'company_id is required';
+  END IF;
+
+  IF NOT (
+    public.has_company_role(v_company_id, 'coach')
+    OR public.has_company_role(v_company_id, 'admin')
+    OR public.is_company_owner(v_company_id)
+  ) THEN
+    RAISE EXCEPTION 'You do not have permission to save coach schema overrides';
+  END IF;
+
+  -- FORMULA OVERRIDE (SINGLE OBJECT)
+  IF jsonb_typeof(p_payload->'formula') = 'object' THEN
+    v_formula := p_payload->'formula';
+    v_formula_id := public.try_parse_uuid(v_formula->>'id');
+
+    IF v_formula_id IS NULL THEN
+      RAISE EXCEPTION 'id is required for coach formula override';
+    END IF;
+
+    INSERT INTO public.coach_formulas_overrides (
+      company_id,
+      coach_user_id,
+      company_formula_id,
+      label,
+      key,
+      expression,
+      unit,
+      decimals,
+      description,
+      show_portal,
+      created_by,
+      updated_by
+    )
+    VALUES (
+      v_company_id,
+      v_user_id,
+      v_formula_id,
+      nullif(trim(coalesce(v_formula->>'label', '')), ''),
+      nullif(trim(coalesce(v_formula->>'key', '')), ''),
+      nullif(trim(coalesce(v_formula->>'expression', '')), ''),
+      nullif(trim(coalesce(v_formula->>'unit', '')), ''),
+      COALESCE((v_formula->>'decimals')::int, 2),
+      nullif(trim(coalesce(v_formula->>'description', '')), ''),
+      COALESCE((v_formula->>'show_portal')::boolean, true),
+      v_user_id,
+      v_user_id
+    )
+    ON CONFLICT (company_formula_id, coach_user_id)
+    DO UPDATE SET
+      label = EXCLUDED.label,
+      key = EXCLUDED.key,
+      expression = EXCLUDED.expression,
+      unit = EXCLUDED.unit,
+      decimals = EXCLUDED.decimals,
+      description = EXCLUDED.description,
+      show_portal = EXCLUDED.show_portal,
+      updated_by = v_user_id;
+
+    v_formula_count := 1;
+  END IF;
+
+  RETURN jsonb_build_object(
+    'ok', true,
+    'company_id', v_company_id,
+    'formula_saved', v_formula_count
+  );
+END;
+$$;
+
+alter function public.save_coach_formula_override_bundle(jsonb) owner to postgres;
+revoke all on function public.save_coach_formula_override_bundle(jsonb) from public;
+grant execute on function public.save_coach_formula_override_bundle(jsonb) to authenticated;

@@ -68,7 +68,8 @@ export function SchemaGroupModal({
       });
     } else {
       onSave({
-        id: `schema-group-${Date.now()}`,
+        id: crypto.randomUUID(),
+        isNew: true,
         name,
         description: description ? description : undefined,
         accentColor: "from-primary/20 to-primary/5",

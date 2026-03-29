@@ -7,11 +7,14 @@ import { buildVariableReferences } from "@/lib/formula/variable-utils";
 import { validateFormulaExpression } from "@/lib/formula/preview-engine";
 import type { FieldGroup } from "@/types/dashboard/coach-schema";
 import type { FormulaDefinition } from "@/types/dashboard/formula-builder";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { saveCoachFormulaOverrideAction, saveCoachFormulasOverrideBundleAction, saveCompanyFormulaAction, saveCompanyFormulasBundleAction } from "@/app/(app)/formulas/actions";
+import { SchemaMode } from "@/lib/db/helpers/resolve-schema-mode";
 
 type FormulaBuilderWorkspaceProps = {
   formulas: FormulaDefinition[];
   fieldGroups: FieldGroup[];
+  mode: SchemaMode;
   sampleValues: Record<string, number>;
 };
 
@@ -30,8 +33,11 @@ function emptyFormula(): FormulaDefinition {
 export function FormulaBuilderWorkspace({
   formulas,
   fieldGroups,
-  sampleValues,
+  mode,
+  sampleValues
 }: FormulaBuilderWorkspaceProps) {
+  const [isPending, startTransition] = useTransition();
+
   const [selectedFormulaId, setSelectedFormulaId] = useState("");
   const selectedFormula = formulas.find(
     (formula) => formula.id === selectedFormulaId,
@@ -89,9 +95,34 @@ export function FormulaBuilderWorkspace({
     [formula, formulas, selectedFormula],
   );
 
+  const onSubmit = () => {
+    startTransition(async () => {
+      console.log(formula);
+      if(!selectedFormulaId && mode === 'company_or_personal') {
+        const newFormula = {
+          ...formula,
+          isNew: true
+        }
+        const res = await saveCompanyFormulasBundleAction({formula: newFormula});
+        console.log(res, 'res');
+        if (!res.ok) {
+          console.error(res.message);
+          return;
+        }
+      } else {
+        const res = await saveCoachFormulasOverrideBundleAction({formula});
+        if (!res.ok) {
+          console.error(res.message);
+          return;
+        }
+      }
+    });
+  }
+
   return (
     <div className="grid gap-6 xl:grid-cols-[230px_minmax(0,1fr)_280px]">
       <FormulaList
+        mode={mode}
         formulas={formulas}
         selectedFormulaId={selectedFormulaId}
         onSelect={setSelectedFormulaId}
@@ -100,11 +131,10 @@ export function FormulaBuilderWorkspace({
 
       <FormulaEditor
         formula={formula}
+        isPending={isPending}
         isNew={!selectedFormulaId}
         onFormulaChange={onFormulaChange}
-        onSave={() => {
-          console.log(formula);
-        }}
+        onSave={onSubmit}
         validation={validation}
       />
 

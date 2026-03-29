@@ -1,17 +1,29 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
 import CardTitle from "@/components/Dashboard/overview-cards/cardTitle";
 import { FieldGroupCard } from "@/components/Dashboard/schema-builder/field-group-card";
 import { SchemaFieldModal } from "@/components/Dashboard/schema-builder/schema-field-modal";
 import { SchemaGroupModal } from "@/components/Dashboard/schema-builder/schema-group-modal";
 import { Button } from "@/components/ui-elements/button";
 import type { FieldGroup, SchemaField } from "@/types/dashboard/coach-schema";
+import { SchemaMode } from "@/lib/db/helpers/resolve-schema-mode";
+import { saveCoachSchemaOverrideBundleAction, saveCompanySchemaBundleAction } from "@/app/(app)/schema/actions";
 
 type ClientDataSchemaClientProps = {
   initialGroups: FieldGroup[];
   pageTitle?: string;
+  mode: SchemaMode;
 };
+
+function flattenFields(groups: FieldGroup[]) {
+  return groups.flatMap((group) =>
+    group.fields.map((field) => ({
+      ...field,
+      groupId: group.id,
+    })),
+  );
+}
 
 function normalizeField(field: SchemaField) {
   return {
@@ -65,7 +77,9 @@ function normalizeGroups(groups: FieldGroup[]) {
 export function ClientDataSchemaClient({
   initialGroups,
   pageTitle = "Client Data Configuration",
+  mode
 }: ClientDataSchemaClientProps) {
+  const [isPending, startTransition] = useTransition();
   const [groups, setGroups] = useState<FieldGroup[]>(initialGroups);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"add" | "edit">("add");
@@ -246,7 +260,7 @@ export function ClientDataSchemaClient({
   const onResetField = (field: SchemaField, groupId: string) => {
     const initialGroupContainingField = initialGroups.find((g) =>
       g.fields.some((f) => f.id === field.id),
-    );
+    ); 
 
     const initialField = initialGroupContainingField?.fields.find(
       (f) => f.id === field.id,
@@ -283,8 +297,16 @@ export function ClientDataSchemaClient({
   }
 
   const onSaveChanges = () => {
-    const current = JSON.stringify(normalizeGroups(groups))
-    console.log(current, 'current');
+    startTransition(async () => {
+      const fields = flattenFields(groups);
+
+      const res = mode === "company_or_personal" ? await saveCompanySchemaBundleAction({groups, validationRules: []})  : await saveCoachSchemaOverrideBundleAction({groups, fields, validationRules: []})
+
+      if (!res.ok) {
+        console.error(res.message);
+        return;
+      }
+    });
   };
 
   return (
@@ -305,7 +327,7 @@ export function ClientDataSchemaClient({
                 type="button"
                 size="small"
                 variant="primary"
-                label="Save Changes"
+                label={isPending ? "Saving..." : "Save Changes"}
                 onClick={onSaveChanges}
               />
             </div>

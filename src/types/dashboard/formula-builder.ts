@@ -1,4 +1,13 @@
+import { SchemaMode } from "@/lib/db/helpers/resolve-schema-mode";
+import { FieldGroup } from "./coach-schema";
+
 export type FormulaVariableSource = "field" | "formula" | "constant";
+
+export interface FullFormulas {
+  mode: SchemaMode,
+  groups: FieldGroup[],
+  formulas: FormulaDefinition[]
+}
 
 export interface FormulaVariableReference {
   key: string;
@@ -8,6 +17,7 @@ export interface FormulaVariableReference {
 
 export interface FormulaDefinition {
   id: string;
+  isNew?: boolean;
   label: string;
   key: string;
   unit?: string;
