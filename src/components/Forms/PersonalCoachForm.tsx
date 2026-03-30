@@ -1,34 +1,55 @@
 "use client";
 
 import { Controller, useForm } from "react-hook-form";
-import { ImageUpload } from "../FormElements/ImageUpload";
-import type { PersonalCoachFormData } from "@/types/forms";
+import { zodResolver } from "@hookform/resolvers/zod";
+
 import { SPECIALIZATIONS, AVAILABILITY_OPTIONS } from "@/data/dashboardForm";
 import InputGroup from "../FormElements/InputGroup";
 import { Select } from "../FormElements/select";
 import { TextAreaGroup } from "../FormElements/InputGroup/text-area";
 import { Button } from "../ui-elements/button";
-import {
-  validateEmail,
-  validatePhone,
-  validateRequired,
-} from "@/lib/forms/formValidation";
 import Header from "../FormElements/common/header";
+import { CreateCompanyCoachInput, CreateCompanyCoachSchema, CreateCompanyCoachValues } from "@/lib/validation/schemas/coach";
 
-export default function PersonalCoachForm() {
+type Props = {
+  onSubmit?: (values: CreateCompanyCoachValues) => Promise<void> | void;
+};
+
+export default function PersonalCoachForm({
+  onSubmit,
+}: Props) {
   const {
     register,
     control,
     handleSubmit,
-    setValue,
-    watch,
-    formState: { errors, isValid, isSubmitting },
-  } = useForm<PersonalCoachFormData>({ mode: "all" });
+    formState: { errors, isSubmitting },
+  } = useForm<CreateCompanyCoachInput, unknown, CreateCompanyCoachValues>({
+    resolver: zodResolver(CreateCompanyCoachSchema),
+    mode: "onChange",
+    defaultValues: {
+      first_name: "",
+      last_name: "",
+      email: "",
+      phone: "",
+      specialization: "",
+      certifications: "",
+      year_exp: undefined,
+      bio: "",
+      availability: "",
+      status: "active",
+    },
+  });
 
-  watch();
-
-  const onSubmit = (data: PersonalCoachFormData) => {
+  const handleFormSubmit = async (data: CreateCompanyCoachValues) => {
     console.log(data);
+
+    if (onSubmit) {
+      await onSubmit(data);
+    }
+  };
+
+  const onError = (error: unknown) => {
+    console.log(error, "error");
   };
 
   return (
@@ -39,72 +60,67 @@ export default function PersonalCoachForm() {
         subtitle="Onboard an independent personal trainer"
       />
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form
+        onSubmit={handleSubmit(handleFormSubmit, onError)}
+        className="space-y-4"
+      >
+
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <InputGroup
             type="text"
             label="First Name"
-            placeholder="Coach 1"
+            placeholder="Coach"
             required
-            inputProps={register("firstName", {
-              validate: (v) => validateRequired(v, "First name is required"),
-            })}
+            error={errors.first_name?.message}
+            inputProps={register("first_name")}
           />
+
           <InputGroup
             type="text"
             label="Last Name"
-            placeholder="Coach 1"
+            placeholder="Smith"
             required
-            inputProps={register("lastName", {
-              validate: (v) => validateRequired(v, "Last name is required"),
-            })}
+            error={errors.last_name?.message}
+            inputProps={register("last_name")}
           />
         </div>
-        <InputGroup
-          type="tel"
-          label="Contact Number"
-          placeholder="+230 5XXX XXXX"
-          required
-          inputProps={register("contactNumber", {
-            required: "Contact number is required",
-            validate: (v) => validatePhone(v),
-          })}
-        />
+
         <InputGroup
           type="email"
           label="Email"
           placeholder="coach@email.com"
           required
-          inputProps={register("email", {
-            required: "Email is required",
-            validate: (v) => validateEmail(v),
-          })}
+          error={errors.email?.message}
+          inputProps={register("email")}
+        />
+
+        <InputGroup
+          type="tel"
+          label="Phone Number"
+          placeholder="+230 5XXX XXXX"
+          required
+          inputProps={register("phone")}
+          error={errors?.phone?.message}
         />
 
         <Controller
           name="specialization"
           control={control}
-          rules={{ required: "Specialization is required" }}
           render={({ field }) => (
             <Select
-              label="Specialization / Role"
+              label="Specialization"
               placeholder="Select specialization"
               items={SPECIALIZATIONS.map((s) => ({ value: s, label: s }))}
               error={errors.specialization?.message}
-              selectProps={{ ...field, required: true }}
+              selectProps={{
+                ...field,
+                value: field.value ?? "",
+                required: true,
+              }}
             />
           )}
         />
-        <InputGroup
-          type="text"
-          label="Operating Location"
-          placeholder="e.g. Port Louis branch / Home visits / Online"
-          required
-          inputProps={register("operatingLocation", {
-            validate: (v) =>
-              validateRequired(v, "Operating location is required"),
-          })}
-        />
+
         <div className="my-6 flex items-center gap-3">
           <div className="h-px flex-1 bg-stroke dark:bg-dark-3" />
           <span className="text-body-xs font-medium uppercase tracking-wider text-dark-5 dark:text-dark-6">
@@ -112,81 +128,76 @@ export default function PersonalCoachForm() {
           </span>
           <div className="h-px flex-1 bg-stroke dark:bg-dark-3" />
         </div>
+
         <InputGroup
           type="text"
           label="Certifications"
           placeholder="e.g. ACE-CPT, NASM, CrossFit L2"
-          required
-          inputProps={register("certifications", {
-            validate: (v) => validateRequired(v, "Certifications are required"),
-          })}
+          error={errors.certifications?.message}
+          inputProps={register("certifications")}
         />
+
         <InputGroup
           type="number"
           label="Years of Experience"
           placeholder="5"
-          inputProps={{
-            ...register("yearsExperience", { valueAsNumber: true }),
-            min: 0,
-            max: 50,
-          }}
+          error={errors.year_exp?.message}
+          inputProps={register("year_exp")}
         />
-        <InputGroup
-          type="number"
-          label="Hourly Rate"
-          placeholder="150"
-          inputProps={{
-            ...register("hourlyRate", { valueAsNumber: true }),
-            min: 0,
-          }}
-        />
-        <InputGroup
-          type="text"
-          label="Languages Spoken"
-          placeholder="English, French, Kreol Morisien"
-          required
-          inputProps={register("languages", {
-            validate: (v) => validateRequired(v, "Languages are required"),
-          })}
-        />
+
         <TextAreaGroup
           label="Bio / Profile Summary"
           placeholder="Brief introduction about this coach's training philosophy, background, and approach..."
-          textareaProps={register("bio", { required: "Bio is required" })}
+          error={errors.bio?.message}
+          textareaProps={register("bio")}
         />
-        <ImageUpload
-          label="Profile Photo"
-          optional
-          accept="image/*"
-          emptyStateText={
-            <>
-              Upload coach photo -{" "}
-              <strong className="text-dark dark:text-white">browse</strong>
-            </>
-          }
-          hint="PNG, JPG, SVG - max 5MB"
-          registerReturn={register("profilePhoto")}
-          setValue={setValue as (name: string, value?: FileList) => void}
-        />
+
         <Controller
           name="availability"
           control={control}
-          rules={{ required: "Availability is required" }}
           render={({ field }) => (
             <Select
               label="Availability"
               placeholder="Select availability"
-              items={AVAILABILITY_OPTIONS.map((a) => ({ value: a, label: a }))}
+              items={AVAILABILITY_OPTIONS.map((a) => ({
+                value: a,
+                label: a,
+              }))}
               error={errors.availability?.message}
-              selectProps={{ ...field, required: true }}
+              selectProps={{
+                ...field,
+                value: field.value ?? "",
+                required: true,
+              }}
             />
           )}
         />
+
+        <Controller
+          name="status"
+          control={control}
+          render={({ field }) => (
+            <Select
+              label="Status"
+              placeholder="Select status"
+              items={[
+                { value: "active", label: "Active" },
+                { value: "inactive", label: "Inactive" },
+              ]}
+              error={errors.status?.message}
+              selectProps={{
+                ...field,
+                value: field.value ?? "active",
+              }}
+            />
+          )}
+        />
+
         <Button
           type="submit"
-          label="Register"
+          label={isSubmitting ? "Creating..." : "Register"}
           className="w-full"
-          disabled={!isValid || isSubmitting}
+          disabled={isSubmitting}
         />
       </form>
     </div>

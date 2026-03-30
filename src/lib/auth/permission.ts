@@ -7,7 +7,9 @@ import { ROUTES } from "@/constants/route";
 export async function requirePermission(permission: string) {
   const auth = await getAuthContext();
 
+  console.log(auth?.permissions)
   if(auth?.isOwner) return auth;
+
 
   const authPermissions = new Set(auth?.permissions as string[]);
   

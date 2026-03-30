@@ -5,9 +5,15 @@ import { COMPANY_COACH_ROWS } from "@/data/company-coaches";
 import type { CompanyCoachRow } from "@/types/dashboard/company-directory";
 import type { ColumnDef } from "@tanstack/react-table";
 import { CoachTable } from "./components/coach-table";
+import { getCoachCompanyAction } from "./actions";
 
 export default async function CompanyCoachesPage() {
-  const coaches: CompanyCoachRow[] = await COMPANY_COACH_ROWS;
+  const coaches = await getCoachCompanyAction();
+
+  if(!coaches.ok) {
+    return <div>{coaches.message}</div>
+  }
+
   return (
     <>
       <div className="mb-7 flex items-center justify-end">
@@ -18,7 +24,7 @@ export default async function CompanyCoachesPage() {
         />
       </div>
 
-      <CoachTable coaches={coaches}/>
+      <CoachTable coaches={coaches.data as CompanyCoachRow[]}/>
     </>
   );
 }

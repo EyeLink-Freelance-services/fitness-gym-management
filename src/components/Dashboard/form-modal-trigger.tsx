@@ -10,6 +10,9 @@ import MedicalNotesForm from "@/components/Forms/MedicalNotesForm";
 import PersonalCoachForm from "@/components/Forms/PersonalCoachForm";
 import { Button } from "@/components/ui-elements/button";
 import { FormModalTriggerProps } from "@/types/forms";
+import { CreateCompanyCoachValues } from "@/lib/validation/schemas/coach";
+import { createCoachAction } from "@/app/(app)/coaches/actions";
+import { toast } from "sonner";
 
 export function FormModalTrigger({
   buttonLabel,
@@ -73,7 +76,25 @@ export function FormModalTrigger({
                       <AssignClientForm onSuccess={close} />
                     )}
                     {formType === "company" && <CompanyForm onSuccess={close} />}
-                    {formType === "personal" && <PersonalCoachForm />}
+                    {formType === "personal" && <PersonalCoachForm 
+                      onSubmit={async (values: CreateCompanyCoachValues) => {
+                        try {
+                          const res = await createCoachAction(values);
+
+                          if(!res.ok) {
+                            console.log(res.message, 'erooro')
+                          } else {
+                            console.log("Coach created:", res.data);
+                            toast.success("Coach created successfully");
+                          }
+
+
+                        } catch (err: any) {
+                          console.error(err);
+                          toast.error(err.message || "failed to create");
+                        }
+                      }}
+                    />}
                     {formType === "announcement" && (
                       <AnnouncementForm onSuccess={close} />
                     )}

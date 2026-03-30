@@ -2,6 +2,7 @@ import type { StatusTone } from "@/types/shared";
 
 export interface CompanyCoachRow {
   id: string;
+  company_id: string;
   user_id: string;
   first_name: string;
   last_name: string
