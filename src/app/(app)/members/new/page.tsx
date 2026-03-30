@@ -3,6 +3,7 @@
 import ClientForm from "@/components/Forms/ClientForm";
 import { ArrowLeftIcon } from "@/components/IconsCollection/icons";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function NewMemberPage() {
   const router = useRouter();
@@ -13,7 +14,7 @@ export default function NewMemberPage() {
         onClick={() => router.back()}
         className="mb-5 cursor-pointer"
       />
-      <ClientForm />
+      <ClientForm onSuccess={() => toast.success('Client created successfully')} />
     </div>
   );
 }

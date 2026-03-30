@@ -2,11 +2,20 @@ import type { StatusTone } from "@/types/shared";
 
 export interface CompanyCoachRow {
   id: string;
-  name: string;
+  user_id: string;
+  first_name: string;
+  last_name: string
+  specialization: string;
+  certifications?: string;
+  year_exp?: number;
+  bio?: string;
+  availability: string;
   email: string;
-  clients: number;
+  phone: string;
+  clients?: number;
   status: string;
-  statusTone: StatusTone;
+  created_by?: string;
+  updated_by?: string;
 }
 
 export interface CompanyClientRow {

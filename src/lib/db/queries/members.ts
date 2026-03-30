@@ -52,6 +52,7 @@ export async function listMembers() {
   const { data, error } = await supabase
     .from(TABLE)
     .select("*")
+    .eq("company_id", auth.companyId)
     .order("created_at", { ascending: false });
 
   if (error) throw error;

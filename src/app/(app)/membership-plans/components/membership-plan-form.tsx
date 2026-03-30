@@ -25,11 +25,7 @@ type Props = {
 };
 
 export default function MembershipPlanForm({ form }: Props) {
-  const {
-    fields,
-    append,
-    remove,
-  } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "features",
   });
@@ -38,7 +34,7 @@ export default function MembershipPlanForm({ form }: Props) {
   const durationValue = form.watch("duration_days");
 
   return (
-    <div className="grid gap-6 rounded-2xl border border-gray-200 bg-white p-4 md:p-6">
+    <div className="grid gap-6 rounded-2xl border border-gray-200 bg-white p-4 md:p-6 dark:border-gray-700 dark:bg-gray-dark">
       <Header
         label="- Membership Plan"
         title="Plan Details"
@@ -51,6 +47,7 @@ export default function MembershipPlanForm({ form }: Props) {
         placeholder="Basic Monthly"
         error={form.formState.errors.name?.message}
         inputProps={form.register("name")}
+        className="dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:placeholder-gray-400"
       />
 
       <div className="grid gap-4 md:grid-cols-2">
@@ -64,6 +61,7 @@ export default function MembershipPlanForm({ form }: Props) {
             step: "0.01",
             min: "0",
           }}
+          className="dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:placeholder-gray-400"
         />
 
         <InputGroup
@@ -76,6 +74,7 @@ export default function MembershipPlanForm({ form }: Props) {
             step: "0.01",
             min: "0",
           }}
+          className="dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:placeholder-gray-400"
         />
       </div>
 
@@ -92,23 +91,17 @@ export default function MembershipPlanForm({ form }: Props) {
             value: isMonthly ? "monthly" : "custom",
             onChange: (e) => {
               const monthly = e.target.value === "monthly";
-
-              form.setValue("is_monthly", monthly, {
-                shouldValidate: true,
-                shouldDirty: true,
-              });
+              form.setValue("is_monthly", monthly, { shouldValidate: true, shouldDirty: true });
 
               if (monthly) {
                 const current = Number(form.getValues("duration_days"));
                 if (!current || current % 30 !== 0) {
-                  form.setValue("duration_days", 30, {
-                    shouldValidate: true,
-                    shouldDirty: true,
-                  });
+                  form.setValue("duration_days", 30, { shouldValidate: true, shouldDirty: true });
                 }
               }
             },
           }}
+          className="dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:placeholder-gray-400"
         />
 
         {isMonthly ? (
@@ -126,12 +119,9 @@ export default function MembershipPlanForm({ form }: Props) {
             ]}
             selectProps={{
               value: String(durationValue ?? 30),
-              onChange: (e) =>
-                form.setValue("duration_days", Number(e.target.value), {
-                  shouldValidate: true,
-                  shouldDirty: true,
-                }),
+              onChange: (e) => form.setValue("duration_days", Number(e.target.value), { shouldValidate: true, shouldDirty: true }),
             }}
+            className="dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:placeholder-gray-400"
           />
         ) : (
           <InputGroup
@@ -144,31 +134,27 @@ export default function MembershipPlanForm({ form }: Props) {
               min: "1",
               step: "1",
             }}
+            className="dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:placeholder-gray-400"
           />
         )}
       </div>
 
-      <div>
-        <TextAreaGroup
-          label="Description"
-          placeholder="Enter description"
-          error={form.formState.errors.description?.message}
-          textareaProps={{
-            ...form.register("description"),
-            rows: 4,
-          }}
-        />
-      </div>
+      <TextAreaGroup
+        label="Description"
+        placeholder="Enter description"
+        error={form.formState.errors.description?.message}
+        textareaProps={{
+          ...form.register("description"),
+          rows: 4,
+          className: "dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:placeholder-gray-400",
+        }}
+      />
 
       <div>
-        <Label
-          as="label"
-          htmlFor="features-0"
-          value="Features"
-        />
+        <Label as="label" htmlFor="features-0" value="Features" className="dark:text-gray-200" />
 
         <div className="mb-2 mt-3 flex items-center justify-between">
-          <span className="text-sm text-gray-600">
+          <span className="text-sm text-gray-600 dark:text-gray-300">
             Define available features for this plan
           </span>
 
@@ -176,7 +162,7 @@ export default function MembershipPlanForm({ form }: Props) {
             <button
               type="button"
               onClick={() => append({ value: "" })}
-              className="rounded-lg border px-3 py-1 text-sm"
+              className="rounded-lg border px-3 py-1 text-sm dark:border-gray-600 dark:text-white"
             >
               Add feature
             </button>
@@ -184,7 +170,7 @@ export default function MembershipPlanForm({ form }: Props) {
             <button
               type="button"
               onClick={() => form.resetField("features")}
-              className="rounded-lg border px-3 py-1 text-sm"
+              className="rounded-lg border px-3 py-1 text-sm dark:border-gray-600 dark:text-white"
             >
               Reset Feature
             </button>
@@ -202,13 +188,14 @@ export default function MembershipPlanForm({ form }: Props) {
                   placeholder={`Feature ${index + 1}`}
                   error={form.formState.errors.features?.[index]?.value?.message}
                   inputProps={form.register(`features.${index}.value`)}
+                  className="dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:placeholder-gray-400"
                 />
               </div>
 
               <button
                 type="button"
                 onClick={() => remove(index)}
-                className="h-fit rounded-lg border px-3 py-3 text-sm"
+                className="h-fit rounded-lg border px-3 py-3 text-sm dark:border-gray-600 dark:text-white"
               >
                 Remove
               </button>
@@ -216,28 +203,24 @@ export default function MembershipPlanForm({ form }: Props) {
           ))}
         </div>
 
-        {"message" in (form.formState.errors.features ?? {}) &&
-          typeof form.formState.errors.features?.message === "string" && (
-            <p className="mt-1 text-body-sm text-red-500 dark:text-red-400">
-              {form.formState.errors.features.message}
-            </p>
-          )}
+        {form.formState.errors.features?.message && (
+          <p className="mt-1 text-body-sm text-red-500 dark:text-red-400">
+            {form.formState.errors.features.message}
+          </p>
+        )}
       </div>
 
       <div className="flex items-center gap-2">
         <input
           id="is_active"
           type="checkbox"
-          className="h-4 w-4 rounded border-gray-300"
+          className="h-4 w-4 rounded border-gray-300 dark:bg-gray-800 dark:border-gray-600"
           checked={!!form.watch("is_active")}
           onChange={(e) =>
-            form.setValue("is_active", e.target.checked, {
-              shouldValidate: true,
-              shouldDirty: true,
-            })
+            form.setValue("is_active", e.target.checked, { shouldValidate: true, shouldDirty: true })
           }
         />
-        <label htmlFor="is_active" className="text-sm text-gray-700">
+        <label htmlFor="is_active" className="text-sm text-gray-700 dark:text-gray-200">
           Active plan
         </label>
       </div>

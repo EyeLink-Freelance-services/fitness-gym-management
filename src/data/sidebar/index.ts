@@ -8,21 +8,21 @@ export const NAV_DATA: NavSection[] = [
     label: "MAIN MENU",
     items: [
       {
-        title: "Dashboard",
+        title: "Overview",
         icon: Icons.HomeIcon,
         items: [
           {
-            title: "General Overview",
+            title: "General",
             url: ROUTES.DASHBOARD.COMPANY.ROOT,
             permission: AuthPermission.dashboard.company
           },
           {
-            title: "Payment Overview",
+            title: "Payment",
             url: ROUTES.DASHBOARD.COMPANY.PAYMENT,
             permission: AuthPermission.dashboard.company
           },
           {
-            title: "Memberships Plan Overview",
+            title: "Memberships Plan",
             url: ROUTES.DASHBOARD.COMPANY.MEMBERSHIP,
             permission: AuthPermission.dashboard.company
           },
@@ -30,11 +30,11 @@ export const NAV_DATA: NavSection[] = [
         permission: AuthPermission.dashboard.company
       },
       {
-        title: "Coach Dashboard",
+        title: "Overview",
         icon: Icons.HomeIcon,
         items: [
           {
-            title: "My Clients Overview",
+            title: "My Clients",
             url: ROUTES.CLIENTS.LIST_CLIENT,
             permission: AuthPermission.dashboard.companyCoach
           },
@@ -44,7 +44,7 @@ export const NAV_DATA: NavSection[] = [
           //   permission: AuthPermission.dashboard.companyCoach
           // },
           {
-            title: "Overview",
+            title: "General",
             url: ROUTES.DASHBOARD.PERSONAL_COACH.ROOT,
             permission: AuthPermission.dashboard.personalCoach
           },
