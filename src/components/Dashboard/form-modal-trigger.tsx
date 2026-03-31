@@ -13,12 +13,19 @@ import { FormModalTriggerProps } from "@/types/forms";
 import { CreateCompanyCoachValues } from "@/lib/validation/schemas/coach";
 import { createCoachAction } from "@/app/(app)/coaches/actions";
 import { toast } from "sonner";
+import { useAuth } from "@/app/context/auth-context";
+import { AuthPermission } from "@/constants/permission";
 
 export function FormModalTrigger({
   buttonLabel,
   formType,
   size,
 }: FormModalTriggerProps) {
+  const auth = useAuth();
+  const authPermissions = new Set(auth?.permissions as string[]);
+  const showClientsBtn = authPermissions.has(AuthPermission.clients.edit);
+  console.log(showClientsBtn, 'showClientsBtn');
+
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const titleId = useId();
@@ -45,6 +52,10 @@ export function FormModalTrigger({
       document.body.style.overflow = previousOverflow;
     };
   }, [isOpen]);
+
+  if(!showClientsBtn) {
+    return;
+  }
 
   return (
     <>

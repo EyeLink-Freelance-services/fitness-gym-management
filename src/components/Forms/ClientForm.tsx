@@ -37,7 +37,7 @@ type Props = {
 };
 
 export default function ClientForm({ onSuccess }: Props) {
-  const { id } = useCompany();
+  const { id, mode } = useCompany();
   const [coaches, setCoaches] = useState<ICoaches[]>([]);
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -63,15 +63,17 @@ export default function ClientForm({ onSuccess }: Props) {
 
   useEffect(() => {
     const getCoaches = async () => {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/coaches`,
-        { method: "GET", cache: "no-store" },
-      );
-      const json = await res.json();
-      if (json.ok) {
-        setCoaches(json.data);
-      }
-    };
+      if(mode !== 'personal') {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/coaches`,
+          { method: "GET", cache: "no-store" },
+        );
+        const json = await res.json();
+        if (json.ok) {
+          setCoaches(json.data);
+        }
+      };
+    }
     getCoaches();
   }, []);
 
@@ -241,13 +243,15 @@ export default function ClientForm({ onSuccess }: Props) {
           textareaProps={register("medical_notes")}
         />
 
-        <Select
-          label={<Label value="Assigned Coach" optional />}
-          placeholder="No coach assigned"
-          items={coachItems}
-          selectProps={register("assigned_coach_id")}
-          error={errors?.assigned_coach_id?.message}
-        />
+        { mode !== 'personal' && (
+          <Select
+            label={<Label value="Assigned Coach" optional />}
+            placeholder="No coach assigned"
+            items={coachItems}
+            selectProps={register("assigned_coach_id")}
+            error={errors?.assigned_coach_id?.message}
+          />
+        )}
 
         <MembershipPlansSelector
           selectedPlan={selectedPlan}

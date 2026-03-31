@@ -501,3 +501,5 @@ group by
   ccd.status,
   ccd.created_by,
   ccd.updated_by;
+
+  grant select on public.v_company_coaches_complete to authenticated;

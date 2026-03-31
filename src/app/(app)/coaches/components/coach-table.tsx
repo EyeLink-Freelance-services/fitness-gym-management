@@ -82,7 +82,7 @@ export function CoachTable({ coaches }: { coaches: CompanyCoachRow[] }) {
 
   return (
     <DataTable
-      title="Clients"
+      title="Coaches"
       description="All registered coaches"
       data={coaches}
       columns={columns}

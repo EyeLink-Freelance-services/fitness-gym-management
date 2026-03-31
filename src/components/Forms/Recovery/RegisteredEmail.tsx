@@ -24,13 +24,13 @@ export default function RegisteredEmail({
 
       <Button type="submit" label="Send Reset Link" className="w-full" />
 
-      <div className="mt-4 text-center text-body-sm text-dark-5">
+      <div className="mt-4 text-center text-body-sm text-slate-500 dark:text-slate-400">
         <Button
           type="button"
           label="← Back to login"
           variant="outlineDark"
           size="small"
-          className="w-auto border-0 bg-transparent !px-0 !py-0 text-primary hover:bg-transparent hover:underline"
+          className="w-auto border-0 bg-transparent !px-0 !py-0 text-primary hover:bg-transparent hover:underline dark:text-blue-400"
           onClick={onBackToLogin}
         />
       </div>

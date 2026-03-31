@@ -34,8 +34,10 @@ export default function RecoveryNewPassword({
         {[0, 1, 2, 3].map((i) => (
           <div
             key={i}
-            className={`h-0.5 flex-1 rounded-full bg-stroke transition-colors ${
-              i < strengthScore ? "!bg-primary" : ""
+            className={`h-0.5 flex-1 rounded-full transition-colors ${
+              i < strengthScore
+                ? "bg-primary dark:bg-blue-400"
+                : "bg-slate-200 dark:bg-slate-700"
             }`}
           />
         ))}
