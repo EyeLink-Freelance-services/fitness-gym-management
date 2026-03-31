@@ -1,60 +1,64 @@
-do $$ begin
- create type public.coach_status as enum ('active', 'inactive');
-exception when duplicate_object then null; end $$;
+DO $$
+BEGIN
+  CREATE TYPE public.coach_status AS ENUM ('active', 'inactive');
+EXCEPTION
+  WHEN duplicate_object THEN NULL;
+END
+$$;
 
 -- =========================================================
 -- TABLE
 -- =========================================================
 
-DROP TABLE IF EXISTS public.company_coach_details cascade; 
+DROP TABLE IF EXISTS public.company_coach_details CASCADE;
 
-create table if not exists public.company_coach_details (
-  id uuid primary key default gen_random_uuid(),
-  company_user_id uuid not null references public.company_user(id) on delete cascade,
-  email text not null,
-  specialization text not null,
-  certifications text,
-  year_exp int,
-  bio text,
-  availability text not null,
-  status public.coach_status not null default 'active',
-  created_by uuid references public.profiles(id) on delete set null,
-  updated_by uuid references public.profiles(id) on delete set null,
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now(),
-  deleted_at timestamptz,
-  constraint chk_company_coach_details_year_exp
-    check (year_exp is null or year_exp >= 0)
+CREATE TABLE IF NOT EXISTS public.company_coach_details (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  company_user_id UUID NOT NULL REFERENCES public.company_user(id) ON DELETE CASCADE,
+  email TEXT NOT NULL,
+  specialization TEXT NOT NULL,
+  certifications TEXT,
+  year_exp INT,
+  bio TEXT,
+  availability TEXT NOT NULL,
+  status public.coach_status NOT NULL DEFAULT 'active',
+  created_by UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
+  updated_by UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  deleted_at TIMESTAMPTZ,
+  CONSTRAINT chk_company_coach_details_year_exp
+    CHECK (year_exp IS NULL OR year_exp >= 0)
 );
 
 -- =========================================================
 -- INDEXES
 -- =========================================================
 
-drop index if exists uq_company_coach_details_company_user_active;
-create unique index if not exists uq_company_coach_details_company_user_active
-  on public.company_coach_details(company_user_id)
-  where deleted_at is null;
+DROP INDEX IF EXISTS uq_company_coach_details_company_user_active;
+CREATE UNIQUE INDEX IF NOT EXISTS uq_company_coach_details_company_user_active
+  ON public.company_coach_details(company_user_id)
+  WHERE deleted_at IS NULL;
 
-drop index if exists idx_company_coach_details_company_user_id;
-create index if not exists idx_company_coach_details_company_user_id
-  on public.company_coach_details(company_user_id);
+DROP INDEX IF EXISTS idx_company_coach_details_company_user_id;
+CREATE INDEX IF NOT EXISTS idx_company_coach_details_company_user_id
+  ON public.company_coach_details(company_user_id);
 
-drop index if exists idx_company_coach_details_email;
-create index if not exists idx_company_coach_details_email
-  on public.company_coach_details(email);
+DROP INDEX IF EXISTS idx_company_coach_details_email;
+CREATE INDEX IF NOT EXISTS idx_company_coach_details_email
+  ON public.company_coach_details(email);
 
-drop index if exists idx_company_coach_details_status;
-create index if not exists idx_company_coach_details_status
-  on public.company_coach_details(status);
+DROP INDEX IF EXISTS idx_company_coach_details_status;
+CREATE INDEX IF NOT EXISTS idx_company_coach_details_status
+  ON public.company_coach_details(status);
 
-drop index if exists idx_company_coach_details_deleted_at;
-create index if not exists idx_company_coach_details_deleted_at
-  on public.company_coach_details(deleted_at);
+DROP INDEX IF EXISTS idx_company_coach_details_deleted_at;
+CREATE INDEX IF NOT EXISTS idx_company_coach_details_deleted_at
+  ON public.company_coach_details(deleted_at);
 
-drop index if exists idx_company_coach_details_company_user_deleted;
-create index if not exists idx_company_coach_details_company_user_deleted
-  on public.company_coach_details(company_user_id, deleted_at);
+DROP INDEX IF EXISTS idx_company_coach_details_company_user_deleted;
+CREATE INDEX IF NOT EXISTS idx_company_coach_details_company_user_deleted
+  ON public.company_coach_details(company_user_id, deleted_at);
 
 -- =========================================================
 -- GRANTS
@@ -77,293 +81,267 @@ FOR EACH ROW
 EXECUTE FUNCTION public.set_updated_at();
 
 -- =========================================================
--- ENABLE RLS
+-- POLICIES
 -- =========================================================
 
 ALTER TABLE public.company_coach_details ENABLE ROW LEVEL SECURITY;
 
--- =========================================================
--- POLICIES
--- =========================================================
+DROP POLICY IF EXISTS "company_coach_details_select"
+ON public.company_coach_details;
 
-drop policy if exists "company_coach_details_select"
-on public.company_coach_details;
-
-create policy "company_coach_details_select"
-on public.company_coach_details
-for select
-to authenticated
-using (
-  deleted_at is null
-  and exists (
-    select 1
-    from public.company_user cu
-    where cu.id = company_coach_details.company_user_id
-      and public.is_company_member(cu.company_id)
+CREATE POLICY "company_coach_details_select"
+ON public.company_coach_details
+FOR SELECT
+TO authenticated
+USING (
+  deleted_at IS NULL
+  AND EXISTS (
+    SELECT 1
+    FROM public.company_user cu
+    WHERE cu.id = company_coach_details.company_user_id
+      AND public.is_company_member(cu.company_id)
   )
 );
 
-drop policy if exists "company_coach_details_insert"
-on public.company_coach_details;
+DROP POLICY IF EXISTS "company_coach_details_insert"
+ON public.company_coach_details;
 
-create policy "company_coach_details_insert"
-on public.company_coach_details
-for insert
-to authenticated
-with check (
-  exists (
-    select 1
-    from public.company_user cu
-    where cu.id = company_coach_details.company_user_id
-      and public.is_company_member(cu.company_id)
-      and (
+CREATE POLICY "company_coach_details_insert"
+ON public.company_coach_details
+FOR INSERT
+TO authenticated
+WITH CHECK (
+  EXISTS (
+    SELECT 1
+    FROM public.company_user cu
+    WHERE cu.id = company_coach_details.company_user_id
+      AND public.is_company_member(cu.company_id)
+      AND (
         public.is_company_owner(cu.company_id)
-        or public.has_company_role(cu.company_id, 'admin')
-        or public.has_company_role(cu.company_id, 'staff')
+        OR public.has_company_role(cu.company_id, 'admin')
+        OR public.has_company_role(cu.company_id, 'staff')
       )
   )
 );
 
-drop policy if exists "company_coach_details_update"
-on public.company_coach_details;
+DROP POLICY IF EXISTS "company_coach_details_update"
+ON public.company_coach_details;
 
-create policy "company_coach_details_update"
-on public.company_coach_details
-for update
-to authenticated
-using (
-  deleted_at is null
-  and exists (
-    select 1
-    from public.company_user cu
-    where cu.id = company_coach_details.company_user_id
-      and public.is_company_member(cu.company_id)
-      and (
+CREATE POLICY "company_coach_details_update"
+ON public.company_coach_details
+FOR UPDATE
+TO authenticated
+USING (
+  deleted_at IS NULL
+  AND EXISTS (
+    SELECT 1
+    FROM public.company_user cu
+    WHERE cu.id = company_coach_details.company_user_id
+      AND public.is_company_member(cu.company_id)
+      AND (
         public.is_company_owner(cu.company_id)
-        or public.has_company_role(cu.company_id, 'admin')
-        or public.has_company_role(cu.company_id, 'staff')
+        OR public.has_company_role(cu.company_id, 'admin')
+        OR public.has_company_role(cu.company_id, 'staff')
       )
   )
 )
-with check (
-  exists (
-    select 1
-    from public.company_user cu
-    where cu.id = company_coach_details.company_user_id
-      and public.is_company_member(cu.company_id)
-      and (
+WITH CHECK (
+  EXISTS (
+    SELECT 1
+    FROM public.company_user cu
+    WHERE cu.id = company_coach_details.company_user_id
+      AND public.is_company_member(cu.company_id)
+      AND (
         public.is_company_owner(cu.company_id)
-        or public.has_company_role(cu.company_id, 'admin')
-        or public.has_company_role(cu.company_id, 'staff')
+        OR public.has_company_role(cu.company_id, 'admin')
+        OR public.has_company_role(cu.company_id, 'staff')
       )
   )
 );
 
-drop policy if exists "company_coach_details_delete"
-on public.company_coach_details;
+DROP POLICY IF EXISTS "company_coach_details_delete"
+ON public.company_coach_details;
 
-create policy "company_coach_details_delete"
-on public.company_coach_details
-for delete
-to authenticated
-using (
-  deleted_at is null
-  and exists (
-    select 1
-    from public.company_user cu
-    where cu.id = company_coach_details.company_user_id
-      and public.is_company_member(cu.company_id)
-      and (
+CREATE POLICY "company_coach_details_delete"
+ON public.company_coach_details
+FOR DELETE
+TO authenticated
+USING (
+  deleted_at IS NULL
+  AND EXISTS (
+    SELECT 1
+    FROM public.company_user cu
+    WHERE cu.id = company_coach_details.company_user_id
+      AND public.is_company_member(cu.company_id)
+      AND (
         public.is_company_owner(cu.company_id)
-        or public.has_company_role(cu.company_id, 'admin')
+        OR public.has_company_role(cu.company_id, 'admin')
       )
   )
 );
 
---=================================================
-
+-- =========================================================
 -- RPC COMPANY COACH INSERT
---=================================================
-drop function if exists public.create_company_coach(
-  uuid,
-  uuid,
-  text,
-  text,
-  text,
-  text,
-  text,
-  text,
-  int,
-  text,
-  text,
+-- =========================================================
+
+DROP FUNCTION IF EXISTS public.create_company_coach(
+  UUID,
+  UUID,
+  TEXT,
+  TEXT,
+  TEXT,
+  TEXT,
+  TEXT,
+  TEXT,
+  INT,
+  TEXT,
+  TEXT,
   public.coach_status
 );
-create or replace function public.create_company_coach(
-  p_user_id uuid,
-  p_company_id uuid,
-  p_first_name text,
-  p_last_name text,
-  p_email text,
-  p_phone text,
-  p_specialization text,
-  p_certifications text default null,
-  p_year_exp int default null,
-  p_bio text default null,
-  p_availability text default null,
-  p_status public.coach_status default 'active'
+
+CREATE OR REPLACE FUNCTION public.create_company_coach(
+  p_user_id UUID,
+  p_company_id UUID,
+  p_first_name TEXT,
+  p_last_name TEXT,
+  p_email TEXT,
+  p_phone TEXT,
+  p_specialization TEXT,
+  p_certifications TEXT DEFAULT NULL,
+  p_year_exp INT DEFAULT NULL,
+  p_bio TEXT DEFAULT NULL,
+  p_availability TEXT DEFAULT NULL,
+  p_status public.coach_status DEFAULT 'active'
 )
-returns jsonb
-language plpgsql
-security definer
-set search_path = public, auth
-as $$
-declare
-  v_company_id uuid;
-  v_company_user_id uuid;
-  v_coach_role_id uuid;
-  v_profile_id uuid;
-  v_coach_details_id uuid;
-begin
-  -- =====================================================
+RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, auth
+AS $$
+DECLARE
+  v_company_id UUID;
+  v_company_user_id UUID;
+  v_coach_role_id UUID;
+  v_profile_id UUID;
+  v_coach_details_id UUID;
+BEGIN
+  
   -- VALIDATIONS
-  -- =====================================================
+  IF auth.uid() IS NULL THEN
+    RAISE EXCEPTION 'Not authenticated';
+  END IF;
 
-  if auth.uid() is null then
-    raise exception 'Not authenticated';
-  end if;
+  IF p_user_id IS NULL THEN
+    RAISE EXCEPTION 'p_user_id is required';
+  END IF;
 
-  if p_user_id is null then
-    raise exception 'p_user_id is required';
-  end if;
+  IF p_company_id IS NULL THEN
+    RAISE EXCEPTION 'p_company_id is required';
+  END IF;
 
-  if p_company_id is null then
-    raise exception 'p_company_id is required';
-  end if;
+  IF p_first_name IS NULL OR btrim(p_first_name) = '' THEN
+    RAISE EXCEPTION 'first_name is required';
+  END IF;
 
-  if p_first_name is null or btrim(p_first_name) = '' then
-    raise exception 'first_name is required';
-  end if;
+  IF p_last_name IS NULL OR btrim(p_last_name) = '' THEN
+    RAISE EXCEPTION 'last_name is required';
+  END IF;
 
-  if p_last_name is null or btrim(p_last_name) = '' then
-    raise exception 'last_name is required';
-  end if;
+  IF p_email IS NULL OR btrim(p_email) = '' THEN
+    RAISE EXCEPTION 'email is required';
+  END IF;
 
-  if p_email is null or btrim(p_email) = '' then
-    raise exception 'email is required';
-  end if;
+  IF p_specialization IS NULL OR btrim(p_specialization) = '' THEN
+    RAISE EXCEPTION 'specialization is required';
+  END IF;
 
-  if p_specialization is null or btrim(p_specialization) = '' then
-    raise exception 'specialization is required';
-  end if;
+  IF p_availability IS NULL OR btrim(p_availability) = '' THEN
+    RAISE EXCEPTION 'availability is required';
+  END IF;
 
-  if p_availability is null or btrim(p_availability) = '' then
-    raise exception 'availability is required';
-  end if;
+  IF p_year_exp IS NOT NULL AND p_year_exp < 0 THEN
+    RAISE EXCEPTION 'year_exp must be greater than or equal to 0';
+  END IF;
 
-  if p_year_exp is not null and p_year_exp < 0 then
-    raise exception 'year_exp must be greater than or equal to 0';
-  end if;
-
-  -- =====================================================
   -- CHECK COMPANY EXISTS
-  -- =====================================================
+  SELECT c.id
+  INTO v_company_id
+  FROM public.companies c
+  WHERE c.id = p_company_id
+    AND c.deleted_at IS NULL
+  LIMIT 1;
 
-  select c.id
-  into v_company_id
-  from public.companies c
-  where c.id = p_company_id
-    and c.deleted_at is null
-  limit 1;
+  IF v_company_id IS NULL THEN
+    RAISE EXCEPTION 'Company not found';
+  END IF;
 
-  if v_company_id is null then
-    raise exception 'Company not found';
-  end if;
-
-  -- =====================================================
   -- CHECK CURRENT USER PERMISSION
   -- owner/admin/staff can create a coach
-  -- =====================================================
-
-  if not (
+  IF NOT (
     public.is_company_owner(v_company_id)
-    or public.has_company_role(v_company_id, 'admin')
-    or public.has_company_role(v_company_id, 'staff')
-  ) then
-    raise exception 'You do not have permission to create a coach for this company';
-  end if;
+    OR public.has_company_role(v_company_id, 'admin')
+    OR public.has_company_role(v_company_id, 'staff')
+  ) THEN
+    RAISE EXCEPTION 'You do not have permission to create a coach for this company';
+  END IF;
 
-  -- =====================================================
   -- CHECK COACH ROLE EXISTS
-  -- =====================================================
+  SELECT cr.id
+  INTO v_coach_role_id
+  FROM public.company_role cr
+  WHERE cr.company_id = v_company_id
+    AND LOWER(cr.name) = 'coach'
+  LIMIT 1;
 
-  select cr.id
-  into v_coach_role_id
-  from public.company_role cr
-  where cr.company_id = v_company_id
-    and lower(cr.name) = 'coach'
-  limit 1;
+  IF v_coach_role_id IS NULL THEN
+    RAISE EXCEPTION 'Coach role does not exist for this company';
+  END IF;
 
-  if v_coach_role_id is null then
-    raise exception 'Coach role does not exist for this company';
-  end if;
-
-  -- =====================================================
   -- PROFILE INSERT
   -- if already exists, keep existing row
-  -- =====================================================
-
-  insert into public.profiles (
+  INSERT INTO public.profiles (
     id,
     first_name,
     last_name,
     phone
   )
-  values (
+  VALUES (
     p_user_id,
     btrim(p_first_name),
     btrim(p_last_name),
-    p_phone::varchar
+    p_phone::VARCHAR
   )
-  on conflict (id) do update
-    set first_name = excluded.first_name,
-        last_name = excluded.last_name,
-        updated_at = now()
-  returning id into v_profile_id;
+  ON CONFLICT (id) DO UPDATE
+    SET first_name = EXCLUDED.first_name,
+        last_name = EXCLUDED.last_name,
+        updated_at = NOW()
+  RETURNING id INTO v_profile_id;
 
-  -- =====================================================
   -- COMPANY USER INSERT
-  -- =====================================================
-
-  insert into public.company_user (
+  INSERT INTO public.company_user (
     user_id,
     company_id,
     is_owner
   )
-  values (
+  VALUES (
     p_user_id,
     v_company_id,
-    false
+    FALSE
   )
-  returning id into v_company_user_id;
+  RETURNING id INTO v_company_user_id;
 
-  -- =====================================================
   -- COMPANY USER ROLE INSERT
-  -- =====================================================
-
-  insert into public.company_user_role (
+  INSERT INTO public.company_user_role (
     company_user_id,
     company_role_id
   )
-  values (
+  VALUES (
     v_company_user_id,
     v_coach_role_id
   );
 
-  -- =====================================================
   -- COMPANY COACH DETAILS INSERT
-  -- =====================================================
-
-  insert into public.company_coach_details (
+  INSERT INTO public.company_coach_details (
     company_user_id,
     email,
     specialization,
@@ -375,26 +353,23 @@ begin
     created_by,
     updated_by
   )
-  values (
+  VALUES (
     v_company_user_id,
-    btrim(lower(p_email)),
+    btrim(LOWER(p_email)),
     btrim(p_specialization),
-    nullif(btrim(p_certifications), ''),
+    NULLIF(btrim(p_certifications), ''),
     p_year_exp,
-    nullif(btrim(p_bio), ''),
+    NULLIF(btrim(p_bio), ''),
     btrim(p_availability),
     p_status,
     auth.uid(),
     auth.uid()
   )
-  returning id into v_coach_details_id;
+  RETURNING id INTO v_coach_details_id;
 
-  -- =====================================================
   -- RETURN
-  -- =====================================================
-
-  return jsonb_build_object(
-    'ok', true,
+  RETURN jsonb_build_object(
+    'ok', TRUE,
     'message', 'Coach created successfully',
     'data', jsonb_build_object(
       'profile_id', v_profile_id,
@@ -405,60 +380,63 @@ begin
       'user_id', p_user_id
     )
   );
-end;
+END;
 $$;
 
-alter function public.create_company_coach(
-  uuid,
-  uuid,
-  text,
-  text,
-  text,
-  text,
-  text,
-  text,
-  int,
-  text,
-  text,
+ALTER FUNCTION public.create_company_coach(
+  UUID,
+  UUID,
+  TEXT,
+  TEXT,
+  TEXT,
+  TEXT,
+  TEXT,
+  TEXT,
+  INT,
+  TEXT,
+  TEXT,
   public.coach_status
-) owner to postgres;
+) OWNER TO postgres;
 
-revoke all on function public.create_company_coach(
-  uuid,
-  uuid,
-  text,
-  text,
-  text,
-  text,
-  text,
-  text,
-  int,
-  text,
-  text,
+REVOKE ALL ON FUNCTION public.create_company_coach(
+  UUID,
+  UUID,
+  TEXT,
+  TEXT,
+  TEXT,
+  TEXT,
+  TEXT,
+  TEXT,
+  INT,
+  TEXT,
+  TEXT,
   public.coach_status
-) from public;
+) FROM PUBLIC;
 
-grant execute on function public.create_company_coach(
-  uuid,
-  uuid,
-  text,
-  text,
-  text,
-  text,
-  text,
-  text,
-  int,
-  text,
-  text,
+GRANT EXECUTE ON FUNCTION public.create_company_coach(
+  UUID,
+  UUID,
+  TEXT,
+  TEXT,
+  TEXT,
+  TEXT,
+  TEXT,
+  TEXT,
+  INT,
+  TEXT,
+  TEXT,
   public.coach_status
-) to authenticated;
+) TO authenticated;
 
+-- =========================================================
+-- VIEW
+-- =========================================================
 
-drop view if exists public.v_company_coaches_complete;
+DROP VIEW IF EXISTS public.v_company_coaches_complete;
 
-create or replace view public.v_company_coaches_complete
-as
-select
+CREATE OR REPLACE VIEW public.v_company_coaches_complete
+AS
+SELECT
   ccd.id,
   cu.company_id,
   cu.user_id,
@@ -471,21 +449,21 @@ select
   ccd.availability,
   ccd.email,
   p.phone,
-  count(m.id)::int as clients,
-  ccd.status::text as status,
+  COUNT(m.id)::INT AS clients,
+  ccd.status::TEXT AS status,
   ccd.created_by,
   ccd.updated_by
-from public.company_coach_details ccd
-join public.company_user cu
-  on cu.id = ccd.company_user_id
-join public.profiles p
-  on p.id = cu.user_id
-left join public.members m
-  on m.assigned_coach_id = p.id
- and m.company_id = cu.company_id
- and m.deleted_at is null
-where ccd.deleted_at is null
-group by
+FROM public.company_coach_details ccd
+JOIN public.company_user cu
+  ON cu.id = ccd.company_user_id
+JOIN public.profiles p
+  ON p.id = cu.user_id
+LEFT JOIN public.members m
+  ON m.assigned_coach_id = p.id
+ AND m.company_id = cu.company_id
+ AND m.deleted_at IS NULL
+WHERE ccd.deleted_at IS NULL
+GROUP BY
   ccd.id,
   cu.company_id,
   cu.user_id,
@@ -502,4 +480,4 @@ group by
   ccd.created_by,
   ccd.updated_by;
 
-  grant select on public.v_company_coaches_complete to authenticated;
+GRANT SELECT ON public.v_company_coaches_complete TO authenticated;

@@ -1,7 +1,7 @@
 "use server";
 
 import { resolveSchemaMode, SchemaMode } from "@/lib/db/helpers/resolve-schema-mode";
-import { getCompanyFieldGroupsQuery, getCompanySchemaOverviewQuery, getCompanySchemaValidationRulesQuery, getEffectiveFieldGroupsQuery, getEffectiveSchemaValidationRulesQuery, resetCoachFieldOverrideQuery, resetCoachGroupOverrideQuery, resetCoachValidationRuleOverrideQuery, SaveCoachFieldOverrideInput, saveCoachFieldOverrideQuery, SaveCoachGroupOverrideInput, saveCoachGroupOverrideQuery, saveCoachSchemaOverrideBundleQuery, SaveCoachValidationRuleOverrideInput, saveCoachValidationRuleOverrideQuery, saveCompanySchemaBundleQuery, SaveCompanySchemaFieldInput, saveCompanySchemaFieldQuery, SaveCompanySchemaGroupInput, saveCompanySchemaGroupQuery, SaveCompanyValidationRuleInput, saveCompanyValidationRuleQuery } from "@/lib/db/queries/schema-builder";
+import { getCompanyFieldGroupsQuery, getCompanySchemaOverviewQuery, getCompanySchemaValidationRulesQuery, getEffectiveFieldGroupsQuery, getEffectiveSchemaValidationRulesQuery, resetCoachFieldOverrideQuery, resetCoachGroupOverrideQuery, resetCoachValidationRuleOverrideQuery, saveCoachSchemaOverrideBundleQuery, saveCompanySchemaBundleQuery } from "@/lib/db/queries/schema-builder";
 import { FieldGroup, FullSchema, SchemaSummary, SchemaValidationRuleSummary } from "@/types/dashboard";
 import { revalidatePath } from "next/cache";
 
@@ -101,120 +101,6 @@ export async function getSchemaPageDataAction() {
     return {
       ok: false,
       message: error?.message ?? "failed to load schema page data",
-    };
-  }
-}
-
-export async function saveCompanySchemaGroupAction(
-  payload: SaveCompanySchemaGroupInput,
-) {
-  try {
-    const data = await saveCompanySchemaGroupQuery(payload);
-    revalidatePath(REVALIDATE_PATH);
-
-    return {
-      ok: true,
-      data,
-    };
-  } catch (error: any) {
-    return {
-      ok: false,
-      message: error?.message ?? "failed to save company schema group",
-    };
-  }
-}
-
-export async function saveCompanySchemaFieldAction(
-  payload: SaveCompanySchemaFieldInput,
-) {
-  try {
-    const data = await saveCompanySchemaFieldQuery(payload);
-    revalidatePath(REVALIDATE_PATH);
-
-    return {
-      ok: true,
-      data,
-    };
-  } catch (error: any) {
-    return {
-      ok: false,
-      message: error?.message ?? "failed to save company schema field",
-    };
-  }
-}
-
-export async function saveCompanyValidationRuleAction(
-  payload: SaveCompanyValidationRuleInput,
-) {
-  try {
-    const data = await saveCompanyValidationRuleQuery(payload);
-    revalidatePath(REVALIDATE_PATH);
-
-    return {
-      ok: true,
-      data,
-    };
-  } catch (error: any) {
-    return {
-      ok: false,
-      message: error?.message ?? "failed to save company validation rule",
-    };
-  }
-}
-
-export async function saveCoachGroupOverrideAction(
-  payload: SaveCoachGroupOverrideInput,
-) {
-  try {
-    const data = await saveCoachGroupOverrideQuery(payload);
-    revalidatePath(REVALIDATE_PATH);
-
-    return {
-      ok: true,
-      data,
-    };
-  } catch (error: any) {
-    return {
-      ok: false,
-      message: error?.message ?? "failed to save coach group override",
-    };
-  }
-}
-
-export async function saveCoachFieldOverrideAction(
-  payload: SaveCoachFieldOverrideInput,
-) {
-  try {
-    const data = await saveCoachFieldOverrideQuery(payload);
-    revalidatePath(REVALIDATE_PATH);
-
-    return {
-      ok: true,
-      data,
-    };
-  } catch (error: any) {
-    return {
-      ok: false,
-      message: error?.message ?? "failed to save coach field override",
-    };
-  }
-}
-
-export async function saveCoachValidationRuleOverrideAction(
-  payload: SaveCoachValidationRuleOverrideInput,
-) {
-  try {
-    const data = await saveCoachValidationRuleOverrideQuery(payload);
-    revalidatePath(REVALIDATE_PATH);
-
-    return {
-      ok: true,
-      data,
-    };
-  } catch (error: any) {
-    return {
-      ok: false,
-      message: error?.message ?? "failed to save coach validation rule override",
     };
   }
 }

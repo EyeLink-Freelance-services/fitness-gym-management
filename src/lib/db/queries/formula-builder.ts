@@ -8,29 +8,6 @@ const TABLES = {
   coachFormulaOverrides: "coach_formulas_overrides",
 } as const;
 
-export type SaveCompanyFormulaInput = {
-  id?: string;
-  label: string;
-  key: string;
-  expression: string;
-  unit?: string | null;
-  decimals?: number;
-  description?: string | null;
-  show_portal?: boolean;
-  archived?: boolean;
-};
-
-export type SaveCoachFormulaOverrideInput = {
-  formula_id: string;
-  label?: string | null;
-  expression?: string | null;
-  unit?: string | null;
-  decimals?: number | null;
-  description?: string | null;
-  show_portal?: boolean | null;
-  archived?: boolean | null;
-};
-
 export async function saveCoachFormulaOverrideBundleQuery(payload: {
 	formula: FormulaDefinition;
 }) {
@@ -119,85 +96,6 @@ export async function resetCoachFormulaOverrideQuery(formulaId: string) {
 
   if (error) throw error;
   return true;
-}
-
-export async function saveCoachFormulaOverrideQuery(
-  payload: SaveCoachFormulaOverrideInput,
-) {
-  const auth = await requirePermission(AuthPermission.formulaBuilder.view);
-  const supabase = await supabaseServer();
-
-  const { data, error } = await supabase
-    .from(TABLES.coachFormulaOverrides)
-    .upsert(
-      {
-        company_id: auth.companyId,
-        coach_user_id: auth.userId,
-        formula_id: payload.formula_id,
-        label: payload.label ?? null,
-        expression: payload.expression ?? null,
-        unit: payload.unit ?? null,
-        decimals: payload.decimals ?? null,
-        description: payload.description ?? null,
-        show_portal: payload.show_portal ?? null,
-        archived: payload.archived ?? null,
-        created_by: auth.userId,
-        updated_by: auth.userId,
-      },
-      {
-        onConflict: "coach_user_id,formula_id",
-      },
-    )
-    .select("*")
-    .single();
-
-  if (error) throw error;
-  return data;
-}
-
-export async function saveCompanyFormulaQuery(
-  payload: SaveCompanyFormulaInput,
-) {
-  const auth = await requirePermission(AuthPermission.formulaBuilder.edit);
-  const supabase = await supabaseServer();
-
-  const row = {
-    company_id: auth.companyId,
-    label: payload.label,
-    key: payload.key,
-    expression: payload.expression,
-    unit: payload.unit ?? null,
-    decimals: payload.decimals ?? 2,
-    description: payload.description ?? null,
-    show_portal: payload.show_portal ?? true,
-    archived: payload.archived ?? false,
-    updated_by: auth.userId,
-  };
-
-  if (payload.id) {
-    const { data, error } = await supabase
-      .from(TABLES.formulas)
-      .update(row)
-      .eq("id", payload.id)
-      .eq("company_id", auth.companyId)
-      .select("*")
-      .single();
-
-    if (error) throw error;
-    return data;
-  }
-
-  const { data, error } = await supabase
-    .from(TABLES.formulas)
-    .insert({
-      ...row,
-      created_by: auth.userId,
-    })
-    .select("*")
-    .single();
-
-  if (error) throw error;
-  return data;
 }
 
 

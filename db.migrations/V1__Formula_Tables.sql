@@ -109,16 +109,12 @@ BEFORE UPDATE ON public.coach_formulas_overrides
 FOR EACH ROW
 EXECUTE FUNCTION public.set_updated_at();
 
--- =========================================================
--- ENABLE RLS
--- =========================================================
-
-ALTER TABLE public.formulas ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.coach_formulas_overrides ENABLE ROW LEVEL SECURITY;
 
 -- =========================================================
 -- POLICIES
 -- =========================================================
+ALTER TABLE public.formulas ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.coach_formulas_overrides ENABLE ROW LEVEL SECURITY;
 
 -- SELECT: ADMIN, OWNER OR COACH CAN READ
 DROP POLICY IF EXISTS "formulas_select_company_member" ON public.formulas;

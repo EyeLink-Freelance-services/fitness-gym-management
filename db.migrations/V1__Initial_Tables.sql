@@ -1,340 +1,166 @@
--- Helpers
 -- =========================================================
+-- HELPERS
+-- =========================================================
+
 -- TODO: updated_at trigger if frontend is not setting it
-create or replace function public.set_updated_at()
-returns trigger
-language plpgsql
-as $$
-begin
-  new.updated_at = now();
-  return new;
-end;
+CREATE OR REPLACE FUNCTION public.set_updated_at()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
 $$;
 
 -- =========================================================
+-- TABLES
+-- =========================================================
 
-create table public.profiles
-(
-    id          uuid primary key references auth.users (id) on delete cascade,
-    first_name  varchar(255)              not null,
-    last_name   varchar(255)              not null,
-    picture_url text,
-    created_at  timestamptz default now() not null,
-    updated_at  timestamptz default now() not null
+CREATE TABLE IF NOT EXISTS public.profiles (
+  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  first_name VARCHAR(255) NOT NULL,
+  last_name VARCHAR(255) NOT NULL,
+  picture_url TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
 
-create table public.companies
-(
-    id         uuid primary key default gen_random_uuid(),
-    name       varchar(255)                   not null,
-    mode       text                           not null,
-    created_at timestamptz      default now() not null,
-    updated_at timestamptz      default now() not null,
-    deleted_at timestamptz
+CREATE TABLE IF NOT EXISTS public.companies (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name VARCHAR(255) NOT NULL,
+  mode TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+  deleted_at TIMESTAMPTZ
 );
 
-create table public.company_user
-(
-    id         uuid primary key default gen_random_uuid(),
-    user_id    uuid    not null references auth.users (id) on delete cascade,
-    company_id uuid    not null references public.companies (id) on delete cascade,
-    is_owner   boolean not null default false,
-    joined_at  timestamptz      default now() not null,
-    unique (user_id, company_id)
+CREATE TABLE IF NOT EXISTS public.company_user (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  company_id UUID NOT NULL REFERENCES public.companies(id) ON DELETE CASCADE,
+  is_owner BOOLEAN NOT NULL DEFAULT FALSE,
+  joined_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+  UNIQUE (user_id, company_id)
 );
 
-CREATE TABLE public.company_role
-(
-    id         uuid primary key default gen_random_uuid(),
-    company_id uuid not null references public.companies (id) on delete cascade,
-    name       text not null,
-    unique (company_id, name)
+CREATE TABLE IF NOT EXISTS public.company_role (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  company_id UUID NOT NULL REFERENCES public.companies(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  UNIQUE (company_id, name)
 );
 
-CREATE TABLE public.company_role_permission
-(
-    id              uuid primary key default gen_random_uuid(),
-    company_role_id uuid    not null references public.company_role (id) on delete cascade,
-    module          text    not null,
-    can_read        boolean not null,
-    can_write       boolean not null,
-    can_delete      boolean not null,
-    unique (company_role_id, module)
+CREATE TABLE IF NOT EXISTS public.company_role_permission (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  company_role_id UUID NOT NULL REFERENCES public.company_role(id) ON DELETE CASCADE,
+  module TEXT NOT NULL,
+  can_read BOOLEAN NOT NULL,
+  can_write BOOLEAN NOT NULL,
+  can_delete BOOLEAN NOT NULL,
+  UNIQUE (company_role_id, module)
 );
 
-CREATE TABLE public.company_user_role
-(
-    id              uuid primary key default gen_random_uuid(),
-    company_user_id uuid not null references public.company_user (id) on delete cascade,
-    company_role_id uuid not null references public.company_role (id) on delete cascade,
-    unique (company_user_id, company_role_id)
+CREATE TABLE IF NOT EXISTS public.company_user_role (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  company_user_id UUID NOT NULL REFERENCES public.company_user(id) ON DELETE CASCADE,
+  company_role_id UUID NOT NULL REFERENCES public.company_role(id) ON DELETE CASCADE,
+  UNIQUE (company_user_id, company_role_id)
 );
 
-CREATE INDEX idx_companies_deleted_at ON public.companies (deleted_at) WHERE deleted_at IS NULL;
-CREATE INDEX idx_company_user_company_id ON public.company_user (company_id);
-CREATE INDEX idx_company_user_role_company_role_id ON public.company_user_role (company_role_id);
-CREATE UNIQUE INDEX idx_company_one_owner ON public.company_user (company_id) WHERE is_owner = true;
+-- =========================================================
+-- INDEXES
+-- =========================================================
+
+DROP INDEX IF EXISTS idx_companies_deleted_at;
+CREATE INDEX IF NOT EXISTS idx_companies_deleted_at
+  ON public.companies(deleted_at)
+  WHERE deleted_at IS NULL;
+
+DROP INDEX IF EXISTS idx_company_user_company_id;
+CREATE INDEX IF NOT EXISTS idx_company_user_company_id
+  ON public.company_user(company_id);
+
+DROP INDEX IF EXISTS idx_company_user_user_id;
+CREATE INDEX IF NOT EXISTS idx_company_user_user_id
+  ON public.company_user(user_id);
+
+DROP INDEX IF EXISTS idx_company_user_role_company_role_id;
+CREATE INDEX IF NOT EXISTS idx_company_user_role_company_role_id
+  ON public.company_user_role(company_role_id);
+
+DROP INDEX IF EXISTS idx_company_user_role_company_user_id;
+CREATE INDEX IF NOT EXISTS idx_company_user_role_company_user_id
+  ON public.company_user_role(company_user_id);
+
+DROP INDEX IF EXISTS idx_company_role_name;
+CREATE INDEX IF NOT EXISTS idx_company_role_name
+  ON public.company_role(name);
+
+DROP INDEX IF EXISTS idx_company_one_owner;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_company_one_owner
+  ON public.company_user(company_id)
+  WHERE is_owner = TRUE;
+
+-- =========================================================
+-- ALTER TABLES
+-- =========================================================
 
 -- updated: update column profiles
 ALTER TABLE public.profiles
-ADD COLUMN IF NOT EXISTS phone VARCHAR(20) unique,
-ADD COLUMN IF NOT EXISTS active_company_id uuid REFERENCES public.companies(id) on delete set null,
-add column if not exists is_super_admin boolean not null default false;
+ADD COLUMN IF NOT EXISTS phone VARCHAR(20) UNIQUE,
+ADD COLUMN IF NOT EXISTS active_company_id UUID REFERENCES public.companies(id) ON DELETE SET NULL,
+ADD COLUMN IF NOT EXISTS is_super_admin BOOLEAN NOT NULL DEFAULT FALSE;
 
 -- updated: column companies
 ALTER TABLE public.companies
-ADD COLUMN IF NOT EXISTS phone VARCHAR(20) unique;
+ADD COLUMN IF NOT EXISTS phone VARCHAR(20) UNIQUE;
 
 ALTER TABLE public.companies
-ADD COLUMN IF NOT EXISTS logo_url text,
-ADD COLUMN IF NOT EXISTS brn text,
-ADD COLUMN IF NOT EXISTS address text,
-ADD COLUMN IF NOT EXISTS city text,
-ADD COLUMN IF NOT EXISTS post_code text,
-ADD COLUMN IF NOT EXISTS region text,
-ADD COLUMN IF NOT EXISTS contact_email text,
-ADD COLUMN IF NOT EXISTS contact_phone text,
-ADD COLUMN IF NOT EXISTS terms text,
-ADD COLUMN IF NOT EXISTS disclaimer text;
+ADD COLUMN IF NOT EXISTS logo_url TEXT,
+ADD COLUMN IF NOT EXISTS brn TEXT,
+ADD COLUMN IF NOT EXISTS address TEXT,
+ADD COLUMN IF NOT EXISTS city TEXT,
+ADD COLUMN IF NOT EXISTS post_code TEXT,
+ADD COLUMN IF NOT EXISTS region TEXT,
+ADD COLUMN IF NOT EXISTS contact_email TEXT,
+ADD COLUMN IF NOT EXISTS contact_phone TEXT,
+ADD COLUMN IF NOT EXISTS terms TEXT,
+ADD COLUMN IF NOT EXISTS disclaimer TEXT;
 
--- =============================================================
-
--- View
--- Select Dropdown purpose (assigned coach)
-CREATE OR REPLACE VIEW public.v_company_coaches AS
-SELECT
-    cu.company_id,
-    p.id AS coach_id,
-    CONCAT(p.first_name, ' ', p.last_name) AS label
-FROM public.company_user cu
-JOIN public.profiles p 
-    ON p.id = cu.user_id
-JOIN public.company_user_role cur 
-    ON cur.company_user_id = cu.id
-JOIN public.company_role cr 
-    ON cr.id = cur.company_role_id
-WHERE cr.name = 'coach';
-
-GRANT SELECT ON public.v_company_coaches TO authenticated;
-
-CREATE INDEX idx_company_user_user_id 
-ON public.company_user(user_id);
-CREATE INDEX idx_company_user_role_company_user_id 
-ON public.company_user_role(company_user_id);
-CREATE INDEX idx_company_role_name 
-ON public.company_role(name);
-
--- =============================================================
-
--- FUNCTION
--- =============================================================
-
--- set active_company_id after logged in or personal workspace otherwise no need both but super admin
-DROP FUNCTION public.ensure_active_company_or_personal_workspace();
-create or replace function public.ensure_active_company_or_personal_workspace()
-returns jsonb
-language plpgsql
-security definer
-set search_path = public, auth
-as $$
-declare
-  v_user_id uuid;
-  v_company uuid;
-  v_company_user_id uuid;
-  v_is_super_admin boolean;
-  result jsonb;
-begin
-  v_user_id := auth.uid();
-
-  if v_user_id is null then
-    raise exception 'Not authenticated';
-  end if;
-
-  -- check platform-level super admin
-  v_is_super_admin := public.is_super_admin();
-
-  -- 1) if already set on profile, use it
-  select p.active_company_id
-  into v_company
-  from public.profiles p
-  where p.id = v_user_id;
-
-  -- 2) otherwise pick best existing membership
-  if v_company is null then
-    select cu.company_id
-    into v_company
-    from public.company_user cu
-    where cu.user_id = v_user_id
-    order by cu.is_owner desc, cu.joined_at desc
-    limit 1;
-  end if;
-
-  -- 3) if no company:
-  --    - super admin: do NOT create personal/company workspace
-  --    - normal user: create personal workspace + owner link
-  if v_company is null then
-    if v_is_super_admin then
-      update public.profiles
-      set active_company_id = null,
-          updated_at = now()
-      where id = v_user_id;
-
-      select jsonb_build_object(
-        'profile', jsonb_build_object(
-          'id', p.id,
-          'first_name', p.first_name,
-          'last_name', p.last_name,
-          'picture_url', p.picture_url,
-          'active_company_id', null,
-          'is_super_admin', true
-        ),
-        'company', null,
-        'company_user', null,
-        'roles', '[]'::jsonb,
-        'permissions', '[]'::jsonb
-      )
-      into result
-      from public.profiles p
-      where p.id = v_user_id;
-
-      return result;
-    else
-      insert into public.companies(name, mode)
-      values ('Personal Workspace', 'personal')
-      returning id into v_company;
-
-      insert into public.company_user(user_id, company_id, is_owner)
-      values (v_user_id, v_company, true)
-      returning id into v_company_user_id;
-    end if;
-  end if;
-
-  -- 4) ensure active company is stored on profile
-  update public.profiles
-  set active_company_id = v_company,
-      updated_at = now()
-  where id = v_user_id;
-
-  -- 5) get company_user id for that active company
-  if v_company_user_id is null then
-    select cu.id
-    into v_company_user_id
-    from public.company_user cu
-    where cu.user_id = v_user_id
-      and cu.company_id = v_company
-    limit 1;
-  end if;
-
-  -- 6) return full auth/menu context
-  select jsonb_build_object(
-    'profile', jsonb_build_object(
-      'id', p.id,
-      'first_name', p.first_name,
-      'last_name', p.last_name,
-      'picture_url', p.picture_url,
-      'active_company_id', p.active_company_id,
-      'is_super_admin', v_is_super_admin
-    ),
-    'company', jsonb_build_object(
-      'id', c.id,
-      'name', c.name,
-      'mode', c.mode
-    ),
-    'company_user', case
-      when cu.id is null then null
-      else jsonb_build_object(
-        'id', cu.id,
-        'user_id', cu.user_id,
-        'company_id', cu.company_id,
-        'is_owner', cu.is_owner,
-        'joined_at', cu.joined_at
-      )
-    end,
-    'roles', coalesce(roles_data.roles, '[]'::jsonb),
-    'permissions', coalesce(perms_data.permissions, '[]'::jsonb)
-  )
-  into result
-  from public.profiles p
-  join public.companies c
-    on c.id = v_company
-  left join public.company_user cu
-    on cu.user_id = p.id
-   and cu.company_id = c.id
-  left join lateral (
-    select jsonb_agg(
-      distinct jsonb_build_object(
-        'id', cr.id,
-        'name', cr.name
-      )
-    ) as roles
-    from public.company_user_role cur
-    join public.company_role cr
-      on cr.id = cur.company_role_id
-    where cur.company_user_id = cu.id
-  ) roles_data on true
-  left join lateral (
-    select jsonb_agg(
-      distinct jsonb_build_object(
-        'role_id', cr.id,
-        'role_name', cr.name,
-        'module', crp.module,
-        'can_read', crp.can_read,
-        'can_write', crp.can_write,
-        'can_delete', crp.can_delete
-      )
-    ) as permissions
-    from public.company_user_role cur
-    join public.company_role cr
-      on cr.id = cur.company_role_id
-    join public.company_role_permission crp
-      on crp.company_role_id = cr.id
-    where cur.company_user_id = cu.id
-  ) perms_data on true
-  where p.id = v_user_id;
-
-  return result;
-end;
-$$;
-
-REVOKE ALL ON FUNCTION public.ensure_active_company_or_personal_workspace() FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION public.ensure_active_company_or_personal_workspace() TO authenticated;
+--=========================================================
+-- HELPERS
+--=========================================================
 
 -- is super admin (about creating companies)
-create or replace function public.is_super_admin()
-returns boolean
-language sql
-stable
-security definer
-set search_path = public, auth
-as $$
-  select exists (
-    select 1
-    from public.profiles p
-    where p.id = auth.uid()
-      and p.is_super_admin = true
+DROP FUNCTION IF EXISTS public.is_super_admin();
+
+CREATE OR REPLACE FUNCTION public.is_super_admin()
+RETURNS BOOLEAN
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public, auth
+AS $$
+  SELECT EXISTS (
+    SELECT 1
+    FROM public.profiles p
+    WHERE p.id = auth.uid()
+      AND p.is_super_admin = TRUE
   );
 $$;
 
-alter function public.is_super_admin() owner to postgres;
-revoke all on function public.is_super_admin() from public;
-grant execute on function public.is_super_admin() to authenticated;
-
--- Active company ids for current user (Optional)  NOT YET RAN (it is for SUPER ADMIN)
-create or replace function public.current_company_ids()
-returns uuid[]
-language sql
-stable
-as $$
-  select coalesce(array_agg(cu.company_id), '{}')::uuid[]
-  from public.company_user cu
-  where cu.user_id = auth.uid()
-$$;
+ALTER FUNCTION public.is_super_admin() OWNER TO postgres;
+REVOKE ALL ON FUNCTION public.is_super_admin() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.is_super_admin() TO authenticated;
 
 -- Is current user in company?
+DROP FUNCTION IF EXISTS public.is_company_member(UUID);
+
 CREATE OR REPLACE FUNCTION public.is_company_member(
-  _company_id uuid
+  _company_id UUID
 )
-RETURNS boolean
+RETURNS BOOLEAN
 LANGUAGE sql
 STABLE
 SECURITY DEFINER
@@ -348,16 +174,18 @@ AS $$
   );
 $$;
 
-ALTER FUNCTION public.is_company_member(uuid) OWNER TO postgres;
-REVOKE ALL ON FUNCTION public.is_company_member(uuid) FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION public.is_company_member(uuid) TO authenticated;
+ALTER FUNCTION public.is_company_member(UUID) OWNER TO postgres;
+REVOKE ALL ON FUNCTION public.is_company_member(UUID) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.is_company_member(UUID) TO authenticated;
 
 -- Does current user have a role in company?
+DROP FUNCTION IF EXISTS public.has_company_role(UUID, TEXT);
+
 CREATE OR REPLACE FUNCTION public.has_company_role(
-  _company_id uuid,
-  _role text
+  _company_id UUID,
+  _role TEXT
 )
-RETURNS boolean
+RETURNS BOOLEAN
 LANGUAGE sql
 STABLE
 SECURITY DEFINER
@@ -372,19 +200,21 @@ AS $$
       ON cr.id = cur.company_role_id
     WHERE cu.company_id = _company_id
       AND cu.user_id = auth.uid()
-      AND lower(cr.name) = lower(_role)
+      AND LOWER(cr.name) = LOWER(_role)
   );
 $$;
 
-ALTER FUNCTION public.has_company_role(uuid, text) OWNER TO postgres;
-REVOKE ALL ON FUNCTION public.has_company_role(uuid, text) FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION public.has_company_role(uuid, text) TO authenticated;
+ALTER FUNCTION public.has_company_role(UUID, TEXT) OWNER TO postgres;
+REVOKE ALL ON FUNCTION public.has_company_role(UUID, TEXT) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.has_company_role(UUID, TEXT) TO authenticated;
 
 -- is company owner?
+DROP FUNCTION IF EXISTS public.is_company_owner(UUID);
+
 CREATE OR REPLACE FUNCTION public.is_company_owner(
-  _company_id uuid
+  _company_id UUID
 )
-RETURNS boolean
+RETURNS BOOLEAN
 LANGUAGE sql
 STABLE
 SECURITY DEFINER
@@ -395,158 +225,396 @@ AS $$
     FROM public.company_user cu
     WHERE cu.company_id = _company_id
       AND cu.user_id = auth.uid()
-      AND cu.is_owner = true
+      AND cu.is_owner = TRUE
   );
 $$;
 
-ALTER FUNCTION public.is_company_owner(uuid) OWNER TO postgres;
-REVOKE ALL ON FUNCTION public.is_company_owner(uuid) FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION public.is_company_owner(uuid) TO authenticated;
+ALTER FUNCTION public.is_company_owner(UUID) OWNER TO postgres;
+REVOKE ALL ON FUNCTION public.is_company_owner(UUID) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.is_company_owner(UUID) TO authenticated;
 
--- =============================================================
+/* --- Helper: can access member (admin/staff OR assigned coach) --- */
+create or replace function public.can_access_member(p_member_id uuid)
+returns boolean
+language sql
+stable
+SECURITY DEFINER
+SET search_path = public, auth
+as $$
+  select exists (
+    select 1
+    from public.members m
+    where m.id = p_member_id
+      and (
+        public.is_company_owner(m.company_id)
+        or public.has_company_role(m.company_id, 'admin')
+        or public.has_company_role(m.company_id, 'staff')
+        or (public.has_company_role(m.company_id, 'coach') and m.assigned_coach_id = auth.uid())
+      )
+  );
+$$;
 
--- Policies
--- =============================================================
-alter table public.companies enable row level security;
-alter table public.company_user enable row level security;
-alter table public.company_role enable row level security;
-alter table public.company_role_permission enable row level security;
-alter table public.company_user_role enable row level security;
+ALTER FUNCTION public.can_access_member(uuid) OWNER TO postgres;
+REVOKE ALL ON FUNCTION public.can_access_member(uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.can_access_member(uuid) TO authenticated;
+
+-- =========================================================
+-- VIEW
+-- =========================================================
+
+-- Select Dropdown purpose (assigned coach)
+DROP VIEW IF EXISTS public.v_company_coaches;
+
+CREATE OR REPLACE VIEW public.v_company_coaches AS
+SELECT
+  cu.company_id,
+  p.id AS coach_id,
+  CONCAT(p.first_name, ' ', p.last_name) AS label
+FROM public.company_user cu
+JOIN public.profiles p
+  ON p.id = cu.user_id
+JOIN public.company_user_role cur
+  ON cur.company_user_id = cu.id
+JOIN public.company_role cr
+  ON cr.id = cur.company_role_id
+WHERE cr.name = 'coach';
+
+GRANT SELECT ON public.v_company_coaches TO authenticated;
+
+-- =========================================================
+-- RPC
+-- =========================================================
+
+-- set active_company_id after logged in or personal workspace otherwise no need both but super admin
+DROP FUNCTION IF EXISTS public.ensure_active_company_or_personal_workspace();
+
+CREATE OR REPLACE FUNCTION public.ensure_active_company_or_personal_workspace()
+RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, auth
+AS $$
+DECLARE
+  v_user_id UUID;
+  v_company UUID;
+  v_company_user_id UUID;
+  v_is_super_admin BOOLEAN;
+  result JSONB;
+BEGIN
+  v_user_id := auth.uid();
+
+  IF v_user_id IS NULL THEN
+    RAISE EXCEPTION 'Not authenticated';
+  END IF;
+
+  -- check platform-level super admin
+  v_is_super_admin := public.is_super_admin();
+
+  -- 1) if already set on profile, use it
+  SELECT p.active_company_id
+  INTO v_company
+  FROM public.profiles p
+  WHERE p.id = v_user_id;
+
+  -- 2) otherwise pick best existing membership
+  IF v_company IS NULL THEN
+    SELECT cu.company_id
+    INTO v_company
+    FROM public.company_user cu
+    WHERE cu.user_id = v_user_id
+    ORDER BY cu.is_owner DESC, cu.joined_at DESC
+    LIMIT 1;
+  END IF;
+
+  -- 3) if no company:
+  --    - super admin: do NOT create personal/company workspace
+  --    - normal user: create personal workspace + owner link
+  IF v_company IS NULL THEN
+    IF v_is_super_admin THEN
+      UPDATE public.profiles
+      SET active_company_id = NULL,
+          updated_at = NOW()
+      WHERE id = v_user_id;
+
+      SELECT jsonb_build_object(
+        'profile', jsonb_build_object(
+          'id', p.id,
+          'first_name', p.first_name,
+          'last_name', p.last_name,
+          'picture_url', p.picture_url,
+          'active_company_id', NULL,
+          'is_super_admin', TRUE
+        ),
+        'company', NULL,
+        'company_user', NULL,
+        'roles', '[]'::JSONB,
+        'permissions', '[]'::JSONB
+      )
+      INTO result
+      FROM public.profiles p
+      WHERE p.id = v_user_id;
+
+      RETURN result;
+    ELSE
+      INSERT INTO public.companies(name, mode)
+      VALUES ('Personal Workspace', 'personal')
+      RETURNING id INTO v_company;
+
+      INSERT INTO public.company_user(user_id, company_id, is_owner)
+      VALUES (v_user_id, v_company, TRUE)
+      RETURNING id INTO v_company_user_id;
+    END IF;
+  END IF;
+
+  -- 4) ensure active company is stored on profile
+  UPDATE public.profiles
+  SET active_company_id = v_company,
+      updated_at = NOW()
+  WHERE id = v_user_id;
+
+  -- 5) get company_user id for that active company
+  IF v_company_user_id IS NULL THEN
+    SELECT cu.id
+    INTO v_company_user_id
+    FROM public.company_user cu
+    WHERE cu.user_id = v_user_id
+      AND cu.company_id = v_company
+    LIMIT 1;
+  END IF;
+
+  -- 6) return full auth/menu context
+  SELECT jsonb_build_object(
+    'profile', jsonb_build_object(
+      'id', p.id,
+      'first_name', p.first_name,
+      'last_name', p.last_name,
+      'picture_url', p.picture_url,
+      'active_company_id', p.active_company_id,
+      'is_super_admin', v_is_super_admin
+    ),
+    'company', jsonb_build_object(
+      'id', c.id,
+      'name', c.name,
+      'mode', c.mode
+    ),
+    'company_user', CASE
+      WHEN cu.id IS NULL THEN NULL
+      ELSE jsonb_build_object(
+        'id', cu.id,
+        'user_id', cu.user_id,
+        'company_id', cu.company_id,
+        'is_owner', cu.is_owner,
+        'joined_at', cu.joined_at
+      )
+    END,
+    'roles', COALESCE(roles_data.roles, '[]'::JSONB),
+    'permissions', COALESCE(perms_data.permissions, '[]'::JSONB)
+  )
+  INTO result
+  FROM public.profiles p
+  JOIN public.companies c
+    ON c.id = v_company
+  LEFT JOIN public.company_user cu
+    ON cu.user_id = p.id
+   AND cu.company_id = c.id
+  LEFT JOIN LATERAL (
+    SELECT jsonb_agg(
+      DISTINCT jsonb_build_object(
+        'id', cr.id,
+        'name', cr.name
+      )
+    ) AS roles
+    FROM public.company_user_role cur
+    JOIN public.company_role cr
+      ON cr.id = cur.company_role_id
+    WHERE cur.company_user_id = cu.id
+  ) roles_data ON TRUE
+  LEFT JOIN LATERAL (
+    SELECT jsonb_agg(
+      DISTINCT jsonb_build_object(
+        'role_id', cr.id,
+        'role_name', cr.name,
+        'module', crp.module,
+        'can_read', crp.can_read,
+        'can_write', crp.can_write,
+        'can_delete', crp.can_delete
+      )
+    ) AS permissions
+    FROM public.company_user_role cur
+    JOIN public.company_role cr
+      ON cr.id = cur.company_role_id
+    JOIN public.company_role_permission crp
+      ON crp.company_role_id = cr.id
+    WHERE cur.company_user_id = cu.id
+  ) perms_data ON TRUE
+  WHERE p.id = v_user_id;
+
+  RETURN result;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.ensure_active_company_or_personal_workspace() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.ensure_active_company_or_personal_workspace() TO authenticated;
+
+-- =========================================================
+-- POLICIES
+-- =========================================================
+
+ALTER TABLE public.companies ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.company_user ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.company_role ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.company_role_permission ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.company_user_role ENABLE ROW LEVEL SECURITY;
 
 -- companies
-drop policy if exists "companies_select" on public.companies;
-create policy "companies_select"
-on public.companies for select
-using (public.is_company_member(id) or public.is_super_admin());
-
-drop policy if exists "companies_update_admin" on public.companies;
-create policy "companies_update_admin"
-on public.companies for update
-using (public.has_company_role(id, 'admin'))
-with check (public.has_company_role(id, 'admin'));
-
-drop policy if exists "companies_write_super_admin" on public.companies;
-create policy "companies_write_super_admin"
-on public.companies
-for insert
-to authenticated
-with check (public.is_super_admin());
-
--- company_user
-drop policy if exists "company_user_select" on public.company_user;
-create policy "company_user_select"
-on public.company_user for select
-using (public.is_company_member(company_id));
-
-drop policy if exists "company_user_admin_write" on public.company_user;
-create policy "company_user_admin_write"
-on public.company_user for all
-using (public.has_company_role(company_id, 'admin'))
-with check (public.has_company_role(company_id, 'admin'));
-
--- company_role
-drop policy if exists "company_role_select" on public.company_role;
-create policy "company_role_select"
-on public.company_role for select
-using (public.is_company_member(company_id));
-
-drop policy if exists "company_role_admin_write" on public.company_role;
-create policy "company_role_admin_write"
-on public.company_role for all
-using (public.has_company_role(company_id, 'admin'))
-with check (public.has_company_role(company_id, 'admin'));
-
--- company_role_permission
-drop policy if exists "company_role_permission_select" on public.company_role_permission;
-create policy "company_role_permission_select"
-on public.company_role_permission for select
-using (
-	Exists(
-		select 1
-		from public.company_role cr
-		where cr.id = company_role_permission.company_role_id
-		and (
-      public.is_company_member(cr.company_id)
-    )
-	)
+DROP POLICY IF EXISTS "companies_select" ON public.companies;
+CREATE POLICY "companies_select"
+ON public.companies
+FOR SELECT
+USING (
+  public.is_company_member(id)
+  OR public.is_super_admin()
 );
 
-drop policy if exists "company_role_permission_admin_write" on public.company_role_permission;
-create policy "company_role_permission_admin_write"
-on public.company_role_permission
-for all
-using (
-  exists (
-    select 1
-    from public.company_role cr
-    where cr.id = company_role_permission.company_role_id
-      and public.has_company_role(cr.company_id, 'admin')
+DROP POLICY IF EXISTS "companies_update_admin" ON public.companies;
+CREATE POLICY "companies_update_admin"
+ON public.companies
+FOR UPDATE
+USING (
+  public.has_company_role(id, 'admin')
+)
+WITH CHECK (
+  public.has_company_role(id, 'admin')
+);
+
+DROP POLICY IF EXISTS "companies_write_super_admin" ON public.companies;
+CREATE POLICY "companies_write_super_admin"
+ON public.companies
+FOR INSERT
+TO authenticated
+WITH CHECK (
+  public.is_super_admin()
+);
+
+-- company_user
+DROP POLICY IF EXISTS "company_user_select" ON public.company_user;
+CREATE POLICY "company_user_select"
+ON public.company_user
+FOR SELECT
+USING (
+  public.is_company_member(company_id)
+);
+
+DROP POLICY IF EXISTS "company_user_admin_write" ON public.company_user;
+CREATE POLICY "company_user_admin_write"
+ON public.company_user
+FOR ALL
+USING (
+  public.has_company_role(company_id, 'admin')
+)
+WITH CHECK (
+  public.has_company_role(company_id, 'admin')
+);
+
+-- company_role
+DROP POLICY IF EXISTS "company_role_select" ON public.company_role;
+CREATE POLICY "company_role_select"
+ON public.company_role
+FOR SELECT
+USING (
+  public.is_company_member(company_id)
+);
+
+DROP POLICY IF EXISTS "company_role_admin_write" ON public.company_role;
+CREATE POLICY "company_role_admin_write"
+ON public.company_role
+FOR ALL
+USING (
+  public.has_company_role(company_id, 'admin')
+)
+WITH CHECK (
+  public.has_company_role(company_id, 'admin')
+);
+
+-- company_role_permission
+DROP POLICY IF EXISTS "company_role_permission_select" ON public.company_role_permission;
+CREATE POLICY "company_role_permission_select"
+ON public.company_role_permission
+FOR SELECT
+USING (
+  EXISTS (
+    SELECT 1
+    FROM public.company_role cr
+    WHERE cr.id = company_role_permission.company_role_id
+      AND public.is_company_member(cr.company_id)
+  )
+);
+
+DROP POLICY IF EXISTS "company_role_permission_admin_write" ON public.company_role_permission;
+CREATE POLICY "company_role_permission_admin_write"
+ON public.company_role_permission
+FOR ALL
+USING (
+  EXISTS (
+    SELECT 1
+    FROM public.company_role cr
+    WHERE cr.id = company_role_permission.company_role_id
+      AND public.has_company_role(cr.company_id, 'admin')
   )
 )
-with check (
-  exists (
-    select 1
-    from public.company_role cr
-    where cr.id = company_role_permission.company_role_id
-      and public.has_company_role(cr.company_id, 'admin')
+WITH CHECK (
+  EXISTS (
+    SELECT 1
+    FROM public.company_role cr
+    WHERE cr.id = company_role_permission.company_role_id
+      AND public.has_company_role(cr.company_id, 'admin')
   )
 );
 
 -- company_user_role
-drop policy if exists "company_user_role_select" on public.company_user_role;
-create policy "company_user_role_select"
-on public.company_user_role
-for select
-using (
-  exists (
-    select 1
-    from public.company_user cu
-    where cu.id = company_user_role.company_user_id
-      and public.is_company_member(cu.company_id)
+DROP POLICY IF EXISTS "company_user_role_select" ON public.company_user_role;
+CREATE POLICY "company_user_role_select"
+ON public.company_user_role
+FOR SELECT
+USING (
+  EXISTS (
+    SELECT 1
+    FROM public.company_user cu
+    WHERE cu.id = company_user_role.company_user_id
+      AND public.is_company_member(cu.company_id)
   )
 );
 
-drop policy if exists "company_user_role_admin_write" on public.company_user_role;
-create policy "company_user_role_admin_write"
-on public.company_user_role
-for all
-using (
-  exists (
-    select 1
-    from public.company_user cu
-    join public.company_role cr on cr.id = company_user_role.company_role_id
-    where cu.id = company_user_role.company_user_id
-      and cr.id = company_user_role.company_role_id
-      and public.has_company_role(cu.company_id, 'admin')
+DROP POLICY IF EXISTS "company_user_role_admin_write" ON public.company_user_role;
+CREATE POLICY "company_user_role_admin_write"
+ON public.company_user_role
+FOR ALL
+USING (
+  EXISTS (
+    SELECT 1
+    FROM public.company_user cu
+    JOIN public.company_role cr
+      ON cr.id = company_user_role.company_role_id
+    WHERE cu.id = company_user_role.company_user_id
+      AND cr.id = company_user_role.company_role_id
+      AND public.has_company_role(cu.company_id, 'admin')
   )
 )
-with check (
-  exists (
-    select 1
-    from public.company_user cu
-    join public.company_role cr on cr.id = company_user_role.company_role_id
-    where cu.id = company_user_role.company_user_id
-      and cr.id = company_user_role.company_role_id
-      and public.has_company_role(cu.company_id, 'admin')
+WITH CHECK (
+  EXISTS (
+    SELECT 1
+    FROM public.company_user cu
+    JOIN public.company_role cr
+      ON cr.id = company_user_role.company_role_id
+    WHERE cu.id = company_user_role.company_user_id
+      AND cr.id = company_user_role.company_role_id
+      AND public.has_company_role(cu.company_id, 'admin')
   )
 );
 
 -- =========================================================
-
--- TODO: Add Check constraint for enums
+-- GRANTS
 -- =========================================================
-do $$ begin
-  create type public.company_common_role as enum ('admin','staff','coach');
-exception when duplicate_object then null; end $$;
-
-do $$ begin
-  create type public.company_mode as enum ('personal','company');
-exception when duplicate_object then null; end $$;
-
---=============================================
-
---GRANT
---============================================
 
 GRANT USAGE ON SCHEMA public TO anon, authenticated;
 GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO authenticated;
@@ -570,4 +638,3 @@ TO authenticated;
 GRANT SELECT, INSERT, UPDATE, DELETE
 ON public.company_user_role
 TO authenticated;
-

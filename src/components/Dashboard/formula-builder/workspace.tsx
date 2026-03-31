@@ -8,7 +8,7 @@ import { validateFormulaExpression } from "@/lib/formula/preview-engine";
 import type { FieldGroup } from "@/types/dashboard/coach-schema";
 import type { FormulaDefinition } from "@/types/dashboard/formula-builder";
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
-import { saveCoachFormulaOverrideAction, saveCoachFormulasOverrideBundleAction, saveCompanyFormulaAction, saveCompanyFormulasBundleAction } from "@/app/(app)/formulas/actions";
+import { saveCoachFormulasOverrideBundleAction, saveCompanyFormulasBundleAction } from "@/app/(app)/formulas/actions";
 import { SchemaMode } from "@/lib/db/helpers/resolve-schema-mode";
 
 type FormulaBuilderWorkspaceProps = {

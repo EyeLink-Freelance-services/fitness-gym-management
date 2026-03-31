@@ -1,7 +1,7 @@
 'use server'
 
 import { resolveSchemaMode, SchemaMode } from "@/lib/db/helpers/resolve-schema-mode";
-import { getCompanyFormulasQuery, getEffectiveCompanyFormulasQuery, resetCoachFormulaOverrideQuery, saveCoachFormulaOverrideBundleQuery, SaveCoachFormulaOverrideInput, saveCoachFormulaOverrideQuery, saveCompanyFormulaBundleQuery, SaveCompanyFormulaInput, saveCompanyFormulaQuery } from "@/lib/db/queries/formula-builder";
+import { getCompanyFormulasQuery, getEffectiveCompanyFormulasQuery, resetCoachFormulaOverrideQuery, saveCoachFormulaOverrideBundleQuery, saveCompanyFormulaBundleQuery } from "@/lib/db/queries/formula-builder";
 import { getCompanyFieldGroupsQuery, getEffectiveFieldGroupsQuery } from "@/lib/db/queries/schema-builder";
 import { FieldGroup, FormulaDefinition, FullFormulas } from "@/types/dashboard";
 import { revalidatePath } from "next/cache";
@@ -65,60 +65,6 @@ export async function getGroupsFormulasDataAction() {
     return {
       ok: false,
       message: error?.message ?? "failed to load formulas page data",
-    };
-  }
-}
-
-export async function saveCompanyFormulaAction(
-  payload: SaveCompanyFormulaInput,
-) {
-  try {
-    const data = await saveCompanyFormulaQuery(payload);
-    revalidatePath(REVALIDATE_PATH);
-
-    return {
-      ok: true,
-      data,
-    };
-  } catch (error: any) {
-    return {
-      ok: false,
-      message: error?.message ?? "failed to save company formula",
-    };
-  }
-}
-
-export async function saveCoachFormulaOverrideAction(
-  payload: SaveCoachFormulaOverrideInput,
-) {
-  try {
-    const data = await saveCoachFormulaOverrideQuery(payload);
-    revalidatePath(REVALIDATE_PATH);
-
-    return {
-      ok: true,
-      data,
-    };
-  } catch (error: any) {
-    return {
-      ok: false,
-      message: error?.message ?? "failed to save coach formula override",
-    };
-  }
-}
-
-export async function getCompanyFormulasAction() {
-  try {
-    const formulas = await getCompanyFormulasQuery();
-
-    return {
-      ok: true,
-      data: formulas,
-    };
-  } catch (error: any) {
-    return {
-      ok: false,
-      message: error?.message ?? "failed to get company formulas",
     };
   }
 }

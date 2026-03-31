@@ -1,330 +1,410 @@
-create table if not exists public.diet_plans (
-  id uuid primary key default gen_random_uuid(),
-  company_id uuid not null references public.companies(id) on delete cascade,
-  created_by uuid not null references public.profiles(id),
-  updated_by uuid references public.profiles(id),
-  title text not null,
-  description text,
-  status text not null default 'draft' check (status in ('draft','published','archived')),
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
+-- =========================================================
+-- TABLES
+-- =========================================================
+
+DROP TABLE IF EXISTS public.diet_plan_assignments CASCADE;
+DROP TABLE IF EXISTS public.diet_meal_items CASCADE;
+DROP TABLE IF EXISTS public.diet_plan_meals CASCADE;
+DROP TABLE IF EXISTS public.diet_plans CASCADE;
+
+CREATE TABLE IF NOT EXISTS public.diet_plans (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  company_id UUID NOT NULL REFERENCES public.companies(id) ON DELETE CASCADE,
+  created_by UUID NOT NULL REFERENCES public.profiles(id),
+  updated_by UUID REFERENCES public.profiles(id),
+  title TEXT NOT NULL,
+  description TEXT,
+  status TEXT NOT NULL DEFAULT 'draft'
+    CHECK (status IN ('draft', 'published', 'archived')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-create index if not exists idx_diet_plans_company_status on public.diet_plans(company_id, status);
-
-drop trigger if exists trg_diet_plans_updated_at on public.diet_plans;
-create trigger trg_diet_plans_updated_at
-before update on public.diet_plans
-for each row execute procedure public.set_updated_at();
-
-create table if not exists public.diet_plan_meals (
-  id uuid primary key default gen_random_uuid(),
-  diet_plan_id uuid not null references public.diet_plans(id) on delete cascade,
-  day_index int,
-  meal_type text not null check (meal_type in ('breakfast','lunch','dinner','snack')),
-  notes text,
-  order_index int not null default 0
+CREATE TABLE IF NOT EXISTS public.diet_plan_meals (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  diet_plan_id UUID NOT NULL REFERENCES public.diet_plans(id) ON DELETE CASCADE,
+  day_index INT,
+  meal_type TEXT NOT NULL
+    CHECK (meal_type IN ('breakfast', 'lunch', 'dinner', 'snack')),
+  notes TEXT,
+  order_index INT NOT NULL DEFAULT 0
 );
 
-create index if not exists idx_diet_meals_plan on public.diet_plan_meals(diet_plan_id, order_index);
-
-create table if not exists public.diet_meal_items (
-  id uuid primary key default gen_random_uuid(),
-  meal_id uuid not null references public.diet_plan_meals(id) on delete cascade,
-  food_name text not null,
-  quantity text not null,
-  notes text,
-  order_index int not null default 0
+CREATE TABLE IF NOT EXISTS public.diet_meal_items (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  meal_id UUID NOT NULL REFERENCES public.diet_plan_meals(id) ON DELETE CASCADE,
+  food_name TEXT NOT NULL,
+  quantity TEXT NOT NULL,
+  notes TEXT,
+  order_index INT NOT NULL DEFAULT 0
 );
 
-create index if not exists idx_diet_items_meal on public.diet_meal_items(meal_id, order_index);
-
-create table if not exists public.diet_plan_assignments (
-  id uuid primary key default gen_random_uuid(),
-  company_id uuid not null references public.companies(id) on delete cascade,
-  diet_plan_id uuid not null references public.diet_plans(id) on delete cascade,
-  member_id uuid not null references public.members(id) on delete cascade,
-  assigned_by uuid not null references public.profiles(id),
-  start_date date,
-  status text not null default 'active' check (status in ('active','completed','cancelled')),
-  -- pdf_doc_id uuid references public.documents(id) on delete set null,
-  created_at timestamptz not null default now()
+CREATE TABLE IF NOT EXISTS public.diet_plan_assignments (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  company_id UUID NOT NULL REFERENCES public.companies(id) ON DELETE CASCADE,
+  diet_plan_id UUID NOT NULL REFERENCES public.diet_plans(id) ON DELETE CASCADE,
+  member_id UUID NOT NULL REFERENCES public.members(id) ON DELETE CASCADE,
+  assigned_by UUID NOT NULL REFERENCES public.profiles(id),
+  start_date DATE,
+  status TEXT NOT NULL DEFAULT 'active'
+    CHECK (status IN ('active', 'completed', 'cancelled')),
+  -- pdf_doc_id UUID REFERENCES public.documents(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-create index if not exists idx_diet_assignments_member on public.diet_plan_assignments(member_id, created_at desc);
+-- =========================================================
+-- INDEXES
+-- =========================================================
 
-alter table public.diet_plan_assignments
-add constraint diet_plan_assignments_plan_member_unique
-unique (diet_plan_id, member_id);
+DROP INDEX IF EXISTS idx_diet_plans_company_status;
+CREATE INDEX IF NOT EXISTS idx_diet_plans_company_status
+  ON public.diet_plans(company_id, status);
 
---===========================================
+DROP INDEX IF EXISTS idx_diet_meals_plan;
+CREATE INDEX IF NOT EXISTS idx_diet_meals_plan
+  ON public.diet_plan_meals(diet_plan_id, order_index);
 
--- Policies
---===========================================
-alter table public.diet_plans enable row level security;
-alter table public.diet_plan_meals enable row level security;
-alter table public.diet_meal_items enable row level security;
-alter table public.diet_plan_assignments enable row level security;
+DROP INDEX IF EXISTS idx_diet_items_meal;
+CREATE INDEX IF NOT EXISTS idx_diet_items_meal
+  ON public.diet_meal_items(meal_id, order_index);
 
-drop policy if exists "diet_assignments_select_access" on public.diet_plan_assignments;
-create policy "diet_assignments_select_access"
-on public.diet_plan_assignments for select
-using (public.can_access_member(member_id));
+DROP INDEX IF EXISTS idx_diet_assignments_member;
+CREATE INDEX IF NOT EXISTS idx_diet_assignments_member
+  ON public.diet_plan_assignments(member_id, created_at DESC);
 
-drop policy if exists "diet_assignments_insert_access" on public.diet_plan_assignments;
-create policy "diet_assignments_insert_access"
-on public.diet_plan_assignments for insert
-with check (
+-- =========================================================
+-- CONSTRAINTS
+-- =========================================================
+
+ALTER TABLE public.diet_plan_assignments
+DROP CONSTRAINT IF EXISTS diet_plan_assignments_plan_member_unique;
+
+ALTER TABLE public.diet_plan_assignments
+ADD CONSTRAINT diet_plan_assignments_plan_member_unique
+UNIQUE (diet_plan_id, member_id);
+
+-- =========================================================
+-- TRIGGERS
+-- =========================================================
+
+DROP TRIGGER IF EXISTS trg_diet_plans_updated_at
+ON public.diet_plans;
+
+CREATE TRIGGER trg_diet_plans_updated_at
+BEFORE UPDATE ON public.diet_plans
+FOR EACH ROW
+EXECUTE FUNCTION public.set_updated_at();
+
+-- =========================================================
+-- ENABLE RLS
+-- =========================================================
+
+ALTER TABLE public.diet_plans ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.diet_plan_meals ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.diet_meal_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.diet_plan_assignments ENABLE ROW LEVEL SECURITY;
+
+-- =========================================================
+-- POLICIES
+-- =========================================================
+
+DROP POLICY IF EXISTS "diet_assignments_select_access"
+ON public.diet_plan_assignments;
+
+CREATE POLICY "diet_assignments_select_access"
+ON public.diet_plan_assignments
+FOR SELECT
+USING (
   public.can_access_member(member_id)
-  and assigned_by = auth.uid()
 );
 
+DROP POLICY IF EXISTS "diet_assignments_insert_access"
+ON public.diet_plan_assignments;
 
-drop policy if exists "diet_plans_select_company" on public.diet_plans;
-create policy "diet_plans_select_company"
-on public.diet_plans for select
-using (public.is_company_member(company_id));
-
-drop policy if exists "diet_plans_write_coach_staff_admin" on public.diet_plans;
-create policy "diet_plans_write_coach_staff_admin"
-on public.diet_plans for insert
-with check (
-  public.has_company_role(company_id,'admin')
-  or public.has_company_role(company_id,'staff')
-  or public.has_company_role(company_id,'coach')
+CREATE POLICY "diet_assignments_insert_access"
+ON public.diet_plan_assignments
+FOR INSERT
+WITH CHECK (
+  public.can_access_member(member_id)
+  AND assigned_by = auth.uid()
 );
 
-drop policy if exists "diet_plans_update_coach_staff_admin" on public.diet_plans;
-create policy "diet_plans_update_coach_staff_admin"
-on public.diet_plans for update
-using (
-  public.has_company_role(company_id,'admin')
-  or public.has_company_role(company_id,'staff')
-  or public.has_company_role(company_id,'coach')
-)
-with check (
-  public.has_company_role(company_id,'admin')
-  or public.has_company_role(company_id,'staff')
-  or public.has_company_role(company_id,'coach')
+DROP POLICY IF EXISTS "diet_plans_select_company"
+ON public.diet_plans;
+
+CREATE POLICY "diet_plans_select_company"
+ON public.diet_plans
+FOR SELECT
+USING (
+  public.is_company_member(company_id)
 );
 
--- ===========================================
--- DELETE policy for diet_plans
--- ===========================================
-drop policy if exists "diet_plans_delete_coach_staff_admin" on public.diet_plans;
-create policy "diet_plans_delete_coach_staff_admin"
-on public.diet_plans
-for delete
-using (
+DROP POLICY IF EXISTS "diet_plans_write_coach_staff_admin"
+ON public.diet_plans;
+
+CREATE POLICY "diet_plans_write_coach_staff_admin"
+ON public.diet_plans
+FOR INSERT
+WITH CHECK (
   public.has_company_role(company_id, 'admin')
-  or public.has_company_role(company_id, 'staff')
-  or public.has_company_role(company_id, 'coach')
+  OR public.has_company_role(company_id, 'staff')
+  OR public.has_company_role(company_id, 'coach')
 );
 
--- ===========================================
--- diet_plan_meals policies
--- ===========================================
+DROP POLICY IF EXISTS "diet_plans_update_coach_staff_admin"
+ON public.diet_plans;
 
-drop policy if exists "diet_plan_meals_select_company" on public.diet_plan_meals;
-create policy "diet_plan_meals_select_company"
-on public.diet_plan_meals
-for select
-using (
-  exists (
-    select 1
-    from public.diet_plans dp
-    where dp.id = diet_plan_meals.diet_plan_id
-      and public.is_company_member(dp.company_id)
+CREATE POLICY "diet_plans_update_coach_staff_admin"
+ON public.diet_plans
+FOR UPDATE
+USING (
+  public.has_company_role(company_id, 'admin')
+  OR public.has_company_role(company_id, 'staff')
+  OR public.has_company_role(company_id, 'coach')
+)
+WITH CHECK (
+  public.has_company_role(company_id, 'admin')
+  OR public.has_company_role(company_id, 'staff')
+  OR public.has_company_role(company_id, 'coach')
+);
+
+DROP POLICY IF EXISTS "diet_plans_delete_coach_staff_admin"
+ON public.diet_plans;
+
+CREATE POLICY "diet_plans_delete_coach_staff_admin"
+ON public.diet_plans
+FOR DELETE
+USING (
+  public.has_company_role(company_id, 'admin')
+  OR public.has_company_role(company_id, 'staff')
+  OR public.has_company_role(company_id, 'coach')
+);
+
+-- =========================================================
+-- diet_plan_meals POLICIES
+-- =========================================================
+
+DROP POLICY IF EXISTS "diet_plan_meals_select_company"
+ON public.diet_plan_meals;
+
+CREATE POLICY "diet_plan_meals_select_company"
+ON public.diet_plan_meals
+FOR SELECT
+USING (
+  EXISTS (
+    SELECT 1
+    FROM public.diet_plans dp
+    WHERE dp.id = diet_plan_meals.diet_plan_id
+      AND public.is_company_member(dp.company_id)
   )
 );
 
-drop policy if exists "diet_plan_meals_insert_coach_staff_admin" on public.diet_plan_meals;
-create policy "diet_plan_meals_insert_coach_staff_admin"
-on public.diet_plan_meals
-for insert
-with check (
-  exists (
-    select 1
-    from public.diet_plans dp
-    where dp.id = diet_plan_meals.diet_plan_id
-      and (
+DROP POLICY IF EXISTS "diet_plan_meals_insert_coach_staff_admin"
+ON public.diet_plan_meals;
+
+CREATE POLICY "diet_plan_meals_insert_coach_staff_admin"
+ON public.diet_plan_meals
+FOR INSERT
+WITH CHECK (
+  EXISTS (
+    SELECT 1
+    FROM public.diet_plans dp
+    WHERE dp.id = diet_plan_meals.diet_plan_id
+      AND (
         public.has_company_role(dp.company_id, 'admin')
-        or public.has_company_role(dp.company_id, 'staff')
-        or public.has_company_role(dp.company_id, 'coach')
+        OR public.has_company_role(dp.company_id, 'staff')
+        OR public.has_company_role(dp.company_id, 'coach')
       )
   )
 );
 
-drop policy if exists "diet_plan_meals_update_coach_staff_admin" on public.diet_plan_meals;
-create policy "diet_plan_meals_update_coach_staff_admin"
-on public.diet_plan_meals
-for update
-using (
-  exists (
-    select 1
-    from public.diet_plans dp
-    where dp.id = diet_plan_meals.diet_plan_id
-      and (
+DROP POLICY IF EXISTS "diet_plan_meals_update_coach_staff_admin"
+ON public.diet_plan_meals;
+
+CREATE POLICY "diet_plan_meals_update_coach_staff_admin"
+ON public.diet_plan_meals
+FOR UPDATE
+USING (
+  EXISTS (
+    SELECT 1
+    FROM public.diet_plans dp
+    WHERE dp.id = diet_plan_meals.diet_plan_id
+      AND (
         public.has_company_role(dp.company_id, 'admin')
-        or public.has_company_role(dp.company_id, 'staff')
-        or public.has_company_role(dp.company_id, 'coach')
+        OR public.has_company_role(dp.company_id, 'staff')
+        OR public.has_company_role(dp.company_id, 'coach')
       )
   )
 )
-with check (
-  exists (
-    select 1
-    from public.diet_plans dp
-    where dp.id = diet_plan_meals.diet_plan_id
-      and (
+WITH CHECK (
+  EXISTS (
+    SELECT 1
+    FROM public.diet_plans dp
+    WHERE dp.id = diet_plan_meals.diet_plan_id
+      AND (
         public.has_company_role(dp.company_id, 'admin')
-        or public.has_company_role(dp.company_id, 'staff')
-        or public.has_company_role(dp.company_id, 'coach')
+        OR public.has_company_role(dp.company_id, 'staff')
+        OR public.has_company_role(dp.company_id, 'coach')
       )
   )
 );
 
-drop policy if exists "diet_plan_meals_delete_coach_staff_admin" on public.diet_plan_meals;
-create policy "diet_plan_meals_delete_coach_staff_admin"
-on public.diet_plan_meals
-for delete
-using (
-  exists (
-    select 1
-    from public.diet_plans dp
-    where dp.id = diet_plan_meals.diet_plan_id
-      and (
+DROP POLICY IF EXISTS "diet_plan_meals_delete_coach_staff_admin"
+ON public.diet_plan_meals;
+
+CREATE POLICY "diet_plan_meals_delete_coach_staff_admin"
+ON public.diet_plan_meals
+FOR DELETE
+USING (
+  EXISTS (
+    SELECT 1
+    FROM public.diet_plans dp
+    WHERE dp.id = diet_plan_meals.diet_plan_id
+      AND (
         public.has_company_role(dp.company_id, 'admin')
-        or public.has_company_role(dp.company_id, 'staff')
-        or public.has_company_role(dp.company_id, 'coach')
+        OR public.has_company_role(dp.company_id, 'staff')
+        OR public.has_company_role(dp.company_id, 'coach')
       )
   )
 );
 
--- ===========================================
--- diet_meal_items policies
--- ===========================================
+-- =========================================================
+-- diet_meal_items POLICIES
+-- =========================================================
 
-drop policy if exists "diet_meal_items_select_company" on public.diet_meal_items;
-create policy "diet_meal_items_select_company"
-on public.diet_meal_items
-for select
-using (
-  exists (
-    select 1
-    from public.diet_plan_meals dpm
-    join public.diet_plans dp on dp.id = dpm.diet_plan_id
-    where dpm.id = diet_meal_items.meal_id
-      and public.is_company_member(dp.company_id)
+DROP POLICY IF EXISTS "diet_meal_items_select_company"
+ON public.diet_meal_items;
+
+CREATE POLICY "diet_meal_items_select_company"
+ON public.diet_meal_items
+FOR SELECT
+USING (
+  EXISTS (
+    SELECT 1
+    FROM public.diet_plan_meals dpm
+    JOIN public.diet_plans dp
+      ON dp.id = dpm.diet_plan_id
+    WHERE dpm.id = diet_meal_items.meal_id
+      AND public.is_company_member(dp.company_id)
   )
 );
 
-drop policy if exists "diet_meal_items_insert_coach_staff_admin" on public.diet_meal_items;
-create policy "diet_meal_items_insert_coach_staff_admin"
-on public.diet_meal_items
-for insert
-with check (
-  exists (
-    select 1
-    from public.diet_plan_meals dpm
-    join public.diet_plans dp on dp.id = dpm.diet_plan_id
-    where dpm.id = diet_meal_items.meal_id
-      and (
+DROP POLICY IF EXISTS "diet_meal_items_insert_coach_staff_admin"
+ON public.diet_meal_items;
+
+CREATE POLICY "diet_meal_items_insert_coach_staff_admin"
+ON public.diet_meal_items
+FOR INSERT
+WITH CHECK (
+  EXISTS (
+    SELECT 1
+    FROM public.diet_plan_meals dpm
+    JOIN public.diet_plans dp
+      ON dp.id = dpm.diet_plan_id
+    WHERE dpm.id = diet_meal_items.meal_id
+      AND (
         public.has_company_role(dp.company_id, 'admin')
-        or public.has_company_role(dp.company_id, 'staff')
-        or public.has_company_role(dp.company_id, 'coach')
+        OR public.has_company_role(dp.company_id, 'staff')
+        OR public.has_company_role(dp.company_id, 'coach')
       )
   )
 );
 
-drop policy if exists "diet_meal_items_update_coach_staff_admin" on public.diet_meal_items;
-create policy "diet_meal_items_update_coach_staff_admin"
-on public.diet_meal_items
-for update
-using (
-  exists (
-    select 1
-    from public.diet_plan_meals dpm
-    join public.diet_plans dp on dp.id = dpm.diet_plan_id
-    where dpm.id = diet_meal_items.meal_id
-      and (
+DROP POLICY IF EXISTS "diet_meal_items_update_coach_staff_admin"
+ON public.diet_meal_items;
+
+CREATE POLICY "diet_meal_items_update_coach_staff_admin"
+ON public.diet_meal_items
+FOR UPDATE
+USING (
+  EXISTS (
+    SELECT 1
+    FROM public.diet_plan_meals dpm
+    JOIN public.diet_plans dp
+      ON dp.id = dpm.diet_plan_id
+    WHERE dpm.id = diet_meal_items.meal_id
+      AND (
         public.has_company_role(dp.company_id, 'admin')
-        or public.has_company_role(dp.company_id, 'staff')
-        or public.has_company_role(dp.company_id, 'coach')
+        OR public.has_company_role(dp.company_id, 'staff')
+        OR public.has_company_role(dp.company_id, 'coach')
       )
   )
 )
-with check (
-  exists (
-    select 1
-    from public.diet_plan_meals dpm
-    join public.diet_plans dp on dp.id = dpm.diet_plan_id
-    where dpm.id = diet_meal_items.meal_id
-      and (
+WITH CHECK (
+  EXISTS (
+    SELECT 1
+    FROM public.diet_plan_meals dpm
+    JOIN public.diet_plans dp
+      ON dp.id = dpm.diet_plan_id
+    WHERE dpm.id = diet_meal_items.meal_id
+      AND (
         public.has_company_role(dp.company_id, 'admin')
-        or public.has_company_role(dp.company_id, 'staff')
-        or public.has_company_role(dp.company_id, 'coach')
+        OR public.has_company_role(dp.company_id, 'staff')
+        OR public.has_company_role(dp.company_id, 'coach')
       )
   )
 );
 
-drop policy if exists "diet_meal_items_delete_coach_staff_admin" on public.diet_meal_items;
-create policy "diet_meal_items_delete_coach_staff_admin"
-on public.diet_meal_items
-for delete
-using (
-  exists (
-    select 1
-    from public.diet_plan_meals dpm
-    join public.diet_plans dp on dp.id = dpm.diet_plan_id
-    where dpm.id = diet_meal_items.meal_id
-      and (
+DROP POLICY IF EXISTS "diet_meal_items_delete_coach_staff_admin"
+ON public.diet_meal_items;
+
+CREATE POLICY "diet_meal_items_delete_coach_staff_admin"
+ON public.diet_meal_items
+FOR DELETE
+USING (
+  EXISTS (
+    SELECT 1
+    FROM public.diet_plan_meals dpm
+    JOIN public.diet_plans dp
+      ON dp.id = dpm.diet_plan_id
+    WHERE dpm.id = diet_meal_items.meal_id
+      AND (
         public.has_company_role(dp.company_id, 'admin')
-        or public.has_company_role(dp.company_id, 'staff')
-        or public.has_company_role(dp.company_id, 'coach')
+        OR public.has_company_role(dp.company_id, 'staff')
+        OR public.has_company_role(dp.company_id, 'coach')
       )
   )
 );
 
---===========================================
+-- =========================================================
+-- RPC
+-- =========================================================
 
--- RPC 
---===========================================
--- Create diet plan
-create or replace function public.create_diet_plan_with_meals(
-  p_payload jsonb
+DROP FUNCTION IF EXISTS public.create_diet_plan_with_meals(JSONB);
+
+CREATE OR REPLACE FUNCTION public.create_diet_plan_with_meals(
+  p_payload JSONB
 )
-returns uuid
-language plpgsql
-security definer
-set search_path = public
-as $$
-declare
-  v_plan_id uuid;
-  v_meal_id uuid;
-  v_company_id uuid;
-  v_user_id uuid;
-  v_meal jsonb;
-  v_item jsonb;
-begin
+RETURNS UUID
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_plan_id UUID;
+  v_meal_id UUID;
+  v_company_id UUID;
+  v_user_id UUID;
+  v_meal JSONB;
+  v_item JSONB;
+BEGIN
   v_user_id := auth.uid();
-  v_company_id := (p_payload->>'company_id')::uuid;
+  v_company_id := (p_payload->>'company_id')::UUID;
 
-  if v_company_id is null then
-    raise exception 'company_id is required';
-  end if;
+  IF v_company_id IS NULL THEN
+    RAISE EXCEPTION 'company_id is required';
+  END IF;
 
-  if not (
+  IF NOT (
     public.is_company_owner(v_company_id)
-    or
-    public.has_company_role(v_company_id, 'admin')
-    or public.has_company_role(v_company_id, 'staff')
-    or public.has_company_role(v_company_id, 'coach')
-  ) then
-    raise exception 'You do not have permission to create this diet plan';
-  end if;
+    OR public.has_company_role(v_company_id, 'admin')
+    OR public.has_company_role(v_company_id, 'staff')
+    OR public.has_company_role(v_company_id, 'coach')
+  ) THEN
+    RAISE EXCEPTION 'You do not have permission to create this diet plan';
+  END IF;
 
-  insert into public.diet_plans (
+  INSERT INTO public.diet_plans (
     company_id,
     created_by,
     updated_by,
@@ -332,7 +412,7 @@ begin
     description,
     status
   )
-  values (
+  VALUES (
     v_company_id,
     v_user_id,
     v_user_id,
@@ -340,165 +420,164 @@ begin
     p_payload->>'description',
     p_payload->>'status'
   )
-  returning id into v_plan_id;
+  RETURNING id INTO v_plan_id;
 
-  for v_meal in
-    select value
-    from jsonb_array_elements(coalesce(p_payload->'meals', '[]'::jsonb))
-  loop
-    insert into public.diet_plan_meals (
+  FOR v_meal IN
+    SELECT value
+    FROM jsonb_array_elements(COALESCE(p_payload->'meals', '[]'::JSONB))
+  LOOP
+    INSERT INTO public.diet_plan_meals (
       diet_plan_id,
       day_index,
       meal_type,
       notes,
       order_index
     )
-    values (
+    VALUES (
       v_plan_id,
-      nullif(v_meal->>'day_index', '')::int,
+      NULLIF(v_meal->>'day_index', '')::INT,
       v_meal->>'meal_type',
-      nullif(trim(v_meal->>'notes'), ''),
-      coalesce((v_meal->>'order_index')::int, 0)
+      NULLIF(TRIM(v_meal->>'notes'), ''),
+      COALESCE((v_meal->>'order_index')::INT, 0)
     )
-    returning id into v_meal_id;
+    RETURNING id INTO v_meal_id;
 
-    for v_item in
-      select value
-      from jsonb_array_elements(coalesce(v_meal->'items', '[]'::jsonb))
-    loop
-      insert into public.diet_meal_items (
+    FOR v_item IN
+      SELECT value
+      FROM jsonb_array_elements(COALESCE(v_meal->'items', '[]'::JSONB))
+    LOOP
+      INSERT INTO public.diet_meal_items (
         meal_id,
         food_name,
         quantity,
         notes,
         order_index
       )
-      values (
+      VALUES (
         v_meal_id,
-        trim(v_item->>'food_name'),
-        trim(v_item->>'quantity'),
-        nullif(trim(v_item->>'notes'), ''),
-        coalesce((v_item->>'order_index')::int, 0)
+        TRIM(v_item->>'food_name'),
+        TRIM(v_item->>'quantity'),
+        NULLIF(TRIM(v_item->>'notes'), ''),
+        COALESCE((v_item->>'order_index')::INT, 0)
       );
-    end loop;
-  end loop;
+    END LOOP;
+  END LOOP;
 
-  return v_plan_id;
-end;
+  RETURN v_plan_id;
+END;
 $$;
 
-ALTER FUNCTION public.create_diet_plan_with_meals(jsonb) OWNER TO postgres;
-REVOKE ALL ON FUNCTION public.create_diet_plan_with_meals(jsonb) FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION public.create_diet_plan_with_meals(jsonb) TO authenticated;
+ALTER FUNCTION public.create_diet_plan_with_meals(JSONB) OWNER TO postgres;
+REVOKE ALL ON FUNCTION public.create_diet_plan_with_meals(JSONB) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.create_diet_plan_with_meals(JSONB) TO authenticated;
 
--- update diet plan
-create or replace function public.update_diet_plan_with_meals(
-  p_payload jsonb
+DROP FUNCTION IF EXISTS public.update_diet_plan_with_meals(JSONB);
+
+CREATE OR REPLACE FUNCTION public.update_diet_plan_with_meals(
+  p_payload JSONB
 )
-returns uuid
-language plpgsql
-security definer
-set search_path = public
-as $$
-declare
-  v_plan_id uuid;
-  v_existing_company_id uuid;
-  v_meal_id uuid;
-  v_user_id uuid;
-  v_meal jsonb;
-  v_item jsonb;
-
-begin
+RETURNS UUID
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_plan_id UUID;
+  v_existing_company_id UUID;
+  v_meal_id UUID;
+  v_user_id UUID;
+  v_meal JSONB;
+  v_item JSONB;
+BEGIN
   v_user_id := auth.uid();
-  v_plan_id := (p_payload->>'id')::uuid;
+  v_plan_id := (p_payload->>'id')::UUID;
 
-  if v_plan_id is null then
-    raise exception 'id is required';
-  end if;
+  IF v_plan_id IS NULL THEN
+    RAISE EXCEPTION 'id is required';
+  END IF;
 
-  select dp.company_id
-  into v_existing_company_id
-  from public.diet_plans dp
-  where dp.id = v_plan_id;
+  SELECT dp.company_id
+  INTO v_existing_company_id
+  FROM public.diet_plans dp
+  WHERE dp.id = v_plan_id;
 
-  if v_existing_company_id is null then
-    raise exception 'Diet plan not found';
-  end if;
+  IF v_existing_company_id IS NULL THEN
+    RAISE EXCEPTION 'Diet plan not found';
+  END IF;
 
-  if not (
+  IF NOT (
     public.is_company_owner(v_existing_company_id)
-    or
-    public.has_company_role(v_existing_company_id, 'admin')
-    or public.has_company_role(v_existing_company_id, 'staff')
-    or public.has_company_role(v_existing_company_id, 'coach')
-  ) then
-    raise exception 'You do not have permission to update this diet plan';
-  end if;
+    OR public.has_company_role(v_existing_company_id, 'admin')
+    OR public.has_company_role(v_existing_company_id, 'staff')
+    OR public.has_company_role(v_existing_company_id, 'coach')
+  ) THEN
+    RAISE EXCEPTION 'You do not have permission to update this diet plan';
+  END IF;
 
-  update public.diet_plans
-  set
+  UPDATE public.diet_plans
+  SET
     title = p_payload->>'title',
     description = p_payload->>'description',
     status = p_payload->>'status',
     updated_by = v_user_id
-  where id = v_plan_id;
+  WHERE id = v_plan_id;
 
-  delete from public.diet_plan_meals
-  where diet_plan_id = v_plan_id;
+  DELETE FROM public.diet_plan_meals
+  WHERE diet_plan_id = v_plan_id;
 
-  for v_meal in
-    select value
-    from jsonb_array_elements(coalesce(p_payload->'meals', '[]'::jsonb))
-  loop
-    insert into public.diet_plan_meals (
+  FOR v_meal IN
+    SELECT value
+    FROM jsonb_array_elements(COALESCE(p_payload->'meals', '[]'::JSONB))
+  LOOP
+    INSERT INTO public.diet_plan_meals (
       diet_plan_id,
       day_index,
       meal_type,
       notes,
       order_index
     )
-    values (
+    VALUES (
       v_plan_id,
-      nullif(v_meal->>'day_index', '')::int,
+      NULLIF(v_meal->>'day_index', '')::INT,
       v_meal->>'meal_type',
-      nullif(trim(v_meal->>'notes'), ''),
-      coalesce((v_meal->>'order_index')::int, 0)
+      NULLIF(TRIM(v_meal->>'notes'), ''),
+      COALESCE((v_meal->>'order_index')::INT, 0)
     )
-    returning id into v_meal_id;
+    RETURNING id INTO v_meal_id;
 
-    for v_item in
-      select value
-      from jsonb_array_elements(coalesce(v_meal->'items', '[]'::jsonb))
-    loop
-      insert into public.diet_meal_items (
+    FOR v_item IN
+      SELECT value
+      FROM jsonb_array_elements(COALESCE(v_meal->'items', '[]'::JSONB))
+    LOOP
+      INSERT INTO public.diet_meal_items (
         meal_id,
         food_name,
         quantity,
         notes,
         order_index
       )
-      values (
+      VALUES (
         v_meal_id,
-        trim(v_item->>'food_name'),
-        trim(v_item->>'quantity'),
-        nullif(trim(v_item->>'notes'), ''),
-        coalesce((v_item->>'order_index')::int, 0)
+        TRIM(v_item->>'food_name'),
+        TRIM(v_item->>'quantity'),
+        NULLIF(TRIM(v_item->>'notes'), ''),
+        COALESCE((v_item->>'order_index')::INT, 0)
       );
-    end loop;
-  end loop;
+    END LOOP;
+  END LOOP;
 
-  return v_plan_id;
-end;
+  RETURN v_plan_id;
+END;
 $$;
 
-ALTER FUNCTION public.update_diet_plan_with_meals(jsonb) OWNER TO postgres;
-REVOKE ALL ON FUNCTION public.update_diet_plan_with_meals(jsonb) FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION public.update_diet_plan_with_meals(jsonb) TO authenticated;
+ALTER FUNCTION public.update_diet_plan_with_meals(JSONB) OWNER TO postgres;
+REVOKE ALL ON FUNCTION public.update_diet_plan_with_meals(JSONB) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.update_diet_plan_with_meals(JSONB) TO authenticated;
 
---===========================================
+-- =========================================================
+-- GRANTS
+-- =========================================================
 
--- GRANT
---===========================================
 GRANT SELECT, INSERT, UPDATE, DELETE
 ON public.diet_plans
 TO authenticated;

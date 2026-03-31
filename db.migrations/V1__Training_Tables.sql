@@ -80,7 +80,6 @@ alter table training_plans
 add column updated_by uuid references public.profiles(id);
 
 --===========================================
-
 -- Policies
 --===========================================
 alter table public.training_plans enable row level security;
