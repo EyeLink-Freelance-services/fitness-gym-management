@@ -9,6 +9,7 @@ interface PropsType {
   disabled?: boolean;
   active?: boolean;
   className?: string;
+  rows?: number;
   labelClassName?: string;
   icon?: React.ReactNode;
   defaultValue?: string;
@@ -24,6 +25,7 @@ export function TextAreaGroup({
   disabled,
   active,
   className,
+  rows,
   labelClassName,
   icon,
   defaultValue,
@@ -37,6 +39,7 @@ export function TextAreaGroup({
   const isRequired = restTextareaProps.required ?? required;
   const isDisabled = restTextareaProps.disabled ?? disabled;
   const defaultFormValue = restTextareaProps.defaultValue ?? defaultValue;
+  const rowsValue = rows ?? 6;
 
   return (
     <div className={cn(className)}>
@@ -51,7 +54,7 @@ export function TextAreaGroup({
       <div className="relative mt-3 [&_svg]:pointer-events-none [&_svg]:absolute [&_svg]:left-5.5 [&_svg]:top-5.5">
         <textarea
           id={id}
-          rows={6}
+          rows={rowsValue}
           placeholder={placeholder}
           defaultValue={defaultFormValue}
           className={cn(

@@ -15,6 +15,7 @@ type InputGroupProps = {
   handleChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   value?: string;
   name?: string;
+  step?: string;
   icon?: React.ReactNode;
   iconPosition?: "left" | "right";
   height?: "sm" | "default";
@@ -29,6 +30,7 @@ const InputGroup: React.FC<InputGroupProps> = ({
   labelClassName,
   label,
   type,
+  step,
   placeholder,
   required,
   disabled,
@@ -53,6 +55,7 @@ const InputGroup: React.FC<InputGroupProps> = ({
     | readonly string[]
     | undefined;
   const defaultValue = restInputProps.defaultValue ?? props.defaultValue;
+  const stepValue = step ?? "1";
 
   return (
     <div className={className}>
@@ -76,6 +79,7 @@ const InputGroup: React.FC<InputGroupProps> = ({
           id={id}
           type={type}
           name={inputName}
+          step={stepValue}
           placeholder={placeholder}
           onChange={onChange}
           value={value}

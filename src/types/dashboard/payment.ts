@@ -2,6 +2,14 @@ import type { ButtonColorVariant, StatusTone } from "@/types/shared";
 
 export type PaymentCollectionsTimeFrame = "last 6 months" | "last 12 months";
 
+export const ActionType = {
+  INVOICE: "invoice",
+  MARK_PAID: "mark-paid",
+  REMIND: "remind",
+} as const;
+
+export type ActionType = (typeof ActionType)[keyof typeof ActionType];
+
 export interface CompanyPaymentAlert {
   title: string;
   description: string;
@@ -36,6 +44,7 @@ export interface PaymentTransactionRow {
   actionLabel: string;
   actionVariant: ButtonColorVariant;
   actionToast: string;
+  action?: ActionType
 }
 
 export interface PaymentRenewalRow {

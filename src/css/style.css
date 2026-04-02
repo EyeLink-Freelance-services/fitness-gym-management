@@ -494,6 +494,32 @@ input[type="search"]::-webkit-search-cancel-button {
   appearance: textfield;
 }
 
+.invoice-preview-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.8) transparent;
+}
+
+.invoice-preview-scroll::-webkit-scrollbar {
+  width: 10px;
+}
+
+.invoice-preview-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.invoice-preview-scroll::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.75);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+.invoice-preview-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.9);
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
 @layer components {
   .form-panel {
     @apply rounded-xl border border-gray-300 dark:border-dark-3 p-6;

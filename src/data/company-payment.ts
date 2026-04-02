@@ -118,6 +118,7 @@ export const COMPANY_PAYMENT_TRANSACTIONS: PaymentTransactionRow[] = MEMBER && S
         actionLabel: "Invoice",
         actionVariant: "outlineDark",
         actionToast: "Invoice preview is not available yet.",
+        action: "invoice"
       },
       {
         invoice: "#INV-2026-0338",
