@@ -5,9 +5,11 @@ import {
   COMPANY_SCHEMA_VALIDATION_RULES,
 } from "@/data/company-schema";
 import {
+  COACH_DIET_PLAN_RECORDS,
   COACH_PROGRESS_RECORDS,
   COACH_PROGRESS_SERIES,
   COACH_PROGRESS_SUMMARY,
+  COACH_TRAINING_PLAN_RECORDS,
   COMPANY_RECORD_DRAFTS,
   COACH_RECORD_DRAFTS,
 } from "@/data/coach-progress";
@@ -83,6 +85,16 @@ export async function getPersonalCoachProgressOverview(clientId?: string) {
     series: COACH_PROGRESS_SERIES,
     records: COACH_PROGRESS_RECORDS,
   });
+}
+
+export async function getPersonalCoachDietPlans(clientId?: string) {
+  const resolvedClientId = clientId ?? COACH_CLIENTS[0]?.id ?? "";
+  return withLatency(COACH_DIET_PLAN_RECORDS[resolvedClientId] ?? []);
+}
+
+export async function getPersonalCoachTrainingPlans(clientId?: string) {
+  const resolvedClientId = clientId ?? COACH_CLIENTS[0]?.id ?? "";
+  return withLatency(COACH_TRAINING_PLAN_RECORDS[resolvedClientId] ?? []);
 }
 
 export async function getCompanyRecordDraft(clientId = "client-wei-liang") {

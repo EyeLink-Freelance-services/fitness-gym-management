@@ -84,6 +84,17 @@ export async function TableUI<TData extends TableRowData = TableRowData>({
         toRecord(row)[key] == null || typeof toRecord(row)[key] === "number",
     );
 
+  const toDisplayText = (value: unknown) => {
+    if (value == null) return "";
+    if (typeof value === "string" || typeof value === "number") {
+      return String(value);
+    }
+    if (Array.isArray(value)) {
+      return value.join(", ");
+    }
+    return "";
+  };
+
   return (
     <div
       className={cn(
@@ -93,10 +104,7 @@ export async function TableUI<TData extends TableRowData = TableRowData>({
     >
       <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <CardTitle
-            title={title ? title : "List"}
-            subtitle={description}
-          />
+          <CardTitle title={title ? title : "List"} subtitle={description} />
         </div>
 
         <div className="flex flex-wrap gap-3">
@@ -110,57 +118,21 @@ export async function TableUI<TData extends TableRowData = TableRowData>({
       </div>
 
       <Table className={cn("w-full", tableClassName)}>
-        <TableHeader>
-          <TableRow className="border-none bg-[#F7F9FC] dark:bg-dark-2">
-            {resolvedColumns.map((column, index) => {
-              const key = String(column.key);
-              const alignment =
-                column.align ??
-                (index === 0
-                  ? "left"
-                  : isNumericColumn(key)
-                    ? "right"
-                    : "center");
-
-              return (
-                <TableHead
-                  key={key}
-                  className={cn(
-                    "whitespace-nowrap text-sm font-medium text-dark dark:text-white",
-                    alignmentClasses[alignment].head,
-                    column.headClassName,
-                    column.className,
-                  )}
-                >
-                  {column.label ?? formatColumnLabel(key)}
-                </TableHead>
-              );
-            })}
+        {!hasRows ? (
+          <TableRow>
+            <TableCell
+              colSpan={Math.max(resolvedColumns.length, 1)}
+              className="text-center text-base text-dark dark:text-white"
+            >
+              {emptyStateLabel ?? "No data available"}
+            </TableCell>
           </TableRow>
-        </TableHeader>
-
-        <TableBody>
-          {!hasRows ? (
-            <TableRow>
-              <TableCell
-                colSpan={Math.max(resolvedColumns.length, 1)}
-                className="text-center text-base text-dark dark:text-white"
-              >
-                {emptyStateLabel ?? "No data available"}
-              </TableCell>
-            </TableRow>
-          ) : (
-            rows.map((row, rowIndex) => (
-              <TableRow
-                className="text-base text-dark dark:text-white"
-                key={
-                  rowKey?.(row, rowIndex) ??
-                  `${String(toRecord(row).name ?? "row")}-${rowIndex}`
-                }
-              >
+        ) : (
+          <>
+            <TableHeader>
+              <TableRow className="border-none bg-[#F7F9FC] dark:bg-dark-2">
                 {resolvedColumns.map((column, index) => {
                   const key = String(column.key);
-                  const value = toRecord(row)[key];
                   const alignment =
                     column.align ??
                     (index === 0
@@ -169,71 +141,130 @@ export async function TableUI<TData extends TableRowData = TableRowData>({
                         ? "right"
                         : "center");
 
-                  if (column.render) {
-                    return (
-                      <TableCell
-                        key={`${key}-${rowIndex}`}
-                        className={cn(
-                          alignmentClasses[alignment].cell,
-                          column.cellClassName,
-                          column.className,
-                        )}
-                      >
-                        {column.render(row, rowIndex)}
-                      </TableCell>
-                    );
-                  }
-
-                  if (index === 0) {
-                    const logo = toRecord(row).logo;
-
-                    return (
-                      <TableCell
-                        key={`${key}-${rowIndex}`}
-                        className={cn(
-                          alignmentClasses[alignment].cell,
-                          "font-medium text-dark dark:text-white",
-                          column.cellClassName,
-                          column.className,
-                        )}
-                      >
-                        <div className="flex min-w-fit items-center gap-3">
-                          {isImageSrc(logo) && (
-                            <Image
-                              src={logo}
-                              className="size-8 rounded-full object-cover"
-                              width={40}
-                              height={40}
-                              alt={`${String(value ?? "Item")} Logo`}
-                              role="presentation"
-                            />
-                          )}
-                          <span>{formatCellValue(key, value)}</span>
-                        </div>
-                      </TableCell>
-                    );
-                  }
-
                   return (
-                    <TableCell
-                      key={`${key}-${rowIndex}`}
+                    <TableHead
+                      key={key}
                       className={cn(
-                        alignmentClasses[alignment].cell,
-                        "text-dark-6 dark:text-dark-6",
-                        isNumericColumn(key) &&
-                          "font-medium text-dark dark:text-white",
-                        column.cellClassName,
+                        "overflow-hidden text-ellipsis whitespace-nowrap text-sm font-medium text-dark dark:text-white",
+                        alignmentClasses[alignment].head,
+                        column.headClassName,
                         column.className,
                       )}
                     >
-                      {formatCellValue(key, value)}
-                    </TableCell>
+                      <span className="block truncate">
+                        {column.label ?? formatColumnLabel(key)}
+                      </span>
+                    </TableHead>
                   );
                 })}
               </TableRow>
-            ))
-          )}
-        </TableBody>
+            </TableHeader>
+
+            <TableBody>
+              <TableRow></TableRow>
+              {rows.map((row, rowIndex) => (
+                <TableRow
+                  className="text-base text-dark dark:text-white"
+                  key={
+                    rowKey?.(row, rowIndex) ??
+                    `${String(toRecord(row).name ?? "row")}-${rowIndex}`
+                  }
+                >
+                  {resolvedColumns.map((column, index) => {
+                    const key = String(column.key);
+                    const value = toRecord(row)[key];
+                    const alignment =
+                      column.align ??
+                      (index === 0
+                        ? "left"
+                        : isNumericColumn(key)
+                          ? "right"
+                          : "center");
+
+                    if (column.render) {
+                      return (
+                        <TableCell
+                          key={`${key}-${rowIndex}`}
+                          className={cn(
+                            "overflow-hidden",
+                            alignmentClasses[alignment].cell,
+                            column.headClassName,
+                            column.cellClassName,
+                            column.className,
+                          )}
+                        >
+                          <div className="w-full truncate">
+                            {column.render(row, rowIndex)}
+                          </div>
+                        </TableCell>
+                      );
+                    }
+
+                    if (index === 0) {
+                      const logo = toRecord(row).logo;
+
+                      return (
+                        <TableCell
+                          key={`${key}-${rowIndex}`}
+                          className={cn(
+                            "overflow-hidden",
+                            alignmentClasses[alignment].cell,
+                            "font-medium text-dark dark:text-white",
+                            column.headClassName,
+                            column.cellClassName,
+                            column.className,
+                          )}
+                        >
+                          <div className="flex w-full min-w-0 items-center gap-3">
+                            {isImageSrc(logo) && (
+                              <Image
+                                src={logo}
+                                className="size-8 rounded-full object-cover"
+                                width={40}
+                                height={40}
+                                alt={`${String(value ?? "Item")} Logo`}
+                                role="presentation"
+                              />
+                            )}
+                            <span
+                              className="block flex-1 truncate"
+                              title={toDisplayText(value)}
+                            >
+                              {formatCellValue(key, value)}
+                            </span>
+                          </div>
+                        </TableCell>
+                      );
+                    }
+
+                    return (
+                      <TableCell
+                        key={`${key}-${rowIndex}`}
+                        className={cn(
+                          "overflow-hidden",
+                          alignmentClasses[alignment].cell,
+                          "text-dark-6 dark:text-dark-6",
+                          isNumericColumn(key) &&
+                            "font-medium text-dark dark:text-white",
+                          column.headClassName,
+                          column.cellClassName,
+                          column.className,
+                        )}
+                      >
+                        <span
+                          className="block w-full truncate"
+                          title={toDisplayText(value)}
+                        >
+                          {formatCellValue(key, value)}
+                        </span>
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableBody>
+          </>
+        )}
       </Table>
     </div>
   );

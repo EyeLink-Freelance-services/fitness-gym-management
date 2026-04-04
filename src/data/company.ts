@@ -1,53 +1,30 @@
-import type { CompanyClientRow } from "@/types/dashboard/company-directory";
+import type { CompanyClientRow, CompanyStaffRow } from "@/types/dashboard/company-directory";
 import * as Icons from "../components/IconsCollection/icons";
 import { buildCompanyClientRows } from "@/utils/dashboard/company-client-rows";
 
 export const DUMMY_KPIS = [
   {
-    label: "Total Members",
+    label: "Total Staff",
     value: "2",
     trend: 0,
     icon: Icons.Users,
   },
   {
-    label: "Active",
+    label: "Total Coaches",
     value: "2",
     trend: 0,
     icon: Icons.Views,
   },
   {
-    label: "Expiring (30d)",
+    label: "Total Clients",
     value: "1",
-    trend: 0,
-    icon: Icons.Product,
-  },
-  {
-    label: "Pending Payments (Rs)",
-    value: "0",
-    icon: Icons.Profit,
+    icon: Icons.Users,
   },
   {
     label: "Revenue (Rs)",
     value: "400",
     trend: 0,
     icon: Icons.Profit,
-  },
-  {
-    label: "Expenses (Rs)",
-    value: "0",
-    trend: 0,
-    icon: Icons.Product,
-  },
-  {
-    label: "New Signups",
-    value: "0",
-    trend: 0,
-    icon: Icons.Users,
-  },
-  {
-    label: "Staff",
-    value: "1",
-    icon: Icons.Users,
   },
 ];
 
@@ -63,7 +40,8 @@ export const GYM_CLIENTS: CompanyClientRow[] = [
     id: "client-1",
     name: "Alex Brown",
     contact: "0435123456",
-    plan: "Premium",
+    plan: "Personal Coaching",
+    price: 123,
     joinedAt: "2024-01-10",
     expiresAt: "2026-04-20",
     coach: "John Smith",
@@ -75,6 +53,7 @@ export const GYM_CLIENTS: CompanyClientRow[] = [
     name: "Jordan Lee",
     contact: "0498765432",
     plan: "Standard",
+    price: 150,
     joinedAt: "2025-09-15",
     expiresAt: "2026-03-26",
     coach: "John Smith",
@@ -84,3 +63,40 @@ export const GYM_CLIENTS: CompanyClientRow[] = [
 ];
 
 export const COMPANY_CLIENT_ROWS = buildCompanyClientRows(GYM_CLIENTS);
+
+export const COMPANY_STAFF_ROWS: CompanyStaffRow[] = [
+  {
+    id: "staff-1",
+    first_name: "Ava",
+    last_name: "Naidoo",
+    gym_name: "MyFit - Trianon",
+    phone_num: "+230 5901 2234",
+    email: "ava.naidoo@myfit.com",
+    role: "Receptionist",
+    notes: "Handles front desk and daily member inquiries.",
+    status: "Active",
+  },
+  {
+    id: "staff-2",
+    first_name: "Ryan",
+    last_name: "Pillay",
+    gym_name: "MyFit - Trianon",
+    phone_num: "+230 5933 7788",
+    email: "ryan.pillay@myfit.com",
+    role: "Operations Manager",
+    notes: "Oversees branch operations and shift planning.",
+    status: "Active",
+  },
+  {
+    id: "staff-3",
+    first_name: "Mia",
+    last_name: "Ramlall",
+    gym_name: "MyFit - Trianon",
+    phone_num: "+230 5755 8811",
+    email: "mia.ramlall@myfit.com",
+    role: "Sales Executive",
+    notes: "Focuses on membership conversions and renewals.",
+    status: "Inactive",
+  },
+];
+

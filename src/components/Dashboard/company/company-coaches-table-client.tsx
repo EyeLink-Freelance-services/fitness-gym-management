@@ -1,21 +1,25 @@
 "use client";
 
-import { useEffect, useId, useState } from "react";
-import { createPortal } from "react-dom";
 import { FormModalTrigger } from "@/components/Dashboard/form-modal-trigger";
 import PersonalCoachForm from "@/components/Forms/PersonalCoachForm";
-import { superAdminCoachColumns } from "@/components/Dashboard/table-column/super-admin-column";
 import { DataTable } from "@/components/Tables";
-import type { SuperAdminCoachesRow } from "@/types/dashboard/super-admin";
+import type { CompanyCoachRow } from "@/types/dashboard/company-directory";
 import type { PersonalCoachFormData } from "@/types/forms";
+import type { ColumnDef } from "@tanstack/react-table";
+import { useEffect, useId, useState } from "react";
+import { createPortal } from "react-dom";
+import { companyCoachColumns } from "../table-column/company-columns";
 
-interface CoachesTableClientProps {
-  data: SuperAdminCoachesRow[];
+interface CompanyCoachesTableClientProps {
+  data: CompanyCoachRow[];
 }
 
-export function CoachesTableClient({ data }: CoachesTableClientProps) {
-  const [selectedCoach, setSelectedCoach] =
-    useState<SuperAdminCoachesRow | null>(null);
+export function CompanyCoachesTableClient({
+  data,
+}: CompanyCoachesTableClientProps) {
+  const [selectedCoach, setSelectedCoach] = useState<CompanyCoachRow | null>(
+    null,
+  );
   const [mounted, setMounted] = useState(false);
   const titleId = useId();
 
@@ -51,12 +55,12 @@ export function CoachesTableClient({ data }: CoachesTableClientProps) {
         specialization: selectedCoach.specialization,
         coachingMode: selectedCoach.coaching_mode,
         location: selectedCoach.location,
-        certifications: selectedCoach.certifications.join(", "),
+        certifications: selectedCoach.certifications?.join(", ") ?? "",
         hourlyRate: selectedCoach.hourly_rate,
         yearsExperience: selectedCoach.years_of_experience,
-        languages: selectedCoach.languages_spoken.join(", "),
+        languages: selectedCoach.languages_spoken?.join(", ") ?? "",
         bio: selectedCoach.bio,
-        availability: selectedCoach.availability.join(", "),
+        availability: selectedCoach.availability?.join(", ") ?? "",
       }
     : undefined;
 
@@ -65,22 +69,24 @@ export function CoachesTableClient({ data }: CoachesTableClientProps) {
       <div className="flex flex-col gap-4">
         <div className="flex justify-end">
           <FormModalTrigger
-            buttonLabel="+ Add Personal Coach"
+            buttonLabel="+ Add Coach"
             formType="personal"
+            coachContext="company"
+            size="small"
           />
         </div>
 
         <DataTable
           title="Coaches"
-          description="Personal coaches across all locations."
+          description="Coach availability and their number of clients."
           data={data}
-          columns={superAdminCoachColumns}
-          searchPlaceholder="Search coach, email, specialization..."
-          initialPageSize={10}
-          emptyStateLabel="No coaches available."
+          columns={companyCoachColumns}
           getRowId={(row) => row.id}
           onRowClick={setSelectedCoach}
-          tableClassName="min-w-[760px]"
+          tableClassName="min-w-[860px]"
+          searchPlaceholder="Search coach, email, status..."
+          initialPageSize={10}
+          emptyStateLabel="No coaches available."
         />
       </div>
 
@@ -101,6 +107,7 @@ export function CoachesTableClient({ data }: CoachesTableClientProps) {
             <div className="w-full max-w-4xl overflow-hidden rounded-2xl bg-white shadow-xl dark:bg-dark-2">
               <div className="max-h-[85vh] overflow-y-auto p-4">
                 <PersonalCoachForm
+                  context="company"
                   mode="edit"
                   initialData={selectedCoachFormData}
                   existingProfilePhotoUrl={

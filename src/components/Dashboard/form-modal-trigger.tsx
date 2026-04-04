@@ -10,10 +10,13 @@ import MedicalNotesForm from "@/components/Forms/MedicalNotesForm";
 import PersonalCoachForm from "@/components/Forms/PersonalCoachForm";
 import { Button } from "@/components/ui-elements/button";
 import { FormModalTriggerProps } from "@/types/forms";
+import StaffForm from "../Forms/StaffForm";
 
 export function FormModalTrigger({
   buttonLabel,
   formType,
+  clientContext,
+  coachContext = "super-admin",
   size,
 }: FormModalTriggerProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -67,13 +70,22 @@ export function FormModalTrigger({
                 <div className="w-full max-w-4xl overflow-hidden rounded-2xl bg-white shadow-xl dark:bg-dark-2">
                   <div className="max-h-[85vh] overflow-y-auto p-4">
                     {formType === "client" && (
-                      <ClientForm onSuccess={close} />
+                      <ClientForm
+                        clientContext={clientContext}
+                        onSuccess={close}
+                      />
                     )}
                     {formType === "assignClient" && (
                       <AssignClientForm onSuccess={close} />
                     )}
                     {formType === "company" && <CompanyForm />}
-                    {formType === "personal" && <PersonalCoachForm />}
+                    {formType === "personal" && (
+                      <PersonalCoachForm
+                        context={coachContext}
+                        onSuccess={close}
+                      />
+                    )}
+                    {formType === "staff" && <StaffForm />}
                     {formType === "announcement" && (
                       <AnnouncementForm onSuccess={close} />
                     )}

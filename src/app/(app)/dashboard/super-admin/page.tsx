@@ -8,10 +8,14 @@ import { Skeleton } from "@/components/Tables/skeleton";
 import { TableUI } from "@/components/Tables";
 import { SearchType } from "@/types/dashboard/dashboard-shared";
 import {
+  getFiveLastCoaches,
   getSuperAdminOverviewData,
-  getTopCoaches,
-  getTopGyms,
+  getFiveLastGyms,
 } from "@/services/dashboard.services";
+import {
+  superAdminCoachPreviewColumns,
+  superAdminCompanyPreviewColumns,
+} from "@/components/Dashboard/table-column/super-admin-column";
 
 export default async function SuperAdminDashboardPage({
   searchParams,
@@ -49,7 +53,8 @@ export default async function SuperAdminDashboardPage({
           <Suspense fallback={<Skeleton />}>
             <TableUI
               title="Last 5 Gyms"
-              data={getTopGyms(5)}
+              data={getFiveLastGyms(5)}
+              columns={superAdminCompanyPreviewColumns}
               buttonLabel="View All"
               buttonPath="/dashboard/super-admin/company"
             />
@@ -60,7 +65,8 @@ export default async function SuperAdminDashboardPage({
           <Suspense fallback={<Skeleton />}>
             <TableUI
               title="Last 5 Coaches"
-              data={getTopCoaches(5)}
+              data={getFiveLastCoaches(5)}
+              columns={superAdminCoachPreviewColumns}
               buttonLabel="View All"
               buttonPath="/dashboard/super-admin/coaches"
             />

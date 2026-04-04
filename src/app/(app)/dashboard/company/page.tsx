@@ -2,7 +2,6 @@ import { DashboardSection } from "@/components/Dashboard/dashboard-section";
 import { OverviewCard } from "@/components/Dashboard/overview-cards/card";
 import {
   getCompanyOverviewData,
-  getExpiringSoonGyms,
   getGymCoachCLientAssign,
   getGymNewClient,
   getPersonalCoachAnnouncements,
@@ -19,9 +18,8 @@ import { ROUTES } from "@/constants/route";
 import { announcementColumns } from "@/components/Dashboard/table-column/personal-coach-preview-columns";
 import {
   coachAssignmentColumns,
-  expiringSoonColumns,
   newSignupColumns,
-} from "@/components/Dashboard/table-column/company-client-columns";
+} from "@/components/Dashboard/table-column/company-columns";
 
 export default async function CompanyDashboardPage({
   searchParams,
@@ -53,31 +51,17 @@ export default async function CompanyDashboardPage({
       </DashboardSection>
 
       <div className="mb-8 grid grid-cols-12 gap-4 md:gap-6 2xl:gap-7.5">
-        <div className="col-span-12 grid xl:col-span-8">
-          <PaymentsOverview
-            className="col-span-12 xl:col-span-7"
-            key={extractTimeFrame("payments_overview")}
-            timeFrame={extractTimeFrame("payments_overview")?.split(":")[1]}
-          />
-        </div>
-
-        <div className="col-span-12 grid xl:col-span-4">
-          <Suspense fallback={<Skeleton />}>
-            <TableUI
-              title="Expiring Soon"
-              data={getExpiringSoonGyms(5)}
-              columns={expiringSoonColumns}
-              buttonLabel="View All"
-              buttonPath="/dashboard/company/clients"
-            />
-          </Suspense>
-        </div>
+        <PaymentsOverview
+          className="col-span-12"
+          key={extractTimeFrame("payments_overview")}
+          timeFrame={extractTimeFrame("payments_overview")?.split(":")[1]}
+        />
       </div>
 
       <div className="mb-8 grid gap-6 lg:grid-cols-2">
         <Suspense fallback={<Skeleton />}>
           <TableUI
-            title="Coach & Client Assigned"
+            title="Coach & Client Assignments"
             data={getGymCoachCLientAssign(5)}
             columns={coachAssignmentColumns}
             buttonLabel="View All"
@@ -86,7 +70,7 @@ export default async function CompanyDashboardPage({
         </Suspense>
         <Suspense fallback={<Skeleton />}>
           <TableUI
-            title="New Signups"
+            title="New Clients"
             data={getGymNewClient(5)}
             columns={newSignupColumns}
             buttonLabel="View All"

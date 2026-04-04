@@ -17,13 +17,6 @@ export const STAFF_ROLES = [
   "Cleaner",
 ] as const;
 
-export const COACH_ROLES = [
-  "Head Coach",
-  "Fitness Coach",
-  "Yoga Instructor",
-  "Nutritionist",
-] as const;
-
 export const SPECIALIZATIONS = [
   "Strength & Conditioning",
   "Weight Loss",
@@ -34,6 +27,12 @@ export const SPECIALIZATIONS = [
   "Nutrition Coach",
   "Pre/Post Natal",
   "Senior Fitness",
+] as const;
+
+export const COACHING_MODES = [
+  "In-person",
+  "Online",
+  "Hybrid",
 ] as const;
 
 export const AVAILABILITY_OPTIONS = [

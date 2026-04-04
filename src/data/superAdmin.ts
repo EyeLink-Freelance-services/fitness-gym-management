@@ -44,53 +44,6 @@ export async function getInvoiceTableData() {
   ];
 }
 
-export async function getTopChannels() {
-  await new Promise((resolve) => setTimeout(resolve, 1500));
-
-  return [
-    {
-      name: "Google",
-      visitors: 3456,
-      revenues: 4220,
-      sales: 3456,
-      conversion: 2.59,
-      logo: logos.google,
-    },
-    {
-      name: "X.com",
-      visitors: 3456,
-      revenues: 4220,
-      sales: 3456,
-      conversion: 2.59,
-      logo: logos.x,
-    },
-    {
-      name: "Github",
-      visitors: 3456,
-      revenues: 4220,
-      sales: 3456,
-      conversion: 2.59,
-      logo: logos.github,
-    },
-    {
-      name: "Vimeo",
-      visitors: 3456,
-      revenues: 4220,
-      sales: 3456,
-      conversion: 2.59,
-      logo: logos.vimeo,
-    },
-    {
-      name: "Facebook",
-      visitors: 3456,
-      revenues: 4220,
-      sales: 3456,
-      conversion: 2.59,
-      logo: logos.facebook,
-    },
-  ];
-}
-
 export async function getOverviewData() {
   await new Promise((resolve) => setTimeout(resolve, 2000));
 
@@ -111,129 +64,6 @@ export async function getOverviewData() {
       value: 3456,
       growthRate: 2.59,
     },
-  };
-}
-
-export async function getChatsData() {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  return [
-    {
-      name: "Jacob Jones",
-      profile: "/images/user/user-01.png",
-      isActive: true,
-      lastMessage: {
-        content: "See you tomorrow at the meeting!",
-        type: "text",
-        timestamp: "2024-12-19T14:30:00Z",
-        isRead: false,
-      },
-      unreadCount: 3,
-    },
-    {
-      name: "Wilium Smith",
-      profile: "/images/user/user-03.png",
-      isActive: true,
-      lastMessage: {
-        content: "Thanks for the update",
-        type: "text",
-        timestamp: "2024-12-19T10:15:00Z",
-        isRead: true,
-      },
-      unreadCount: 0,
-    },
-    {
-      name: "Johurul Haque",
-      profile: "/images/user/user-04.png",
-      isActive: false,
-      lastMessage: {
-        content: "What's up?",
-        type: "text",
-        timestamp: "2024-12-19T10:15:00Z",
-        isRead: true,
-      },
-      unreadCount: 0,
-    },
-    {
-      name: "M. Chowdhury",
-      profile: "/images/user/user-05.png",
-      isActive: false,
-      lastMessage: {
-        content: "Where are you now?",
-        type: "text",
-        timestamp: "2024-12-19T10:15:00Z",
-        isRead: true,
-      },
-      unreadCount: 2,
-    },
-    {
-      name: "Akagami",
-      profile: "/images/user/user-07.png",
-      isActive: false,
-      lastMessage: {
-        content: "Hey, how are you?",
-        type: "text",
-        timestamp: "2024-12-19T10:15:00Z",
-        isRead: true,
-      },
-      unreadCount: 0,
-    },
-  ];
-}
-
-export async function getPaymentsOverviewData(
-  timeFrame?: "monthly" | "yearly" | (string & {}),
-) {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  if (timeFrame === "yearly") {
-    return {
-      received: [
-        { x: 2020, y: 450 },
-        { x: 2021, y: 620 },
-        { x: 2022, y: 780 },
-        { x: 2023, y: 920 },
-        { x: 2024, y: 1080 },
-      ],
-      due: [
-        { x: 2020, y: 1480 },
-        { x: 2021, y: 1720 },
-        { x: 2022, y: 1950 },
-        { x: 2023, y: 2300 },
-        { x: 2024, y: 1200 },
-      ],
-    };
-  }
-
-  return {
-    received: [
-      { x: "Jan", y: 0 },
-      { x: "Feb", y: 20 },
-      { x: "Mar", y: 35 },
-      { x: "Apr", y: 45 },
-      { x: "May", y: 35 },
-      { x: "Jun", y: 55 },
-      { x: "Jul", y: 65 },
-      { x: "Aug", y: 50 },
-      { x: "Sep", y: 65 },
-      { x: "Oct", y: 75 },
-      { x: "Nov", y: 60 },
-      { x: "Dec", y: 75 },
-    ],
-    due: [
-      { x: "Jan", y: 15 },
-      { x: "Feb", y: 9 },
-      { x: "Mar", y: 17 },
-      { x: "Apr", y: 32 },
-      { x: "May", y: 25 },
-      { x: "Jun", y: 68 },
-      { x: "Jul", y: 80 },
-      { x: "Aug", y: 68 },
-      { x: "Sep", y: 84 },
-      { x: "Oct", y: 94 },
-      { x: "Nov", y: 74 },
-      { x: "Dec", y: 62 },
-    ],
   };
 }
 
@@ -287,63 +117,77 @@ export async function getWeeksProfitData(timeFrame?: string) {
 
 export const DUMMY_COACHES = [
   {
-    name: "Alex",
-    logo: logos.google,
-    specialization: "Strength Training",
-    clients: 3456,
+    firstName: "Nachiket",
+    lastName: "Joyekurun",
+    contactNumber: "59054043",
+    email: "njoyekurun@gmail.com",
+    specialization: "Yoga & Mindfulness",
+    coachingMode: "Online",
+    location: "",
+    certifications: "",
+    yearsExperience: "",
+    hourlyRate: 0,
+    availability: "",
+    languages: "sdsd",
+    bio: "BRe",
+    profilePhoto: logos.google,
     status: "Active",
-    location: "New York, USA",
+    createdAt: "2024-01-10",
   },
   {
-    name: "Tom",
-    logo: logos.x,
-    specialization: "Strength Training",
-    clients: 356,
-    status: "Active",
-    location: "New York, USA",
-  },
-  {
-    name: "Cat",
-    logo: logos.github,
-    specialization: "Cardio",
-    clients: 456,
-    status: "Active",
-    location: "New York, USA",
-  },
-  {
-    name: "Bat",
-    logo: logos.vimeo,
-    specialization: "Training",
-    clients: 3456,
-    status: "Active",
-    location: "New York, USA",
-  },
-  {
-    name: "Dat",
-    logo: logos.facebook,
+    firstName: "Nac",
+    lastName: "Joy",
+    contactNumber: "5826",
+    email: "njoye@gmail.com",
     specialization: "Strength",
-    clients: 3450,
-    status: "Active",
-    location: "New York, USA",
+    coachingMode: "In-Person",
+    location: "Port-Louis",
+    certifications: "NASM, Cross Fit L2",
+    yearsExperience: "12",
+    hourlyRate: 123,
+    availability: "Weekdays Only",
+    languages: "Creole, English",
+    bio: "Brief bio about the coach goes here. It can include their coaching philosophy, experience, and any other relevant information that potential clients might find useful when deciding to work with them.",
+    profilePhoto: logos.google,
+    status: "Inactive",
+    createdAt: "2024-03-10",
+  },
+  {
+    firstName: "Ovi",
+    lastName: "Joy",
+    contactNumber: "5123",
+    email: "ovijoy@gmail.com",
+    specialization: "Strength",
+    coachingMode: "In-Person",
+    location: "Port-Louis",
+    certifications: "NASM, Cross Fit L2",
+    yearsExperience: "12",
+    hourlyRate: 123,
+    availability: "Weekdays Only",
+    languages: "Creole, English",
+    bio: "Brief bio about the coach goes here.Other relevant information that potential clients might find useful when deciding to work with them.",
+    profilePhoto: logos.google,
+    status: "Disabled",
+    createdAt: "2025-01-10",
   },
 ];
 
 export const OVERVIEW_SUPER_ADMIN_DATA = [
   {
-    name: "Users",
-    value: 3456,
+    name: "Totals Users",
+    value: 6,
     growthRate: -0.95,
     icon: Users,
   },
   {
-    name: "Company",
-    value: 3456,
+    name: "Total Companies",
+    value: 3,
     growthRate: 0.43,
     icon: Gym,
   },
   {
-    name: "Coach",
-    value: 4220,
+    name: "Total Coaches",
+    value: 3,
     growthRate: 4.35,
     icon: Trainer,
   },
@@ -357,57 +201,72 @@ export const OVERVIEW_SUPER_ADMIN_DATA = [
 
 export const DUMMY_GYMS = [
   {
-    id: 1,
-    name: "MyFit",
-    logo: logos.google,
-    clients: 3456,
-    location: "New York, USA",
+    companyName: "MyFit",
+    companyLogo: {},
+    brn: "23232332",
+    contactNumber: "59054043",
+    addressLine1: "Unit 3, 41-45 Glebe Street",
+    city: "Forest Hill",
+    postcode: "3131",
+    state: "Grand Port",
+    branches: [
+      {
+        value: "",
+      },
+    ],
+    standardPrice: 150,
+    hasPremiumPlan: true,
+    premiumPrice: 250,
+    disclaimer: "A simple disclaimer text",
+    agreeTerms: true,
+    status: "Active",
+    createdAt: "2023-01-10",
+  },
+  {
+    companyName: "YourFit",
+    companyLogo: logos.google,
+    brn: "23238332",
+    contactNumber: "5982643",
+    addressLine1: "Unit 3, 41-45 Glebe Street",
+    city: "Forest Hill",
+    postcode: "3131",
+    state: "Moka",
+    branches: [
+      {
+        value: "ST-Pierre",
+      },
+    ],
+    standardPrice: 175,
+    hasPremiumPlan: false,
+    premiumPrice: undefined,
+    disclaimer: "A simple disclaimer text",
+    agreeTerms: true,
     status: "Active",
     createdAt: "2024-01-10",
   },
   {
-    id: 2,
-    name: "MyFit",
-    logo: logos.x,
-    clients: 3456,
-    location: "USA",
+    companyName: "OurFit",
+    companyLogo: logos.x,
+    brn: "23234782",
+    contactNumber: "5922643",
+    addressLine1: "Unit 3, 41-45 Glebe Street",
+    city: "Forest Hill",
+    postcode: "3131",
+    state: "Quatre Bornes",
+    branches: [
+      {
+        value: "Belle Roese",
+      },
+      {
+        value: "St-Jean",
+      },
+    ],
+    standardPrice: 180,
+    hasPremiumPlan: true,
+    premiumPrice: 300,
+    disclaimer: "A simple disclaimer text",
+    agreeTerms: true,
     status: "Active",
-    createdAt: "2024-02-10",
-  },
-  {
-    id: 3,
-    name: "MyFit",
-    logo: logos.github,
-    clients: 3456,
-    location: "Mauritius",
-    status: "Active",
-    createdAt: "2024-04-10",
-  },
-  {
-    id: 4,
-    name: "MyFit",
-    logo: logos.vimeo,
-    clients: 3456,
-    location: "Port Louis",
-    status: "Active",
-    createdAt: "2024-06-10",
-  },
-  {
-    id: 5,
-    name: "MyFit",
-    logo: logos.facebook,
-    clients: 3456,
-    location: "New York, USA",
-    status: "Active",
-    createdAt: "2024-07-10",
-  },
-  {
-    id: 6,
-    name: "MyFit",
-    logo: logos.facebook,
-    clients: 3456,
-    location: "New York, USA",
-    status: "Active",
-    createdAt: "2026-02-10",
+    createdAt: "2025-01-10",
   },
 ];

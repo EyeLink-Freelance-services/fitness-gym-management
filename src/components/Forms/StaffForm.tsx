@@ -2,11 +2,10 @@
 
 import { Controller, useForm } from "react-hook-form";
 import { useEffect } from "react";
-import type { StaffCoachFormData, StaffCoachFormProps } from "@/types/forms";
-import { COACH_ROLES, STAFF_ROLES } from "@/data/dashboardForm";
+import type { CompanyStaffFormProps, StaffFormData } from "@/types/forms";
+import { STAFF_ROLES } from "@/data/dashboardForm";
 import InputGroup from "../FormElements/InputGroup";
 import { Select } from "../FormElements/select";
-import { RadioInput } from "../FormElements/radio";
 import { TextAreaGroup } from "../FormElements/InputGroup/text-area";
 import { Button } from "../ui-elements/button";
 import {
@@ -17,67 +16,65 @@ import {
 import Header from "../FormElements/common/header";
 import Label from "../FormElements/common/label";
 
-export default function StaffCoachForm({
-  onPersonalCoach,
-}: StaffCoachFormProps) {
+export default function StaffForm({
+  initialData,
+  mode = "create",
+  onSuccess,
+}: CompanyStaffFormProps) {
   const {
     register,
     control,
     handleSubmit,
-    watch,
     setValue,
+    reset,
     formState: { errors, isValid, isSubmitting },
-  } = useForm<StaffCoachFormData>({
-        mode: "all",
+  } = useForm<StaffFormData>({
+    mode: "all",
     defaultValues: {
-      userType: "staff",
-      gymBranch: "MyFit - Trianon",
-      accessLevel: "Viewer",
+      gymBranch: "",
+      firstName: "",
+      lastName: "",
+      contactNumber: "",
+      email: "",
+      role: "",
+      notes: "",
+      ...initialData,
     },
   });
 
-  const userType = watch("userType");
+  useEffect(() => {
+    reset({
+      gymBranch: "",
+      firstName: "",
+      lastName: "",
+      contactNumber: "",
+      email: "",
+      role: "",
+      notes: "",
+      ...initialData,
+    });
+  }, [initialData, reset]);
 
   useEffect(() => {
     setValue("role", "");
-    setValue("accessLevel", userType === "staff" ? "Viewer" : "Editor");
-  }, [userType, setValue]);
+  }, [setValue]);
 
-  const onSubmit = (data: StaffCoachFormData) => {
+  const onSubmit = (data: StaffFormData) => {
     console.log(data);
+    onSuccess?.();
   };
 
   return (
     <div className="form-panel space-y-4">
       <Header
         label="- Team"
-        title="Create user"
-        subtitle="Add a staff member or coach to your team"
+        title={mode === "edit" ? "Edit staff" : "Register staff"}
+        subtitle={
+          mode === "edit" ? "Update the staff details" : "Onboard a staff"
+        }
       />
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-7">
-        <input type="hidden" {...register("accessLevel")} />
-
-        <div className="mb-5 space-y-2">
-          <Label value="User Type" />
-          <div className="grid grid-cols-2 gap-4">
-            <RadioInput
-              label="Staff"
-              name="userType"
-              value="staff"
-              inputProps={register("userType")}
-              minimal
-            />
-            <RadioInput
-              label="Coach"
-              name="userType"
-              value="coach"
-              inputProps={register("userType")}
-              minimal
-            />
-          </div>
-        </div>
-
         <InputGroup
           type="text"
           label="Gym / Branch"
@@ -142,9 +139,7 @@ export default function StaffCoachForm({
             <Select
               label="Role / Position"
               placeholder="Select a role"
-              items={(userType === "staff" ? STAFF_ROLES : COACH_ROLES).map(
-                (r) => ({ value: r, label: r }),
-              )}
+              items={STAFF_ROLES.map((r) => ({ value: r, label: r }))}
               error={errors.role?.message}
               selectProps={{ ...field, required: true }}
             />
@@ -159,7 +154,7 @@ export default function StaffCoachForm({
 
         <Button
           type="submit"
-          label="Create User"
+          label={mode === "edit" ? "Update Staff" : "Create Staff"}
           className="w-full"
           disabled={!isValid || isSubmitting}
         />

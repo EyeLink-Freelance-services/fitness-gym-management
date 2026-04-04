@@ -12,45 +12,25 @@ import type {
   ClientWorkoutPlanRow,
 } from "@/types/dashboard/client";
 
+export const CLIENT_HAS_ASSIGNED_COACH = true;
+
 export const CLIENT_OVERVIEW: ClientOverviewItem[] = [
   {
-    label: "Current Weight (kg)",
-    value: "74.2",
+    label: "Gym Name / Coach Name",
+    value: "My Fit",
     trend: -4.3,
     icon: Icons.Gym,
-  },
-  {
-    label: "Body Fat (%)",
-    value: "18.4",
-    trend: -2.1,
-    icon: Icons.Product,
-  },
-  {
-    label: "Lean Muscle (kg)",
-    value: "57.6",
-    trend: 1.4,
-    icon: Icons.Users,
-  },
-  {
-    label: "Goal Completion(%)",
-    value: "72",
-    trend: 8,
-    icon: Icons.Profit,
   },
   {
     label: "Member Since",
     value: "January 2025",
   },
   {
-    label: "Renewal (days)",
-    value: "29",
-  },
-  {
     label: "Monthly Price",
     value: "250.00",
   },
   {
-    label: "Branch",
+    label: "Training Location",
     value: "KL Sentral (all access)",
   },
 ];

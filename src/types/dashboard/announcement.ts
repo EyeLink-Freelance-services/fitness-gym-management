@@ -44,7 +44,6 @@ export interface AnnouncementStatusFilter {
 
 export interface AnnouncementFilters {
   statuses: AnnouncementStatusFilter[];
-  audiences: string[];
   channels: string[];
   priorities: string[];
 }
@@ -79,4 +78,3 @@ export interface AnnouncementMetricsTableProps {
   rows: AnnouncementMetricRow[];
 }
 
-export type AnnouncementSendType = "now" | "schedule";

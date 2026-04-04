@@ -57,6 +57,7 @@ export function ClientCardsGrid({ clients }: ClientCardsGridProps) {
           <FormModalTrigger
             buttonLabel="+ Add Client"
             formType="client"
+            clientContext="personal"
             size="small"
           />
         </div>

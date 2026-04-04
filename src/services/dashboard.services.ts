@@ -2,6 +2,7 @@ import {
   CLIENT_BODY_COMPOSITION,
   CLIENT_BODY_MEASUREMENTS,
   CLIENT_COACH_SUMMARY,
+  CLIENT_HAS_ASSIGNED_COACH,
   CLIENT_MEAL_PLAN,
   CLIENT_MEMBERSHIP_SUMMARY,
   CLIENT_OVERVIEW,
@@ -10,7 +11,11 @@ import {
   CLIENT_WEIGHT_TREND,
   CLIENT_WORKOUT_PLAN,
 } from "@/data/client";
-import { COMPANY_CLIENT_ROWS, DUMMY_KPIS } from "@/data/company";
+import {
+  COMPANY_CLIENT_ROWS,
+  COMPANY_STAFF_ROWS,
+  DUMMY_KPIS,
+} from "@/data/company";
 import { COACH_CLIENTS } from "@/data/coach-clients";
 import {
   ANNOUNCEMENTS,
@@ -33,8 +38,14 @@ import {
 } from "@/data/company-membership";
 import type {
   StatusOpt,
+  SuperAdminCoachesRow,
   SuperAdminCompanyRow,
 } from "@/types/dashboard/super-admin";
+import type {
+  CompanyCoachRow,
+  CompanyClientRow,
+  CompanyStaffRow,
+} from "@/types/dashboard/company-directory";
 import type { PaymentCollectionsTimeFrame } from "@/types/dashboard/payment";
 import type { MembershipRevenueTimeFrame } from "@/types/dashboard/membership";
 import {
@@ -49,35 +60,49 @@ import {
   DUMMY_GYMS,
   OVERVIEW_SUPER_ADMIN_DATA,
 } from "@/data/superAdmin";
+import { COMPANY_COACH_ROWS } from "@/data/company-coaches";
 // Gyms
-export async function getAllGyms(){
+export async function getAllGyms() {
   // const res = await fetch("/api/gyms");
   // return res.json();
 
   await new Promise((r) => setTimeout(r, 200));
-  return DUMMY_GYMS.map((gym) => ({
-    id: String(gym.id),
-    company_name: gym.name,
-    company_logo: gym.logo,
-    business_reg_no: `BRN-${gym.id}`,
-    contact_number: "+1 555-000-0000",
-    address_line_1: gym.location,
-    city: "",
-    postcode: "",
-    district: "",
-    branches: [],
-    disclaimer_text: "",
-    terms_and_conditions: "",
-  }));
+  console.log(
+    DUMMY_GYMS.map((gym) =>
+      gym.branches.map((b) => (b.value === "" ? "-" : b.value)),
+    ),
+  );
+  return DUMMY_GYMS.map(
+    (gym, i): SuperAdminCompanyRow => ({
+      id: `gym-${i + 1}`,
+      company_name: gym.companyName,
+      company_logo:
+        typeof gym.companyLogo === "string" ? gym.companyLogo : null,
+      business_reg_no: `BRN-${gym.brn}`,
+      contact_number: gym.contactNumber,
+      address_line_1: gym.addressLine1,
+      city: gym.city,
+      postcode: gym.postcode,
+      district: gym.state,
+      branches: gym.branches.map((b) => (b.value === "" ? "N/A" : b.value)),
+      standard_price: gym.standardPrice,
+      has_premium_plan: gym.hasPremiumPlan,
+      premium_price: gym.premiumPrice ?? null,
+      disclaimer_text: gym.disclaimer,
+      terms_and_conditions: gym.agreeTerms ? "Agreed" : "Not Agreed",
+      status: gym.status as StatusOpt,
+      createdAt: gym.createdAt,
+    }),
+  );
 }
 
-export async function getTopGyms(limit = 5) {
+export async function getFiveLastGyms(limit = 5) {
   // const res = await fetch(`/api/gyms?limit=${limit}`);
   // return res.json();
-
+  const gyms = await getAllGyms();
   await new Promise((r) => setTimeout(r, 200));
 
-  const sorted = [...DUMMY_GYMS].sort(
+  const sorted = [...gyms].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
 
@@ -88,31 +113,42 @@ export async function getTopGyms(limit = 5) {
 export async function getAllCoaches() {
   await new Promise((r) => setTimeout(r, 200));
 
-  return DUMMY_COACHES.map((coach, i) => ({
-    id: `coach-${i + 1}`,
-    first_name: coach.name.split(" ")[0] ?? coach.name,
-    last_name: coach.name.split(" ").slice(1).join(" ") || "-",
-    phone_num: "+1 555-000-0000",
-    email: `${coach.name.toLowerCase().replace(/\s/g, ".")}@example.com`,
-    specialization: coach.specialization,
-    location: coach.location,
-    qualifications: "Certified",
-    certifications: ["ACE-CPT"],
-    years_of_experience: 5,
-    hourly_rate: 75,
-    languages_spoken: ["English"],
-    bio: "",
-    profile_photo: coach.logo,
-    availability: ["Mon", "Wed", "Fri"],
-    clients: coach.clients,
-    statusTone: (coach.status === "Active" ? "Active" : "Not Active") as StatusOpt,
-  }));
+  return DUMMY_COACHES.map(
+    (coach, i): SuperAdminCoachesRow => ({
+      id: `coach-${i + 1}`,
+      first_name: coach.firstName,
+      last_name: coach.lastName,
+      phone_num: coach.contactNumber,
+      email: `${coach.email}`,
+      specialization: coach.specialization,
+      coaching_mode: coach.coachingMode,
+      location: coach.location,
+      qualifications: coach.certifications,
+      certifications: coach.certifications
+        ? coach.certifications.split(",").map((item) => item.trim())
+        : ["ACE-CPT"],
+      years_of_experience: Number(coach.yearsExperience) || 0,
+      hourly_rate: coach.hourlyRate,
+      languages_spoken: coach.languages
+        ? coach.languages.split(",").map((item) => item.trim())
+        : ["English"],
+      bio: coach.bio,
+      profile_photo: coach.profilePhoto,
+      availability: coach.availability.split(",").map((item) => item.trim()),
+      status: coach.status as StatusOpt,
+      createdAt: coach.createdAt,
+    }),
+  );
 }
 
-export async function getTopCoaches(limit = 5) {
+export async function getFiveLastCoaches(limit = 5) {
+  const coaches = await getAllCoaches();
+
   await new Promise((r) => setTimeout(r, 200));
 
-  const sorted = [...DUMMY_COACHES].sort((a, b) => b.clients - a.clients);
+  const sorted = [...coaches].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  );
 
   return sorted.slice(0, limit);
 }
@@ -127,6 +163,21 @@ export async function getSuperAdminOverviewData() {
 export async function getCompanyOverviewData() {
   await new Promise((r) => setTimeout(r, 200));
   return DUMMY_KPIS;
+}
+
+export async function getCompanyStaff() {
+  await new Promise((r) => setTimeout(r, 200));
+  return COMPANY_STAFF_ROWS.map((staff): CompanyStaffRow => ({ ...staff }));
+}
+
+export async function getCompanyCoaches() {
+  await new Promise((r) => setTimeout(r, 200));
+  return COMPANY_COACH_ROWS.map((coach): CompanyCoachRow => ({ ...coach }));
+}
+
+export async function getCompanyClients() {
+  await new Promise((r) => setTimeout(r, 200));
+  return COMPANY_CLIENT_ROWS.map((client): CompanyClientRow => ({ ...client }));
 }
 
 // Personal coach overview data
@@ -148,8 +199,11 @@ export async function getPersonalCoachTodaySessions(limit = 5) {
 export async function getPersonalCoachProgressSeries() {
   await new Promise((r) => setTimeout(r, 200));
   return COACH_CLIENTS.filter(
-    (c): c is typeof c & { progressSeries: NonNullable<typeof c.progressSeries> } =>
-      !!c.progressSeries?.points?.length,
+    (
+      c,
+    ): c is typeof c & {
+      progressSeries: NonNullable<typeof c.progressSeries>;
+    } => !!c.progressSeries?.points?.length,
   ).map((c) => c.progressSeries!);
 }
 
@@ -192,7 +246,7 @@ export async function getClientMembershipSummary() {
 
 export async function getClientCoachSummary() {
   await new Promise((r) => setTimeout(r, 200));
-  return CLIENT_COACH_SUMMARY;
+  return CLIENT_HAS_ASSIGNED_COACH ? CLIENT_COACH_SUMMARY : null;
 }
 
 export async function getClientWeightTrend() {
@@ -240,26 +294,7 @@ export async function getClientPaymentHistory(limit?: number) {
   return CLIENT_PAYMENT_HISTORY.slice(0, limit);
 }
 
-// get 5 latest gyms membership which is expiring soon
-export async function getExpiringSoonGyms(limit = 5) {
-  await new Promise((r) => setTimeout(r, 200));
-
-  const now = new Date();
-
-  const upcoming = COMPANY_CLIENT_ROWS.filter(
-    (item) => item.expiresAt && new Date(item.expiresAt) >= now,
-  );
-
-  const sorted = upcoming.sort(
-    (a, b) =>
-      new Date(a.expiresAt ?? 0).getTime() -
-      new Date(b.expiresAt ?? 0).getTime(),
-  );
-
-  return sorted.slice(0, limit);
-}
-
-// Recent 5 gym clients who are assigned to a coach
+// clients assigned to a coach
 export async function getGymCoachCLientAssign(limit = 5) {
   await new Promise((r) => setTimeout(r, 200));
 

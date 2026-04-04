@@ -24,11 +24,34 @@ export function MenuItem(
     className?: string;
     children: React.ReactNode;
     isActive: boolean;
+    disabled?: boolean;
   } & ({ as?: "button"; onClick: () => void } | { as: "link"; href: string }),
 ) {
   const { toggleSidebar, isMobile } = useSidebarContext();
+  const disabledClasses =
+    props.disabled
+      ? "cursor-not-allowed opacity-50 hover:bg-transparent hover:text-current dark:hover:bg-transparent dark:hover:text-current"
+      : "";
 
   if (props.as === "link") {
+    if (props.disabled) {
+      return (
+        <span
+          aria-disabled="true"
+          className={cn(
+            menuItemBaseStyles({
+              isActive: false,
+              className: "relative block py-2",
+            }),
+            disabledClasses,
+            props.className,
+          )}
+        >
+          {props.children}
+        </span>
+      );
+    }
+
     return (
       <Link
         href={props.href}
@@ -39,6 +62,7 @@ export function MenuItem(
             isActive: props.isActive,
             className: "relative block py-2",
           }),
+          disabledClasses,
           props.className,
         )}
       >
@@ -51,9 +75,10 @@ export function MenuItem(
     <button
       onClick={props.onClick}
       aria-expanded={props.isActive}
+      disabled={props.disabled}
       className={menuItemBaseStyles({
         isActive: props.isActive,
-        className: "flex w-full items-center gap-3 py-3",
+        className: cn("flex w-full items-center gap-3 py-3", disabledClasses),
       })}
     >
       {props.children}

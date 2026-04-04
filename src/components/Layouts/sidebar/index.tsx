@@ -136,6 +136,7 @@ export function Sidebar({ auth }: sidebarProps) {
                                       as="link"
                                       href={subItem.url}
                                       isActive={pathname.includes(subItem.url)}
+                                      disabled={subItem.disabled}
                                     >
                                       <div className="flex gap-2">
                                       {subItem.icon && (
@@ -159,17 +160,25 @@ export function Sidebar({ auth }: sidebarProps) {
                                 ? item.url + ""
                                 : "/" +
                                   item.title.toLowerCase().split(" ").join("-");
+                            const hasNestedSiblingRoutes = section.items.some(
+                              (sectionItem) =>
+                                "url" in sectionItem &&
+                                typeof sectionItem.url === "string" &&
+                                sectionItem.url !== href &&
+                                sectionItem.url.startsWith(`${href}/`),
+                            );
+                            const isActive = hasNestedSiblingRoutes
+                              ? pathname === href
+                              : pathname === href ||
+                                pathname.startsWith(`${href}/`);
 
                             return (
                               <MenuItem
                                 className="flex items-center gap-3 py-3"
                                 as="link"
                                 href={href}
-                                isActive={
-                                  href === "/"
-                                    ? pathname === "/"
-                                    : pathname === href || pathname.startsWith(`${href}/`)
-                                }
+                                isActive={href === "/" ? pathname === "/" : isActive}
+                                disabled={item.disabled}
                               >
                                 <item.icon
                                   className="size-6 shrink-0"

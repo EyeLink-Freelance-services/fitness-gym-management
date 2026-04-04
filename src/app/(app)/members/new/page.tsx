@@ -13,7 +13,7 @@ export default function NewMemberPage() {
         onClick={() => router.back()}
         className="mb-5 cursor-pointer"
       />
-      <ClientForm />
+      <ClientForm clientContext="company" />
     </div>
   );
 }

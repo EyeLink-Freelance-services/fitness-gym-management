@@ -57,6 +57,7 @@ export function DataTable<TData extends RowData>({
   pageSizeOptions = [5, 10, 20],
   showFooter = true,
   getRowId,
+  onRowClick,
 }: DataTableProps<TData>) {
   const [globalFilter, setGlobalFilter] = useState("");
   const [pagination, setPagination] = useState({
@@ -182,7 +183,11 @@ export function DataTable<TData extends RowData>({
             rows.map((row) => (
               <TableRow
                 key={row.id}
-                className="text-base text-dark dark:text-white"
+                className={cn(
+                  "text-base text-dark dark:text-white",
+                  onRowClick && "cursor-pointer",
+                )}
+                onClick={() => onRowClick?.(row.original)}
               >
                 {row.getVisibleCells().map((cell) => {
                   const meta = (cell.column.columnDef.meta ??

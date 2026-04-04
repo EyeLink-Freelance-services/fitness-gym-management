@@ -52,13 +52,6 @@ export async function getPaymentsOverviewData(
         { x: 2023, y: 920 },
         { x: 2024, y: 1080 },
       ],
-      due: [
-        { x: 2020, y: 1480 },
-        { x: 2021, y: 1720 },
-        { x: 2022, y: 1950 },
-        { x: 2023, y: 2300 },
-        { x: 2024, y: 1200 },
-      ],
     };
   }
 

@@ -20,8 +20,8 @@ export const PERSONAL_COACH_OVERVIEW: PersonalCoachOverviewItem[] = [
     icon: Icons.Calendar,
   },
   {
-    label: "Active Progress",
-    value: "2",
+    label: "Rate per Hour (Rs)",
+    value: "250",
     trend: 1,
     icon: Icons.Product,
   },
@@ -117,7 +117,7 @@ export const ANNOUNCEMENTS: PersonalCoachAnnouncementRow[] = [
     id: "announcement-3",
     title: "Form check video submission reminder",
     publishAt: "2026-03-12",
-    status: "Scheduled",
-    statusTone: "primary",
+    status: "Posted",
+    statusTone: "success",
   },
 ];

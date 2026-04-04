@@ -9,6 +9,7 @@ export type ImageUploadProps = {
   label: string;
   optional?: boolean;
   accept?: string;
+  initialPreviewUrl?: string;
   emptyStateText?: React.ReactNode;
   hint?: string;
   error?: string;
@@ -20,6 +21,7 @@ export function ImageUpload({
   label,
   optional,
   accept = "image/*",
+  initialPreviewUrl,
   emptyStateText = (
     <>
       Drop your image here or{" "}
@@ -33,18 +35,29 @@ export function ImageUpload({
 }: ImageUploadProps) {
   const [previewFile, setPreviewFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [existingPreviewUrl, setExistingPreviewUrl] = useState<string | null>(
+    initialPreviewUrl ?? null,
+  );
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const { ref, onChange, name, ...rest } = registerReturn;
+
+  const triggerRegisteredChange = (files?: FileList) => {
+    onChange({
+      target: { files, name },
+    } as unknown as React.ChangeEvent<HTMLInputElement>);
+  };
+
+  useEffect(() => {
+    setExistingPreviewUrl(initialPreviewUrl ?? null);
+  }, [initialPreviewUrl]);
 
   const validateAndSetFile = (file: File) => {
     setPreviewFile(file);
     const dt = new DataTransfer();
     dt.items.add(file);
     setValue(name, dt.files);
-    onChange({
-      target: { files: dt.files },
-    } as React.ChangeEvent<HTMLInputElement>);
+    triggerRegisteredChange(dt.files);
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -78,16 +91,26 @@ export function ImageUpload({
     setPreviewUrl(null);
   }, [previewFile]);
 
+  const resolvedPreviewUrl = previewUrl ?? existingPreviewUrl;
+  const resolvedPreviewLabel =
+    previewFile?.name ??
+    existingPreviewUrl?.split("/").pop()?.split("?")[0] ??
+    "Current image";
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange(e);
     const file = e.target.files?.[0];
+    setValue(name, e.target.files ?? undefined);
     setPreviewFile(file ?? null);
   };
 
   const clearImage = (e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
+    triggerRegisteredChange(undefined);
     setValue(name, undefined);
     setPreviewFile(null);
+    setExistingPreviewUrl(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
@@ -101,6 +124,9 @@ export function ImageUpload({
             : "border-stroke bg-gray-2 hover:border-primary dark:border-dark-3 dark:bg-dark-2 dark:hover:border-primary"
         }`}
         onClick={(e) => {
+          if ((e.target as HTMLElement).closest("[data-image-upload-action]")) {
+            return;
+          }
           const target = e.currentTarget.querySelector(
             "input",
           ) as HTMLInputElement;
@@ -113,6 +139,7 @@ export function ImageUpload({
       >
         <input
           type="file"
+          name={name}
           accept={accept}
           className="hidden"
           {...rest}
@@ -122,12 +149,12 @@ export function ImageUpload({
           }}
           onChange={handleFileChange}
         />
-        {previewFile ? (
+        {resolvedPreviewUrl ? (
           <div className="flex flex-col items-center gap-2 md:flex-row md:justify-between">
             <div className="flex items-center gap-2">
-              {previewUrl ? (
+              {resolvedPreviewUrl ? (
                 <img
-                  src={previewUrl}
+                  src={resolvedPreviewUrl}
                   alt="Preview"
                   className="h-20 w-20 rounded-lg object-cover"
                 />
@@ -135,7 +162,7 @@ export function ImageUpload({
                 <div className="h-20 w-20 animate-pulse rounded-lg bg-gray-2 dark:bg-dark-3" />
               )}
               <p className="max-w-[30%] truncate text-body-sm font-medium text-dark dark:text-white">
-                {previewFile.name}
+                {resolvedPreviewLabel}
               </p>
             </div>
             <Button
@@ -143,6 +170,7 @@ export function ImageUpload({
               label="Remove"
               variant="outlineDark"
               size="small"
+              data-image-upload-action="remove"
               onClick={clearImage}
             />
           </div>

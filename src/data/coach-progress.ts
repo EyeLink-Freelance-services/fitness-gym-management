@@ -6,6 +6,10 @@ import type {
   ComputedMetric,
   ProgressSeries,
 } from "@/types/dashboard/client-records";
+import type {
+  CoachDietPlanRecord,
+  CoachTrainingPlanRecord,
+} from "@/types/dashboard/client";
 
 export const COACH_RECORD_DRAFTS: Record<
   string,
@@ -282,3 +286,106 @@ export const COACH_PROGRESS_RECORDS: ClientRecordRow[] = [
     fatDelta: 0,
   },
 ];
+
+export const COACH_DIET_PLAN_RECORDS: Record<string, CoachDietPlanRecord[]> = {
+  "client-wei-liang": [
+    {
+      id: "diet-plan-wei-liang-mar",
+      clientId: "client-wei-liang",
+      clientName: "Wei Liang",
+      updatedAt: "2026-03-06T08:00:00.000Z",
+      meals: [
+        {
+          id: "diet-meal-1",
+          timeSlot: "Breakfast",
+          meal: "3 eggs, wholegrain bread, boiled potatoes",
+        },
+        {
+          id: "diet-meal-2",
+          timeSlot: "Lunch",
+          meal: "Grilled chicken, rice, mixed vegetables",
+        },
+        {
+          id: "diet-meal-3",
+          timeSlot: "Dinner",
+          meal: "Salmon, quinoa, green salad",
+        },
+        {
+          id: "diet-meal-4",
+          timeSlot: "Specific",
+          specificTime: "16:30",
+          meal: "Greek yogurt, banana, almonds",
+        },
+      ],
+    },
+  ],
+  "client-nurul-ain": [
+    {
+      id: "diet-plan-nurul-ain-mar",
+      clientId: "client-nurul-ain",
+      clientName: "Nurul Ain",
+      updatedAt: "2026-03-02T08:00:00.000Z",
+      meals: [
+        {
+          id: "diet-meal-5",
+          timeSlot: "Breakfast",
+          meal: "Oats, berries, whey protein",
+        },
+        {
+          id: "diet-meal-6",
+          timeSlot: "Lunch",
+          meal: "Turkey wrap, fruit bowl",
+        },
+        {
+          id: "diet-meal-7",
+          timeSlot: "Dinner",
+          meal: "Tofu stir-fry with jasmine rice",
+        },
+      ],
+    },
+  ],
+};
+
+export const COACH_TRAINING_PLAN_RECORDS: Record<
+  string,
+  CoachTrainingPlanRecord[]
+> = {
+  "client-wei-liang": [
+    {
+      id: "training-plan-wei-liang-mar",
+      clientId: "client-wei-liang",
+      clientName: "Wei Liang",
+      updatedAt: "2026-03-06T08:00:00.000Z",
+      repeatEveryWeek: true,
+      repeatEveryMonth: false,
+      days: [
+        { day: "Monday", exercise: "Chest + triceps" },
+        { day: "Tuesday", exercise: "Legs + mobility" },
+        { day: "Wednesday", exercise: "Rest" },
+        { day: "Thursday", exercise: "Back + biceps" },
+        { day: "Friday", exercise: "Shoulders + core" },
+        { day: "Saturday", exercise: "Conditioning" },
+        { day: "Sunday", exercise: "Rest" },
+      ],
+    },
+  ],
+  "client-nurul-ain": [
+    {
+      id: "training-plan-nurul-ain-mar",
+      clientId: "client-nurul-ain",
+      clientName: "Nurul Ain",
+      updatedAt: "2026-03-02T08:00:00.000Z",
+      repeatEveryWeek: true,
+      repeatEveryMonth: false,
+      days: [
+        { day: "Monday", exercise: "Lower body strength" },
+        { day: "Tuesday", exercise: "Light cardio" },
+        { day: "Wednesday", exercise: "Upper body push" },
+        { day: "Thursday", exercise: "Rest" },
+        { day: "Friday", exercise: "Upper body pull" },
+        { day: "Saturday", exercise: "Glutes + core" },
+        { day: "Sunday", exercise: "Rest" },
+      ],
+    },
+  ],
+};

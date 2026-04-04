@@ -1,8 +1,6 @@
-import { PersonalCoachTrainingPlan } from "@/components/Dashboard/personal-coach/training-plan";
-import { listTrainingPlanAction } from "@/app/(app)/training-plans/actions";
+import { ROUTES } from "@/constants/route";
+import { redirect } from "next/navigation";
 
 export default async function PersonalCoachTrainingPlanPage() {
-  const { data: plans } = await listTrainingPlanAction();
-
-  return <PersonalCoachTrainingPlan plans={plans} />;
+  redirect(ROUTES.DASHBOARD.PERSONAL_COACH.CLIENTS);
 }

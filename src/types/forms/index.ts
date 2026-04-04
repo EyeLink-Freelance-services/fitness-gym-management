@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { UseFormReturn } from "react-hook-form";
+import type { CoachMealTimeOption } from "@/types/dashboard/client";
 
 export interface FormHeader {
   label: string;
@@ -49,20 +50,18 @@ export interface CompanyFormData {
   state: string;
   branches: CompanyBranchField[];
   disclaimer: string;
+  standardPrice: number | undefined;
+  hasPremiumPlan: boolean;
+  premiumPrice?: number | undefined;
   agreeTerms: boolean;
 }
-
-export type UserType = "staff" | "coach";
-
-export interface StaffCoachFormData {
-  userType: UserType;
+export interface StaffFormData {
   gymBranch: string;
   firstName: string;
   lastName: string;
   contactNumber: string;
   email: string;
   role: string;
-  accessLevel: string;
   notes?: string;
 }
 
@@ -72,14 +71,66 @@ export interface PersonalCoachFormData {
   contactNumber: string;
   email: string;
   specialization: string;
-  operatingLocation: string;
-  certifications: string;
-  yearsExperience: number;
+  coachingMode: string;
+  location?: string;
+  certifications?: string;
   hourlyRate: number;
+  yearsExperience?: number;
   languages: string;
   bio: string;
   profilePhoto?: FileList;
-  availability: string;
+  availability?: string;
+}
+
+export interface CompanyCoachFormData {
+  firstName: string;
+  lastName: string;
+  contactNumber: string;
+  email: string;
+  specialization: string;
+  coachingMode: string;
+  location?: string;
+  certifications?: string;
+  hourlyRate: number;
+  yearsExperience?: number;
+  languages: string;
+  bio: string;
+  profilePhoto?: FileList;
+  availability?: string;
+}
+
+export interface PersonalCoachFormProps {
+  initialData?: Partial<PersonalCoachFormData>;
+  existingProfilePhotoUrl?: string;
+  mode?: "create" | "edit";
+  context?: "super-admin" | "company";
+  onSuccess?: () => void;
+}
+
+export interface CompanyFormProps {
+  initialData?: Partial<CompanyFormData>;
+  existingProfilePhotoUrl?: string;
+  mode?: "create" | "edit";
+  onSuccess?: () => void;
+}
+
+export interface CompanyStaffFormProps {
+  initialData?: Partial<StaffFormData>;
+  mode?: "create" | "edit";
+  onSuccess?: () => void;
+}
+
+export interface CompanyClientFormProps {
+  initialData?: Partial<ClientFormData>;
+  clientContext?: "company" | "personal";
+  mode?: "create" | "edit";
+  onSuccess?: () => void;
+}
+
+export interface AssignClientFormProps {
+  initialData?: Partial<AssignClientFormData>;
+  mode?: "create" | "edit";
+  onSuccess?: () => void;
 }
 
 export interface ClientFormData {
@@ -89,10 +140,12 @@ export interface ClientFormData {
   gender: string;
   email: string;
   phone: string;
-  emergencyContact: string;
+  emergencyContactName: string;
+  emergencyContactPhone: string;
   medicalConditions?: string;
-  activityLevel: string;
   membershipPlan: string;
+  membershipPrice?: number;
+  customFee?: number;
   assignedCoach: string;
   startDate: string;
   agreeTerms: boolean;
@@ -107,10 +160,6 @@ export interface RecoveryFormProps {
   onBackToLogin: () => void;
 }
 
-export interface CompanyFormProps {
-  onBackToLogin: () => void;
-}
-
 export interface StaffCoachFormProps {
   onPersonalCoach: () => void;
 }
@@ -120,8 +169,6 @@ export type FormModalId = "client" | "company" | "personal" | "staff";
 export interface AnnouncementFormData {
   title: string;
   message: string;
-  sendType: "now" | "schedule";
-  scheduledDate?: string | null;
 }
 
 export interface MedicalNoteFormData {
@@ -129,6 +176,32 @@ export interface MedicalNoteFormData {
   condition: string;
   restrictionNotes: string;
   severity: "high" | "moderate" | "low";
+}
+
+export interface PersonalCoachDietPlanMealFormData {
+  timeSlot: CoachMealTimeOption;
+  specificTime?: string;
+  meal: string;
+}
+
+export interface PersonalCoachDietPlanFormData {
+  clientId: string;
+  clientName: string;
+  meals: PersonalCoachDietPlanMealFormData[];
+}
+
+export interface PersonalCoachTrainingPlanFormData {
+  clientId: string;
+  clientName: string;
+  monday: string;
+  tuesday: string;
+  wednesday: string;
+  thursday: string;
+  friday: string;
+  saturday: string;
+  sunday: string;
+  repeatEveryWeek: boolean;
+  repeatEveryMonth: boolean;
 }
 
 /** Client-coach assignment status for Assign Client form */
@@ -159,7 +232,6 @@ export type NewPasswordProps = {
   onNext: (values: RecoveryNewPasswordFormData) => void;
 };
 
-
 export type RecoveryCodeProps = {
   form: UseFormReturn<RecoveryStep2FormData>;
   recoverEmail: string;
@@ -175,10 +247,13 @@ type FormType =
   | "personal"
   | "announcement"
   | "medicalNotes"
-  | "assignClient";
+  | "assignClient"
+  | "staff";
 
 export type FormModalTriggerProps = {
   buttonLabel: string;
   formType: FormType;
+  clientContext?: "company" | "personal";
+  coachContext?: "super-admin" | "company";
   size?: "default" | "small" | "xs";
 };

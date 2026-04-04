@@ -1,5 +1,14 @@
 "use client";
 
+import { DUMMY_COACHES, DUMMY_GYMS } from "@/data/superAdmin";
+import {
+  validateEmail,
+  validatePhone,
+  validateRequired,
+} from "@/lib/forms/formValidation";
+import { ClientFormData, CompanyClientFormProps } from "@/types/forms";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
 import InputGroup from "../FormElements/InputGroup";
 import { Select } from "../FormElements/select";
 import { TextAreaGroup } from "../FormElements/InputGroup/text-area";
@@ -7,132 +16,169 @@ import Header from "../FormElements/common/header";
 import Label from "../FormElements/common/label";
 import { Checkbox } from "../FormElements/checkbox";
 import { Button } from "@/components/ui-elements/button";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { MemberCreateInput, MemberCreateSchema } from "@/lib/validation/schemas/member";
-import { useEffect, useState, useTransition } from "react";
-import { useCompany } from "@/app/context/company-context";
-import { useRouter } from "next/navigation";
-import { ROUTES } from "@/constants/route";
-import {
-  createMemberAction,
-  createMemberWithMembershipPlanAction,
-} from "@/app/(app)/members/actions";
-import { MembershipPlanRow } from "@/lib/validation/schemas/membership-plan";
-import { formatDateLocal } from "@/lib/formatters/format-date";
-import {
-  MemberMembershipCreateInput,
-  MemberMembershipStatusSchema,
-} from "@/lib/validation/schemas/member-membership";
-import MembershipPlansSelector from "@/app/(app)/membership-plans/components/membership-plan-selector";
 
-interface ICoaches {
-  coach_id: string | undefined;
-  company_id: string | undefined;
-  label: string;
+function getDisplayPrice(value: number | undefined) {
+  return value === undefined ? "" : String(value);
 }
 
-type Props = {
-  onSuccess?: () => void;
-};
+export default function ClientForm({
+  clientContext = "company",
+  initialData,
+  mode = "create",
+  onSuccess,
+}: CompanyClientFormProps) {
+  const companyPricing = DUMMY_GYMS[0];
+  const coachPricing = DUMMY_COACHES[0];
 
-export default function ClientForm({ onSuccess }: Props) {
-  const { id } = useCompany();
-  const [coaches, setCoaches] = useState<ICoaches[]>([]);
-  const [agreeTerms, setAgreeTerms] = useState(false);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [selectedPlan, setSelectedPlan] = useState<MembershipPlanRow | null>(
-    null,
-  );
-  const [isPending, startTransition] = useTransition();
-  const router = useRouter();
+  const defaultStandardPrice =
+    clientContext === "company"
+      ? companyPricing?.standardPrice
+      : coachPricing?.hourlyRate;
+  const premiumPrice =
+    clientContext === "company" && companyPricing?.hasPremiumPlan
+      ? companyPricing.premiumPrice
+      : undefined;
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
-  } = useForm<MemberCreateInput>({
-    mode: "onChange",
-    resolver: zodResolver(MemberCreateSchema),
+    setValue,
+    watch,
+    reset,
+    formState: { errors, isValid, isSubmitting },
+  } = useForm<ClientFormData>({
+    mode: "all",
+    // resolver: zodResolver(MemberCreateSchema),
     defaultValues: {
-      company_id: id,
-      assigned_coach_id: null,
-      status: "active",
+      //companyid
+      firstName: "",
+      lastName: "",
+      dateOfBirth: "",
+      gender: "",
+      email: "",
+      phone: "",
+      emergencyContactName: "",
+      emergencyContactPhone: "",
+      medicalConditions: "",
+      membershipPlan: "standard",
+      membershipPrice: undefined,
+      customFee: undefined,
+      assignedCoach: "",
+      startDate: "",
+      agreeTerms: false,
+      ...initialData,
     },
   });
 
+  const membershipPlan = watch("membershipPlan");
+  const customFee = watch("customFee");
+  const membershipPrice = watch("membershipPrice");
+
   useEffect(() => {
-    const getCoaches = async () => {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/coaches`,
-        { method: "GET", cache: "no-store" },
-      );
-      const json = await res.json();
-      if (json.ok) {
-        setCoaches(json.data);
-      }
-    };
-    getCoaches();
-  }, []);
+    const nextMembershipPlan = initialData?.membershipPlan?.trim() || "standard";
 
-  const onSubmit = (values: MemberCreateInput) => {
-    const payloadMember: MemberCreateInput = {
-      ...values,
-      assigned_coach_id: values.assigned_coach_id || null,
-    };
+    reset({
+      firstName: "",
+      lastName: "",
+      dateOfBirth: "",
+      gender: "",
+      email: "",
+      phone: "",
+      emergencyContactName: "",
+      emergencyContactPhone: "",
+      medicalConditions: "",
+      membershipPlan: nextMembershipPlan,
+      membershipPrice: undefined,
+      customFee: undefined,
+      assignedCoach: "",
+      startDate: "",
+      agreeTerms: false,
+      ...initialData,
+    });
+  }, [initialData, reset]);
 
-    if (selectedPlan?.id) {
-      const today = new Date();
-      const end = new Date(today);
-      end.setDate(end.getDate() + selectedPlan.duration_days);
-
-      const payloadWithMembershipPlan: MemberMembershipCreateInput = {
-        plan_id: selectedPlan.id,
-        start_date: formatDateLocal(today),
-        end_date: formatDateLocal(end),
-        status: MemberMembershipStatusSchema.parse("active"),
-      };
-
-      startTransition(async () => {
-        const res = await createMemberWithMembershipPlanAction(
-          payloadMember,
-          payloadWithMembershipPlan,
-        );
-        if (!res.ok) {
-          setErrorMsg(res.message);
-        } else {
-          onSuccess?.();
-          if (!onSuccess) {
-            router.push(ROUTES.MEMBERS.ID(res.data[0].member_id));
-          }
-        }
-      });
-    } else {
-      startTransition(async () => {
-        const res = await createMemberAction(payloadMember);
-        if (!res.ok) {
-          setErrorMsg(res.message);
-        } else {
-          onSuccess?.();
-          if (!onSuccess) {
-            router.push(ROUTES.MEMBERS.ID(res.data.id));
-          }
-        }
-      });
+  useEffect(() => {
+    if (!membershipPlan) {
+      setValue("membershipPlan", "standard", { shouldValidate: true });
     }
+  }, [membershipPlan, setValue]);
+
+  useEffect(() => {
+    if (
+      clientContext === "company" &&
+      membershipPlan === "premium" &&
+      !companyPricing?.hasPremiumPlan
+    ) {
+      setValue("membershipPlan", "standard", { shouldValidate: true });
+    }
+  }, [clientContext, companyPricing?.hasPremiumPlan, membershipPlan, setValue]);
+
+  useEffect(() => {
+    if (membershipPlan !== "custom") {
+      setValue("customFee", undefined, { shouldValidate: false });
+    }
+  }, [membershipPlan, setValue]);
+
+  useEffect(() => {
+    let nextMembershipPrice: number | undefined;
+
+    if (clientContext === "personal") {
+      nextMembershipPrice =
+        membershipPlan === "custom" ? customFee : defaultStandardPrice;
+    } else {
+      nextMembershipPrice =
+        membershipPlan === "premium" ? premiumPrice : defaultStandardPrice;
+    }
+
+    setValue("membershipPrice", nextMembershipPrice, {
+      shouldValidate: true,
+      shouldDirty: false,
+    });
+  }, [
+    clientContext,
+    customFee,
+    defaultStandardPrice,
+    membershipPlan,
+    premiumPrice,
+    setValue,
+  ]);
+
+  const onSubmit = (data: ClientFormData) => {
+    console.log(data);
+    onSuccess?.();
   };
 
-  const coachItems = [
-    ...coaches.map((c) => ({ value: c.coach_id ?? "", label: c.label })),
-    { value: "", label: "No coach assigned" },
-  ];
+  const membershipPlanOptions =
+    clientContext === "personal"
+      ? [
+          { value: "standard", label: "Standard" },
+          { value: "custom", label: "Custom" },
+        ]
+      : [
+          { value: "standard", label: "Standard" },
+          ...(companyPricing?.hasPremiumPlan
+            ? [{ value: "premium", label: "Premium" }]
+            : []),
+        ];
+
+  const membershipPriceLabel =
+    clientContext === "personal"
+      ? membershipPlan === "custom"
+        ? "Custom Fee"
+        : "Hourly Rate"
+      : "Selected Price";
+
+  const membershipPriceError =
+    membershipPrice === undefined ? "Price is not available from the mock data" : undefined;
 
   return (
-    <div className="form-panel bg-white dark:bg-transparent space-y-4 py-10">
+    <div className="form-panel space-y-4 bg-white py-10 dark:bg-transparent">
       <Header
         label="- Members"
-        title="New client"
-        subtitle="Register a new gym member"
+        title={mode === "edit" ? "Edit client" : "Register client"}
+        subtitle={
+          mode === "edit" ? "Update client information" : "Onboard your client"
+        }
       />
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-7">
@@ -150,16 +196,22 @@ export default function ClientForm({ onSuccess }: Props) {
             label="First Name"
             placeholder="Asha"
             required
-            inputProps={register("first_name")}
-            error={errors?.first_name?.message}
+            inputProps={register("firstName", {
+              validate: (value) =>
+                validateRequired(value, "First name is required"),
+            })}
+            error={errors?.firstName?.message}
           />
           <InputGroup
             type="text"
             label="Last Name"
             placeholder="Ramsahoy"
             required
-            inputProps={register("last_name")}
-            error={errors?.last_name?.message}
+            inputProps={register("lastName", {
+              validate: (value) =>
+                validateRequired(value, "Last name is required"),
+            })}
+            error={errors?.lastName?.message}
           />
         </div>
 
@@ -169,8 +221,11 @@ export default function ClientForm({ onSuccess }: Props) {
             label="Date of Birth"
             placeholder="DD / MM / YYYY"
             required
-            inputProps={register("dob")}
-            error={errors?.dob?.message}
+            inputProps={register("dateOfBirth", {
+              validate: (value) =>
+                validateRequired(value, "Date of birth is required"),
+            })}
+            error={errors?.dateOfBirth?.message}
           />
           <Select
             label="Gender"
@@ -181,7 +236,10 @@ export default function ClientForm({ onSuccess }: Props) {
               { value: "Non-binary", label: "Non-binary" },
               { value: "Prefer not to say", label: "Prefer not to say" },
             ]}
-            selectProps={register("gender")}
+            error={errors.gender?.message}
+            selectProps={register("gender", {
+              validate: (value) => validateRequired(value, "Gender is required"),
+            })}
           />
         </div>
 
@@ -198,7 +256,10 @@ export default function ClientForm({ onSuccess }: Props) {
           label="Email Address"
           placeholder="member@email.com"
           required
-          inputProps={register("email")}
+          inputProps={register("email", {
+            required: "Email is required",
+            validate: (value) => validateEmail(value),
+          })}
           error={errors?.email?.message}
         />
 
@@ -207,7 +268,10 @@ export default function ClientForm({ onSuccess }: Props) {
           label="Phone Number"
           placeholder="+230 5XXX XXXX"
           required
-          inputProps={register("phone")}
+          inputProps={register("phone", {
+            required: "Phone number is required",
+            validate: (value) => validatePhone(value),
+          })}
           error={errors?.phone?.message}
         />
 
@@ -215,7 +279,7 @@ export default function ClientForm({ onSuccess }: Props) {
           type="text"
           label={<Label value="Emergency Contact Name" optional />}
           placeholder="Name"
-          inputProps={register("emergency_contact_name")}
+          inputProps={register("emergencyContactName")}
         />
 
         <InputGroup
@@ -223,8 +287,11 @@ export default function ClientForm({ onSuccess }: Props) {
           label="Emergency Contact"
           placeholder="phone number +230 XXXXXX"
           required
-          inputProps={register("emergency_contact_phone")}
-          error={errors?.emergency_contact_phone?.message}
+          inputProps={register("emergencyContactPhone", {
+            required: "Emergency contact number is required",
+            validate: (value) => validatePhone(value),
+          })}
+          error={errors?.emergencyContactPhone?.message}
         />
 
         <div className="my-6 flex items-center gap-3">
@@ -238,20 +305,72 @@ export default function ClientForm({ onSuccess }: Props) {
         <TextAreaGroup
           label={<Label value="Known Medical Condition" optional />}
           placeholder="e.g. Hypertension, Asthma, Knee injury, Pregnancy... Leave blank if none."
-          textareaProps={register("medical_notes")}
+          textareaProps={register("medicalConditions")}
         />
 
-        <Select
-          label={<Label value="Assigned Coach" optional />}
-          placeholder="No coach assigned"
-          items={coachItems}
-          selectProps={register("assigned_coach_id")}
-          error={errors?.assigned_coach_id?.message}
-        />
+        <div className="my-6 flex items-center gap-3">
+          <div className="h-px flex-1 bg-stroke dark:bg-dark-3" />
+          <span className="text-body-xs font-medium uppercase tracking-wider text-dark-5 dark:text-dark-6">
+            Membership
+          </span>
+          <div className="h-px flex-1 bg-stroke dark:bg-dark-3" />
+        </div>
 
-        <MembershipPlansSelector
-          selectedPlan={selectedPlan}
-          setSelectedPlan={setSelectedPlan}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <Select
+            label="Membership Plan"
+            placeholder="Select plan"
+            items={membershipPlanOptions}
+            error={errors.membershipPlan?.message}
+            selectProps={register("membershipPlan", {
+              validate: (value) =>
+                validateRequired(value, "Membership plan is required"),
+            })}
+          />
+
+          {clientContext === "personal" && membershipPlan === "custom" ? (
+            <InputGroup
+              type="number"
+              label={membershipPriceLabel}
+              placeholder="200"
+              required
+              error={errors.customFee?.message}
+              inputProps={{
+                ...register("customFee", {
+                  valueAsNumber: true,
+                  validate: (value) =>
+                    membershipPlan === "custom"
+                      ? validateRequired(value, "Custom fee is required")
+                      : true,
+                }),
+                min: 0,
+              }}
+            />
+          ) : (
+            <InputGroup
+              type="number"
+              label={membershipPriceLabel}
+              placeholder={
+                clientContext === "personal" ? "Coach hourly rate" : "Selected plan price"
+              }
+              error={membershipPriceError}
+              inputProps={{
+                value: getDisplayPrice(
+                  membershipPlan === "premium" ? premiumPrice : defaultStandardPrice,
+                ),
+                readOnly: true,
+                disabled: true,
+              }}
+            />
+          )}
+        </div>
+
+        <input
+          type="hidden"
+          {...register("membershipPrice", {
+            validate: (value) =>
+              validateRequired(value, "Membership price is required"),
+          })}
         />
 
         <div className="my-6 flex items-center gap-3">
@@ -275,32 +394,29 @@ export default function ClientForm({ onSuccess }: Props) {
             radius="md"
             label={
               <span className="text-body-sm text-dark-5 dark:text-dark-6">
-                I confirm the member has read, understood, and accepted the{" "}
+                I have read and agree to the{" "}
                 <a href="#" className="text-primary hover:underline">
                   Terms &amp; Conditions
-                </a>
-                , and{" "}
+                </a>{" "}
+                and{" "}
                 <a href="#" className="text-primary hover:underline">
                   Privacy Policy
-                </a>
-                .
+                </a>{" "}
+                <span className="text-red">*</span>
               </span>
             }
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setAgreeTerms(e.target.checked)
-            }
+            inputProps={register("agreeTerms", {
+              validate: (v) => (v ? true : "You must agree to the terms"),
+            })}
+            error={errors.agreeTerms?.message}
           />
         </div>
 
-        {errorMsg && (
-          <div className="mb-2 text-sm text-red-600">{errorMsg}</div>
-        )}
-
         <Button
           type="submit"
-          disabled={!agreeTerms || isPending}
-          variant={!agreeTerms ? "disabled" : "primary"}
-          label={isPending ? "Saving..." : "Register Client"}
+          disabled={!isValid || isSubmitting}
+          // variant={!agreeTerms ? "disabled" : "primary"}
+          label={mode === "edit" ? "Update Client" : "Create Client"}
           className="w-full"
         />
       </form>

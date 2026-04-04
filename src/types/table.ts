@@ -25,4 +25,5 @@ export interface DataTableProps<TData extends RowData> {
   pageSizeOptions?: number[];
   showFooter?: boolean;
   getRowId?: (originalRow: TData, index: number) => string;
+  onRowClick?: (row: TData) => void;
 }

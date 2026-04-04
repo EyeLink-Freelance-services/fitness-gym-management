@@ -1,16 +1,33 @@
 import type { CompanyCoachRow } from "@/types/dashboard/company-directory";
 import { GYM_CLIENTS } from "@/data/company";
+import { DUMMY_COACHES } from "@/data/superAdmin";
+import type { StatusOpt } from "@/types/dashboard/super-admin";
 
-const coachForClient = GYM_CLIENTS[0]?.coach;
-export const COMPANY_COACH_ROWS: CompanyCoachRow[] = coachForClient
-  ? [
-      {
-        id: "coach-1",
-        name: coachForClient,
-        email: "john@example.com",
-        clients: GYM_CLIENTS.filter((c) => c.coach === coachForClient).length,
-        status: "Active",
-        statusTone: "success",
-      },
-    ]
-  : [];
+export const COMPANY_COACH_ROWS: CompanyCoachRow[] = DUMMY_COACHES.map(
+  (coach, index) => ({
+    id: `coach-${index + 1}`,
+    first_name: coach.firstName,
+    last_name: coach.lastName,
+    phone_num: coach.contactNumber,
+    email: coach.email,
+    specialization: coach.specialization,
+    coaching_mode: coach.coachingMode,
+    location: coach.location,
+    qualifications: coach.certifications,
+    certifications: coach.certifications
+      ? coach.certifications.split(",").map((item) => item.trim())
+      : [],
+    years_of_experience: Number(coach.yearsExperience) || 0,
+    hourly_rate: coach.hourlyRate,
+    languages_spoken: coach.languages
+      ? coach.languages.split(",").map((item) => item.trim())
+      : [],
+    bio: coach.bio,
+    profile_photo: coach.profilePhoto,
+    availability: coach.availability
+      ? coach.availability.split(",").map((item) => item.trim())
+      : [],
+    status: coach.status as StatusOpt,
+    createdAt: coach.createdAt,
+  }),
+);

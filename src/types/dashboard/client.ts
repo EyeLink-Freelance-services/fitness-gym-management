@@ -83,6 +83,73 @@ export interface ClientMealPlanRow {
   calories: string;
 }
 
+export type CoachMealTimeOption =
+  | "Breakfast"
+  | "Lunch"
+  | "Dinner"
+  | "Specific";
+
+export type CoachTrainingPlanDay =
+  | "Monday"
+  | "Tuesday"
+  | "Wednesday"
+  | "Thursday"
+  | "Friday"
+  | "Saturday"
+  | "Sunday";
+
+export interface CoachDietPlanMeal {
+  id: string;
+  timeSlot: CoachMealTimeOption;
+  specificTime?: string;
+  meal: string;
+}
+
+export interface CoachDietPlanRecord {
+  id: string;
+  clientId: string;
+  clientName: string;
+  meals: CoachDietPlanMeal[];
+  updatedAt: string;
+}
+
+export interface CoachTrainingPlanEntry {
+  day: CoachTrainingPlanDay;
+  exercise: string;
+}
+
+export interface CoachTrainingPlanRecord {
+  id: string;
+  clientId: string;
+  clientName: string;
+  days: CoachTrainingPlanEntry[];
+  repeatEveryWeek: boolean;
+  repeatEveryMonth: boolean;
+  updatedAt: string;
+}
+
+export interface CoachDietPlanRow {
+  id: string;
+  clientName: string;
+  mealsSummary: string;
+  totalMeals: number;
+  updatedAt: string;
+}
+
+export interface CoachTrainingPlanRow {
+  id: string;
+  clientName: string;
+  monday: string;
+  tuesday: string;
+  wednesday: string;
+  thursday: string;
+  friday: string;
+  saturday: string;
+  sunday: string;
+  repeats: string;
+  updatedAt: string;
+}
+
 export interface ClientPaymentRow {
   id: string;
   invoice: string;

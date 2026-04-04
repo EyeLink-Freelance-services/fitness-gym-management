@@ -8,8 +8,6 @@ import { AnnouncementCard } from "./announcement-card";
 import { Button } from "@/components/ui-elements/button";
 
 const ITEMS_PER_PAGE = 4;
-const filterInputClasses =
-  "h-11 rounded-[10px] border border-stroke bg-transparent px-4 text-sm text-dark outline-none focus:border-primary dark:border-dark-3 dark:text-white";
 
 export function AnnouncementList({
   announcements,
@@ -17,9 +15,6 @@ export function AnnouncementList({
 }: AnnouncementListProps) {
   const [selectedStatus, setSelectedStatus] = useState(
     filters.statuses[0]?.value ?? "All",
-  );
-  const [selectedAudience, setSelectedAudience] = useState(
-    filters.audiences[0] ?? "All Audiences",
   );
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -33,14 +28,9 @@ export function AnnouncementList({
               ? announcement.status === "Draft"
               : announcement.status === selectedStatus;
 
-        const matchesAudience =
-          selectedAudience === "All Audiences"
-            ? true
-            : announcement.audience === selectedAudience;
-
-        return matchesStatus && matchesAudience;
+        return matchesStatus;
       }),
-    [announcements, selectedAudience, selectedStatus],
+    [announcements, selectedStatus],
   );
 
   const totalPages =
@@ -56,7 +46,7 @@ export function AnnouncementList({
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [selectedStatus, selectedAudience]);
+  }, [selectedStatus]);
 
   return (
     <section className="mb-8 rounded-[10px] bg-white px-7.5 py-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card">
@@ -66,7 +56,7 @@ export function AnnouncementList({
             Announcement
           </h2>
           <p className="mt-1 text-sm text-dark-6 dark:text-dark-6">
-            Recent published, scheduled, and draft announcements.
+            Recent published and draft announcements.
           </p>
         </div>
 
@@ -76,18 +66,6 @@ export function AnnouncementList({
             formType="announcement"
             size="small"
           />
-
-          <select
-            value={selectedAudience}
-            onChange={(event) => setSelectedAudience(event.target.value)}
-            className={filterInputClasses}
-          >
-            {filters.audiences.map((item) => (
-              <option key={item} value={item}>
-                {item}
-              </option>
-            ))}
-          </select>
         </div>
       </div>
 

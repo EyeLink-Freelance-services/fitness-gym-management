@@ -1,18 +1,14 @@
-export type StatusOpt = "Active" | "Not Active";
+export type StatusOpt = "Active" | "Inactive" | "Disabled" | "Pending";
 
 export interface SuperAdminCoachesRow {
   id: string;
 
-  // Basic identity
   first_name: string;
   last_name: string;
-
-  // Contact
   phone_num: string;
   email: string;
-
-  // Profile
   specialization: string;
+  coaching_mode: string;
   location: string;
   qualifications: string;
   certifications: string[];
@@ -20,40 +16,28 @@ export interface SuperAdminCoachesRow {
   hourly_rate: number;
   languages_spoken: string[];
   bio: string;
-
-  // Media
   profile_photo?: string | null;
-
-  // Availability
   availability: string[];
-
-  // System fields
-  clients: number;
-  statusTone: StatusOpt;
+  status: StatusOpt;
+  createdAt: string;
 }
 
 export interface SuperAdminCompanyRow {
   id: string;
-  // Basic Info
   company_name: string;
   company_logo?: string | null;
-
-  // Registration
   business_reg_no: string;
-
-  // Contact
   contact_number: string;
-
-  // Location
   address_line_1: string;
   city: string;
   postcode: string;
   district: string;
-
-  // Branches
   branches: string[];
-
-  // Legal
+  standard_price: number;
+  has_premium_plan: boolean;
+  premium_price?: number | null;
   disclaimer_text: string;
   terms_and_conditions: string;
+  status: StatusOpt;
+  createdAt: string;
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import type { CompanyFormData } from "@/types/forms";
+import type { CompanyFormData, CompanyFormProps } from "@/types/forms";
 import { COMPANY_STATES } from "@/data/dashboardForm";
 import InputGroup from "../FormElements/InputGroup";
 import { TextAreaGroup } from "../FormElements/InputGroup/text-area";
@@ -12,24 +12,74 @@ import { ImageUpload } from "../FormElements/ImageUpload";
 import { validatePhone, validateRequired } from "@/lib/forms/formValidation";
 import Header from "../FormElements/common/header";
 import Label from "../FormElements/common/label";
+import { useEffect } from "react";
 
-export default function CompanyForm() {
+export default function CompanyForm({
+  initialData,
+  existingProfilePhotoUrl,
+  mode = "create",
+  onSuccess,
+}: CompanyFormProps) {
   const {
     register,
     control,
     handleSubmit,
     setValue,
     watch,
+    reset,
     formState: { errors, isValid, isSubmitting },
   } = useForm<CompanyFormData>({
     mode: "all",
     defaultValues: {
-      branches: [{ value: "MyFit- Trianon" }],
+      companyName: "",
+      brn: "",
+      contactNumber: "",
+      addressLine1: "",
+      city: "",
+      postcode: "",
       state: "",
+      branches: [{ value: "" }],
+      standardPrice: undefined,
+      hasPremiumPlan: false,
+      premiumPrice: undefined,
+      disclaimer: "",
+      agreeTerms: false,
+      ...initialData,
     },
   });
 
+  useEffect(() => {
+    reset({
+      companyName: "",
+      brn: "",
+      contactNumber: "",
+      addressLine1: "",
+      city: "",
+      postcode: "",
+      state: "",
+      branches: [{ value: "" }],
+      standardPrice: undefined,
+      hasPremiumPlan: false,
+      premiumPrice: undefined,
+      disclaimer: "",
+      agreeTerms: false,
+      ...initialData,
+    });
+  }, [initialData, reset]);
+
   watch();
+
+  const branches = watch("branches");
+  const hasPremiumPlan = watch("hasPremiumPlan");
+  const canAddBranch = branches.every(
+    (branch) => branch.value.trim().length > 0,
+  );
+
+  useEffect(() => {
+    if (!hasPremiumPlan) {
+      setValue("premiumPrice", undefined, { shouldValidate: true });
+    }
+  }, [hasPremiumPlan, setValue]);
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -38,14 +88,17 @@ export default function CompanyForm() {
 
   const onSubmit = (data: CompanyFormData) => {
     console.log(data);
+    onSuccess?.();
   };
 
   return (
     <div className="form-panel space-y-4">
       <Header
         label="- Organization"
-        title="Register your gym"
-        subtitle="Set up your organization to get started"
+        title={mode === "edit" ? "Edit company" : "Register company"}
+        subtitle={
+          mode === "edit" ? "Update the company details" : "Onboard your gym"
+        }
       />
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-7">
@@ -71,12 +124,11 @@ export default function CompanyForm() {
         <ImageUpload
           label="Company Logo"
           accept="image/*"
+          initialPreviewUrl={existingProfilePhotoUrl}
           emptyStateText={
             <>
-              Drop your logo here or{" "}
-              <strong className="text-dark dark:text-white">
-                browse files
-              </strong>
+              Upload company logo -{" "}
+              <strong className="text-dark dark:text-white">browse</strong>
             </>
           }
           hint="PNG, JPG, SVG - max 5MB"
@@ -172,6 +224,60 @@ export default function CompanyForm() {
 
         <div className="my-6 flex items-center gap-3">
           <div className="h-px flex-1 bg-stroke dark:bg-dark-3" />
+          <span className="text-body-xs font-medium uppercase tracking-wider text-dark-5 dark:text-dark-6">
+            Membership Pricing
+          </span>
+          <div className="h-px flex-1 bg-stroke dark:bg-dark-3" />
+        </div>
+
+        <div className="grid grid-cols-1 gap-4">
+          <InputGroup
+            type="number"
+            label="Standard Price"
+            placeholder="150"
+            required
+            error={errors.standardPrice?.message}
+            inputProps={{
+              ...register("standardPrice", {
+                valueAsNumber: true,
+                validate: (value) =>
+                  validateRequired(value, "Standard price is required"),
+              }),
+              min: 0,
+            }}
+          />
+          <div className="flex items-end">
+            <Checkbox
+              minimal
+              radius="md"
+              label="Premium Plan"
+              inputProps={register("hasPremiumPlan")}
+            />
+          </div>
+        </div>
+
+        {hasPremiumPlan && (
+          <InputGroup
+            type="number"
+            label="Premium Price"
+            placeholder="250"
+            required
+            error={errors.premiumPrice?.message}
+            inputProps={{
+              ...register("premiumPrice", {
+                valueAsNumber: true,
+                validate: (value) =>
+                  hasPremiumPlan
+                    ? validateRequired(value, "Premium price is required")
+                    : true,
+              }),
+              min: 0,
+            }}
+          />
+        )}
+
+        <div className="my-6 flex items-center gap-3">
+          <div className="h-px flex-1 bg-stroke dark:bg-dark-3" />
           <Label value="Multi-Branch" optional />
           <div className="h-px flex-1 bg-stroke dark:bg-dark-3" />
         </div>
@@ -206,7 +312,8 @@ export default function CompanyForm() {
           label="+ Add Another Branch"
           variant="outlineDark"
           className="w-full border-dashed text-dark-5 hover:border-primary hover:text-primary dark:text-dark-6 dark:hover:text-primary"
-          onClick={() => append({ value: "" })}
+          onClick={() => canAddBranch && append({ value: "" })}
+          disabled={!canAddBranch}
         />
 
         <div className="my-6 flex items-center gap-3">

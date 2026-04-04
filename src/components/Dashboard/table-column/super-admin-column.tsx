@@ -5,6 +5,7 @@ import {
   type StatusOpt,
 } from "@/types/dashboard/super-admin";
 import type { StatusTone } from "@/types/shared";
+import type { TableUIColumn } from "@/types/shared";
 import { ColumnDef } from "@tanstack/react-table";
 
 function getStatusTone(status: StatusOpt): StatusTone {
@@ -15,17 +16,17 @@ export const superAdminCoachColumns: ColumnDef<SuperAdminCoachesRow>[] = [
   {
     accessorKey: "first_name",
     header: "First Name",
-    meta: { align: "left", headClassName: "min-w-[220px]" },
+    meta: { align: "left", headClassName: "min-w-[160px]" },
   },
   {
     accessorKey: "last_name",
     header: "Last Name",
-    meta: { align: "left", headClassName: "min-w-[220px]" },
+    meta: { align: "left", headClassName: "min-w-[160px]" },
   },
   {
     accessorKey: "phone_num",
-    header: "Contact",
-    meta: { align: "left", headClassName: "min-w-[150px]" },
+    header: "Phone",
+    meta: { align: "left", headClassName: "min-w-[140px]" },
   },
   {
     accessorKey: "email",
@@ -38,33 +39,58 @@ export const superAdminCoachColumns: ColumnDef<SuperAdminCoachesRow>[] = [
     meta: { align: "left", headClassName: "min-w-[160px]" },
   },
   {
+    accessorKey: "coaching_mode",
+    header: "Coaching Mode",
+    meta: { align: "left", headClassName: "min-w-[160px]" },
+  },
+  {
     accessorKey: "location",
     header: "Location",
     meta: { align: "left", headClassName: "min-w-[160px]" },
   },
   {
-    accessorKey: "clients",
-    header: "Clients",
-    cell: ({ row }) => (
-      <span className="font-medium text-dark dark:text-white">
-        {row.original.clients}
-      </span>
-    ),
-    meta: { align: "center", headClassName: "min-w-[100px]" },
-  },
-  {
-    accessorKey: "statusTone",
+    accessorKey: "status",
     header: "Status",
     cell: ({ row }) => (
       <StatusBadge
-        label={row.original.statusTone}
-        tone={getStatusTone(row.original.statusTone)}
+        label={row.original.status}
+        tone={getStatusTone(row.original.status)}
       />
     ),
     meta: { align: "left", headClassName: "min-w-[120px]" },
   },
 ];
 
+export const superAdminCoachPreviewColumns: TableUIColumn<SuperAdminCoachesRow>[] =
+  [
+    {
+      key: "coach_name",
+      label: "Name",
+      align: "left",
+      render: (row) => `${row.first_name} ${row.last_name}`,
+      headClassName: "min-w-[180px]",
+    },
+    {
+      key: "contact_num",
+      label: "Phone",
+      align: "left",
+      render: (row) => row.phone_num,
+      headClassName: "min-w-[160px]",
+    },
+    {
+      key: "coaching_mode",
+      label: "Coaching Mode",
+      align: "left",
+      headClassName: "min-w-[150px]",
+    },
+    {
+      key: "location",
+      label: "Location",
+      align: "left",
+      render: (row) => row.location || "N/A",
+      headClassName: "min-w-[150px]",
+    },
+  ];
 
 export const superAdminCompanyColumns: ColumnDef<SuperAdminCompanyRow>[] = [
   {
@@ -77,13 +103,11 @@ export const superAdminCompanyColumns: ColumnDef<SuperAdminCompanyRow>[] = [
     header: "BRN",
     meta: { align: "left", headClassName: "min-w-[160px]" },
   },
-
   {
     accessorKey: "contact_number",
     header: "Contact",
     meta: { align: "left", headClassName: "min-w-[150px]" },
   },
-
   {
     accessorKey: "address_line_1",
     header: "Address",
@@ -94,7 +118,6 @@ export const superAdminCompanyColumns: ColumnDef<SuperAdminCompanyRow>[] = [
     ),
     meta: { align: "left", headClassName: "min-w-[220px]" },
   },
-
   {
     accessorKey: "postcode",
     header: "Postcode",
@@ -106,7 +129,6 @@ export const superAdminCompanyColumns: ColumnDef<SuperAdminCompanyRow>[] = [
     header: "District",
     meta: { align: "left", headClassName: "min-w-[140px]" },
   },
-
   {
     accessorKey: "branches",
     header: "Branches",
@@ -114,8 +136,51 @@ export const superAdminCompanyColumns: ColumnDef<SuperAdminCompanyRow>[] = [
       row.original.branches.length > 0 ? (
         <span>{row.original.branches.join(", ")}</span>
       ) : (
-        <span className="text-dark-5 text-xs">None</span>
+        <span className="text-xs text-dark-5">None</span>
       ),
     meta: { align: "left", headClassName: "min-w-[200px]" },
   },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => (
+      <StatusBadge
+        label={row.original.status}
+        tone={getStatusTone(row.original.status)}
+      />
+    ),
+    meta: { align: "left", headClassName: "min-w-[120px]" },
+  },
 ];
+
+export const superAdminCompanyPreviewColumns: TableUIColumn<SuperAdminCompanyRow>[] =
+  [
+    {
+      key: "company_name",
+      label: "Name",
+      align: "left",
+      render: (row) => `${row.company_name}`,
+      headClassName: "min-w-[140px] max-w-[150px]",
+    },
+    {
+      key: "contact_num",
+      label: "Phone",
+      align: "left",
+      render: (row) => row.contact_number,
+      headClassName: "min-w-[140px]",
+    },
+    {
+      key: "brn",
+      label: "BRN",
+      align: "left",
+      render: (row) => row.business_reg_no,
+      headClassName: "min-w-[150px]",
+    },
+    {
+      key: "address",
+      label: "Address",
+      align: "left",
+      render: (row) => `${row.address_line_1}, ${row.city}`,
+      headClassName: "min-w-[220px]",
+    },
+  ];

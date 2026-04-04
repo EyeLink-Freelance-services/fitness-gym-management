@@ -1,9 +1,6 @@
-import { PersonalCoachDietPlan } from "@/components/Dashboard/personal-coach/diet-plan";
-import { listDietPlanAction } from "@/app/(app)/diet-plans/actions";
+import { ROUTES } from "@/constants/route";
+import { redirect } from "next/navigation";
 
 export default async function PersonalCoachDietPlanPage() {
-  const res = await listDietPlanAction();
-  const plans = res?.data ?? [];
-
-  return <PersonalCoachDietPlan plans={plans} />;
+  redirect(ROUTES.DASHBOARD.PERSONAL_COACH.CLIENTS);
 }

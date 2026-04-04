@@ -2,6 +2,7 @@ import { NavSection } from "@/types/dashboard/dashboard-shared";
 import * as Icons from "../../components/IconsCollection/icons";
 import { section } from "@/utils/dashboard-nav";
 import { ROUTES } from "@/constants/route";
+import { CLIENT_HAS_ASSIGNED_COACH } from "@/data/client";
 
 /** 1. Super Admin */
 export const SUPER_ADMIN_NAV: NavSection[] = [
@@ -48,10 +49,15 @@ export const COMPANY_NAV: NavSection[] = [
       icon: Icons.User,
       items: [],
     },
-
     {
       title: "Coach Assignments",
       url: ROUTES.DASHBOARD.COMPANY.CLIENT_COACH_ASSIGN,
+      icon: Icons.User,
+      items: [],
+    },
+    {
+      title: "Staff",
+      url: ROUTES.DASHBOARD.COMPANY.STAFF,
       icon: Icons.User,
       items: [],
     },
@@ -146,18 +152,6 @@ export const PERSONAL_COACH_NAV: NavSection[] = [
       items: [],
     },
     {
-      title: "Training Plan",
-      url: ROUTES.DASHBOARD.PERSONAL_COACH.TRAINING_PLAN,
-      icon: Icons.TrainingIcon,
-      items: [],
-    },
-    {
-      title: "Diet Plan",
-      url: ROUTES.DASHBOARD.PERSONAL_COACH.DIET_PLAN,
-      icon: Icons.DietPlanIcon,
-      items: [],
-    },
-    {
       title: "Data Entry",
       url: ROUTES.DASHBOARD.PERSONAL_COACH.DATA_ENTRY,
       icon: Icons.FourCircle,
@@ -198,6 +192,7 @@ export const CLIENT_NAV: NavSection[] = [
       url: ROUTES.DASHBOARD.CLIENT.SESSIONS,
       icon: Icons.Calendar,
       items: [],
+      disabled: !CLIENT_HAS_ASSIGNED_COACH,
     },
   ]),
 ];

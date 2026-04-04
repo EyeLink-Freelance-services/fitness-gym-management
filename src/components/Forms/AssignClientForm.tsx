@@ -11,9 +11,10 @@ import {
   AssignClientCreateSchema,
 } from "@/lib/validation/schemas/assign-client";
 import type { AssignClientOption, AssignCoachOption } from "@/types/dashboard/assign-client";
+import type { AssignClientFormProps } from "@/types/forms";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMemo, useTransition } from "react";
+import { useEffect, useMemo, useTransition } from "react";
 
 const ASSIGN_CLIENT_STATUS_OPTIONS: { value: string; label: string }[] = [
   { value: "assigned", label: "Assigned" },
@@ -21,11 +22,17 @@ const ASSIGN_CLIENT_STATUS_OPTIONS: { value: string; label: string }[] = [
   { value: "unassigned", label: "Unassigned" },
 ];
 
-interface AssignClientFormProps {
-  onSuccess?: () => void;
-}
+const defaultValues: AssignClientCreateInput = {
+  clientId: "",
+  coachId: "",
+  status: "assigned",
+};
 
-export default function AssignClientForm({ onSuccess }: AssignClientFormProps) {
+export default function AssignClientForm({
+  initialData,
+  mode = "create",
+  onSuccess,
+}: AssignClientFormProps) {
   const [isPending, startTransition] = useTransition();
 
   const clientOptions = useMemo<AssignClientOption[]>(
@@ -41,7 +48,7 @@ export default function AssignClientForm({ onSuccess }: AssignClientFormProps) {
     () =>
       COMPANY_COACH_ROWS.map((coach) => ({
         value: coach.id,
-        label: coach.name,
+        label: `${coach.first_name} ${coach.last_name}`.trim(),
       })),
     [],
   );
@@ -49,21 +56,46 @@ export default function AssignClientForm({ onSuccess }: AssignClientFormProps) {
   const {
     handleSubmit,
     control,
+    watch,
+    setValue,
+    reset,
     formState: { errors },
   } = useForm<AssignClientCreateInput>({
     mode: "onChange",
     resolver: zodResolver(AssignClientCreateSchema),
     defaultValues: {
-      clientId: "",
-      coachId: "",
-      status: "assigned",
+      ...defaultValues,
+      ...initialData,
     },
   });
 
+  const selectedStatus = watch("status");
+
+  useEffect(() => {
+    reset({
+      ...defaultValues,
+      ...initialData,
+    });
+  }, [initialData, reset]);
+
+  useEffect(() => {
+    if (selectedStatus === "unassigned") {
+      setValue("coachId", "", {
+        shouldDirty: true,
+        shouldTouch: true,
+        shouldValidate: true,
+      });
+    }
+  }, [selectedStatus, setValue]);
+
   const onSubmit = (values: AssignClientCreateInput) => {
     startTransition(async () => {
-      // TODO: Connect to database
-      console.log("Assign client form submitted:", values);
+      console.log(
+        mode === "edit"
+          ? "Assign client form updated:"
+          : "Assign client form submitted:",
+        values,
+      );
       onSuccess?.();
     });
   };
@@ -72,8 +104,12 @@ export default function AssignClientForm({ onSuccess }: AssignClientFormProps) {
     <div className="form-panel space-y-4 bg-white py-10 dark:bg-transparent">
       <Header
         label="- Client Coach Assignments"
-        title="Assign Client"
-        subtitle="Assign a client to a coach"
+        title={mode === "edit" ? "Edit assignment" : "Assign client"}
+        subtitle={
+          mode === "edit"
+            ? "Update the selected client-coach assignment"
+            : "Assign a client to a coach"
+        }
       />
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-7">
@@ -110,11 +146,16 @@ export default function AssignClientForm({ onSuccess }: AssignClientFormProps) {
               <SearchableSelect
                 label="Coach"
                 options={coachOptions}
-                placeholder="Search coach..."
-                required
+                placeholder={
+                  selectedStatus === "unassigned"
+                    ? "No coach needed for unassigned status"
+                    : "Search coach..."
+                }
+                required={selectedStatus !== "unassigned"}
                 value={field.value}
                 onChange={field.onChange}
                 onBlur={field.onBlur}
+                disabled={selectedStatus === "unassigned"}
                 error={errors?.coachId?.message}
               />
             )}
@@ -143,7 +184,15 @@ export default function AssignClientForm({ onSuccess }: AssignClientFormProps) {
           type="submit"
           disabled={isPending}
           variant="primary"
-          label={isPending ? "Submitting..." : "Submit"}
+          label={
+            isPending
+              ? mode === "edit"
+                ? "Saving..."
+                : "Submitting..."
+              : mode === "edit"
+                ? "Save Changes"
+                : "Submit"
+          }
           className="w-full"
         />
       </form>

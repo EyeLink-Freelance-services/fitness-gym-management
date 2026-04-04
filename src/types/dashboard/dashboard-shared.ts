@@ -5,6 +5,7 @@ export type SubItem = {
   url: string;
   icon?: React.FC<SVGProps<SVGSVGElement>>;
   permission?: string;
+  disabled?: boolean;
 };
 
 export type NavItem = {
@@ -13,6 +14,7 @@ export type NavItem = {
   icon: React.FC<React.SVGProps<SVGSVGElement>>;
   items: SubItem[];
   permission?: string;
+  disabled?: boolean;
 };
 export type NavSection = { label: string; items: NavItem[] };
 
