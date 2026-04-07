@@ -31,7 +31,6 @@ export const SCHEMA_FIELD_GROUPS: FieldGroup[] = [
         type: "number",
         unit: "cm",
         required: true,
-        readOnly: true,
         sortOrder: 20,
         validation: { min: 120, max: 220 },
       },

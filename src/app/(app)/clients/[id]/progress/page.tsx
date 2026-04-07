@@ -1,12 +1,40 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { ProgressRecordsTable } from "@/components/Dashboard/client-records/progress-records-table";
 import { ProgressSeriesCard } from "@/components/Dashboard/client-records/progress-series-card";
 import { ProgressSummaryCards } from "@/components/Dashboard/client-records/progress-summary-cards";
 import CardTitle from "@/components/Dashboard/overview-cards/cardTitle";
 import { Button } from "@/components/ui-elements/button";
 import { getCompanyProgressOverview } from "@/services/coach-schema.services";
+import { Member } from "@/types/member";
 
-export default async function CompanyProgressPage() {
-  const [progress] = await Promise.all([getCompanyProgressOverview()]);
+export default function ProgressPage(props: Member) {
+  const [progress, setProgress] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadProgress() {
+      try {
+        const progressRes = await getCompanyProgressOverview();
+        setProgress(progressRes);
+      } catch (error) {
+        console.error("Failed to load progress overview:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadProgress();
+  }, []);
+
+  if (loading) {
+    return <div className="p-4">Loading...</div>;
+  }
+
+  if (!progress) {
+    return <div className="p-4">No progress data found.</div>;
+  }
 
   return (
     <div className="flex flex-col gap-8">
@@ -28,7 +56,7 @@ export default async function CompanyProgressPage() {
       <ProgressSummaryCards metrics={progress.summaryCards} />
 
       <div className="grid gap-6 xl:grid-cols-2">
-        {progress.series.map((series) => (
+        {progress.series.map((series: any) => (
           <ProgressSeriesCard key={series.id} series={series} />
         ))}
       </div>

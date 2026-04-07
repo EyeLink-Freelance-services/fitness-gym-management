@@ -21,6 +21,7 @@ export interface DataTableProps<TData extends RowData> {
   tableClassName?: string;
   searchPlaceholder?: string;
   emptyStateLabel?: string;
+  onRowClick?: (row: any) => void;
   initialPageSize?: number;
   pageSizeOptions?: number[];
   showFooter?: boolean;

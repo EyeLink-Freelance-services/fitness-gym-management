@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Tabs } from "@/components/ui/tabs";
 import { ShowcaseSection } from "@/components/Layouts/showcase-section";
-import MemberActions from "../components/ui";
+import MemberActions from "../../clients/components/ui";
 import MeasurementsTab from "./measurements-tab";
 import MembershipPlansSelector from "../../membership-plans/components/membership-plan-selector";
 import { MembershipPlanTab } from "./membership-plan-tab";

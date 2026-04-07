@@ -10,9 +10,11 @@ import type {
   FormulaSnapshotPreview,
 } from "@/types/dashboard/client-records";
 import type { FormulaDefinition } from "@/types/dashboard/formula-builder";
+import { Member } from "@/types/member";
 import { useMemo, useState } from "react";
 
 type DataEntryWorkspaceProps = {
+  client: Member;
   draft: ClientRecordDraft;
   formulas: FormulaDefinition[];
 };
@@ -33,6 +35,7 @@ function getNumericScope(values: Record<string, string>) {
 }
 
 export function DataEntryWorkspace({
+  client,
   draft,
   formulas,
 }: DataEntryWorkspaceProps) {
@@ -76,10 +79,10 @@ export function DataEntryWorkspace({
           <div className="grid gap-3 xl:grid-cols-[280px_minmax(0,1fr)] xl:items-center">
             <div className="flex items-center gap-3">
               <span className="flex h-10 w-10 items-center justify-center rounded-full bg-green/15 text-sm font-bold text-green">
-                WL
+                {client.first_name[0].trim()}{client.last_name[0].trim() ?? ""}
               </span>
               <h2 className="text-lg font-bold text-dark dark:text-white">
-                {draft.clientName}
+                {client.first_name} {client.last_name}
               </h2>
             </div>
             <div className="flex items-center gap-3">

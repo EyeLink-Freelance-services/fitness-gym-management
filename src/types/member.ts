@@ -12,6 +12,7 @@ export type Member = {
   phone: string,
   email: string,
   address: string,
+  created_at: string,
   emergency_contact_name: string | null,
   emergency_contact_phone: string,
   medical_notes: string,

@@ -47,6 +47,7 @@ export function DataTable<TData extends RowData>({
   description,
   data,
   columns,
+  onRowClick,
   headerActions,
   toolbar,
   className,
@@ -182,7 +183,8 @@ export function DataTable<TData extends RowData>({
             rows.map((row) => (
               <TableRow
                 key={row.id}
-                className="text-base text-dark dark:text-white"
+                onClick={() => onRowClick?.(row.original)}
+                className="cursor-pointer text-base text-dark dark:text-white"
               >
                 {row.getVisibleCells().map((cell) => {
                   const meta = (cell.column.columnDef.meta ??

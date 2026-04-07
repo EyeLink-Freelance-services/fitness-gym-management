@@ -3,6 +3,8 @@ import Link from "next/link";
 import { ROUTES } from "@/constants/route";
 import MemberTabs from "../components/member-tabs";
 import { ArrowLeftIcon } from "@/components/IconsCollection/icons";
+import PageHeader from "@/components/PageHeader";
+import { Button } from "@/components/ui-elements/button";
 
 export default async function MemberPage({
   params,
@@ -32,10 +34,6 @@ export default async function MemberPage({
 
   return (
     <div className="space-y-6">
-      <Link href={ROUTES.MEMBERS.LIST_MEMBER}>
-        <ArrowLeftIcon className="mb-5 cursor-pointer" />
-      </Link>
-
       {/* Client-side Tabs */}
       <MemberTabs member={singleMember} />
     </div>
