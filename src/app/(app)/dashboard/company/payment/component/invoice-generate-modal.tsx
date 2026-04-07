@@ -119,6 +119,7 @@ export function InvoiceGenerateModal({
 }: Props) {
   const [mode, setMode] = useState<"form" | "preview">("form");
   const [previewData, setPreviewData] = useState<InvoiceData | null>(null);
+  const [zoom, setZoom] = useState(1);
 
   const {
     register,
@@ -166,7 +167,12 @@ export function InvoiceGenerateModal({
     await onGenerate(previewData);
   }
 
-  const scale = Math.max(0.36, 0.52 - 0.02 * ((previewData?.items.length ?? 1) - 1));
+  const baseScale = Math.max(
+    0.36,
+    0.52 - 0.02 * ((previewData?.items.length ?? 1) - 1)
+  );
+
+  const scale = baseScale * zoom;
 
   return mode === "form" ? (
     <Modal
@@ -297,7 +303,7 @@ export function InvoiceGenerateModal({
             <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
               <Button
                 type="button"
-                variant="danger"
+                variant="outlineDark"
                 label="Cancel"
                 onClick={onClose}
               />
@@ -318,7 +324,42 @@ export function InvoiceGenerateModal({
       hideHeader
     >
       <div className="relative flex min-h-0 flex-1 flex-col">
-        <div className="invoice-preview-scroll flex-1 overflow-y-hidden bg-slate-100 dark:bg-slate-800 px-4 pt-2 md:px-6">
+        <div 
+          className="invoice-preview-scroll flex-1 overflow-y-hidden bg-slate-100 dark:bg-slate-800 px-4 pt-2 md:px-6"
+          onWheel={(e) => {
+            if (e.ctrlKey) {
+              e.preventDefault();
+              setZoom((z) =>
+                Math.min(2, Math.max(0.5, z - e.deltaY * 0.001))
+              );
+            }
+          }}
+        >
+          <div className="absolute right-4 top-4 z-30">
+            <div className="flex items-center gap-2 rounded-2xl border border-white/60 bg-white/85 p-2 shadow-[0_10px_30px_rgba(15,23,42,0.16)] backdrop-blur-md dark:border-white/10 dark:bg-slate-900/80">
+              <button
+                type="button"
+                onClick={() => setZoom((z) => Math.max(0.5, z - 0.1))}
+                className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-base font-semibold text-slate-700 transition hover:bg-slate-100 active:scale-95 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700"
+                aria-label="Zoom out"
+              >
+                −
+              </button>
+
+              <div className="min-w-[68px] rounded-xl bg-slate-100 px-3 py-2 text-center text-sm font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-100">
+                {Math.round(zoom * 100)}%
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setZoom((z) => Math.min(2, z + 0.1))}
+                className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-base font-semibold text-slate-700 transition hover:bg-slate-100 active:scale-95 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700"
+                aria-label="Zoom in"
+              >
+                +
+              </button>
+            </div>
+          </div>
           <div 
             className="mx-auto origin-top w-full max-w-[920px] rounded-[24px] bg-white 
             shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_20px_rgba(0,0,0,0.06),0_20px_60px_rgba(0,0,0,0.10)]"

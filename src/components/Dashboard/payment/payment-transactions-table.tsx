@@ -196,7 +196,7 @@ export function PaymentTransactionsTable({
       setTimeout(() => {
         setOpenInvoiceModal(false);
         setSelectedPayment(null);
-        toast.success("PDF generated and downloaded");
+        toast.success("PDF generated");
       }, 300);
     } catch {
       toast.error("Failed to download PDF");
