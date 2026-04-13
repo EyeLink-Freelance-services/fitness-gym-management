@@ -61,7 +61,16 @@ import {
   OVERVIEW_SUPER_ADMIN_DATA,
 } from "@/data/superAdmin";
 import { COMPANY_COACH_ROWS } from "@/data/company-coaches";
+import {
+  Company,
+  CompanyRepository,
+} from "@/modules/company/company.repository";
 // Gyms
+
+export async function getCompanies() : Promise<SuperAdminCompanyRow[]> {
+  return await CompanyRepository.findAll();
+}
+
 export async function getAllGyms() {
   // const res = await fetch("/api/gyms");
   // return res.json();

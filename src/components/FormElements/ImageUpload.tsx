@@ -13,8 +13,7 @@ export type ImageUploadProps = {
   emptyStateText?: React.ReactNode;
   hint?: string;
   error?: string;
-  registerReturn: UseFormRegisterReturn;
-  setValue: (name: string, value: FileList | undefined) => void;
+  onFileChange: (file: File | null) => void;
 };
 
 export function ImageUpload({
@@ -24,95 +23,31 @@ export function ImageUpload({
   initialPreviewUrl,
   emptyStateText = (
     <>
-      Drop your image here or{" "}
-      <strong className="text-dark dark:text-white">browse files</strong>
+      Drop your image here or <strong>browse files</strong>
     </>
   ),
   hint = "PNG, JPG, SVG - max 5MB",
   error,
-  registerReturn,
-  setValue,
+  onFileChange,
 }: ImageUploadProps) {
   const [previewFile, setPreviewFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [existingPreviewUrl, setExistingPreviewUrl] = useState<string | null>(
-    initialPreviewUrl ?? null,
-  );
   const [isDragging, setIsDragging] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const { ref, onChange, name, ...rest } = registerReturn;
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const triggerRegisteredChange = (files?: FileList) => {
-    onChange({
-      target: { files, name },
-    } as unknown as React.ChangeEvent<HTMLInputElement>);
-  };
-
-  useEffect(() => {
-    setExistingPreviewUrl(initialPreviewUrl ?? null);
-  }, [initialPreviewUrl]);
-
-  const validateAndSetFile = (file: File) => {
+  const setFile = (file: File | null) => {
     setPreviewFile(file);
-    const dt = new DataTransfer();
-    dt.items.add(file);
-    setValue(name, dt.files);
-    triggerRegisteredChange(dt.files);
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-    const file = e.dataTransfer.files?.[0];
-    if (file) validateAndSetFile(file);
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
-      setIsDragging(false);
-    }
+    onFileChange(file);
   };
 
   useEffect(() => {
-    if (previewFile) {
-      const url = URL.createObjectURL(previewFile);
-      setPreviewUrl(url);
-      return () => URL.revokeObjectURL(url);
-    }
-    setPreviewUrl(null);
+    if (!previewFile) return setPreviewUrl(null);
+    const url = URL.createObjectURL(previewFile);
+    setPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
   }, [previewFile]);
 
-  const resolvedPreviewUrl = previewUrl ?? existingPreviewUrl;
-  const resolvedPreviewLabel =
-    previewFile?.name ??
-    existingPreviewUrl?.split("/").pop()?.split("?")[0] ??
-    "Current image";
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onChange(e);
-    const file = e.target.files?.[0];
-    setValue(name, e.target.files ?? undefined);
-    setPreviewFile(file ?? null);
-  };
-
-  const clearImage = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    triggerRegisteredChange(undefined);
-    setValue(name, undefined);
-    setPreviewFile(null);
-    setExistingPreviewUrl(null);
-    if (fileInputRef.current) fileInputRef.current.value = "";
-  };
+  const resolvedPreviewUrl = previewUrl ?? initialPreviewUrl ?? null;
 
   return (
     <div className="mb-5">
@@ -120,49 +55,42 @@ export function ImageUpload({
       <div
         className={`cursor-pointer rounded-lg border border-dashed p-6 text-center transition ${
           isDragging
-            ? "border-primary bg-primary/5 dark:border-primary dark:bg-primary/10"
-            : "border-stroke bg-gray-2 hover:border-primary dark:border-dark-3 dark:bg-dark-2 dark:hover:border-primary"
+            ? "border-primary bg-primary/5"
+            : "border-stroke bg-gray-2 hover:border-primary dark:border-dark-3 dark:bg-dark-2"
         }`}
-        onClick={(e) => {
-          if ((e.target as HTMLElement).closest("[data-image-upload-action]")) {
-            return;
-          }
-          const target = e.currentTarget.querySelector(
-            "input",
-          ) as HTMLInputElement;
-          target?.click();
+        onClick={() => inputRef.current?.click()}
+        onDragOver={(e) => {
+          e.preventDefault();
+          setIsDragging(true);
         }}
-        onDragOver={handleDragOver}
-        onDragEnter={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
+        onDragLeave={(e) => {
+          e.preventDefault();
+          setIsDragging(false);
+        }}
+        onDrop={(e) => {
+          e.preventDefault();
+          setIsDragging(false);
+          const file = e.dataTransfer.files?.[0];
+          if (file) setFile(file);
+        }}
       >
         <input
+          ref={inputRef}
           type="file"
-          name={name}
           accept={accept}
           className="hidden"
-          {...rest}
-          ref={(el) => {
-            ref(el);
-            fileInputRef.current = el;
-          }}
-          onChange={handleFileChange}
+          onChange={(e) => setFile(e.target.files?.[0] ?? null)}
         />
         {resolvedPreviewUrl ? (
-          <div className="flex flex-col items-center gap-2 md:flex-row md:justify-between">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              {resolvedPreviewUrl ? (
-                <img
-                  src={resolvedPreviewUrl}
-                  alt="Preview"
-                  className="h-20 w-20 rounded-lg object-cover"
-                />
-              ) : (
-                <div className="h-20 w-20 animate-pulse rounded-lg bg-gray-2 dark:bg-dark-3" />
-              )}
-              <p className="max-w-[30%] truncate text-body-sm font-medium text-dark dark:text-white">
-                {resolvedPreviewLabel}
+              <img
+                src={resolvedPreviewUrl}
+                alt="Preview"
+                className="h-20 w-20 rounded-lg object-cover"
+              />
+              <p className="truncate text-body-sm font-medium text-dark dark:text-white">
+                {previewFile?.name ?? "Current image"}
               </p>
             </div>
             <Button
@@ -170,8 +98,11 @@ export function ImageUpload({
               label="Remove"
               variant="outlineDark"
               size="small"
-              data-image-upload-action="remove"
-              onClick={clearImage}
+              onClick={(e) => {
+                e.stopPropagation();
+                setFile(null);
+                if (inputRef.current) inputRef.current.value = "";
+              }}
             />
           </div>
         ) : (
@@ -187,11 +118,7 @@ export function ImageUpload({
           </>
         )}
       </div>
-      {error && (
-        <p className="mt-1 text-body-sm text-red-500 dark:text-red-400">
-          {error}
-        </p>
-      )}
+      {error && <p className="mt-1 text-body-sm text-red-500">{error}</p>}
     </div>
   );
 }

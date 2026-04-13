@@ -36,12 +36,12 @@ export interface RecoveryNewPasswordFormData {
 }
 
 export interface CompanyBranchField {
-  value: string;
+  branchName: string;
 }
 
 export interface CompanyFormData {
   companyName: string;
-  companyLogo?: FileList;
+  companyLogo?: File | null;
   brn: string;
   contactNumber: string;
   addressLine1: string;

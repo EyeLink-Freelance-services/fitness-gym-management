@@ -1,8 +1,8 @@
-import { getAllGyms } from "@/services/dashboard.services";
+import { getAllGyms, getCompanies } from "@/services/dashboard.services";
 import CompanyTableClient from "@/components/Dashboard/super-admin/company-table-client";
 
 export default async function SuperAdminCompanyPage() {
-  const allGyms = await getAllGyms();
+  const allCompanies = await getCompanies();
 
-  return <CompanyTableClient data={allGyms} />;
+  return <CompanyTableClient data={allCompanies} />;
 }

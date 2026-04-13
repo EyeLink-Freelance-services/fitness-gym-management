@@ -51,7 +51,9 @@ export default function CompanyTableClient({ data }: CompanyTableClientProps) {
         city: selectedCompany.city,
         postcode: selectedCompany.postcode,
         state: selectedCompany.district,
-        branches: selectedCompany.branches.map((branch) => ({ value: branch })),
+        branches: selectedCompany.branches.map((branch) => ({
+          branchName: branch,
+        })),
         standardPrice: selectedCompany.standard_price,
         hasPremiumPlan: selectedCompany.has_premium_plan,
         premiumPrice: selectedCompany.premium_price ?? undefined,

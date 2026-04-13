@@ -12,7 +12,9 @@ import { ImageUpload } from "../FormElements/ImageUpload";
 import { validatePhone, validateRequired } from "@/lib/forms/formValidation";
 import Header from "../FormElements/common/header";
 import Label from "../FormElements/common/label";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { createCompanyAction } from "@/app/(app)/dashboard/super-admin/company/actions";
+import { toast } from "sonner";
 
 export default function CompanyForm({
   initialData,
@@ -38,7 +40,7 @@ export default function CompanyForm({
       city: "",
       postcode: "",
       state: "",
-      branches: [{ value: "" }],
+      branches: [],
       standardPrice: undefined,
       hasPremiumPlan: false,
       premiumPrice: undefined,
@@ -57,13 +59,14 @@ export default function CompanyForm({
       city: "",
       postcode: "",
       state: "",
-      branches: [{ value: "" }],
+      branches: [],
       standardPrice: undefined,
       hasPremiumPlan: false,
       premiumPrice: undefined,
       disclaimer: "",
       agreeTerms: false,
       ...initialData,
+      companyLogo: undefined,
     });
   }, [initialData, reset]);
 
@@ -72,7 +75,7 @@ export default function CompanyForm({
   const branches = watch("branches");
   const hasPremiumPlan = watch("hasPremiumPlan");
   const canAddBranch = branches.every(
-    (branch) => branch.value.trim().length > 0,
+    (branch) => branch.branchName.trim().length > 0,
   );
 
   useEffect(() => {
@@ -86,9 +89,16 @@ export default function CompanyForm({
     name: "branches",
   });
 
-  const onSubmit = (data: CompanyFormData) => {
-    console.log(data);
-    onSuccess?.();
+  const logoRef = useRef<File | null>(null);
+
+  const onSubmit = async (data: CompanyFormData) => {
+    try {
+      await createCompanyAction({ ...data, companyLogo: logoRef.current });
+      onSuccess?.();
+      toast.success("Company created successfully");
+    } catch {
+      toast.error("Failed to create company");
+    }
   };
 
   return (
@@ -125,15 +135,10 @@ export default function CompanyForm({
           label="Company Logo"
           accept="image/*"
           initialPreviewUrl={existingProfilePhotoUrl}
-          emptyStateText={
-            <>
-              Upload company logo -{" "}
-              <strong className="text-dark dark:text-white">browse</strong>
-            </>
-          }
+          onFileChange={(file) => {
+            logoRef.current = file;
+          }}
           hint="PNG, JPG, SVG - max 5MB"
-          registerReturn={register("companyLogo")}
-          setValue={setValue as (name: string, value?: FileList) => void}
         />
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -293,7 +298,7 @@ export default function CompanyForm({
                     : "Branch name (e.g. Petaling Jaya)"
                 }
                 className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5.5 py-3 text-dark outline-none transition placeholder:text-dark-6 focus:border-primary dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary"
-                {...register(`branches.${i}.value` as const)}
+                {...register(`branches.${i}.branchName` as const)}
               />
               <Button
                 type="button"
@@ -312,7 +317,7 @@ export default function CompanyForm({
           label="+ Add Another Branch"
           variant="outlineDark"
           className="w-full border-dashed text-dark-5 hover:border-primary hover:text-primary dark:text-dark-6 dark:hover:text-primary"
-          onClick={() => canAddBranch && append({ value: "" })}
+          onClick={() => canAddBranch && append({ branchName: "" })}
           disabled={!canAddBranch}
         />
 
