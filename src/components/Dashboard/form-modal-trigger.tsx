@@ -18,12 +18,17 @@ export function FormModalTrigger({
   clientContext,
   coachContext = "super-admin",
   size,
+  onSuccess,
 }: FormModalTriggerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const titleId = useId();
 
   const close = () => setIsOpen(false);
+  const handleSuccess = () => {
+    close();
+    onSuccess?.();
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -72,25 +77,27 @@ export function FormModalTrigger({
                     {formType === "client" && (
                       <ClientForm
                         clientContext={clientContext}
-                        onSuccess={close}
+                        onSuccess={handleSuccess}
                       />
                     )}
                     {formType === "assignClient" && (
-                      <AssignClientForm onSuccess={close} />
+                      <AssignClientForm onSuccess={handleSuccess} />
                     )}
-                    {formType === "company" && <CompanyForm onSuccess={close} />}
+                    {formType === "company" && (
+                      <CompanyForm onSuccess={handleSuccess} />
+                    )}
                     {formType === "personal" && (
                       <PersonalCoachForm
                         context={coachContext}
-                        onSuccess={close}
+                        onSuccess={handleSuccess}
                       />
                     )}
                     {formType === "staff" && <StaffForm />}
                     {formType === "announcement" && (
-                      <AnnouncementForm onSuccess={close} />
+                      <AnnouncementForm onSuccess={handleSuccess} />
                     )}
                     {formType === "medicalNotes" && (
-                      <MedicalNotesForm onSuccess={close} />
+                      <MedicalNotesForm onSuccess={handleSuccess} />
                     )}
                   </div>
                 </div>

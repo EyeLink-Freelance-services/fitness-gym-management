@@ -8,12 +8,14 @@ import { useEffect, useId, useState } from "react";
 import { CompanyFormData } from "@/types/forms";
 import { createPortal } from "react-dom";
 import CompanyForm from "@/components/Forms/CompanyForm";
+import { useRouter } from "next/navigation";
 
 interface CompanyTableClientProps {
   data: SuperAdminCompanyRow[];
 }
 
 export default function CompanyTableClient({ data }: CompanyTableClientProps) {
+  const router = useRouter();
   const [selectedCompany, setSelectedCompany] =
     useState<SuperAdminCompanyRow | null>(null);
   const [mounted, setMounted] = useState(false);
@@ -66,7 +68,11 @@ export default function CompanyTableClient({ data }: CompanyTableClientProps) {
     <>
       <div className="flex flex-col gap-4">
         <div className="flex justify-end">
-          <FormModalTrigger buttonLabel="+ Add Company" formType="company" />
+          <FormModalTrigger
+            buttonLabel="+ Add Company"
+            formType="company"
+            onSuccess={() => router.refresh()}
+          />
         </div>
 
         <DataTable

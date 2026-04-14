@@ -55,60 +55,17 @@ import {
   COMPANY_PAYMENT_RENEWALS,
   COMPANY_PAYMENT_TRANSACTIONS,
 } from "@/data/company-payment";
-import {
-  DUMMY_COACHES,
-  DUMMY_GYMS,
-  OVERVIEW_SUPER_ADMIN_DATA,
-} from "@/data/superAdmin";
+import { DUMMY_COACHES, OVERVIEW_SUPER_ADMIN_DATA } from "@/data/superAdmin";
 import { COMPANY_COACH_ROWS } from "@/data/company-coaches";
-import {
-  Company,
-  CompanyRepository,
-} from "@/modules/company/company.repository";
-// Gyms
+import { CompanyRepository } from "@/modules/company/company.repository";
 
-export async function getCompanies() : Promise<SuperAdminCompanyRow[]> {
+/* LIST OF GYMS */
+export async function getCompanies(): Promise<SuperAdminCompanyRow[]> {
   return await CompanyRepository.findAll();
 }
 
-export async function getAllGyms() {
-  // const res = await fetch("/api/gyms");
-  // return res.json();
-
-  await new Promise((r) => setTimeout(r, 200));
-  console.log(
-    DUMMY_GYMS.map((gym) =>
-      gym.branches.map((b) => (b.value === "" ? "-" : b.value)),
-    ),
-  );
-  return DUMMY_GYMS.map(
-    (gym, i): SuperAdminCompanyRow => ({
-      id: `gym-${i + 1}`,
-      company_name: gym.companyName,
-      company_logo:
-        typeof gym.companyLogo === "string" ? gym.companyLogo : null,
-      business_reg_no: `BRN-${gym.brn}`,
-      contact_number: gym.contactNumber,
-      address_line_1: gym.addressLine1,
-      city: gym.city,
-      postcode: gym.postcode,
-      district: gym.state,
-      branches: gym.branches.map((b) => (b.value === "" ? "N/A" : b.value)),
-      standard_price: gym.standardPrice,
-      has_premium_plan: gym.hasPremiumPlan,
-      premium_price: gym.premiumPrice ?? null,
-      disclaimer_text: gym.disclaimer,
-      terms_and_conditions: gym.agreeTerms ? "Agreed" : "Not Agreed",
-      status: gym.status as StatusOpt,
-      createdAt: gym.createdAt,
-    }),
-  );
-}
-
 export async function getFiveLastGyms(limit = 5) {
-  // const res = await fetch(`/api/gyms?limit=${limit}`);
-  // return res.json();
-  const gyms = await getAllGyms();
+  const gyms = await getCompanies();
   await new Promise((r) => setTimeout(r, 200));
 
   const sorted = [...gyms].sort(
@@ -165,7 +122,12 @@ export async function getFiveLastCoaches(limit = 5) {
 // Super Admin overview data
 export async function getSuperAdminOverviewData() {
   await new Promise((r) => setTimeout(r, 200));
-  return OVERVIEW_SUPER_ADMIN_DATA;
+  const companies = await getCompanies();
+  const totalCompanies = companies.length;
+
+  return OVERVIEW_SUPER_ADMIN_DATA.map((item) =>
+    item.name === "Total Companies" ? { ...item, value: totalCompanies } : item,
+  );
 }
 
 // Company overview data

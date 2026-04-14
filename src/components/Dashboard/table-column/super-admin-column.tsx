@@ -123,33 +123,15 @@ export const superAdminCompanyColumns: ColumnDef<SuperAdminCompanyRow>[] = [
     header: "Postcode",
     meta: { align: "left", headClassName: "min-w-[100px]" },
   },
-
   {
     accessorKey: "district",
     header: "District",
     meta: { align: "left", headClassName: "min-w-[140px]" },
   },
   {
-    accessorKey: "branches",
-    header: "Branches",
-    cell: ({ row }) =>
-      row.original.branches.length > 0 ? (
-        <span>{row.original.branches.join(", ")}</span>
-      ) : (
-        <span className="text-xs text-dark-5">None</span>
-      ),
-    meta: { align: "left", headClassName: "min-w-[200px]" },
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => (
-      <StatusBadge
-        label={row.original.status}
-        tone={getStatusTone(row.original.status)}
-      />
-    ),
-    meta: { align: "left", headClassName: "min-w-[120px]" },
+    accessorKey: "standard_price",
+    header: "Standard Price",
+    meta: { align: "left", headClassName: "min-w-[140px]" },
   },
 ];
 
@@ -174,13 +156,13 @@ export const superAdminCompanyPreviewColumns: TableUIColumn<SuperAdminCompanyRow
       label: "BRN",
       align: "left",
       render: (row) => row.business_reg_no,
-      headClassName: "min-w-[150px]",
+      headClassName: "min-w-[140px] max-w-[150px]",
     },
     {
       key: "address",
       label: "Address",
       align: "left",
-      render: (row) => `${row.address_line_1}, ${row.city}`,
-      headClassName: "min-w-[220px]",
+      render: (row) => `${row.district}, ${row.city}`,
+      headClassName: "min-w-[180px] max-w-[190px]",
     },
   ];

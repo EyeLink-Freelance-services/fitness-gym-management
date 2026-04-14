@@ -256,4 +256,5 @@ export type FormModalTriggerProps = {
   clientContext?: "company" | "personal";
   coachContext?: "super-admin" | "company";
   size?: "default" | "small" | "xs";
+  onSuccess?: () => void;
 };
