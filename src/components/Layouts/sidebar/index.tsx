@@ -9,6 +9,7 @@ import { MenuItem } from "./menu-item";
 import { useSidebarContext } from "./sidebar-context";
 import { getDashboardNav } from "@/utils/dashboard-nav";
 import { IAuthContext } from "@/types/auth-context";
+import { Logo } from "@/components/logo";
 
 interface sidebarProps {
   auth?: IAuthContext | null;
@@ -24,25 +25,6 @@ export function Sidebar({ auth }: sidebarProps) {
   const toggleExpanded = (title: string) => {
     setExpandedItems((prev) => (prev.includes(title) ? [] : [title]));
   };
-
-  // useEffect(() => {
-  //   const data = pathname.startsWith("/dashboard/")
-  //     ? getDashboardNav(pathname)
-  //     : NAV_DATA;
-  //   data.some((section) =>
-  //     section.items.some((item) =>
-  //       item.items.some((subItem) => {
-  //         if (subItem.url === pathname) {
-  //           setExpandedItems((prev) =>
-  //             prev.includes(item.title) ? prev : [...prev, item.title],
-  //           );
-  //           return true;
-  //         }
-  //         return false;
-  //       }),
-  //     ),
-  //   );
-  // }, [pathname]);
 
   return (
     <>
@@ -65,15 +47,17 @@ export function Sidebar({ auth }: sidebarProps) {
         aria-hidden={!isOpen}
         inert={!isOpen}
       >
-        <div className="flex h-full flex-col py-10 pl-[25px] pr-[7px]">
+        <div className="flex h-full flex-col py-2 pl-[25px] pr-[7px]">
           <div className="relative pr-4.5">
-            <Link
-              href={"/"}
-              onClick={() => isMobile && toggleSidebar()}
-              className="px-0 py-2.5 min-[850px]:py-0"
-            >
-              {/* <Logo /> */}
-              Fitness Gym
+            <Link href={"/"} onClick={() => isMobile && toggleSidebar()}>
+              <div className="flex items-center gap-3 rounded-lg bg-black/25 p-1 text-base font-bold text-dark dark:text-white">
+                <div className="relative h-18 w-18 flex-shrink-0">
+                  <Logo />
+                </div>
+                <p className="text-center text-lg font-bold tracking-wide hidden sm:block">
+                  Fitness | Coach <br /> Management
+                </p>
+              </div>
             </Link>
 
             {isMobile && (
@@ -103,8 +87,8 @@ export function Sidebar({ auth }: sidebarProps) {
                         {item.items.length ? (
                           <div>
                             <MenuItem
-                              isActive={item.items.some(
-                                ({ url }) => url.includes(pathname),
+                              isActive={item.items.some(({ url }) =>
+                                url.includes(pathname),
                               )}
                               onClick={() => toggleExpanded(item.title)}
                             >
@@ -139,13 +123,13 @@ export function Sidebar({ auth }: sidebarProps) {
                                       disabled={subItem.disabled}
                                     >
                                       <div className="flex gap-2">
-                                      {subItem.icon && (
-                                        <subItem.icon
-                                          className="size-6 shrink-0"
-                                          aria-hidden="true"
-                                        />
-                                      )}
-                                      <span>{subItem.title}</span>
+                                        {subItem.icon && (
+                                          <subItem.icon
+                                            className="size-6 shrink-0"
+                                            aria-hidden="true"
+                                          />
+                                        )}
+                                        <span>{subItem.title}</span>
                                       </div>
                                     </MenuItem>
                                   </li>
@@ -177,7 +161,9 @@ export function Sidebar({ auth }: sidebarProps) {
                                 className="flex items-center gap-3 py-3"
                                 as="link"
                                 href={href}
-                                isActive={href === "/" ? pathname === "/" : isActive}
+                                isActive={
+                                  href === "/" ? pathname === "/" : isActive
+                                }
                                 disabled={item.disabled}
                               >
                                 <item.icon

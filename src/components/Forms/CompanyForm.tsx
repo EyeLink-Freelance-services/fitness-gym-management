@@ -373,7 +373,7 @@ export default function CompanyForm({
 
         <Button
           type="submit"
-          label="Register Company"
+          label={mode === "edit" ? "Save changes" : "Register company"}
           className="w-full"
           disabled={!isValid || isSubmitting}
         />

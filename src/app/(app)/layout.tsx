@@ -18,10 +18,7 @@ export default async function RootLayout({ children }: any) {
           <div className="flex min-h-screen">
             <Sidebar auth={auth} />
             <div className="w-full bg-gray-2 dark:bg-[#020d1a]">
-              <Header
-                workspaceName={auth.company?.name}
-                mode={auth.company?.mode}
-              />
+              <Header />
               <main className="isolate mx-auto w-full max-w-screen-2xl p-4 md:p-6 2xl:px-10 2xl:py-5">
                 {children}
               </main>

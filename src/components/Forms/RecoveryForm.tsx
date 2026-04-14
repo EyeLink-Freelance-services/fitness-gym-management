@@ -55,7 +55,7 @@ export default function RecoveryForm({ step, onBackToLogin }: RecoveryFormProps)
   }
 
   return (
-    <div className="form-panel space-y-4 bg-white/80 p-8 shadow-lg backdrop-blur-sm">
+    <div className="form-panel space-y-4 bg-white/80 p-8 shadow-lg backdrop-blur-sm dark:bg-dark-2">
       <Header
         label="- Recovery"
         title="Reset access"

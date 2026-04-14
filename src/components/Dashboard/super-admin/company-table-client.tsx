@@ -68,7 +68,7 @@ export default function CompanyTableClient({ data }: CompanyTableClientProps) {
     <>
       <div className="flex flex-col gap-4">
         <div className="flex justify-end">
-          <FormModalTrigger
+             <FormModalTrigger
             buttonLabel="+ Add Company"
             formType="company"
             onSuccess={() => router.refresh()}

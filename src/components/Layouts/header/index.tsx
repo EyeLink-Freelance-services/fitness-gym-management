@@ -1,6 +1,5 @@
 "use client";
 
-import { SearchIcon } from "@/components/IconsCollection/icons";
 import Image from "next/image";
 import Link from "next/link";
 import { useSidebarContext } from "../sidebar/sidebar-context";
@@ -8,9 +7,8 @@ import { MenuIcon } from "./icons";
 import { Notification } from "./notification";
 import { ThemeToggleSwitch } from "./theme-toggle";
 import { UserInfo } from "./user-info";
-import { HeaderProps } from "@/types/shared";
 
-export function Header({ mode, workspaceName }: HeaderProps) {
+export function Header() {
   const { toggleSidebar, isMobile } = useSidebarContext();
 
   return (
@@ -34,13 +32,6 @@ export function Header({ mode, workspaceName }: HeaderProps) {
           />
         </Link>
       )}
-
-      <div className="max-xl:hidden">
-        <h1 className="mb-0.5 text-heading-5 font-bold text-dark dark:text-white">
-          {workspaceName}
-        </h1>
-        <div className="font-medium">{mode}</div>
-      </div>
 
       <div className="flex flex-1 items-center justify-end gap-2 min-[375px]:gap-4">
         {/* <ThemeToggleSwitch /> */}
