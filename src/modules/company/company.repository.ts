@@ -1,7 +1,6 @@
 import { supabaseServer } from "@/lib/supabase/server";
 import type { Database } from "@/types/database";
 import { assertNoError, DatabaseError } from "@/lib/db/errors";
-import { StatusOpt, SuperAdminCompanyRow } from "@/types/dashboard/super-admin";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -23,7 +22,7 @@ export const CompanyRepository = {
   /**
    * Fetch all active companies (respects soft-delete index on deleted_at)
    */
-  async findAll(): Promise<SuperAdminCompanyRow[]> {
+  async findAll(): Promise<any[]> {
     const db = await supabaseServer();
 
     const { data, error } = await db
@@ -43,29 +42,24 @@ export const CompanyRepository = {
 
     assertNoError(error, "CompanyRepository.findAll");
 
-    return data!.map(
-      (company): SuperAdminCompanyRow => ({
-        id: company.id,
-        company_name: company.name,
-        company_logo: company.logo_url ?? null,
-        business_reg_no: company.brn ? `BRN-${company.brn}` : "N/A",
-        contact_number: company.contact_phone ?? "",
-        address_line_1: company.address ?? "",
-        city: company.city ?? "",
-        postcode: company.post_code ?? "",
-        district: company.region ?? "",
-        branches: company.company_branches.map((b) => b.branch_name),
-        standard_price: company.standard_price ?? 0,
-        has_premium_plan: company.mode === "premium",
-        premium_price: company.premium_price ?? null,
-        disclaimer_text: company.disclaimer ?? "",
-        terms_and_conditions: company.terms ? "Agreed" : "Not Agreed",
-        status: company.deleted_at
-          ? ("inactive" as StatusOpt)
-          : ("active" as StatusOpt),
-        createdAt: company.created_at,
-      }),
-    );
+    return data!;
+  },
+
+  async findSummary(page: number, pageSize: number): Promise<any> {
+    const db = await supabaseServer();
+    const from = (page - 1) * pageSize;
+    const to = from + pageSize - 1;
+
+    const { data, error } = await db
+      .from("companies")
+      .select("name, contact_phone, brn, address")
+      .is("deleted_at", null)
+      .order("created_at", { ascending: false })
+      .range(from, to);
+
+    assertNoError(error, "CompanyRepository.findPaginated");
+
+    return data;
   },
 
   /**

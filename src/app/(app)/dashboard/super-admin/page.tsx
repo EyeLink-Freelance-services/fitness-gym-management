@@ -1,5 +1,5 @@
 import { DashboardSection } from "@/components/Dashboard/dashboard-section";
-import { OverviewCard } from "../../../../components/Dashboard/overview-cards/card";
+import { OverviewCard } from "@/components/Dashboard/overview-cards/card";
 import { compactFormat } from "@/lib/formatters/format-number";
 import { WeeksProfit } from "@/components/Charts/weeks-profit";
 import { createTimeFrameExtractor } from "@/utils/timeframe-extractor";
@@ -9,26 +9,35 @@ import { TableUI } from "@/components/Tables";
 import { SearchType } from "@/types/dashboard/dashboard-shared";
 import {
   getFiveLastCoaches,
-  getSuperAdminOverviewData,
-  getFiveLastGyms,
 } from "@/services/dashboard.services";
 import {
   superAdminCoachPreviewColumns,
   superAdminCompanyPreviewColumns,
 } from "@/components/Dashboard/table-column/super-admin-column";
+import { getLastFiveCompanies } from "@/modules/company/company.service";
+import { OVERVIEW_SUPER_ADMIN_DATA } from "@/data/superAdmin";
 
 export default async function SuperAdminDashboardPage({
   searchParams,
 }: SearchType) {
-  const overviewData = await getSuperAdminOverviewData();
   const { selected_time_frame } = await searchParams;
   const extractTimeFrame = createTimeFrameExtractor(selected_time_frame);
+  const lastFiveComapanies = await getLastFiveCompanies();
+  const getSuperAdminOverviewData = () => {
+    const totalCompanies = 5
+
+    return OVERVIEW_SUPER_ADMIN_DATA.map((item) =>
+      item.name === "Total Companies"
+        ? { ...item, value: totalCompanies }
+        : item,
+    );
+  };
 
   return (
     <div>
       <DashboardSection title="Overview">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {overviewData.map((item) => (
+          {getSuperAdminOverviewData().map((item) => (
             <OverviewCard
               key={item.name}
               label={item.name}
@@ -53,7 +62,7 @@ export default async function SuperAdminDashboardPage({
           <Suspense fallback={<Skeleton />}>
             <TableUI
               title="Last 5 Gyms"
-              data={getFiveLastGyms(5)}
+              data={lastFiveComapanies}
               columns={superAdminCompanyPreviewColumns}
               buttonLabel="View All"
               buttonPath="/dashboard/super-admin/company"
@@ -65,7 +74,7 @@ export default async function SuperAdminDashboardPage({
           <Suspense fallback={<Skeleton />}>
             <TableUI
               title="Last 5 Coaches"
-              data={getFiveLastCoaches(5)}
+              data={await getFiveLastCoaches(5)}
               columns={superAdminCoachPreviewColumns}
               buttonLabel="View All"
               buttonPath="/dashboard/super-admin/coaches"

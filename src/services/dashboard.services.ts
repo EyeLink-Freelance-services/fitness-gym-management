@@ -39,11 +39,10 @@ import {
 import type {
   StatusOpt,
   SuperAdminCoachesRow,
-  SuperAdminCompanyRow,
 } from "@/types/dashboard/super-admin";
 import type {
-  CompanyCoachRow,
   CompanyClientRow,
+  CompanyCoachRow,
   CompanyStaffRow,
 } from "@/types/dashboard/company-directory";
 import type { PaymentCollectionsTimeFrame } from "@/types/dashboard/payment";
@@ -55,25 +54,8 @@ import {
   COMPANY_PAYMENT_RENEWALS,
   COMPANY_PAYMENT_TRANSACTIONS,
 } from "@/data/company-payment";
-import { DUMMY_COACHES, OVERVIEW_SUPER_ADMIN_DATA } from "@/data/superAdmin";
+import { DUMMY_COACHES } from "@/data/superAdmin";
 import { COMPANY_COACH_ROWS } from "@/data/company-coaches";
-import { CompanyRepository } from "@/modules/company/company.repository";
-
-/* LIST OF GYMS */
-export async function getCompanies(): Promise<SuperAdminCompanyRow[]> {
-  return await CompanyRepository.findAll();
-}
-
-export async function getFiveLastGyms(limit = 5) {
-  const gyms = await getCompanies();
-  await new Promise((r) => setTimeout(r, 200));
-
-  const sorted = [...gyms].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-  );
-
-  return sorted.slice(0, limit);
-}
 
 // Coaches
 export async function getAllCoaches() {
@@ -117,17 +99,6 @@ export async function getFiveLastCoaches(limit = 5) {
   );
 
   return sorted.slice(0, limit);
-}
-
-// Super Admin overview data
-export async function getSuperAdminOverviewData() {
-  await new Promise((r) => setTimeout(r, 200));
-  const companies = await getCompanies();
-  const totalCompanies = companies.length;
-
-  return OVERVIEW_SUPER_ADMIN_DATA.map((item) =>
-    item.name === "Total Companies" ? { ...item, value: totalCompanies } : item,
-  );
 }
 
 // Company overview data

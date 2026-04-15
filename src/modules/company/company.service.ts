@@ -1,6 +1,8 @@
 import { supabaseServer } from "@/lib/supabase/server";
 import { CompanyFormData } from "@/types/forms";
 import { supabaseAdmin } from "@/lib/supabase/client";
+import { StatusOpt, SuperAdminCompanyRow } from "@/types/dashboard/super-admin";
+import { CompanyRepository } from "@/modules/company/company.repository";
 
 export async function createCompanyService(form: CompanyFormData) {
   const supabase = await supabaseServer();
@@ -50,4 +52,62 @@ export async function uploadCompanyLogo(file: File) {
     .getPublicUrl(filePath);
 
   return data.publicUrl;
+}
+
+export async function findAllCompanies(): Promise<SuperAdminCompanyRow[]> {
+  return (await CompanyRepository.findAll()).map(
+    (company): SuperAdminCompanyRow => ({
+      id: company.id,
+      company_name: company.name,
+      company_logo: company.logo_url ?? null,
+      business_reg_no: company.brn ? `BRN-${company.brn}` : "N/A",
+      contact_number: company.contact_phone ?? "",
+      address_line_1: company.address ?? "",
+      city: company.city ?? "",
+      postcode: company.post_code ?? "",
+      district: company.region ?? "",
+      branches: company.company_branches.map(
+        (b: { branch_name: any }) => b.branch_name,
+      ),
+      standard_price: company.standard_price ?? 0,
+      has_premium_plan: company.mode === "premium",
+      premium_price: company.premium_price ?? null,
+      disclaimer_text: company.disclaimer ?? "",
+      terms_and_conditions: company.terms ? "Agreed" : "Not Agreed",
+      status: company.deleted_at
+        ? ("inactive" as StatusOpt)
+        : ("active" as StatusOpt),
+      createdAt: company.created_at,
+    }),
+  );
+}
+
+export async function getLastFiveCompanies(): Promise<SuperAdminCompanyRow[]> {
+  const companies = await CompanyRepository.findSummary(1, 5);
+
+  return companies.map(
+    (company: any): SuperAdminCompanyRow => ({
+      id: company.id,
+      company_name: company.name,
+      business_reg_no: company.brn ? `BRN-${company.brn}` : "N/A",
+      contact_number: company.contact_phone ?? "",
+      address_line_1: company.address ?? "",
+      city: company.city ?? "",
+      postcode: company.post_code ?? "",
+      district: company.region ?? "",
+      branches:
+        company.company_branches?.map(
+          (b: { branch_name: string }) => b.branch_name,
+        ) ?? [],
+      standard_price: company.standard_price ?? 0,
+      has_premium_plan: company.mode === "premium",
+      premium_price: company.premium_price ?? null,
+      disclaimer_text: company.disclaimer ?? "",
+      terms_and_conditions: company.terms ? "Agreed" : "Not Agreed",
+      status: company.deleted_at
+        ? ("inactive" as StatusOpt)
+        : ("active" as StatusOpt),
+      createdAt: company.created_at,
+    }),
+  );
 }
