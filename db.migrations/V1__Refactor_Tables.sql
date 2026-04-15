@@ -115,3 +115,79 @@ CREATE POLICY "Public read access for company assets"
     FOR SELECT
     TO public
     USING (bucket_id = 'company-assets');
+
+CREATE TABLE public.personal_coaches
+(
+    id                uuid            DEFAULT gen_random_uuid() NOT NULL,
+
+    first_name        varchar(100)                                NOT NULL,
+    last_name         varchar(100)                                NOT NULL,
+    contact_number    varchar(50)                                 NOT NULL,
+    email             varchar(255)                                NOT NULL,
+
+    specialization    varchar(255)                                NOT NULL,
+    coaching_mode     varchar(100)                                NOT NULL,
+
+    location          varchar(255)                                NULL,
+    certifications    text                                        NULL,
+
+    hourly_rate       numeric(10, 2)                              NOT NULL,
+    years_experience  integer                                     NULL,
+
+    languages         varchar(255)                                NOT NULL,
+    bio               text                                        NOT NULL,
+
+    profile_photo_url text                                        NULL,
+    availability      text                                        NULL,
+
+    created_at        timestamptz     DEFAULT now()               NOT NULL,
+    updated_at        timestamptz     DEFAULT now()               NOT NULL,
+    deleted_at        timestamptz                                 NULL,
+
+    CONSTRAINT personal_coaches_pkey
+        PRIMARY KEY (id),
+
+    CONSTRAINT personal_coaches_email_unique
+        UNIQUE (email),
+
+    CONSTRAINT personal_coaches_hourly_rate_check
+        CHECK (hourly_rate >= 0),
+
+    CONSTRAINT personal_coaches_years_experience_check
+        CHECK (years_experience IS NULL OR years_experience >= 0)
+);
+
+CREATE INDEX idx_personal_coaches_email
+    ON public.personal_coaches (email);
+
+CREATE INDEX idx_personal_coaches_specialization
+    ON public.personal_coaches (specialization);
+
+CREATE INDEX idx_personal_coaches_deleted_at
+    ON public.personal_coaches (deleted_at)
+    WHERE deleted_at IS NULL;
+
+ALTER TABLE public.personal_coaches ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow read personal_coaches"
+    ON public.personal_coaches
+    FOR SELECT
+    USING (true);
+
+GRANT SELECT ON public.personal_coaches TO anon;
+GRANT SELECT ON public.personal_coaches TO authenticated;
+GRANT SELECT ON public.personal_coaches TO service_role;
+GRANT INSERT ON public.personal_coaches TO authenticated;
+GRANT INSERT ON public.personal_coaches TO service_role;
+
+CREATE POLICY "Public read access for company assets"
+    ON storage.objects
+    FOR SELECT
+    TO public
+    USING (bucket_id = 'personal-coaches-assets');
+
+CREATE POLICY "Allow insert personal_coaches"
+    ON public.personal_coaches
+    FOR INSERT
+    TO authenticated
+    WITH CHECK (true);

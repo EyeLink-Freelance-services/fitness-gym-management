@@ -89,18 +89,6 @@ export async function getAllCoaches() {
   );
 }
 
-export async function getFiveLastCoaches(limit = 5) {
-  const coaches = await getAllCoaches();
-
-  await new Promise((r) => setTimeout(r, 200));
-
-  const sorted = [...coaches].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-  );
-
-  return sorted.slice(0, limit);
-}
-
 // Company overview data
 export async function getCompanyOverviewData() {
   await new Promise((r) => setTimeout(r, 200));

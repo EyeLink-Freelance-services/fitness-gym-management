@@ -1,40 +1,41 @@
-import { supabaseServer } from "@/lib/supabase/server";
 import { PersonalCoachFormData } from "@/types/forms";
 import { supabaseAdmin } from "@/lib/supabase/client";
 import { StatusOpt, SuperAdminCoachesRow } from "@/types/dashboard/super-admin";
-import { PersonalCoachRepository } from "./personal-coach.repository";
+import {
+  PersonalCoach,
+  PersonalCoachRepository,
+} from "./personal-coach.repository";
 
-export async function createPersonalCoachService(form: PersonalCoachFormData) {
-  const supabase = await supabaseServer();
-
+export async function createPersonalCoachService(
+  form: PersonalCoachFormData,
+): Promise<PersonalCoach> {
   try {
-    let logoUrl: string | null = null;
+    let profilePhotoUrl: string | null = null;
+
     if (form.profilePhoto) {
-      logoUrl = await uploadPersonalCoachProfilePhoto(form.profilePhoto);
+      profilePhotoUrl = await uploadPersonalCoachProfilePhoto(
+        form.profilePhoto,
+      );
     }
 
-    const { data, error } = await supabase.rpc("create_personal_coach", {
-      p_first_name: form.firstName,
-      p_last_name: form.lastName,
-      p_contact_number: form.contactNumber,
-      p_email: form.email,
-      p_specialization: form.specialization,
-      p_coaching_mode: form.coachingMode,
-      p_location: form.location,
-      p_certifications: form.certifications,
-      p_hourly_rate: form.hourlyRate,
-      p_years_experience: form.yearsExperience,
-      p_languages: form.languages,
-      p_bio: form.bio,
-      p_profile_photo_url: logoUrl,
-      p_availability: form.availability,
+    return await PersonalCoachRepository.insert({
+      first_name: form.firstName,
+      last_name: form.lastName,
+      contact_number: form.contactNumber,
+      email: form.email,
+      specialization: form.specialization,
+      coaching_mode: form.coachingMode,
+      location: form.location ?? null,
+      certifications: form.certifications ?? null,
+      hourly_rate: form.hourlyRate,
+      years_experience: form.yearsExperience ?? null,
+      languages: form.languages,
+      bio: form.bio,
+      profile_photo_url: profilePhotoUrl,
+      availability: form.availability ?? null,
     });
-
-    if (error) throw error;
-
-    return data;
   } catch (error) {
-    console.error(error);
+    console.error("createPersonalCoachService failed:", error);
     throw error;
   }
 }

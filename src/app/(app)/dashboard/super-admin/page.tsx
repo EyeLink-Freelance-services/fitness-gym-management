@@ -8,14 +8,12 @@ import { Skeleton } from "@/components/Tables/skeleton";
 import { TableUI } from "@/components/Tables";
 import { SearchType } from "@/types/dashboard/dashboard-shared";
 import {
-  getFiveLastCoaches,
-} from "@/services/dashboard.services";
-import {
   superAdminCoachPreviewColumns,
   superAdminCompanyPreviewColumns,
 } from "@/components/Dashboard/table-column/super-admin-column";
 import { getLastFiveCompanies } from "@/modules/company/company.service";
 import { OVERVIEW_SUPER_ADMIN_DATA } from "@/data/superAdmin";
+import { getLastFivePersonalCoaches } from "@/modules/personal-coach/personal-coach.service";
 
 export default async function SuperAdminDashboardPage({
   searchParams,
@@ -23,8 +21,9 @@ export default async function SuperAdminDashboardPage({
   const { selected_time_frame } = await searchParams;
   const extractTimeFrame = createTimeFrameExtractor(selected_time_frame);
   const last5Companies = await getLastFiveCompanies();
+  const lastFiveCoaches = await getLastFivePersonalCoaches();
   const getSuperAdminOverviewData = () => {
-    const totalCompanies = 5
+    const totalCompanies = 5;
 
     return OVERVIEW_SUPER_ADMIN_DATA.map((item) =>
       item.name === "Total Companies"
@@ -74,7 +73,7 @@ export default async function SuperAdminDashboardPage({
           <Suspense fallback={<Skeleton />}>
             <TableUI
               title="Last 5 Coaches"
-              data={await getFiveLastCoaches(5)}
+              data={lastFiveCoaches}
               columns={superAdminCoachPreviewColumns}
               buttonLabel="View All"
               buttonPath="/dashboard/super-admin/coaches"

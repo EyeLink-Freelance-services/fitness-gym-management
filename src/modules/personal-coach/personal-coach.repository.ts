@@ -1,8 +1,11 @@
 import { supabaseServer } from "@/lib/supabase/server";
 import type { Database } from "@/types/database";
-import { assertNoError, DatabaseError } from "@/lib/db/errors";
+import { assertNoError } from "@/lib/db/errors";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
+export type PersonalCoach = Database["public"]["Tables"]["personal_coaches"]["Row"];
+export type PersonalCoachInsert = Database["public"]["Tables"]["personal_coaches"]["Insert"];
+export type PersonalCoachUpdate = Database["public"]["Tables"]["personal_coaches"]["Update"];
 
 export type PaginatedResult<T> = {
   data: T[];
@@ -15,6 +18,20 @@ export type PaginatedResult<T> = {
 // ─── Repository ───────────────────────────────────────────────────────────────
 
 export const PersonalCoachRepository = {
+  async insert(payload: PersonalCoachInsert): Promise<PersonalCoach> {
+    const db = await supabaseServer();
+
+    const { data, error } = await db
+      .from("personal_coaches")
+      .insert(payload)
+      .select()
+      .single();
+
+    assertNoError(error, "PersonalCoachRepository.insert");
+
+    return data!;
+  },
+
   /**
    * Fetch all active personal coaches (respects soft-delete index on deleted_at)
    */
@@ -25,7 +42,7 @@ export const PersonalCoachRepository = {
       .from("personal_coaches")
       .select(
         `
-      *,
+      *
     `,
       )
       .is("deleted_at", null)
@@ -43,7 +60,7 @@ export const PersonalCoachRepository = {
 
     const { data, error } = await db
       .from("personal_coaches")
-      .select("name, contact_phone, coaching_mode, location")
+      .select("first_name, last_name, contact_number, coaching_mode, location")
       .is("deleted_at", null)
       .order("created_at", { ascending: false })
       .range(from, to);

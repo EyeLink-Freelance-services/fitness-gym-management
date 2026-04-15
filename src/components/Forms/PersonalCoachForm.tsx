@@ -37,7 +37,6 @@ export default function PersonalCoachForm({
     register,
     control,
     handleSubmit,
-    setValue,
     watch,
     reset,
     formState: { errors, isValid, isSubmitting },
@@ -216,7 +215,7 @@ export default function PersonalCoachForm({
           placeholder="5"
           inputProps={{
             ...register("yearsExperience", {
-              setValueAs: (v) => (v === "" ? "" : Number(v)),
+              setValueAs: (v) => (v === "" ? null : Number(v)),
             }),
             min: 0,
             max: 60,
