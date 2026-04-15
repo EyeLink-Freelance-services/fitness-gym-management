@@ -1,9 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { ImageUpload } from "../FormElements/ImageUpload";
-import type { PersonalCoachFormData, PersonalCoachFormProps } from "@/types/forms";
+import type {
+  PersonalCoachFormData,
+  PersonalCoachFormProps,
+} from "@/types/forms";
 import {
   SPECIALIZATIONS,
   AVAILABILITY_OPTIONS,
@@ -19,6 +22,8 @@ import {
   validateRequired,
 } from "@/lib/forms/formValidation";
 import Header from "../FormElements/common/header";
+import { createPersonalCoachAction } from "@/app/(app)/dashboard/super-admin/coaches/actions";
+import { toast } from "sonner";
 
 export default function PersonalCoachForm({
   initialData,
@@ -71,15 +76,26 @@ export default function PersonalCoachForm({
       languages: "",
       bio: "",
       availability: isCompanyContext ? "Assigned by company" : "",
+      profilePhoto: undefined,
       ...initialData,
     });
   }, [initialData, isCompanyContext, reset]);
 
   watch();
 
-  const onSubmit = (data: PersonalCoachFormData) => {
-    console.log(data);
-    onSuccess?.();
+  const logoRef = useRef<File | null>(null);
+
+  const onSubmit = async (data: PersonalCoachFormData) => {
+    try {
+      await createPersonalCoachAction({
+        ...data,
+        profilePhoto: logoRef.current,
+      });
+      onSuccess?.();
+      toast.success("Coach created successfully");
+    } catch {
+      toast.error("Failed to create coach");
+    }
   };
 
   return (
@@ -236,21 +252,17 @@ export default function PersonalCoachForm({
           required
           textareaProps={register("bio", { required: "Bio is required" })}
         />
+
         <ImageUpload
           label="Profile Photo"
-          optional
           accept="image/*"
           initialPreviewUrl={existingProfilePhotoUrl}
-          emptyStateText={
-            <>
-              Upload coach photo -{" "}
-              <strong className="text-dark dark:text-white">browse</strong>
-            </>
-          }
+          onFileChange={(file) => {
+            logoRef.current = file;
+          }}
           hint="PNG, JPG, SVG - max 5MB"
-          registerReturn={register("profilePhoto")}
-          setValue={setValue as (name: string, value?: FileList) => void}
         />
+
         {!isCompanyContext && (
           <Controller
             name="availability"
@@ -259,7 +271,10 @@ export default function PersonalCoachForm({
               <Select
                 label="Availability"
                 placeholder="Select availability"
-                items={AVAILABILITY_OPTIONS.map((a) => ({ value: a, label: a }))}
+                items={AVAILABILITY_OPTIONS.map((a) => ({
+                  value: a,
+                  label: a,
+                }))}
                 error={errors.availability?.message}
                 selectProps={{
                   ...field,

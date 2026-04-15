@@ -22,7 +22,7 @@ export default async function SuperAdminDashboardPage({
 }: SearchType) {
   const { selected_time_frame } = await searchParams;
   const extractTimeFrame = createTimeFrameExtractor(selected_time_frame);
-  const lastFiveComapanies = await getLastFiveCompanies();
+  const last5Companies = await getLastFiveCompanies();
   const getSuperAdminOverviewData = () => {
     const totalCompanies = 5
 
@@ -61,8 +61,8 @@ export default async function SuperAdminDashboardPage({
         <div className="col-span-12 mt-8 grid xl:col-span-6">
           <Suspense fallback={<Skeleton />}>
             <TableUI
-              title="Last 5 Gyms"
-              data={lastFiveComapanies}
+              title="Last 5 Companies"
+              data={last5Companies}
               columns={superAdminCompanyPreviewColumns}
               buttonLabel="View All"
               buttonPath="/dashboard/super-admin/company"

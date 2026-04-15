@@ -4,10 +4,6 @@ import { assertNoError, DatabaseError } from "@/lib/db/errors";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export type Company = Database["public"]["Tables"]["companies"]["Row"];
-export type CompanyInsert = Database["public"]["Tables"]["companies"]["Insert"];
-export type CompanyUpdate = Database["public"]["Tables"]["companies"]["Update"];
-
 export type PaginatedResult<T> = {
   data: T[];
   total: number;
@@ -18,29 +14,24 @@ export type PaginatedResult<T> = {
 
 // ─── Repository ───────────────────────────────────────────────────────────────
 
-export const CompanyRepository = {
+export const PersonalCoachRepository = {
   /**
-   * Fetch all active companies (respects soft-delete index on deleted_at)
+   * Fetch all active personal coaches (respects soft-delete index on deleted_at)
    */
   async findAll(): Promise<any[]> {
     const db = await supabaseServer();
 
     const { data, error } = await db
-      .from("companies")
+      .from("personal_coaches")
       .select(
         `
       *,
-      company_branches (
-        id,
-        branch_name
-      )
     `,
       )
       .is("deleted_at", null)
-      .is("company_branches.deleted_at", null)
       .order("created_at", { ascending: false });
 
-    assertNoError(error, "CompanyRepository.findAll");
+    assertNoError(error, "PersonalCoachRepository.findAll");
 
     return data!;
   },
@@ -51,58 +42,40 @@ export const CompanyRepository = {
     const to = from + pageSize - 1;
 
     const { data, error } = await db
-      .from("companies")
-      .select("name, contact_phone, brn, city, region")
+      .from("personal_coaches")
+      .select("name, contact_phone, coaching_mode, location")
       .is("deleted_at", null)
       .order("created_at", { ascending: false })
       .range(from, to);
 
-    assertNoError(error, "CompanyRepository.findPaginated");
+    assertNoError(error, "PersonalCoachRepository.findPaginated");
 
     return data;
   },
 
   /**
-   * Fetch a single company by ID — returns null if not found
+   * Fetch a single personal coach by ID — returns null if not found
    */
-  async findById(id: string): Promise<Company | null> {
+  async findById(id: string) {
     const db = await supabaseServer();
-
-    const { data, error } = await db
-      .from("companies")
-      .select("*")
-      .eq("id", id)
-      .is("deleted_at", null)
-      .single();
-
-    if (error) {
-      const dbError = new DatabaseError(error, "CompanyRepository.findById");
-      if (dbError.isNotFound) return null;
-      throw dbError;
-    }
-
-    return data;
   },
 
   /**
    * Paginated fetch with total count
    */
-  async findPaginated(
-    page: number,
-    pageSize: number,
-  ): Promise<PaginatedResult<Company>> {
+  async findPaginated(page: number, pageSize: number) {
     const db = await supabaseServer();
     const from = (page - 1) * pageSize;
     const to = from + pageSize - 1;
 
     const { data, error, count } = await db
-      .from("companies")
+      .from("personal_coaches")
       .select("*", { count: "exact" })
       .is("deleted_at", null)
       .order("created_at", { ascending: false })
       .range(from, to);
 
-    assertNoError(error, "CompanyRepository.findPaginated");
+    assertNoError(error, "PersonalCoachRepository.findPaginated");
 
     return {
       data: data!,
@@ -116,25 +89,7 @@ export const CompanyRepository = {
   /**
    * Filtered fetch — all filters are optional
    */
-  async findByFilters(filters: {
-    mode?: string;
-    city?: string;
-    region?: string;
-  }): Promise<Company[]> {
+  async findByFilters(filters: {}) {
     const db = await supabaseServer();
-
-    let query = db
-      .from("companies")
-      .select("*")
-      .is("deleted_at", null)
-      .order("created_at", { ascending: false });
-
-    if (filters.mode) query = query.eq("mode", filters.mode);
-    if (filters.city) query = query.eq("city", filters.city);
-    if (filters.region) query = query.eq("region", filters.region);
-
-    const { data, error } = await query;
-    assertNoError(error, "CompanyRepository.findByFilters");
-    return data!;
   },
 };

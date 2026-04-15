@@ -78,7 +78,7 @@ export interface PersonalCoachFormData {
   yearsExperience?: number;
   languages: string;
   bio: string;
-  profilePhoto?: FileList;
+  profilePhoto?: File | null;
   availability?: string;
 }
 
