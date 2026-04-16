@@ -8,12 +8,14 @@ import { superAdminCoachColumns } from "@/components/Dashboard/table-column/supe
 import { DataTable } from "@/components/Tables";
 import type { SuperAdminCoachesRow } from "@/types/dashboard/super-admin";
 import type { PersonalCoachFormData } from "@/types/forms";
+import { useRouter } from "next/navigation";
 
 interface CoachesTableClientProps {
   data: SuperAdminCoachesRow[];
 }
 
 export function CoachesTableClient({ data }: CoachesTableClientProps) {
+    const router = useRouter();
   const [selectedCoach, setSelectedCoach] =
     useState<SuperAdminCoachesRow | null>(null);
   const [mounted, setMounted] = useState(false);
@@ -56,7 +58,7 @@ export function CoachesTableClient({ data }: CoachesTableClientProps) {
         yearsExperience: selectedCoach.years_of_experience,
         languages: selectedCoach.languages_spoken.join(", "),
         bio: selectedCoach.bio,
-        availability: selectedCoach.availability.join(", "),
+        availability: selectedCoach.availability,
       }
     : undefined;
 
@@ -67,6 +69,7 @@ export function CoachesTableClient({ data }: CoachesTableClientProps) {
           <FormModalTrigger
             buttonLabel="+ Add Personal Coach"
             formType="personal"
+            onSuccess={() => router.refresh()}
           />
         </div>
 

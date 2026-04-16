@@ -17,7 +17,7 @@ export interface SuperAdminCoachesRow {
   languages_spoken: string[];
   bio: string;
   profile_photo?: string | null;
-  availability: string[];
+  availability: string;
   status: StatusOpt;
   createdAt: string;
 }
