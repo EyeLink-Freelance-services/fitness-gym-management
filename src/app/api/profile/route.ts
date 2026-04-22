@@ -1,14 +1,14 @@
 import { getProfile, updateProfile } from "@/lib/db/queries/profile";
-import { createSupabaseRouteClient } from "@/lib/supabase/route";
+import { getRouteAuthClient } from "@/lib/db/route-client";
 import { ProfileUpdateSchema } from "@/lib/validation/schemas/profile";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
 	try {
 		const response = NextResponse.json({ok: true});
-		const supabase = await createSupabaseRouteClient(req, response);
+		const authClient = await getRouteAuthClient(req, response);
 	
-		const { data: {user}} = await supabase.auth.getUser();
+		const { data: {user}} = await authClient.auth.getUser();
 		if(!user) {
 			return NextResponse.json({ok: false, message: "Session expired, please login again"},  { status: 401 })
 		}
@@ -31,9 +31,9 @@ export async function PUT(req: NextRequest) {
 	let userUpdated: any = null;
 
 	const response = NextResponse.json({ok: true});
-	const supabase = await createSupabaseRouteClient(req, response);
+	const authClient = await getRouteAuthClient(req, response);
 
-	const { data: {user}} = await supabase.auth.getUser();
+	const { data: {user}} = await authClient.auth.getUser();
 	if(!user) {
 		return NextResponse.json({ok: false, message: "Session expired, please login again"},  { status: 401 })
 	}
@@ -59,7 +59,7 @@ export async function PUT(req: NextRequest) {
 			phone: parsed.data.phone
 		};
 
-		userUpdated = await supabase.auth.updateUser(userAuthPayload);
+		userUpdated = await authClient.auth.updateUser(userAuthPayload);
 		console.log(userUpdated, 'userUpdated');
 		const profileUpdated = await updateProfile(user.id, profilePayload);
 
@@ -68,7 +68,7 @@ export async function PUT(req: NextRequest) {
 	} catch(err: any) {
 		// Rollback user update if profile update fails
 		if(userUpdated) {
-			await supabase.auth.updateUser({ email: user.email });
+			await authClient.auth.updateUser({ email: user.email });
 		}
 		console.log(err, 'error')
 		return NextResponse.json(

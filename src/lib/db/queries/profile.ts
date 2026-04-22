@@ -1,4 +1,4 @@
-import { supabaseServer } from "@/lib/supabase/server";
+import { getServerDbClient } from "@/lib/db/server-client";
 import { ProfileUpdateFormValues } from "@/lib/validation/schemas/profile";
 
 const TABLE = "profiles";
@@ -10,8 +10,8 @@ const TABLE = "profiles";
  */
 
 export async function updateProfile(id: string, payload: ProfileUpdateFormValues) {
-  const supabase = await supabaseServer();
-  const { data, error } = await supabase
+  const db = await getServerDbClient();
+  const { data, error } = await db
     .from(TABLE)
     .update(payload)
     .eq("id", id)
@@ -23,9 +23,9 @@ export async function updateProfile(id: string, payload: ProfileUpdateFormValues
 }
 
 export async function getProfile(id: string) {
-  const supabase = await supabaseServer();
+  const db = await getServerDbClient();
 
-  const { data, error } = await supabase
+  const { data, error } = await db
     .from(TABLE)
     .select("*")
     .eq("id", id)

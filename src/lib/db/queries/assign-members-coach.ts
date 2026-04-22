@@ -1,4 +1,4 @@
-import { supabaseServer } from "@/lib/supabase/server";
+import { getServerDbClient } from "@/lib/db/server-client";
 import { DietPlanAssignment, TrainingPlanAssignment } from "@/types/assignment-plan";
 
 type AssignmentPayloadMap = {
@@ -39,10 +39,10 @@ export async function getMembersForPlanAssignment(
     search?: string;
   }
 ) {
-    const supabase = await supabaseServer();
+    const db = await getServerDbClient();
     const config = ASSIGNMENT_TABLES[type];
 
-    let membersQuery = supabase
+    let membersQuery = db
       .from("members")
       .select("id, first_name, last_name, email, phone")
       .eq("company_id", params.companyId)
@@ -66,7 +66,7 @@ export async function getMembersForPlanAssignment(
 
     const memberIds = members.map((m) => m.id);
 
-    const { data: assignments, error: assignmentsError } = await supabase
+    const { data: assignments, error: assignmentsError } = await db
       .from(config.table)
       .select("id, member_id, start_date")
       .eq("company_id", params.companyId)
@@ -99,11 +99,11 @@ export async function createAssignment<T extends AssignmentType>(
   type: T,
   payload: AssignmentPayloadMap[T] | AssignmentPayloadMap[T][]
 ) {
-  const supabase = await supabaseServer();
+  const db = await getServerDbClient();
 
   const config = ASSIGNMENT_TABLES[type];
 
-  const { data, error } = await supabase
+  const { data, error } = await db
     .from(config.table)
     .insert(payload)
     .select("*");

@@ -1,6 +1,6 @@
 "use server";
 
-import { createSupabaseRouteClient } from "@/lib/supabase/route";
+import { getRouteAuthClient } from "@/lib/db/route-client";
 import { LoginFormData } from "@/types/forms";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -26,9 +26,9 @@ export async function POST(req: NextRequest) {
 
 		const response = NextResponse.json({ok: true}, {status: 200});
 
-		const supabase = await createSupabaseRouteClient(req, response);
+		const authClient = await getRouteAuthClient(req, response);
 
-    const { error } = await supabase.auth.signInWithPassword(body);
+    const { error } = await authClient.auth.signInWithPassword(body);
 
     if (error) {
       return NextResponse.json(

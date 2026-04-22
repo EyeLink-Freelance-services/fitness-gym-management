@@ -1,11 +1,14 @@
-import type { PostgrestError } from "@supabase/supabase-js";
+type DbErrorLike = {
+  message: string;
+  code?: string | null;
+};
 
 export class DatabaseError extends Error {
   constructor(
-    public readonly error: PostgrestError,
+    public readonly error: DbErrorLike,
     public readonly context?: string
   ) {
-    super(`[${context ?? "DB"}] ${error.message} (code: ${error.code})`);
+    super(`[${context ?? "DB"}] ${error.message} (code: ${error.code ?? "n/a"})`);
     this.name = "DatabaseError";
   }
 
@@ -14,6 +17,6 @@ export class DatabaseError extends Error {
   }
 }
 
-export function assertNoError(error: PostgrestError | null, context?: string) {
+export function assertNoError(error: DbErrorLike | null, context?: string) {
   if (error) throw new DatabaseError(error, context);
 }

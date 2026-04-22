@@ -1,4 +1,4 @@
-import { supabaseServer } from "@/lib/supabase/server";
+import { getServerDbClient } from "@/lib/db/server-client";
 import { TrainingPlanFormInput } from "@/lib/validation/schemas/training-plans";
 
 const TABLE = "training_plans";
@@ -42,15 +42,15 @@ function mapTrainingPlanToForm(data: any): TrainingPlanFormInput {
 }
 
 export const createTrainingPlan = async (payload: TrainingPlanFormInput) => {
-  const supabase = await supabaseServer();
+  const db = await getServerDbClient();
 
   const {
     data: { user },
-  } = await supabase.auth.getUser();
+  } = await db.auth.getUser();
 
   if (!user) return null;
 
-  const { data, error } = await supabase.rpc("create_training_plan_with_sessions", {p_payload: payload});
+  const { data, error } = await db.rpc("create_training_plan_with_sessions", {p_payload: payload});
 
   if (error) throw error;
 
@@ -58,9 +58,9 @@ export const createTrainingPlan = async (payload: TrainingPlanFormInput) => {
 }
 
 export const updateTrainingPlan = async (payload: TrainingPlanFormInput) => {
-  const supabase = await supabaseServer();
+  const db = await getServerDbClient();
 
-  const { data, error } = await supabase.rpc(
+  const { data, error } = await db.rpc(
     "update_training_plan_with_sessions",
     { p_payload: payload }
   );
@@ -78,9 +78,9 @@ export const saveTrainingPlan = async (payload: TrainingPlanFormInput) => {
 };
 
 export async function listTrainingPlan() {
-  const supabase = await supabaseServer();
+  const db = await getServerDbClient();
 
-  const { data, error } = await supabase
+  const { data, error } = await db
     .from(TABLE)
     .select("*")
     .order("created_at", { ascending: false });
@@ -90,9 +90,9 @@ export async function listTrainingPlan() {
 }
 
 export async function getTrainingPlan(id: string) {
-  const supabase = await supabaseServer();
+  const db = await getServerDbClient();
   
-  const { data, error } = await supabase
+  const { data, error } = await db
     .from(TABLE)
     .select(`
       id,

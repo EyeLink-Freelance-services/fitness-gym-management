@@ -1,6 +1,6 @@
 import { AuthPermission } from "@/constants/permission";
 import { requirePermission } from "@/lib/auth/permission";
-import { supabaseServer } from "@/lib/supabase/server";
+import { getServerDbClient } from "@/lib/db/server-client";
 import type { MemberCreateInput, MemberUpdateInput, MemberWithMembershipInput } from "@/lib/validation/schemas/member";
 import { MemberMembershipCreateInput } from "@/lib/validation/schemas/member-membership";
 
@@ -18,9 +18,9 @@ export async function listMembersByAssignCoach(
 ) {
   await requirePermission(AuthPermission.members.view);
 
-  const supabase = await supabaseServer();
+  const db = await getServerDbClient();
 
-  let query = supabase
+  let query = db
     .from(TABLE)
     .select("*")
     .eq("company_id", idCompany);
@@ -47,9 +47,9 @@ export async function listMembersByAssignCoach(
 
 export async function listMembers() {
   const auth = await requirePermission(AuthPermission.members.view)
-  const supabase = await supabaseServer();
+  const db = await getServerDbClient();
 
-  const { data, error } = await supabase
+  const { data, error } = await db
     .from(TABLE)
     .select("*")
     .order("created_at", { ascending: false });
@@ -59,8 +59,8 @@ export async function listMembers() {
 }
 
 export async function getMember(id: string) {
-  const supabase = await supabaseServer();
-  const { data, error } = await supabase
+  const db = await getServerDbClient();
+  const { data, error } = await db
     .from(TABLE)
     .select('*')
     .eq("id", id)
@@ -71,9 +71,9 @@ export async function getMember(id: string) {
 }
 
 export async function createMember(payload: MemberCreateInput) {
-  const supabase = await supabaseServer();
+  const db = await getServerDbClient();
 
-  const { data, error } = await supabase
+  const { data, error } = await db
     .from(TABLE)
     .insert(payload)
     .select('*')
@@ -84,9 +84,9 @@ export async function createMember(payload: MemberCreateInput) {
 }
 
 export async function createMemberWithMembershipPlan(payloadMember: MemberCreateInput, payloadMemberMembership: MemberMembershipCreateInput) {
-  const supabase = await supabaseServer();
+  const db = await getServerDbClient();
 
-  const {data: {user}, error: authError} = await supabase.auth.getUser();
+  const {data: {user}, error: authError} = await db.auth.getUser();
 
   if(authError) throw authError
 	if (!user) throw new Error("User not authenticated");
@@ -113,7 +113,7 @@ export async function createMemberWithMembershipPlan(payloadMember: MemberCreate
     p_membership_status: payloadMemberMembership.status ?? "active",
   }
 
-  const { data, error } = await supabase.rpc("create_member_with_membership", payloadMemberWithMembershipPlan);
+  const { data, error } = await db.rpc("create_member_with_membership", payloadMemberWithMembershipPlan);
 
   if (error) throw error;
 
@@ -121,8 +121,8 @@ export async function createMemberWithMembershipPlan(payloadMember: MemberCreate
 }
 
 export async function updateMember(id: string, payload: MemberUpdateInput) {
-  const supabase = await supabaseServer();
-  const { data, error } = await supabase
+  const db = await getServerDbClient();
+  const { data, error } = await db
     .from(TABLE)
     .update(payload)
     .eq("id", id)
@@ -134,8 +134,8 @@ export async function updateMember(id: string, payload: MemberUpdateInput) {
 }
 
 export async function deleteMember(id: string) {
-  const supabase = await supabaseServer();
-  const { error } = await supabase.from(TABLE).delete().eq("id", id);
+  const db = await getServerDbClient();
+  const { error } = await db.from(TABLE).delete().eq("id", id);
   if (error) throw error;
   return { ok: true };
 }

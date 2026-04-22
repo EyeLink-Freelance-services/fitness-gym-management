@@ -1,5 +1,4 @@
 import { ROUTES } from "@/constants/route";
-import { createServerClient } from "@supabase/ssr";
 import { NextRequest, NextResponse } from "next/server";
 
 const PUBLIC_ROUTES = [ROUTES.LOGIN, ROUTES.RESET_PASSWORD.NEW_PASSWORD];
@@ -25,39 +24,14 @@ function isPublicRoute(pathname: string, except?: string) {
 
 export async function proxy(req: NextRequest) {
 	const res = NextResponse.next();
-
-	const supabase = createServerClient(
-		process.env.NEXT_PUBLIC_SUPABASE_URL!,
-		process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-		{
-			cookies: {
-        getAll() {
-            return req.cookies.getAll();
-        },
-        setAll(cookiesToSet) {
-					cookiesToSet.forEach(({ name, value, options }) => {
-						res.cookies.set(name, value, options);
-					});
-        },
-			},
-    }
-	)
-
-	const {data} = await supabase.auth.getUser();
-	const user = data.user;
-	
-	console.log(user, 'user');
 	const pathname = req.nextUrl.pathname;
 
-	// Protect private routes in (app)
-	if (!user && isProtectedRoute(pathname)) {
+	// Temporary migration
+	if (isProtectedRoute(pathname)) {
     return NextResponse.redirect(new URL(ROUTES.LOGIN, req.url));
   }
 
-	// Block public auth pages when logged in
-	if (user && isPublicRoute(pathname, ROUTES.RESET_PASSWORD.NEW_PASSWORD)) {
-    return NextResponse.redirect(new URL(ROUTES.HOME, req.url));
-  }
+	void isPublicRoute(pathname, ROUTES.RESET_PASSWORD.NEW_PASSWORD);
 
 	return res
 }

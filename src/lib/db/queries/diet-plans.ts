@@ -1,6 +1,5 @@
-import { supabaseServer } from "@/lib/supabase/server";
+import { getServerDbClient } from "@/lib/db/server-client";
 import { DietPlanFormInput } from "@/lib/validation/schemas/diet-plans";
-import { TrainingPlanFormInput } from "@/lib/validation/schemas/training-plans";
 
 const TABLE = "diet_plans";
 
@@ -39,15 +38,15 @@ function mapDietPlanToForm(data: any): DietPlanFormInput {
 }
 
 export const createDietPlan = async (payload: DietPlanFormInput) => {
-  const supabase = await supabaseServer();
+  const db = await getServerDbClient();
 
   const {
     data: { user },
-  } = await supabase.auth.getUser();
+  } = await db.auth.getUser();
 
   if (!user) return null;
 
-  const { data, error } = await supabase.rpc("create_diet_plan_with_meals", {p_payload: payload});
+  const { data, error } = await db.rpc("create_diet_plan_with_meals", {p_payload: payload});
 
   if (error) throw error;
 
@@ -55,9 +54,9 @@ export const createDietPlan = async (payload: DietPlanFormInput) => {
 }
 
 export const updateDietPlan = async (payload: DietPlanFormInput) => {
-  const supabase = await supabaseServer();
+  const db = await getServerDbClient();
 
-  const { data, error } = await supabase.rpc(
+  const { data, error } = await db.rpc(
     "update_diet_plan_with_meals",
     { p_payload: payload }
   );
@@ -75,9 +74,9 @@ export const saveDietPlan = async (payload: DietPlanFormInput) => {
 };
 
 export async function listDietPlan() {
-  const supabase = await supabaseServer();
+  const db = await getServerDbClient();
 
-  const { data, error } = await supabase
+  const { data, error } = await db
     .from("diet_plans")
     .select(`
       id,
@@ -103,9 +102,9 @@ export async function listDietPlan() {
 }
 
 export async function getDietPlan(id: string) {
-  const supabase = await supabaseServer();
+  const db = await getServerDbClient();
   
-  const { data, error } = await supabase
+  const { data, error } = await db
     .from(TABLE)
     .select(`
       id,

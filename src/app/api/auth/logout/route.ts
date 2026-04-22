@@ -1,12 +1,12 @@
-import { createSupabaseRouteClient } from "@/lib/supabase/route";
+import { getRouteAuthClient } from "@/lib/db/route-client";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
     const res = NextResponse.json({ok: true});
 
-    const supabase = await createSupabaseRouteClient(req, res);
-    await supabase.auth.signOut();
+    const authClient = await getRouteAuthClient(req, res);
+    await authClient.auth.signOut();
 
     return res
     

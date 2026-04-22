@@ -1,5 +1,5 @@
 import { ROUTES } from "@/constants/route";
-import { createSupabaseRouteClient } from "@/lib/supabase/route";
+import { getRouteAuthClient } from "@/lib/db/route-client";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -15,8 +15,8 @@ export async function GET(req: NextRequest) {
     const nextPageUrl = new URL(nextPage, req.url);
     const response = NextResponse.redirect(nextPageUrl);
 
-    const supabase = await createSupabaseRouteClient(req, response);
-    const {error} =  await supabase.auth.exchangeCodeForSession(code);
+    const authClient = await getRouteAuthClient(req, response);
+    const {error} =  await authClient.auth.exchangeCodeForSession(code);
 
     if(error) {
         const invalidOrExpiredUrl = new URL(ROUTES.RESET_PASSWORD.INVALID_OR_EXPIRED, req.url);

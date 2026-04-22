@@ -1,11 +1,10 @@
-import { supabaseServer } from "@/lib/supabase/server";
 import { CompanyFormData } from "@/types/forms";
-import { supabaseAdmin } from "@/lib/supabase/client";
 import { StatusOpt, SuperAdminCompanyRow } from "@/types/dashboard/super-admin";
 import { CompanyRepository } from "@/modules/company/company.repository";
+import { getServerDbClient } from "@/lib/db/server-client";
 
 export async function createCompanyService(form: CompanyFormData) {
-  const supabase = await supabaseServer();
+  const db = await getServerDbClient();
 
   try {
     let logoUrl: string | null = null;
@@ -13,7 +12,7 @@ export async function createCompanyService(form: CompanyFormData) {
       logoUrl = await uploadCompanyLogo(form.companyLogo);
     }
 
-    const { data, error } = await supabase.rpc("create_company_with_branches", {
+    const { data, error } = await db.rpc("create_company_with_branches", {
       p_name: form.companyName,
       p_brn: form.brn,
       p_contact_phone: form.contactNumber,
@@ -38,20 +37,8 @@ export async function createCompanyService(form: CompanyFormData) {
 }
 
 export async function uploadCompanyLogo(file: File) {
-  const extension = file.name.split(".").pop();
-  const filePath = `company-logos/${crypto.randomUUID()}.${extension}`;
-
-  const { error } = await supabaseAdmin.storage
-    .from("company-assets")
-    .upload(filePath, file);
-
-  if (error) throw error;
-
-  const { data } = supabaseAdmin.storage
-    .from("company-assets")
-    .getPublicUrl(filePath);
-
-  return data.publicUrl;
+  void file;
+  throw new Error("Company logo upload is not configured yet.");
 }
 
 export async function findAllCompanies(): Promise<SuperAdminCompanyRow[]> {

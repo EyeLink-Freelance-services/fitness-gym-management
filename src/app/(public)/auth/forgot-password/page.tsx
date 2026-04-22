@@ -3,11 +3,11 @@
 import { useRouter } from "next/navigation";
 import RecoveryForm from "@/components/Forms/RecoveryForm";
 import { ROUTES } from "@/constants/route";
-import { RECOVERY } from "@/constants/recovery";
 import Image from "next/image";
 
 export default function ForgotPasswordPage() {
   const router = useRouter();
+  const RECOVERY_VERIFY_REGISTERED_EMAIL = 1;
 
   return (
     <div className="relative flex min-h-screen items-center justify-center p-4">
@@ -21,7 +21,7 @@ export default function ForgotPasswordPage() {
       />
       <div className="w-full max-w-xl">
         <RecoveryForm
-          step={RECOVERY.VERIFY_REGISTERED_EMAIL}
+          step={RECOVERY_VERIFY_REGISTERED_EMAIL}
           onBackToLogin={() => router.push(ROUTES.LOGIN)}
         />
       </div>

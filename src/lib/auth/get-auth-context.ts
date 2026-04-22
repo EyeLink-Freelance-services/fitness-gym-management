@@ -1,6 +1,6 @@
 import { cache } from "react";
 import { getPermissionStringTable } from "../formatters/format-permission";
-import { supabaseServer } from "../supabase/server";
+import { getServerDbClient } from "../db/server-client";
 import type { IAuthContext } from "@/types/auth-context";
 
 export async function buildAuthContext(data: any): Promise<IAuthContext> {
@@ -18,15 +18,15 @@ export async function buildAuthContext(data: any): Promise<IAuthContext> {
 }
 
 export const getAuthContext = cache(async (): Promise<IAuthContext | null> => {
-  const supabase = await supabaseServer();
+  const db = await getServerDbClient();
 
   const {
     data: { user },
-  } = await supabase.auth.getUser();
+  } = await db.auth.getUser();
 
   if (!user) return null;
 
-  const { data, error } = await supabase.rpc("ensure_active_company_or_personal_workspace");
+  const { data, error } = await db.rpc("ensure_active_company_or_personal_workspace");
 
   if (error) throw error;
 

@@ -1,4 +1,4 @@
-import { createSupabaseRouteClient } from "@/lib/supabase/route";
+import { getRouteAuthClient } from "@/lib/db/route-client";
 import { RecoveryNewPasswordFormData } from "@/types/forms";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -24,9 +24,9 @@ export async function POST(req: NextRequest) {
 
 		const response = NextResponse.json({ok: true});
 
-		const supabase = await createSupabaseRouteClient(req, response);
+		const authClient = await getRouteAuthClient(req, response);
 
-    const { data: userData } = await supabase.auth.getUser();
+    const { data: userData } = await authClient.auth.getUser();
 		if(!userData.user) {
 			return NextResponse.json(
 				{ ok: false, message: 'session expired. Please retry the reset link.' },
@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
 			);
 		}
 
-		const { error } = await supabase.auth.updateUser({password: body.confirmPassword});
+		const { error } = await authClient.auth.updateUser({password: body.confirmPassword});
 		if(error) {
 			return NextResponse.json({ ok: false, message: error.message });
 		}

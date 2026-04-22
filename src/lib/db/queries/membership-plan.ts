@@ -1,4 +1,4 @@
-import { supabaseServer } from "@/lib/supabase/server";
+import { getServerDbClient } from "@/lib/db/server-client";
 import { MembershipPlanCreateInput, MembershipPlanEditInput } from "@/lib/validation/schemas/membership-plan";
 
 const TABLE = "membership_plans";
@@ -9,9 +9,9 @@ const TABLE = "membership_plans";
  * Use RLS policies to restrict by workspace/tenant as needed.
  */
 export async function listMembershipPlan() {
-  const supabase = await supabaseServer();
+  const db = await getServerDbClient();
 
-  const { data, error } = await supabase
+  const { data, error } = await db
     .from(TABLE)
     .select("*")
     .order("created_at", { ascending: false });
@@ -21,9 +21,9 @@ export async function listMembershipPlan() {
 }
 
 export async function listMembershipPlanActive() {
-  const supabase = await supabaseServer();
+  const db = await getServerDbClient();
 
-  const { data, error } = await supabase
+  const { data, error } = await db
     .from(TABLE)
     .select("*")
 		.eq('is_active', true)
@@ -34,9 +34,9 @@ export async function listMembershipPlanActive() {
 }
 
 export async function getMembershipPlan(id: string) {
-  const supabase = await supabaseServer();
+  const db = await getServerDbClient();
 
-  const { data, error } = await supabase
+  const { data, error } = await db
     .from(TABLE)
     .select('*')
     .eq("id", id)
@@ -47,9 +47,9 @@ export async function getMembershipPlan(id: string) {
 }
 
 export async function createMembershipPlan(payload: MembershipPlanCreateInput) {
-  const supabase = await supabaseServer();
+  const db = await getServerDbClient();
 
-  const {data: {user}, error: authError} = await supabase.auth.getUser();
+  const {data: {user}, error: authError} = await db.auth.getUser();
 
   if(authError) throw authError
 	if (!user) throw new Error("User not authenticated");
@@ -65,7 +65,7 @@ export async function createMembershipPlan(payload: MembershipPlanCreateInput) {
 
 	console.log(payloadComplete, 'payloadComplet');
 	
-  const { data, error } = await supabase
+  const { data, error } = await db
     .from(TABLE)
     .insert(payloadComplete)
     .select('*')
@@ -76,9 +76,9 @@ export async function createMembershipPlan(payload: MembershipPlanCreateInput) {
 }
 
 export async function updateMembershipPlan(payload: MembershipPlanEditInput) {
-  const supabase = await supabaseServer();
+  const db = await getServerDbClient();
 
-  const {data: {user}, error: authError} = await supabase.auth.getUser();
+  const {data: {user}, error: authError} = await db.auth.getUser();
 
   if(authError) throw authError
 	if (!user) throw new Error("User not authenticated");
@@ -91,7 +91,7 @@ export async function updateMembershipPlan(payload: MembershipPlanEditInput) {
     updated_by: user.id,
   };
 
-  const { data, error } = await supabase
+  const { data, error } = await db
     .from(TABLE)
     .update(payloadComplete)
     .eq("id", payload.id)
@@ -103,8 +103,8 @@ export async function updateMembershipPlan(payload: MembershipPlanEditInput) {
 }
 
 export async function deleteMembershipPlan(id: string) {
-  const supabase = await supabaseServer();
-  const { error } = await supabase.from(TABLE).delete().eq("id", id);
+  const db = await getServerDbClient();
+  const { error } = await db.from(TABLE).delete().eq("id", id);
   if (error) throw error;
   return { ok: true };
 }

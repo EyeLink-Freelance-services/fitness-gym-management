@@ -1,15 +1,14 @@
 // app/api/company/overview/route.ts
 import { buildAuthContext } from "@/lib/auth/get-auth-context";
-import { getPermissionStringTable } from "@/lib/formatters/format-permission";
-import { createSupabaseRouteClient } from "@/lib/supabase/route";
+import { getRouteAuthClient } from "@/lib/db/route-client";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   const res = NextResponse.next();
-  const supabase = await createSupabaseRouteClient(req, res);
+  const authClient = await getRouteAuthClient(req, res);
 
   const { data, error } =
-    await supabase.rpc("ensure_active_company_or_personal_workspace");
+    await authClient.rpc("ensure_active_company_or_personal_workspace");
 
   if (error) {
     return NextResponse.json(

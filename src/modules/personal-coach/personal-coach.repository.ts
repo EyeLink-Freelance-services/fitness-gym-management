@@ -1,4 +1,4 @@
-import { supabaseServer } from "@/lib/supabase/server";
+import { getServerDbClient } from "@/lib/db/server-client";
 import type { Database } from "@/types/database";
 import { assertNoError } from "@/lib/db/errors";
 
@@ -19,7 +19,7 @@ export type PaginatedResult<T> = {
 
 export const PersonalCoachRepository = {
   async insert(payload: PersonalCoachInsert): Promise<PersonalCoach> {
-    const db = await supabaseServer();
+    const db = await getServerDbClient();
 
     const { data, error } = await db
       .from("personal_coaches")
@@ -36,7 +36,7 @@ export const PersonalCoachRepository = {
    * Fetch all active personal coaches (respects soft-delete index on deleted_at)
    */
   async findAll(): Promise<any[]> {
-    const db = await supabaseServer();
+    const db = await getServerDbClient();
 
     const { data, error } = await db
       .from("personal_coaches")
@@ -54,7 +54,7 @@ export const PersonalCoachRepository = {
   },
 
   async findSummary(page: number, pageSize: number): Promise<any> {
-    const db = await supabaseServer();
+    const db = await getServerDbClient();
     const from = (page - 1) * pageSize;
     const to = from + pageSize - 1;
 
@@ -74,14 +74,14 @@ export const PersonalCoachRepository = {
    * Fetch a single personal coach by ID — returns null if not found
    */
   async findById(id: string) {
-    const db = await supabaseServer();
+    const db = await getServerDbClient();
   },
 
   /**
    * Paginated fetch with total count
    */
   async findPaginated(page: number, pageSize: number) {
-    const db = await supabaseServer();
+    const db = await getServerDbClient();
     const from = (page - 1) * pageSize;
     const to = from + pageSize - 1;
 
@@ -107,6 +107,8 @@ export const PersonalCoachRepository = {
    * Filtered fetch — all filters are optional
    */
   async findByFilters(filters: {}) {
-    const db = await supabaseServer();
+    void filters;
+    const db = await getServerDbClient();
+    return db;
   },
 };

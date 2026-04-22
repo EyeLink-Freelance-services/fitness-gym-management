@@ -1,4 +1,4 @@
-import { supabaseServer } from "@/lib/supabase/server";
+import { getServerDbClient } from "@/lib/db/server-client";
 import type { Database } from "@/types/database";
 import { assertNoError, DatabaseError } from "@/lib/db/errors";
 
@@ -23,7 +23,7 @@ export const CompanyRepository = {
    * Fetch all active companies (respects soft-delete index on deleted_at)
    */
   async findAll(): Promise<any[]> {
-    const db = await supabaseServer();
+    const db = await getServerDbClient();
 
     const { data, error } = await db
       .from("companies")
@@ -46,7 +46,7 @@ export const CompanyRepository = {
   },
 
   async findSummary(page: number, pageSize: number): Promise<any> {
-    const db = await supabaseServer();
+    const db = await getServerDbClient();
     const from = (page - 1) * pageSize;
     const to = from + pageSize - 1;
 
@@ -66,7 +66,7 @@ export const CompanyRepository = {
    * Fetch a single company by ID — returns null if not found
    */
   async findById(id: string): Promise<Company | null> {
-    const db = await supabaseServer();
+    const db = await getServerDbClient();
 
     const { data, error } = await db
       .from("companies")
@@ -91,7 +91,7 @@ export const CompanyRepository = {
     page: number,
     pageSize: number,
   ): Promise<PaginatedResult<Company>> {
-    const db = await supabaseServer();
+    const db = await getServerDbClient();
     const from = (page - 1) * pageSize;
     const to = from + pageSize - 1;
 
@@ -121,7 +121,7 @@ export const CompanyRepository = {
     city?: string;
     region?: string;
   }): Promise<Company[]> {
-    const db = await supabaseServer();
+    const db = await getServerDbClient();
 
     let query = db
       .from("companies")

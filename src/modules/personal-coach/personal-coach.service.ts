@@ -1,5 +1,4 @@
 import { PersonalCoachFormData } from "@/types/forms";
-import { supabaseAdmin } from "@/lib/supabase/client";
 import { StatusOpt, SuperAdminCoachesRow } from "@/types/dashboard/super-admin";
 import {
   PersonalCoach,
@@ -41,20 +40,8 @@ export async function createPersonalCoachService(
 }
 
 export async function uploadPersonalCoachProfilePhoto(file: File) {
-  const extension = file.name.split(".").pop();
-  const filePath = `personal-coaches/${crypto.randomUUID()}.${extension}`;
-
-  const { error } = await supabaseAdmin.storage
-    .from("personal-coaches-assets")
-    .upload(filePath, file);
-
-  if (error) throw error;
-
-  const { data } = supabaseAdmin.storage
-    .from("personal-coaches-assets")
-    .getPublicUrl(filePath);
-
-  return data.publicUrl;
+  void file;
+  throw new Error("Personal coach photo upload is not configured yet.");
 }
 
 export async function findAllPersonalCoaches(): Promise<
