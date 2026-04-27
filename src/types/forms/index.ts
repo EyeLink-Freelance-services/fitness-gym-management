@@ -18,8 +18,10 @@ export interface FormLabel {
 }
 
 export interface LoginFormData {
-  email: string;
+  username: string;
   password: string;
+  contextType?: string;
+  businessId?: string;
 }
 
 export interface RecoveryRegisteredEmailFormData {
@@ -158,6 +160,7 @@ export interface LoginFormProps {
 export interface RecoveryFormProps {
   step: number;
   onBackToLogin: () => void;
+  resetToken?: string | null;
 }
 
 export interface StaffCoachFormProps {

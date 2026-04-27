@@ -7,7 +7,7 @@ import {
 } from "@/data/sidebar/dashboard-nav";
 import { NavItem, NavSection } from "@/types/dashboard/dashboard-shared";
 import { AuthPermission } from "@/constants/permission";
-import type { IAuthContext } from "@/types/auth-context";
+import type { IAuthContext } from "@/types/auth/auth-context";
 
 export function section(label: string, items: NavItem[]): NavSection {
   return { label, items };

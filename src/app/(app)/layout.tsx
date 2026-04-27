@@ -1,15 +1,17 @@
 import { getAuthContext } from "@/lib/auth/get-auth-context";
-import type { IAuthContext } from "@/types/auth-context";
+import type { IAuthContext } from "@/types/auth/auth-context";
 import { AuthProvider } from "../context/auth-context";
 import { CompanyProvider } from "../context/company-context";
 import { Sidebar } from "@/components/Layouts/sidebar";
 import { Header } from "@/components/Layouts/header";
+import { redirect } from "next/navigation";
+import { ROUTES } from "@/constants/route";
 
 export default async function RootLayout({ children }: any) {
   const auth: IAuthContext | null = await getAuthContext();
   
   if (!auth) {
-    return null;
+    redirect(ROUTES.LOGIN);
   }
 
   return (

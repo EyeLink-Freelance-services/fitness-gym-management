@@ -1,4 +1,4 @@
-import { IAuthContext } from "@/types/auth-context";
+import { IAuthContext } from "@/types/auth/auth-context";
 import { getAuthContext } from "./get-auth-context";
 import { NavItem, NavSection, SubItem } from "@/types/dashboard/dashboard-shared";
 import { AuthPermission } from "@/constants/permission";
@@ -16,7 +16,7 @@ export async function requirePermission(permission: string) {
 }
 
 function isPersonalOwner(auth?: IAuthContext) {
-  return auth?.isOwner && auth?.company.mode === "personal";
+  return auth?.isOwner && auth?.company?.mode === "personal";
 }
 
 function isCompanyCoach(auth?: IAuthContext) {

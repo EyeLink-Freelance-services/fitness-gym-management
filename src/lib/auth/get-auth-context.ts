@@ -1,34 +1,72 @@
 import { cache } from "react";
 import { getPermissionStringTable } from "../formatters/format-permission";
-import { getServerDbClient } from "../db/server-client";
-import type { IAuthContext } from "@/types/auth-context";
+import type { IAuthContext } from "@/types/auth/auth-context";
+import { getAuthSession } from "@/auth";
+import type { AccessTokenClaims } from "@/types/auth/token";
 
 export async function buildAuthContext(data: any): Promise<IAuthContext> {
   const permissions = getPermissionStringTable(data.permissions ?? []);
 
   return {
     userId: data.profile.id,
+    email: data.profile.email ?? "",
     profile: data.profile,
     companyId: data.company?.id ?? data.profile.active_company_id ?? null,
-    company: data.company,
+    company: data.company ?? null,
     isOwner: data.company_user?.is_owner ?? false,
     roles: data.roles?.map((r: any) => r.name) ?? [],
     permissions,
+    availableContexts: [],
+  };
+}
+
+function inferCompanyMode(contextType?: string): "company" | "personal" | "super-admin" {
+  const value = (contextType ?? "").toUpperCase();
+  if (value.includes("PERSONAL")) return "personal";
+  if (value.includes("SUPER")) return "super-admin";
+  return "company";
+}
+
+function mapClaimsToAuthContext(claims: AccessTokenClaims): IAuthContext {
+  const email = claims.email ?? claims.sub ?? "";
+  const contextType = claims.contextType ?? "COMPANY";
+  const businessId = claims.businessId ?? null;
+  const companyMode = inferCompanyMode(contextType);
+  const [firstName = "User", ...lastNameParts] = email.split("@")[0]?.split(".") ?? [];
+
+  return {
+    userId: claims.userId ?? claims.sub ?? "",
+    email,
+    profile: {
+      id: claims.userId ?? claims.sub ?? "",
+      first_name: firstName,
+      last_name: lastNameParts.join(" "),
+      picture_url: "",
+      active_company_id: businessId,
+    },
+    companyId: businessId,
+    company: businessId
+      ? {
+          id: businessId,
+          name: businessId,
+          mode: companyMode,
+        }
+      : null,
+    isOwner: (claims.roles ?? []).some((role) => role.toLowerCase().includes("owner")),
+    roles: claims.roles ?? [],
+    permissions: claims.permissions ?? [],
+    availableContexts:
+      claims.availableContexts?.map((ctx) => ({
+        contextType: ctx.contextType ?? "COMPANY",
+        businessId: ctx.businessId ?? "SUPER-ADMIN",
+        roles: ctx.roles,
+        permissions: ctx.permissions,
+      })) ?? [],
   };
 }
 
 export const getAuthContext = cache(async (): Promise<IAuthContext | null> => {
-  const db = await getServerDbClient();
-
-  const {
-    data: { user },
-  } = await db.auth.getUser();
-
-  if (!user) return null;
-
-  const { data, error } = await db.rpc("ensure_active_company_or_personal_workspace");
-
-  if (error) throw error;
-
-  return await buildAuthContext(data);
+  const session = await getAuthSession();
+  if (!session?.accessToken || !session.claims) return null;
+  return mapClaimsToAuthContext(session.claims);
 });

@@ -1,4 +1,4 @@
-import { IPermission } from "@/types/auth-context";
+import { IPermission } from "@/types/auth/auth-context";
 
 export const getPermissionStringTable = (data: IPermission[]) => {
 	const permissions =

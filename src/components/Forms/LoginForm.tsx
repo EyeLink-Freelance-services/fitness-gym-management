@@ -7,9 +7,9 @@ import InputGroup from "../FormElements/InputGroup";
 import { validateEmail } from "@/lib/forms/formValidation";
 import Header from "../FormElements/common/header";
 import { useState } from "react";
-import { LOGIN_ENDPOINT } from "@/constants/urls";
 import { useRouter } from "next/navigation";
 import { ROUTES } from "@/constants/route";
+import { signIn } from "next-auth/react";
 
 export default function LoginForm({ onForgotPassword }: LoginFormProps) {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -22,20 +22,22 @@ export default function LoginForm({ onForgotPassword }: LoginFormProps) {
 
   const onSubmit = async (data: LoginFormData) => {
     setErrorMsg(null);
-    console.log(data, "data");
     try {
-      const res = await fetch(LOGIN_ENDPOINT, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+      const result = await signIn("credentials", {
+        username: data.username,
+        password: data.password,
+        contextType: data.contextType ?? "",
+        businessId: data.businessId ?? "",
+        redirect: false,
       });
-      const json = await res.json();
-      if (!res.ok) {
-        setErrorMsg(json.message);
-      } else {
-        router.push(ROUTES.HOME);
-        router.refresh();
+
+      if (result?.error) {
+        setErrorMsg(result.error);
+        return;
       }
+
+      router.push(ROUTES.HOME);
+      router.refresh();
     } catch (err: any) {
       setErrorMsg(err.message);
     }
@@ -51,14 +53,14 @@ export default function LoginForm({ onForgotPassword }: LoginFormProps) {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-7">
         <InputGroup
-          type="email"
-          label="Email Address"
+          type="text"
+          label="Username"
           placeholder="coach@apexgym.com"
           required
-          error={errors.email?.message}
-          inputProps={register("email", {
-            required: "Email is required",
-            validate: (v) => validateEmail(v),
+          error={errors.username?.message}
+          inputProps={register("username", {
+            required: "Username is required",
+            // validate: (v) => validateEmail(v),
           })}
         />
 

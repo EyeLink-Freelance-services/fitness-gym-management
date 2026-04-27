@@ -1,6 +1,5 @@
 import { ROUTES } from "@/constants/route";
-import { RESET_PASSWORD_ENDPOINT } from "@/constants/urls";
-import { getRouteAuthClient } from "@/lib/db/route-client";
+import { requestPasswordReset } from "@/lib/auth/backend-auth-api";
 import { RecoveryRegisteredEmailFormData } from "@/types/forms";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -23,14 +22,10 @@ export async function POST(req: NextRequest) {
         )
     }
 
-		const response = NextResponse.json({ok: true});
-
-		const authClient = await getRouteAuthClient(req, response);
-
-		const redirectTo = new URL(`${RESET_PASSWORD_ENDPOINT}?next=${ROUTES.RESET_PASSWORD.NEW_PASSWORD}`, req.url).toString()
-    await authClient.auth.resetPasswordForEmail(body.email, {redirectTo});
+		const redirectTo = new URL(ROUTES.RESET_PASSWORD.NEW_PASSWORD, req.url).toString()
+    await requestPasswordReset({ email: body.email, redirectTo });
 		
-		return response;
+		return NextResponse.json({ok: true});
 
   } catch (err: any) {
     console.error("reset error:", err); // <--- log for debugging

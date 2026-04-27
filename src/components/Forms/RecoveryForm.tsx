@@ -12,8 +12,9 @@ import RecoveryNewPassword from "./Recovery/RecoveryNewPassword";
 import RecoverySuccess from "./Recovery/RecoverySuccess";
 import RegisteredEmail from "./Recovery/RegisteredEmail";
 
-export default function RecoveryForm({ step, onBackToLogin }: RecoveryFormProps) {
-  const [errorUpdatePasswordForm, setUpdatePasswordFormError] = useState(null);
+export default function RecoveryForm({ step, onBackToLogin, resetToken }: RecoveryFormProps) {
+  const [errorUpdatePasswordForm, setUpdatePasswordFormError] = useState<string | null>(null);
+  const [errorRegisteredEmailForm, setRegisteredEmailFormError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [sent, setSent] = useState(false);
 
@@ -25,11 +26,19 @@ export default function RecoveryForm({ step, onBackToLogin }: RecoveryFormProps)
   const step2NewPasswordForm = useForm<RecoveryNewPasswordFormData>();
 
   const handleStep1 = async (data: RecoveryRegisteredEmailFormData) => {
-    await fetch("/api/auth/reset/start", {
+    setRegisteredEmailFormError(null);
+
+    const response = await fetch("/api/auth/reset/start", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify(data),
     });
+
+    if (!response.ok) {
+      const body = await response.json().catch(() => null);
+      setRegisteredEmailFormError(body?.message ?? "Could not start password reset");
+      return;
+    }
 
     // Always show success (don’t reveal if email exists)
     setSent(true);
@@ -38,10 +47,19 @@ export default function RecoveryForm({ step, onBackToLogin }: RecoveryFormProps)
   const handleStep2 = async (values: RecoveryNewPasswordFormData) => {
     setUpdatePasswordFormError(null);
 
+    if (!resetToken) {
+      setUpdatePasswordFormError("Password reset link is missing or invalid.");
+      return;
+    }
+
     const r = await fetch("/api/auth/reset/confirm", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ password: values.newPassword, confirmPassword: values.confirmPassword }),
+      body: JSON.stringify({
+        token: resetToken,
+        password: values.newPassword,
+        confirmPassword: values.confirmPassword,
+      }),
     });
 
     const data = await r.json().catch(() => null);
@@ -91,6 +109,7 @@ export default function RecoveryForm({ step, onBackToLogin }: RecoveryFormProps)
           />
         )
       )}
+      {errorRegisteredEmailForm && <p className="text-sm text-red-600">{errorRegisteredEmailForm}</p>}
 
       {step === 2 && !success && (
         <>

@@ -1,10 +1,30 @@
 import { NextRequest, NextResponse } from "next/server";
-
-export type RouteAuthClient = any;
+import { getAuthSession } from "@/auth";
+import { RouteAuthClient } from "@/types/auth/auth-context";
 
 export async function getRouteAuthClient(
   _req: NextRequest,
   _res: NextResponse,
 ): Promise<RouteAuthClient> {
-  throw new Error("Route auth client is not configured yet.");
+  const session = await getAuthSession();
+
+  return {
+    auth: {
+      getUser: async () => {
+        if (!session?.claims) {
+          return { data: { user: null }, error: null };
+        }
+
+        return {
+          data: {
+            user: {
+              id: session.claims.userId ?? session.claims.sub ?? "",
+              email: session.claims.email ?? session.claims.sub ?? "",
+            },
+          },
+          error: null,
+        };
+      },
+    },
+  };
 }

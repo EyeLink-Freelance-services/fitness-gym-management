@@ -8,7 +8,7 @@ import { ArrowLeftIcon, ChevronUp } from "../../IconsCollection/icons";
 import { MenuItem } from "./menu-item";
 import { useSidebarContext } from "./sidebar-context";
 import { getDashboardNav } from "@/utils/dashboard-nav";
-import { IAuthContext } from "@/types/auth-context";
+import { IAuthContext } from "@/types/auth/auth-context";
 import { Logo } from "@/components/logo";
 
 interface sidebarProps {

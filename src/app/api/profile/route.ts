@@ -28,8 +28,6 @@ export async function GET(req: NextRequest) {
 }
 
 export async function PUT(req: NextRequest) {
-	let userUpdated: any = null;
-
 	const response = NextResponse.json({ok: true});
 	const authClient = await getRouteAuthClient(req, response);
 
@@ -49,27 +47,17 @@ export async function PUT(req: NextRequest) {
 			)
 		}
 	
-		const userAuthPayload = {
-			email: parsed.data.email,
-		};
-	
 		const profilePayload = {
 			first_name: parsed.data.first_name,
 			last_name: parsed.data.last_name,
 			phone: parsed.data.phone
 		};
 
-		userUpdated = await authClient.auth.updateUser(userAuthPayload);
-		console.log(userUpdated, 'userUpdated');
 		const profileUpdated = await updateProfile(user.id, profilePayload);
 
-		return NextResponse.json({ ok: true, data: {...profileUpdated, email: userUpdated.email} });
+		return NextResponse.json({ ok: true, data: {...profileUpdated, email: parsed.data.email} });
 
 	} catch(err: any) {
-		// Rollback user update if profile update fails
-		if(userUpdated) {
-			await authClient.auth.updateUser({ email: user.email });
-		}
 		console.log(err, 'error')
 		return NextResponse.json(
 			{ ok: false, message: err.message },

@@ -11,11 +11,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { LogOutIcon, SettingsIcon, UserIcon } from "./icons";
-import { LOGOUT_ENDPOINT } from "@/constants/urls";
 import { ROUTES } from "@/constants/route";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/context/auth-context";
 import { getUserDisplayInfo } from "@/lib/auth/user-display";
+import { signOut } from "next-auth/react";
 
 export function UserInfo() {
   const auth = useAuth();
@@ -23,9 +23,7 @@ export function UserInfo() {
   const [isOpen, setIsOpen] = useState(false);
 
   const logout = async () => {
-    await fetch(LOGOUT_ENDPOINT, {
-      method: "POST",
-    });
+    await signOut({ redirect: false });
 
     setIsOpen(false);
 

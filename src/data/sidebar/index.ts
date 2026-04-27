@@ -2,30 +2,6 @@ import { AuthPermission } from "@/constants/permission";
 import * as Icons from "../../components/IconsCollection/icons";
 import type { NavSection } from "@/types/dashboard/dashboard-shared";
 import { ROUTES } from "@/constants/route";
-import { IAuthContext } from "@/types/auth-context";
-
-// <export function getAuthorizedNav(
-//   itemSections: NavSection[],
-//   auth: IAuthContext | undefined
-// ): NavSection[] {
-//   return itemSections
-//     .map((section) => ({
-//       ...section,
-//       items: section.items.filter((item) => {
-//         // parent without permission -> keep it
-//         if (!item.permission) {
-//           // if it has children, optionally filter children too
-//           if (item.items?.length) {
-//             return true;
-//           }
-//           return true;
-//         }
-
-//         return auth?.permissions?.includes(item.permission);
-//       }),
-//     }))
-//     .filter((section) => section.items.length > 0);
-// }>
 
 export const NAV_DATA: NavSection[] = [
   {

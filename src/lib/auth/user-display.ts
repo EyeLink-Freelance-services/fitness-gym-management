@@ -1,4 +1,4 @@
-import type { IAuthContext, IRole } from "@/types/auth-context";
+import type { IAuthContext, IRole } from "@/types/auth/auth-context";
 
 export interface UserDisplayInfo {
   displayName: string;
