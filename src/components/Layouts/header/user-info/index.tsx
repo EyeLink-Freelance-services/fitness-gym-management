@@ -1,6 +1,10 @@
 "use client";
 
-import { ChevronUpIcon } from "@/components/IconsCollection/icons";
+import {
+  ChevronUpIcon,
+  LogOutIcon,
+  Users,
+} from "@/components/IconsCollection/icons";
 import {
   Dropdown,
   DropdownContent,
@@ -8,9 +12,7 @@ import {
 } from "@/components/ui/dropdown";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import Link from "next/link";
 import { useState } from "react";
-import { LogOutIcon, SettingsIcon, UserIcon } from "./icons";
 import { ROUTES } from "@/constants/route";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/context/auth-context";
@@ -40,14 +42,17 @@ export function UserInfo() {
         <span className="sr-only">My Account</span>
 
         <figure className="flex items-center gap-3">
-          <Image
-            src={avatarSrc}
-            className="size-12 rounded-[50%]"
-            alt={`Avatar of ${displayName}`}
-            role="presentation"
-            width={200}
-            height={200}
-          />
+          {avatarSrc ? (
+            <Image
+              src={avatarSrc}
+              alt={`Avatar of ${displayName}`}
+              width={48}
+              height={48}
+              className="size-12 rounded-full object-cover"
+            />
+          ) : (
+            <Users className="size-12 text-gray-500" />
+          )}
           <figcaption className="flex items-center gap-1 font-medium text-dark dark:text-dark-6 max-[1024px]:sr-only">
             <span>{initial}</span>
 

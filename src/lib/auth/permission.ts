@@ -94,7 +94,10 @@ export function getRedirectPathForAuth(auth: IAuthContext | null): string | null
   if (auth.permissions?.includes(AuthPermission.dashboard.personalCoach) && auth.company?.mode === "personal") {
     return "/dashboard/personal-coach";
   }
-  if (auth.permissions?.includes(AuthPermission.dashboard.superAdmin)) {
+  if (
+    auth.permissions?.includes(AuthPermission.dashboard.superAdmin) ||
+    auth.company?.mode === "super-admin"
+  ) {
     return "/dashboard/super-admin";
   }
   if (auth.permissions?.includes(AuthPermission.dashboard.company)) {

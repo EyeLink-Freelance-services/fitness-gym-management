@@ -41,3 +41,48 @@ export interface SuperAdminCompanyRow {
   status: StatusOpt;
   createdAt: string;
 }
+
+
+interface CompanyBranchApiBean {
+  id?: string;
+  name: string;
+}
+
+export interface CompanyResponseApiBean {
+  id: string;
+  information: {
+    companyName: string;
+    logo?: string | null;
+    brn: string;
+    branches: CompanyBranchApiBean[];
+  };
+  address: {
+    street: string;
+    city: string;
+    state: string;
+    postalCode: string;
+  };
+  price: {
+    standardPrice: number;
+    hasPremiumPrice: boolean;
+    premiumPrice?: number | null;
+  };
+  miscellaneous: {
+    disclaimer: string;
+    agreeTermsOfService: boolean;
+  };
+  auditData?: {
+    createdDate?: string;
+    createdBy?: string;
+    lastModifiedDate?: string;
+    lastModifiedBy?: string;
+  };
+}
+
+export interface SearchCompaniesApiBean {
+  companies: CompanyResponseApiBean[];
+  pageSize: number;
+  pageNumber: number;
+  totalElements: number;
+  totalPages: number;
+}

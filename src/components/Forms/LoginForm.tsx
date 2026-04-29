@@ -9,7 +9,7 @@ import Header from "../FormElements/common/header";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ROUTES } from "@/constants/route";
-import { signIn } from "next-auth/react";
+import { signIn, getSession } from "next-auth/react";
 
 export default function LoginForm({ onForgotPassword }: LoginFormProps) {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -36,7 +36,14 @@ export default function LoginForm({ onForgotPassword }: LoginFormProps) {
         return;
       }
 
-      router.push(ROUTES.HOME);
+      const session = await getSession();
+      const contextType = session?.claims?.contextType;
+
+      if (contextType === "SUPER_ADMIN") {
+        router.push(ROUTES.DASHBOARD.SUPER_ADMIN.ROOT);
+      } else {
+        router.push(ROUTES.HOME);
+      }
       router.refresh();
     } catch (err: any) {
       setErrorMsg(err.message);

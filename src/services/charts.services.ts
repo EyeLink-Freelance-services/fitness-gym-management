@@ -47,3 +47,25 @@ export async function getPaymentsOverviewData(
     ],
   };
 }
+
+
+export async function getTotalSalesData() {
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+
+  return {
+    received: [
+      { x: "Jan", y: 0 },
+      { x: "Feb", y: 20 },
+      { x: "Mar", y: 35 },
+      { x: "Apr", y: 45 },
+      { x: "May", y: 35 },
+      { x: "Jun", y: 55 },
+      { x: "Jul", y: 65 },
+      { x: "Aug", y: 50 },
+      { x: "Sep", y: 65 },
+      { x: "Oct", y: 75 },
+      { x: "Nov", y: 60 },
+      { x: "Dec", y: 75 },
+    ],
+  };
+}

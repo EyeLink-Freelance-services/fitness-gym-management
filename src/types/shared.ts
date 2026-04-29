@@ -1,6 +1,9 @@
 import type { ButtonHTMLAttributes, ReactNode, SVGProps, JSX } from "react";
 import type { VariantProps } from "class-variance-authority";
 import { buttonVariants } from "@/components/ui-elements/button";
+import { IAuthContext } from "./auth/auth-context";
+
+export type IconProps = React.SVGProps<SVGSVGElement>;
 
 export type TableRowData = object;
 
@@ -75,3 +78,17 @@ export interface TableUIProps<TData extends TableRowData = TableRowData> {
   tableClassName?: string;
   emptyStateLabel?: string;
 }
+
+export interface sidebarProps {
+  auth?: IAuthContext | null;
+}
+
+type SidebarState = "expanded" | "collapsed";
+
+export type SidebarContextType = {
+  state: SidebarState;
+  isOpen: boolean;
+  setIsOpen: (open: boolean) => void;
+  isMobile: boolean;
+  toggleSidebar: () => void;
+};
