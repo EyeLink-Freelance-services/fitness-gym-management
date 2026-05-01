@@ -1,6 +1,6 @@
 export const AUTH_CONFIG = {
   apiBaseUrl:
-    process.env.AUTH_API_URL ??
+    process.env.AUTH_API_URL ??   
     process.env.NEXT_PUBLIC_API_URL ??
     "",
   accessTokenTtlSeconds: Number(process.env.AUTH_ACCESS_TOKEN_TTL_SECONDS ?? "900"),

@@ -1,10 +1,3 @@
-import {
-  Users,
-  Gym,
-  Trainer,
-  Profit,
-} from "@/components/IconsCollection/icons";
-
 const logos = {
   google: "/images/logo/google.svg",
   x: "/images/logo/x.svg",
@@ -169,33 +162,6 @@ export const DUMMY_COACHES = [
     profilePhoto: logos.google,
     status: "Disabled",
     createdAt: "2025-01-10",
-  },
-];
-
-export const OVERVIEW_SUPER_ADMIN_DATA = [
-  {
-    name: "Totals Users",
-    value: 6,
-    growthRate: -0.95,
-    icon: Users,
-  },
-  {
-    name: "Total Companies",
-    value: 3,
-    growthRate: 0.43,
-    icon: Gym,
-  },
-  {
-    name: "Total Coaches",
-    value: 3,
-    growthRate: 4.35,
-    icon: Trainer,
-  },
-  {
-    name: "Revenue",
-    value: 3456,
-    growthRate: 2.59,
-    icon: Profit,
   },
 ];
 

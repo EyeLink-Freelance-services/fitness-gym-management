@@ -1,8 +1,11 @@
-import { NavSection } from "@/types/dashboard/dashboard-shared";
+import { NavItem, NavSection } from "@/types/dashboard/dashboard-shared";
 import * as Icons from "../../components/IconsCollection/icons";
-import { section } from "@/utils/dashboard-nav";
 import { ROUTES } from "@/constants/route";
 import { CLIENT_HAS_ASSIGNED_COACH } from "@/data/client";
+
+function section(label: string, items: NavItem[]): NavSection {
+  return { label, items };
+}
 
 /** 1. Super Admin */
 export const SUPER_ADMIN_NAV: NavSection[] = [

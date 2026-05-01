@@ -1,8 +1,16 @@
 import { CompanyFormData } from "@/types/forms";
-import { CompanyResponseApiBean, SearchCompaniesApiBean, StatusOpt, SuperAdminCompanyRow } from "@/types/dashboard/super-admin";
+import {
+  CompanyResponseApiBean,
+  GetCompaniesParams,
+  SearchCompaniesApiBean,
+  StatusOpt,
+  SuperAdminCompanyRow,
+} from "@/types/dashboard/super-admin";
 import { backendGet, backendPost } from "@/lib/api/backend-client";
 
-function mapCompanyApiToRow(company: CompanyResponseApiBean): SuperAdminCompanyRow {
+function mapCompanyApiToRow(
+  company: CompanyResponseApiBean,
+): SuperAdminCompanyRow {
   return {
     id: company.id,
     company_name: company.information.companyName,
@@ -59,16 +67,26 @@ export async function createCompanyService(form: CompanyFormData) {
   });
 }
 
-export async function findAllCompanies(): Promise<SuperAdminCompanyRow[]> {
+export async function getCompanies({
+  pageNumber = 0,
+  pageSize = 10,
+}: GetCompaniesParams = {}) {
   const data = await backendGet<SearchCompaniesApiBean>(
-    "/api/companies?pageNumber=0&pageSize=100&descendingSort=true",
+    `/api/companies?pageNumber=${pageNumber}&pageSize=${pageSize}&descendingSort=true`,
   );
-  return (data.companies ?? []).map(mapCompanyApiToRow);
+
+  return {
+    companies: (data.companies ?? []).map(mapCompanyApiToRow),
+    totalCount: data.totalElements ?? 0,
+  };
 }
 
-export async function getLastFiveCompanies(): Promise<SuperAdminCompanyRow[]> {
-  const data = await backendGet<SearchCompaniesApiBean>(
-    "/api/companies?pageNumber=0&pageSize=5&descendingSort=true",
-  );
-  return (data.companies ?? []).map(mapCompanyApiToRow);
+export async function getAllCompanies() {
+  const { companies } = await getCompanies({ pageSize: 10 });
+  return companies;
+}
+
+export async function getLastFiveCompanies() {
+  const { companies } = await getCompanies({ pageSize: 5 });
+  return companies;
 }

@@ -86,3 +86,8 @@ export interface SearchCompaniesApiBean {
   totalElements: number;
   totalPages: number;
 }
+
+export type GetCompaniesParams = {
+  pageNumber?: number;
+  pageSize?: number;
+};

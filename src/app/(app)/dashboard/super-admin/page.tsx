@@ -12,8 +12,8 @@ import {
   superAdminCompanyPreviewColumns,
 } from "@/components/Dashboard/table-column/super-admin-column";
 import { getLastFiveCompanies } from "@/modules/company/company.service";
-import { OVERVIEW_SUPER_ADMIN_DATA } from "@/data/superAdmin";
 import { getLastFivePersonalCoaches } from "@/modules/personal-coach/personal-coach.service";
+import { getOverviewSuperAdminData } from "@/services/super-admin/main";
 
 export default async function SuperAdminDashboardPage({
   searchParams,
@@ -22,21 +22,13 @@ export default async function SuperAdminDashboardPage({
   const extractTimeFrame = createTimeFrameExtractor(selected_time_frame);
   const last5Companies = await getLastFiveCompanies();
   const lastFiveCoaches = await getLastFivePersonalCoaches();
-  const getSuperAdminOverviewData = () => {
-    const totalCompanies = 5;
-
-    return OVERVIEW_SUPER_ADMIN_DATA.map((item) =>
-      item.name === "Total Companies"
-        ? { ...item, value: totalCompanies }
-        : item,
-    );
-  };
+  const overviewData = await getOverviewSuperAdminData();
 
   return (
     <div>
       <DashboardSection title="Overview">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {getSuperAdminOverviewData().map((item) => (
+          {overviewData.map((item) => (
             <OverviewCard
               key={item.name}
               label={item.name}

@@ -1,24 +1,7 @@
 import { cache } from "react";
-import { getPermissionStringTable } from "../formatters/format-permission";
 import type { IAuthContext } from "@/types/auth/auth-context";
 import { getAuthSession } from "@/auth";
 import type { AccessTokenClaims } from "@/types/auth/token";
-
-export async function buildAuthContext(data: any): Promise<IAuthContext> {
-  const permissions = getPermissionStringTable(data.permissions ?? []);
-
-  return {
-    userId: data.profile.id,
-    email: data.profile.email ?? "",
-    profile: data.profile,
-    companyId: data.company?.id ?? data.profile.active_company_id ?? null,
-    company: data.company ?? null,
-    isOwner: data.company_user?.is_owner ?? false,
-    roles: data.roles?.map((r: any) => r.name) ?? [],
-    permissions,
-    availableContexts: [],
-  };
-}
 
 function inferCompanyMode(contextType?: string): "company" | "personal" | "super-admin" {
   const value = (contextType ?? "").toUpperCase();

@@ -16,8 +16,8 @@ import { useState } from "react";
 import { ROUTES } from "@/constants/route";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/context/auth-context";
-import { getUserDisplayInfo } from "@/lib/auth/user-display";
 import { signOut } from "next-auth/react";
+import { getUserDetails } from "@/lib/auth/user-details";
 
 export function UserInfo() {
   const auth = useAuth();
@@ -33,33 +33,34 @@ export function UserInfo() {
     router.refresh();
   };
 
-  const { displayName, initial, subtitle, avatarSrc } =
-    getUserDisplayInfo(auth);
+  const { firstName, displayName, role, profilePic } = getUserDetails(auth);
+
+  const displayAvatar = () => {
+    return profilePic ? (
+      <Image
+        src={profilePic}
+        alt={`Picture Picture of ${displayName}`}
+        width={48}
+        height={48}
+        className="size-12 rounded-full object-cover"
+      />
+    ) : (
+      <Users className="size-12 text-gray-500" />
+    );
+  };
 
   return (
     <Dropdown isOpen={isOpen} setIsOpen={setIsOpen}>
-      <DropdownTrigger className="rounded align-middle outline-none ring-primary ring-offset-2 focus-visible:ring-1 dark:ring-offset-gray-dark">
+      <DropdownTrigger className="rounded-xl bg-[#374151] align-middle outline-none">
         <span className="sr-only">My Account</span>
 
-        <figure className="flex items-center gap-3">
-          {avatarSrc ? (
-            <Image
-              src={avatarSrc}
-              alt={`Avatar of ${displayName}`}
-              width={48}
-              height={48}
-              className="size-12 rounded-full object-cover"
-            />
-          ) : (
-            <Users className="size-12 text-gray-500" />
-          )}
-          <figcaption className="flex items-center gap-1 font-medium text-dark dark:text-dark-6 max-[1024px]:sr-only">
-            <span>{initial}</span>
-
+        <figure className="flex items-center gap-1">
+          {displayAvatar()}
+          <figcaption className="flex items-center gap-1 font-medium max-[1024px]:sr-only">
             <ChevronUpIcon
               aria-hidden
               className={cn(
-                "rotate-180 transition-transform",
+                "mr-2 rotate-180 transition-transform",
                 isOpen && "rotate-0",
               )}
               strokeWidth={1.5}
@@ -75,21 +76,13 @@ export function UserInfo() {
         <h2 className="sr-only">User information</h2>
 
         <figure className="flex items-center gap-2.5 px-5 py-3.5">
-          <Image
-            src={avatarSrc}
-            className="size-12"
-            alt={`Avatar for ${displayName}`}
-            role="presentation"
-            width={200}
-            height={200}
-          />
-
+          {displayAvatar()}
           <figcaption className="space-y-1 text-base font-medium">
             <div className="mb-2 leading-none text-dark dark:text-white">
-              {displayName}
+              {firstName}
             </div>
 
-            <div className="leading-none text-gray-6">{subtitle}</div>
+            <div className="leading-none text-gray-6">{role}</div>
           </figcaption>
         </figure>
 
