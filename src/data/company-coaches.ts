@@ -1,9 +1,8 @@
-import type { CompanyCoachRow } from "@/types/dashboard/company-directory";
-import { GYM_CLIENTS } from "@/data/company";
+import type { CompanyCoachesRow } from "@/types/dashboard/company";
 import { DUMMY_COACHES } from "@/data/superAdmin";
 import type { StatusOpt } from "@/types/dashboard/super-admin";
 
-export const COMPANY_COACH_ROWS: CompanyCoachRow[] = DUMMY_COACHES.map(
+export const COMPANY_COACH_ROWS: CompanyCoachesRow[] = DUMMY_COACHES.map(
   (coach, index) => ({
     id: `coach-${index + 1}`,
     first_name: coach.firstName,

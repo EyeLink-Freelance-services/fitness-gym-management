@@ -14,7 +14,6 @@ import {
 import {
   COMPANY_CLIENT_ROWS,
   COMPANY_STAFF_ROWS,
-  DUMMY_KPIS,
 } from "@/data/company";
 import { COACH_CLIENTS } from "@/data/coach-clients";
 import {
@@ -42,9 +41,9 @@ import type {
 } from "@/types/dashboard/super-admin";
 import type {
   CompanyClientRow,
-  CompanyCoachRow,
+  CompanyCoachesRow,
   CompanyStaffRow,
-} from "@/types/dashboard/company-directory";
+} from "@/types/dashboard/company";
 import type { PaymentCollectionsTimeFrame } from "@/types/dashboard/payment";
 import type { MembershipRevenueTimeFrame } from "@/types/dashboard/membership";
 import {
@@ -82,7 +81,10 @@ export async function getAllCoaches() {
         : ["English"],
       bio: coach.bio,
       profile_photo: coach.profilePhoto,
-      availability: coach.availability.split(",").map((item) => item.trim()),
+      availability: coach.availability
+        .split(",")
+        .map((item) => item.trim())
+        .join(", "),
       status: coach.status as StatusOpt,
       createdAt: coach.createdAt,
     }),
@@ -90,10 +92,6 @@ export async function getAllCoaches() {
 }
 
 // Company overview data
-export async function getCompanyOverviewData() {
-  await new Promise((r) => setTimeout(r, 200));
-  return DUMMY_KPIS;
-}
 
 export async function getCompanyStaff() {
   await new Promise((r) => setTimeout(r, 200));
@@ -102,13 +100,9 @@ export async function getCompanyStaff() {
 
 export async function getCompanyCoaches() {
   await new Promise((r) => setTimeout(r, 200));
-  return COMPANY_COACH_ROWS.map((coach): CompanyCoachRow => ({ ...coach }));
+  return COMPANY_COACH_ROWS.map((coach): CompanyCoachesRow => ({ ...coach }));
 }
 
-export async function getCompanyClients() {
-  await new Promise((r) => setTimeout(r, 200));
-  return COMPANY_CLIENT_ROWS.map((client): CompanyClientRow => ({ ...client }));
-}
 
 // Personal coach overview data
 export async function getPersonalCoachOverviewData() {

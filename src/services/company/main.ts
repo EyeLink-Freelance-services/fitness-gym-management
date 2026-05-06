@@ -4,28 +4,30 @@ import {
   Trainer,
   Users,
 } from "@/components/IconsCollection/icons";
-import { getCompanies } from "@/modules/super-admin/super-admin.service";
+import { getCompanyClientsForCompany } from "@/modules/company/company.service";
 
-export async function getOverviewSuperAdminData() {
-  const { totalCount } = await getCompanies({ pageSize: 1 });
+export async function getOverviewCompanyData() {
+  const { totalCount } = await getCompanyClientsForCompany({ pageSize: 1 });
   const revenue = totalCount * 520;
+
+  console.log("Total Companies:", totalCount);
 
   return [
     {
-      name: "Total Users",
+      name: "Total Staff",
       value: totalCount || 0,
       growthRate: -0.95,
       icon: Users,
     },
     {
-      name: "Total Companies",
+      name: "Total Coaches",
       value: totalCount || 0,
       growthRate: 0.43,
       icon: Gym,
     },
     {
-      name: "Total Personal Coaches",
-      value: 0,
+      name: "Total Clients",
+      value: totalCount ||0,
       growthRate: 4.35,
       icon: Trainer,
     },

@@ -35,6 +35,7 @@ export default function CompanyForm({
     defaultValues: {
       companyName: "",
       brn: "",
+      email: "",
       contactNumber: "",
       addressLine1: "",
       city: "",
@@ -54,6 +55,7 @@ export default function CompanyForm({
     reset({
       companyName: "",
       brn: "",
+      email: "",
       contactNumber: "",
       addressLine1: "",
       city: "",
@@ -128,6 +130,17 @@ export default function CompanyForm({
           error={errors.companyName?.message}
           inputProps={register("companyName", {
             validate: (v) => validateRequired(v, "Company name is required"),
+          })}
+        />
+
+        <InputGroup
+          type="text"
+          label="Company Email"
+          placeholder="myfit@gmail.com"
+          required
+          error={errors.email?.message}
+          inputProps={register("email", {
+            validate: (v) => validateRequired(v, "Company email is required"),
           })}
         />
 
@@ -332,7 +345,12 @@ export default function CompanyForm({
         <TextAreaGroup
           label="Disclaimer Text"
           placeholder="Enter your organization disclaimer..."
-          textareaProps={register("disclaimer")}
+          required
+          error={errors.disclaimer?.message}
+          textareaProps={register("disclaimer", {
+            validate: (v) =>
+              validateRequired(v, "Disclaimer is required"),
+          })}
         />
 
         <div className="mb-5">

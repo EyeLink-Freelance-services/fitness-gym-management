@@ -3,21 +3,20 @@
 import { FormModalTrigger } from "@/components/Dashboard/form-modal-trigger";
 import PersonalCoachForm from "@/components/Forms/PersonalCoachForm";
 import { DataTable } from "@/components/Tables";
-import type { CompanyCoachRow } from "@/types/dashboard/company-directory";
+import type { CompanyCoachesRow } from "@/types/dashboard/company";
 import type { PersonalCoachFormData } from "@/types/forms";
-import type { ColumnDef } from "@tanstack/react-table";
 import { useEffect, useId, useState } from "react";
 import { createPortal } from "react-dom";
 import { companyCoachColumns } from "../table-column/company-columns";
 
 interface CompanyCoachesTableClientProps {
-  data: CompanyCoachRow[];
+  data: CompanyCoachesRow[];
 }
 
 export function CompanyCoachesTableClient({
   data,
 }: CompanyCoachesTableClientProps) {
-  const [selectedCoach, setSelectedCoach] = useState<CompanyCoachRow | null>(
+  const [selectedCoach, setSelectedCoach] = useState<CompanyCoachesRow | null>(
     null,
   );
   const [mounted, setMounted] = useState(false);

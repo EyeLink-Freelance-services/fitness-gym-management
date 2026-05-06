@@ -1,7 +1,6 @@
 import { DashboardSection } from "@/components/Dashboard/dashboard-section";
 import { OverviewCard } from "@/components/Dashboard/overview-cards/card";
 import {
-  getCompanyOverviewData,
   getGymCoachCLientAssign,
   getGymNewClient,
   getPersonalCoachAnnouncements,
@@ -20,15 +19,17 @@ import {
   coachAssignmentColumns,
   newSignupColumns,
 } from "@/components/Dashboard/table-column/company-columns";
+import { getOverviewCompanyData } from "@/services/company/main";
+import { compactFormat } from "@/lib/formatters/format-number";
 
 export default async function CompanyDashboardPage({
   searchParams,
 }: SearchType) {
   const { selected_time_frame } = await searchParams;
   const extractTimeFrame = createTimeFrameExtractor(selected_time_frame);
+  const overviewData = await getOverviewCompanyData();
 
-  const [overviewData, announcements] = await Promise.all([
-    getCompanyOverviewData(),
+  const [announcements] = await Promise.all([
     getPersonalCoachAnnouncements(4),
   ]);
 
@@ -38,11 +39,11 @@ export default async function CompanyDashboardPage({
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {overviewData.map((item) => (
             <OverviewCard
-              key={item.label}
-              label={item.label}
+              key={item.name}
+              label={item.name}
               data={{
-                value: item.value,
-                growthRate: item.trend ?? 0,
+                ...item,
+                value: compactFormat(item.value),
               }}
               Icon={item.icon}
             />

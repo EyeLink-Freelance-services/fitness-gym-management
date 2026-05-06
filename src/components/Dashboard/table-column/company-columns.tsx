@@ -1,9 +1,9 @@
 import { StatusBadge } from "@/components/ui-elements/status-badge";
 import type {
   CompanyClientRow,
-  CompanyCoachRow,
+  CompanyCoachesRow,
   CompanyStaffRow,
-} from "@/types/dashboard/company-directory";
+} from "@/types/dashboard/company";
 import type { TableUIColumn } from "@/types/shared";
 import type { ColumnDef } from "@tanstack/react-table";
 function formatDate(date?: string) {
@@ -241,7 +241,7 @@ export const companyStaffColumns: ColumnDef<CompanyStaffRow>[] = [
 ];
 
 
-export const companyCoachColumns: ColumnDef<CompanyCoachRow>[] = [
+export const companyCoachColumns: ColumnDef<CompanyCoachesRow>[] = [
   {
     accessorKey: "first_name",
     header: "First Name",

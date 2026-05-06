@@ -1,7 +1,6 @@
 import { getAuthContext } from "@/lib/auth/get-auth-context";
 import type { IAuthContext } from "@/types/auth/auth-context";
 import { AuthProvider } from "../context/auth-context";
-import { CompanyProvider } from "../context/company-context";
 import { Sidebar } from "@/components/Layouts/sidebar";
 import { Header } from "@/components/Layouts/header";
 import { redirect } from "next/navigation";
@@ -16,7 +15,6 @@ export default async function RootLayout({ children }: any) {
 
   return (
     <AuthProvider auth={auth}>
-        <CompanyProvider company={auth.company}>
           <div className="flex min-h-screen">
             <Sidebar auth={auth} />
             <div className="w-full bg-gray-2 dark:bg-[#020d1a]">
@@ -26,7 +24,6 @@ export default async function RootLayout({ children }: any) {
               </main>
             </div>
           </div>
-        </CompanyProvider>
     </AuthProvider>
   )
 }

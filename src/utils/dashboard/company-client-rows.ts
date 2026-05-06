@@ -1,4 +1,4 @@
-import type { CompanyClientRow } from "@/types/dashboard/company-directory";
+import type { CompanyClientRow } from "@/types/dashboard/company";
 import type { StatusTone } from "@/types/shared";
 import { getMembershipStatus } from "@/utils/dashboard/company-directory";
 

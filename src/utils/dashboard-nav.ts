@@ -22,15 +22,14 @@ export function getDashboardNav(
 ): NavSection[] {
   if (!auth?.permissions?.length) return [];
 
-  if (auth.roles.includes('Super Admin'))
-    return SUPER_ADMIN_NAV;
+  if (auth.roles.includes("Super Admin")) return SUPER_ADMIN_NAV;
 
   if (auth.permissions.includes(AuthPermission.dashboard.personalCoach))
     return PERSONAL_COACH_NAV;
 
   if (isCompanyCoachOnly(auth)) return COMPANY_COACH_NAV;
 
-  if (auth.permissions.includes(AuthPermission.dashboard.company))
+  if (auth.company?.mode === "company" && auth.roles.includes("ADMIN"))
     return COMPANY_NAV;
 
   if (auth.permissions.includes(AuthPermission.dashboard.client))

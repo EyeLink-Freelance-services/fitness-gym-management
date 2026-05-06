@@ -44,6 +44,7 @@ export interface CompanyBranchField {
 export interface CompanyFormData {
   companyName: string;
   companyLogo?: File | null;
+  email: string;
   brn: string;
   contactNumber: string;
   addressLine1: string;

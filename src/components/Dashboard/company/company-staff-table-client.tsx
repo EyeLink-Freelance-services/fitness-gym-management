@@ -4,7 +4,7 @@ import { FormModalTrigger } from "@/components/Dashboard/form-modal-trigger";
 import { companyStaffColumns } from "@/components/Dashboard/table-column/company-columns";
 import StaffForm from "@/components/Forms/StaffForm";
 import { DataTable } from "@/components/Tables";
-import type { CompanyStaffRow } from "@/types/dashboard/company-directory";
+import type { CompanyStaffRow } from "@/types/dashboard/company";
 import { StaffFormData } from "@/types/forms";
 import { useEffect, useId, useState } from "react";
 import { createPortal } from "react-dom";

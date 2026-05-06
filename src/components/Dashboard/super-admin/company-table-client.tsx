@@ -48,6 +48,7 @@ export default function CompanyTableClient({ data }: CompanyTableClientProps) {
     ? {
         companyName: selectedCompany.company_name,
         brn: selectedCompany.business_reg_no,
+        email: selectedCompany.email,
         contactNumber: selectedCompany.contact_number,
         addressLine1: selectedCompany.address_line_1,
         city: selectedCompany.city,

@@ -1,32 +1,5 @@
-import type { CompanyClientRow, CompanyStaffRow } from "@/types/dashboard/company-directory";
-import * as Icons from "../components/IconsCollection/icons";
+import type { CompanyClientRow, CompanyStaffRow } from "@/types/dashboard/company";
 import { buildCompanyClientRows } from "@/utils/dashboard/company-client-rows";
-
-export const DUMMY_KPIS = [
-  {
-    label: "Total Staff",
-    value: "2",
-    trend: 0,
-    icon: Icons.Users,
-  },
-  {
-    label: "Total Coaches",
-    value: "2",
-    trend: 0,
-    icon: Icons.Views,
-  },
-  {
-    label: "Total Clients",
-    value: "1",
-    icon: Icons.Users,
-  },
-  {
-    label: "Revenue (Rs)",
-    value: "400",
-    trend: 0,
-    icon: Icons.Profit,
-  },
-];
 
 export const PENDING_COACH = [
   {

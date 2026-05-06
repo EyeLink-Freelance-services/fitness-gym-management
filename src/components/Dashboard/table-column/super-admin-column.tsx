@@ -96,6 +96,11 @@ export const superAdminCompanyColumns: ColumnDef<SuperAdminCompanyRow>[] = [
   {
     accessorKey: "company_name",
     header: "Company Name",
+    meta: { align: "left", headClassName: "min-w-[180px]" },
+  },
+  {
+    accessorKey: "email",
+    header: "Company Email",
     meta: { align: "left", headClassName: "min-w-[220px]" },
   },
   {

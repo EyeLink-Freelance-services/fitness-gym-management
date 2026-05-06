@@ -4,7 +4,7 @@ import { FormModalTrigger } from "@/components/Dashboard/form-modal-trigger";
 import { companyClientColumns } from "@/components/Dashboard/table-column/company-columns";
 import ClientForm from "@/components/Forms/ClientForm";
 import { DataTable } from "@/components/Tables";
-import type { CompanyClientRow } from "@/types/dashboard/company-directory";
+import type { CompanyClientRow } from "@/types/dashboard/company";
 import { ClientFormData } from "@/types/forms";
 import { useEffect, useId, useState } from "react";
 import { createPortal } from "react-dom";

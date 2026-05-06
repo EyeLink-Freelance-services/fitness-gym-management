@@ -26,6 +26,7 @@ export interface SuperAdminCompanyRow {
   id: string;
   company_name: string;
   company_logo?: string | null;
+  email: string;
   business_reg_no: string;
   contact_number: string;
   address_line_1: string;
@@ -52,6 +53,7 @@ export interface CompanyResponseApiBean {
   id: string;
   information: {
     companyName: string;
+    email?: string;
     logo?: string | null;
     brn: string;
     branches: CompanyBranchApiBean[];
@@ -87,7 +89,3 @@ export interface SearchCompaniesApiBean {
   totalPages: number;
 }
 
-export type GetCompaniesParams = {
-  pageNumber?: number;
-  pageSize?: number;
-};

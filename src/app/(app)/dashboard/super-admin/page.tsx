@@ -11,7 +11,7 @@ import {
   superAdminCoachPreviewColumns,
   superAdminCompanyPreviewColumns,
 } from "@/components/Dashboard/table-column/super-admin-column";
-import { getLastFiveCompanies } from "@/modules/company/company.service";
+import { getLastFiveCompanies } from "@/modules/super-admin/super-admin.service";
 import { getLastFivePersonalCoaches } from "@/modules/personal-coach/personal-coach.service";
 import { getOverviewSuperAdminData } from "@/services/super-admin/main";
 

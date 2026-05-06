@@ -7,7 +7,7 @@ import {
 import AssignClientForm from "@/components/Forms/AssignClientForm";
 import { DataTable } from "@/components/Tables";
 import { COMPANY_COACH_ROWS } from "@/data/company-coaches";
-import type { CompanyClientRow } from "@/types/dashboard/company-directory";
+import type { CompanyClientRow } from "@/types/dashboard/company";
 import type { AssignClientFormData, AssignClientStatus } from "@/types/forms";
 import { useEffect, useId, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
