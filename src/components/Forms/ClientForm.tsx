@@ -1,6 +1,5 @@
 "use client";
 
-import { DUMMY_COACHES, DUMMY_GYMS } from "@/data/superAdmin";
 import {
   validateEmail,
   validatePhone,
@@ -16,6 +15,7 @@ import Header from "../FormElements/common/header";
 import Label from "../FormElements/common/label";
 import { Checkbox } from "../FormElements/checkbox";
 import { Button } from "@/components/ui-elements/button";
+import { genderOptions } from "@/data/shared";
 
 function getDisplayPrice(value: number | undefined) {
   return value === undefined ? "" : String(value);
@@ -25,18 +25,17 @@ export default function ClientForm({
   clientContext = "company",
   initialData,
   mode = "create",
+  companyPricing: companyPricingProp,
   onSuccess,
 }: CompanyClientFormProps) {
-  const companyPricing = DUMMY_GYMS[0];
-  const coachPricing = DUMMY_COACHES[0];
+  const companyPricing =
+    clientContext === "company" ? companyPricingProp ?? null : null;
 
   const defaultStandardPrice =
-    clientContext === "company"
-      ? companyPricing?.standardPrice
-      : coachPricing?.hourlyRate;
+    clientContext === "company" ? companyPricing?.standardPrice : undefined;
   const premiumPrice =
-    clientContext === "company" && companyPricing?.hasPremiumPlan
-      ? companyPricing.premiumPrice
+    clientContext === "company" && companyPricing?.hasPremiumPrice
+      ? (companyPricing.premiumPrice ?? undefined)
       : undefined;
 
   const {
@@ -75,7 +74,8 @@ export default function ClientForm({
   const membershipPrice = watch("membershipPrice");
 
   useEffect(() => {
-    const nextMembershipPlan = initialData?.membershipPlan?.trim() || "standard";
+    const nextMembershipPlan =
+      initialData?.membershipPlan?.trim() || "standard";
 
     reset({
       firstName: "",
@@ -107,11 +107,16 @@ export default function ClientForm({
     if (
       clientContext === "company" &&
       membershipPlan === "premium" &&
-      !companyPricing?.hasPremiumPlan
+      !companyPricing?.hasPremiumPrice
     ) {
       setValue("membershipPlan", "standard", { shouldValidate: true });
     }
-  }, [clientContext, companyPricing?.hasPremiumPlan, membershipPlan, setValue]);
+  }, [
+    clientContext,
+    companyPricing?.hasPremiumPrice,
+    membershipPlan,
+    setValue,
+  ]);
 
   useEffect(() => {
     if (membershipPlan !== "custom") {
@@ -156,7 +161,7 @@ export default function ClientForm({
         ]
       : [
           { value: "standard", label: "Standard" },
-          ...(companyPricing?.hasPremiumPlan
+          ...(companyPricing?.hasPremiumPrice
             ? [{ value: "premium", label: "Premium" }]
             : []),
         ];
@@ -169,7 +174,9 @@ export default function ClientForm({
       : "Selected Price";
 
   const membershipPriceError =
-    membershipPrice === undefined ? "Price is not available from the mock data" : undefined;
+    membershipPrice === undefined
+      ? "Price is not available"
+      : undefined;
 
   return (
     <div className="form-panel space-y-4 bg-white py-10 dark:bg-transparent">
@@ -230,15 +237,11 @@ export default function ClientForm({
           <Select
             label="Gender"
             placeholder="Select"
-            items={[
-              { value: "Male", label: "Male" },
-              { value: "Female", label: "Female" },
-              { value: "Non-binary", label: "Non-binary" },
-              { value: "Prefer not to say", label: "Prefer not to say" },
-            ]}
+            items={genderOptions}
             error={errors.gender?.message}
             selectProps={register("gender", {
-              validate: (value) => validateRequired(value, "Gender is required"),
+              validate: (value) =>
+                validateRequired(value, "Gender is required"),
             })}
           />
         </div>
@@ -351,12 +354,16 @@ export default function ClientForm({
               type="number"
               label={membershipPriceLabel}
               placeholder={
-                clientContext === "personal" ? "Coach hourly rate" : "Selected plan price"
+                clientContext === "personal"
+                  ? "Coach hourly rate"
+                  : "Selected plan price"
               }
               error={membershipPriceError}
               inputProps={{
                 value: getDisplayPrice(
-                  membershipPlan === "premium" ? premiumPrice : defaultStandardPrice,
+                  membershipPlan === "premium"
+                    ? premiumPrice
+                    : defaultStandardPrice,
                 ),
                 readOnly: true,
                 disabled: true,

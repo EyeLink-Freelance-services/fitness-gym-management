@@ -13,13 +13,18 @@ import { validatePhone, validateRequired } from "@/lib/forms/formValidation";
 import Header from "../FormElements/common/header";
 import Label from "../FormElements/common/label";
 import { useEffect, useRef } from "react";
-import { createCompanyAction } from "@/app/(app)/dashboard/super-admin/company/actions";
+import {
+  createCompanyAction,
+  updateCompanyAction,
+} from "@/app/(app)/dashboard/super-admin/company/actions";
 import { toast } from "sonner";
+import { fileToBase64 } from "@/utils/dashboard/shared";
 
 export default function CompanyForm({
   initialData,
   existingProfilePhotoUrl,
   mode = "create",
+  companyId,
   onSuccess,
 }: CompanyFormProps) {
   const {
@@ -68,7 +73,7 @@ export default function CompanyForm({
       disclaimer: "",
       agreeTerms: false,
       ...initialData,
-      companyLogo: undefined,
+      logo: undefined,
     });
   }, [initialData, reset]);
 
@@ -95,11 +100,28 @@ export default function CompanyForm({
 
   const onSubmit = async (data: CompanyFormData) => {
     try {
-      await createCompanyAction({ ...data, companyLogo: logoRef.current });
+      let logoBase64: string | null = null;
+      if (logoRef.current) {
+        logoBase64 = await fileToBase64(logoRef.current);
+      }
+
+      const logoToSend =
+        logoBase64 ?? existingProfilePhotoUrl ?? data.logo ?? null;
+
+      if (mode === "edit") {
+        if (!companyId) throw new Error("Missing companyId for edit mode");
+        await updateCompanyAction(companyId, { ...data, logo: logoToSend });
+        toast.success("Company updated successfully");
+      } else {
+        await createCompanyAction({ ...data, logo: logoToSend });
+        toast.success("Company created successfully");
+      }
+
       onSuccess?.();
-      toast.success("Company created successfully");
     } catch {
-      toast.error("Failed to create company");
+      toast.error(
+        mode === "edit" ? "Failed to update company" : "Failed to create company",
+      );
     }
   };
 

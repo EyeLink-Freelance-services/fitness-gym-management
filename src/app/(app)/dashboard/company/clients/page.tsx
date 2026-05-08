@@ -1,8 +1,16 @@
 import { CompanyClientsTableClient } from "@/components/Dashboard/company/company-clients-table-client";
-import { getCompanyAllClients } from "@/modules/company/company.service";
+import {
+  getCompanyAllClients,
+  getCompanyPricingForCompany,
+} from "@/modules/company/company.service";
 
 export default async function CompanyClientsPage() {
-  const clients = await getCompanyAllClients();
+  const [clients, companyPricing] = await Promise.all([
+    getCompanyAllClients(),
+    getCompanyPricingForCompany(),
+  ]);
 
-  return <CompanyClientsTableClient data={clients} />;
+  return (
+    <CompanyClientsTableClient data={clients} companyPricing={companyPricing} />
+  );
 }

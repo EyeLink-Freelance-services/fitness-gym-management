@@ -4,16 +4,14 @@ import { useForm } from "react-hook-form";
 import type { LoginFormData, LoginFormProps } from "@/types/forms";
 import { Button } from "../ui-elements/button";
 import InputGroup from "../FormElements/InputGroup";
-import { validateEmail } from "@/lib/forms/formValidation";
 import Header from "../FormElements/common/header";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { ROUTES } from "@/constants/route";
-import { signIn, getSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
+import { useRoleRedirect } from "@/hooks/useRoleRedirect";
 
 export default function LoginForm({ onForgotPassword }: LoginFormProps) {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const router = useRouter();
+  const { redirectToRoleDashboard } = useRoleRedirect();
   const {
     register,
     handleSubmit,
@@ -36,15 +34,7 @@ export default function LoginForm({ onForgotPassword }: LoginFormProps) {
         return;
       }
 
-      const session = await getSession();
-      const contextType = session?.claims?.contextType;
-
-      if (contextType === "SUPER_ADMIN") {
-        router.push(ROUTES.DASHBOARD.SUPER_ADMIN.ROOT);
-      } else {
-        router.push(ROUTES.HOME);
-      }
-      router.refresh();
+      await redirectToRoleDashboard();
     } catch (err: any) {
       setErrorMsg(err.message);
     }
@@ -67,7 +57,6 @@ export default function LoginForm({ onForgotPassword }: LoginFormProps) {
           error={errors.username?.message}
           inputProps={register("username", {
             required: "Username is required",
-            // validate: (v) => validateEmail(v),
           })}
         />
 

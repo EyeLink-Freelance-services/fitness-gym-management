@@ -57,3 +57,40 @@ export async function backendPost<T>(path: string, body: unknown): Promise<T> {
   if (res.status === 201) return {} as T;
   return res.json() as Promise<T>;
 }
+
+export async function backendPut<T>(path: string, body: unknown): Promise<T> {
+  const token = await getBearerToken();
+
+  const res = await fetch(backendUrl(path), {
+    method: "PUT",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    const bodyObj = body as Record<string, unknown> | null;
+    const information =
+      bodyObj && typeof bodyObj === "object"
+        ? (bodyObj["information"] as Record<string, unknown> | undefined)
+        : undefined;
+    const email =
+      information && typeof information === "object"
+        ? information["email"]
+        : undefined;
+    const keys =
+      bodyObj && typeof bodyObj === "object" ? Object.keys(bodyObj) : [];
+
+    throw new Error(
+      `Backend API error ${res.status}: ${text}\n` +
+        `Debug request: keys=${JSON.stringify(keys)} information.email=${JSON.stringify(email)}`,
+    );
+  }
+
+  if (res.status === 204) return {} as T;
+  return res.json() as Promise<T>;
+}

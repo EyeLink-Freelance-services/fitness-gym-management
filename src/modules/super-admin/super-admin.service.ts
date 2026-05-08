@@ -5,8 +5,36 @@ import {
   StatusOpt,
   SuperAdminCompanyRow,
 } from "@/types/dashboard/super-admin";
-import { backendGet, backendPost } from "@/lib/api/backend-client";
+import { backendGet, backendPost, backendPut } from "@/lib/api/backend-client";
 import { GetPageParams } from "@/types/dashboard/shared";
+
+function mapCompanyFormToCompanyRequest(form: CompanyFormData) {
+  return {
+    information: {
+      companyName: form.companyName,
+      logo: form.logo ?? null,
+      email: form.email.trim(),
+      brn: form.brn,
+      contactNumber: form.contactNumber,
+      branches: form.branches.map((b) => ({ name: b.branchName })),
+    },
+    address: {
+      street: form.addressLine1,
+      city: form.city,
+      state: form.state,
+      postalCode: form.postcode,
+    },
+    price: {
+      standardPrice: form.standardPrice ?? 0,
+      hasPremiumPrice: form.hasPremiumPlan,
+      premiumPrice: form.hasPremiumPlan ? (form.premiumPrice ?? null) : null,
+    },
+    miscellaneous: {
+      disclaimer: form.disclaimer.trim(),
+      agreeTermsOfService: form.agreeTerms,
+    },
+  };
+}
 
 function mapCompanyApiToRow(
   company: CompanyResponseApiBean,
@@ -18,7 +46,7 @@ function mapCompanyApiToRow(
     business_reg_no: company.information.brn
       ? `BRN-${company.information.brn}`
       : "N/A",
-    contact_number: "",
+    contact_number: company.information.contactNumber ?? "",
     email: company.information.email ?? "",
     address_line_1: company.address.street,
     city: company.address.city,
@@ -40,33 +68,10 @@ function mapCompanyApiToRow(
 // ─── Service ──────────────────────────────────────────────────────────────────
 
 export async function createCompanyService(form: CompanyFormData) {
-  if (form.companyLogo) {
-    throw new Error("Company logo upload is not configured yet.");
-  }
-
-  return await backendPost("/api/companies", {
-    information: {
-      companyName: form.companyName,
-      email: form.email.trim(),
-      brn: form.brn,
-      branches: form.branches.map((b) => ({ name: b.branchName })),
-    },
-    address: {
-      street: form.addressLine1,
-      city: form.city,
-      state: form.state,
-      postalCode: form.postcode,
-    },
-    price: {
-      standardPrice: form.standardPrice ?? 0,
-      hasPremiumPrice: form.hasPremiumPlan,
-      premiumPrice: form.hasPremiumPlan ? (form.premiumPrice ?? null) : null,
-    },
-    miscellaneous: {
-      disclaimer: form.disclaimer.trim(),
-      agreeTermsOfService: form.agreeTerms,
-    },
-  });
+  return await backendPost(
+    "/api/companies",
+    mapCompanyFormToCompanyRequest(form),
+  );
 }
 
 const COMPANY_API_BASE = "/api/companies";
@@ -93,4 +98,14 @@ export async function getAllCompanies() {
 export async function getLastFiveCompanies() {
   const { companies } = await getCompanies({ pageSize: 5 });
   return companies;
+}
+
+export async function updateCompanyService(
+  companyId: string,
+  form: CompanyFormData,
+) {
+  return await backendPut(
+    `${COMPANY_API_BASE}/${companyId}`,
+    mapCompanyFormToCompanyRequest(form),
+  );
 }

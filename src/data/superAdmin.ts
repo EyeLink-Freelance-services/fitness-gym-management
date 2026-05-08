@@ -66,7 +66,7 @@ export const DUMMY_COACHES = [
 export const DUMMY_GYMS = [
   {
     companyName: "MyFit",
-    companyLogo: {},
+    logo: {},
     brn: "23232332",
     contactNumber: "59054043",
     addressLine1: "Unit 3, 41-45 Glebe Street",
@@ -88,7 +88,7 @@ export const DUMMY_GYMS = [
   },
   {
     companyName: "YourFit",
-    companyLogo: logos.google,
+    logo: logos.google,
     brn: "23238332",
     contactNumber: "5982643",
     addressLine1: "Unit 3, 41-45 Glebe Street",
@@ -110,7 +110,7 @@ export const DUMMY_GYMS = [
   },
   {
     companyName: "OurFit",
-    companyLogo: logos.x,
+    logo: logos.x,
     brn: "23234782",
     contactNumber: "5922643",
     addressLine1: "Unit 3, 41-45 Glebe Street",

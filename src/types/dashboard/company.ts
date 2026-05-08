@@ -1,5 +1,6 @@
 import type { StatusTone } from "@/types/shared";
 import { StatusOpt } from "./super-admin";
+import { GenderOption } from "./shared";
 
 export interface CompanyCoachesRow {
   id: string;
@@ -65,7 +66,7 @@ export interface ClientInformationApiBean {
   firstName?: string;
   lastName?: string;
   dateOfBirth?: string;
-  gender?: "MALE" | "FEMALE" | "OTHER" | "PREFER_NOT_TO_SAY";
+  gender?: GenderOption;
 }
 
 export interface ClientContactApiBean {
@@ -106,3 +107,9 @@ export interface SearchClientsApiBean {
   totalElements?: number;
   totalPages?: number;
 }
+
+export type CompanyPricing = {
+  standardPrice: number | undefined;
+  hasPremiumPrice: boolean | undefined;
+  premiumPrice: number | null | undefined;
+};

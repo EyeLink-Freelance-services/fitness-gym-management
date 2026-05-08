@@ -3,8 +3,10 @@ import { getAuthContext } from "@/lib/auth/get-auth-context";
 import type {
   ClientResponseApiBean,
   CompanyClientRow,
+  CompanyPricing,
   SearchClientsApiBean,
 } from "@/types/dashboard/company";
+import type { CompanyResponseApiBean } from "@/types/dashboard/super-admin";
 import { GetPageParams } from "@/types/dashboard/shared";
 import type { StatusTone } from "@/types/shared";
 
@@ -47,10 +49,7 @@ function mapClientApiToRow(client: ClientResponseApiBean): CompanyClientRow {
 
 const COMPANY_API_BASE = "/api/companies";
 
-export async function getCompanyClientsForCompany({
-  pageNumber = 0,
-  pageSize = 50,
-}: GetPageParams = {}) {
+async function requireCompanyId(): Promise<string> {
   const auth = await getAuthContext();
   const companyId = auth?.companyId;
 
@@ -59,6 +58,29 @@ export async function getCompanyClientsForCompany({
       "No active company in session (missing businessId/companyId).",
     );
   }
+
+  return companyId;
+}
+
+export async function getCompanyPricingForCompany(): Promise<CompanyPricing> {
+  const companyId = await requireCompanyId();
+
+  const company = await backendGet<CompanyResponseApiBean>(
+    `${COMPANY_API_BASE}/${companyId}`,
+  );
+
+  return {
+    standardPrice: company.price?.standardPrice ?? undefined,
+    hasPremiumPrice: company.price?.hasPremiumPrice ?? undefined,
+    premiumPrice: company.price?.premiumPrice ?? undefined,
+  };
+}
+
+export async function getCompanyClientsForCompany({
+  pageNumber = 0,
+  pageSize = 10,
+}: GetPageParams = {}) {
+  const companyId = await requireCompanyId();
 
   const data = await backendGet<SearchClientsApiBean>(
     `${COMPANY_API_BASE}/${companyId}/clients?pageNumber=${pageNumber}&pageSize=${pageSize}&descendingSort=true`,

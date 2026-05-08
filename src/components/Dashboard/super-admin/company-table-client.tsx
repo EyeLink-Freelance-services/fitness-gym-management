@@ -47,7 +47,10 @@ export default function CompanyTableClient({ data }: CompanyTableClientProps) {
   const selectedCompanyFormData: CompanyFormData | undefined = selectedCompany
     ? {
         companyName: selectedCompany.company_name,
-        brn: selectedCompany.business_reg_no,
+        brn:
+          selectedCompany.business_reg_no === "N/A"
+            ? ""
+            : selectedCompany.business_reg_no.replace(/^BRN-/, ""),
         email: selectedCompany.email,
         contactNumber: selectedCompany.contact_number,
         addressLine1: selectedCompany.address_line_1,
@@ -108,6 +111,7 @@ export default function CompanyTableClient({ data }: CompanyTableClientProps) {
               <div className="max-h-[85vh] overflow-y-auto p-4">
                 <CompanyForm
                   mode="edit"
+                  companyId={selectedCompany.id}
                   initialData={selectedCompanyFormData}
                   existingProfilePhotoUrl={
                     selectedCompany.company_logo ?? undefined

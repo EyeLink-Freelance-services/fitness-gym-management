@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { UseFormReturn } from "react-hook-form";
 import type { CoachMealTimeOption } from "@/types/dashboard/client";
+import { CompanyPricing } from "../dashboard/company";
 
 export interface FormHeader {
   label: string;
@@ -43,7 +44,7 @@ export interface CompanyBranchField {
 
 export interface CompanyFormData {
   companyName: string;
-  companyLogo?: File | null;
+  logo?: string | null;
   email: string;
   brn: string;
   contactNumber: string;
@@ -114,6 +115,7 @@ export interface CompanyFormProps {
   initialData?: Partial<CompanyFormData>;
   existingProfilePhotoUrl?: string;
   mode?: "create" | "edit";
+  companyId?: string;
   onSuccess?: () => void;
 }
 
@@ -127,6 +129,7 @@ export interface CompanyClientFormProps {
   initialData?: Partial<ClientFormData>;
   clientContext?: "company" | "personal";
   mode?: "create" | "edit";
+  companyPricing?: CompanyPricing | null;
   onSuccess?: () => void;
 }
 

@@ -56,6 +56,7 @@ export interface CompanyResponseApiBean {
     email?: string;
     logo?: string | null;
     brn: string;
+    contactNumber?: string;
     branches: CompanyBranchApiBean[];
   };
   address: {

@@ -1,3 +1,10 @@
+export const genderOptions = [
+  { value: "MALE", label: "Male" },
+  { value: "FEMALE", label: "Female" },
+  { value: "OTHER", label: "Other" },
+  { value: "PREFER_NOT_TO_SAY", label: "Prefer not to say" },
+];
+
 export const notificationList = [
   {
     image: "/images/user/user-15.png",

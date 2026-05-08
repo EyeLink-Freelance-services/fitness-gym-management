@@ -72,3 +72,12 @@ export function getAccent(index: number) {
 export function capitalize(str: string = "") {
  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
+
+export function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+  });
+}

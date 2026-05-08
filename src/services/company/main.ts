@@ -10,8 +10,6 @@ export async function getOverviewCompanyData() {
   const { totalCount } = await getCompanyClientsForCompany({ pageSize: 1 });
   const revenue = totalCount * 520;
 
-  console.log("Total Companies:", totalCount);
-
   return [
     {
       name: "Total Staff",

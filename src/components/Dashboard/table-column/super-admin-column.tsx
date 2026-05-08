@@ -124,18 +124,13 @@ export const superAdminCompanyColumns: ColumnDef<SuperAdminCompanyRow>[] = [
     meta: { align: "left", headClassName: "min-w-[220px]" },
   },
   {
-    accessorKey: "postcode",
-    header: "Postcode",
-    meta: { align: "left", headClassName: "min-w-[100px]" },
-  },
-  {
-    accessorKey: "district",
-    header: "District",
+    accessorKey: "standard_price",
+    header: "Standard Price",
     meta: { align: "left", headClassName: "min-w-[140px]" },
   },
   {
-    accessorKey: "standard_price",
-    header: "Standard Price",
+    accessorKey: "premium_price",
+    header: "Premium Price",
     meta: { align: "left", headClassName: "min-w-[140px]" },
   },
 ];

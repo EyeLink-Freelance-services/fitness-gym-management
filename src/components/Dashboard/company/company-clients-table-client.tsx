@@ -4,17 +4,19 @@ import { FormModalTrigger } from "@/components/Dashboard/form-modal-trigger";
 import { companyClientColumns } from "@/components/Dashboard/table-column/company-columns";
 import ClientForm from "@/components/Forms/ClientForm";
 import { DataTable } from "@/components/Tables";
-import type { CompanyClientRow } from "@/types/dashboard/company";
+import type { CompanyClientRow, CompanyPricing } from "@/types/dashboard/company";
 import { ClientFormData } from "@/types/forms";
 import { useEffect, useId, useState } from "react";
 import { createPortal } from "react-dom";
 
 interface CompanyClientsTableClientProps {
   data: CompanyClientRow[];
+  companyPricing: CompanyPricing | null;
 }
 
 export function CompanyClientsTableClient({
   data,
+  companyPricing,
 }: CompanyClientsTableClientProps) {
   const [selectedClient, setSelectedClient] = useState<CompanyClientRow | null>(
     null,
@@ -114,6 +116,7 @@ export function CompanyClientsTableClient({
                   mode="edit"
                   clientContext="company"
                   initialData={selectedClientFormData}
+                  companyPricing={companyPricing}
                   onSuccess={() => setSelectedClient(null)}
                 />
               </div>

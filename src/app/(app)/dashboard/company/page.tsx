@@ -21,6 +21,7 @@ import {
 } from "@/components/Dashboard/table-column/company-columns";
 import { getOverviewCompanyData } from "@/services/company/main";
 import { compactFormat } from "@/lib/formatters/format-number";
+import { getCompanyLastFiveClients } from "@/modules/company/company.service";
 
 export default async function CompanyDashboardPage({
   searchParams,
@@ -28,6 +29,7 @@ export default async function CompanyDashboardPage({
   const { selected_time_frame } = await searchParams;
   const extractTimeFrame = createTimeFrameExtractor(selected_time_frame);
   const overviewData = await getOverviewCompanyData();
+  const last5Clients = await getCompanyLastFiveClients();
 
   const [announcements] = await Promise.all([
     getPersonalCoachAnnouncements(4),
@@ -72,7 +74,7 @@ export default async function CompanyDashboardPage({
         <Suspense fallback={<Skeleton />}>
           <TableUI
             title="New Clients"
-            data={getGymNewClient(5)}
+            data={last5Clients}
             columns={newSignupColumns}
             buttonLabel="View All"
             buttonPath="/dashboard/company/clients"

@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { getSession, useSession } from "next-auth/react";
 const TRIGGER_BEFORE_EXPIRY_MS = 35 * 1_000;
+const HEARTBEAT_MS = 60 * 1_000;
 
 export function SessionAutoRefresh() {
   const { data: session, status } = useSession();
@@ -15,20 +16,37 @@ export function SessionAutoRefresh() {
   useEffect(() => {
     if (!accessTokenExpiresAt) return;
 
-    const refreshAt = accessTokenExpiresAt - TRIGGER_BEFORE_EXPIRY_MS;
+    const refreshNowIfNeeded = () => {
+      const refreshAt = accessTokenExpiresAt - TRIGGER_BEFORE_EXPIRY_MS;
+      if (Date.now() >= refreshAt) {
+        getSession();
+      }
+    };
 
-    const delay = refreshAt - Date.now();
+    refreshNowIfNeeded();
 
-    if (delay <= 0) {
+    const heartbeat = window.setInterval(() => {
+      refreshNowIfNeeded();
+    }, HEARTBEAT_MS);
+
+    const onFocus = () => {
       getSession();
-      return;
-    }
+    };
 
-    const timer = setTimeout(() => {
-      getSession();
-    }, delay);
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        getSession();
+      }
+    };
 
-    return () => clearTimeout(timer);
+    window.addEventListener("focus", onFocus);
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
+    return () => {
+      window.clearInterval(heartbeat);
+      window.removeEventListener("focus", onFocus);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
   }, [accessTokenExpiresAt]);
 
   return null;

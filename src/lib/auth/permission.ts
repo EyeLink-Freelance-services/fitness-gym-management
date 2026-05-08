@@ -1,6 +1,6 @@
 import { IAuthContext } from "@/types/auth/auth-context";
 import { getAuthContext } from "./get-auth-context";
-import { AuthPermission } from "@/constants/permission";
+import { getDefaultRouteFromAuthContext } from "@/config/routes.config";
 
 export async function requirePermission(permission: string) {
   const auth = await getAuthContext();
@@ -17,23 +17,5 @@ export async function requirePermission(permission: string) {
 export function getRedirectPathForAuth(
   auth: IAuthContext | null,
 ): string | null {
-  if (!auth) return null;
-
-  if (
-    auth.permissions?.includes(AuthPermission.dashboard.personalCoach) &&
-    auth.company?.mode === "personal"
-  ) {
-    return "/dashboard/personal-coach";
-  }
-  if (auth.company?.mode === "super-admin") {
-    return "/dashboard/super-admin";
-  }
-  if (auth.company?.mode === "company") {
-    return "/dashboard/company";
-  }
-  if (auth.permissions?.includes(AuthPermission.dashboard.client)) {
-    return "/dashboard/client";
-  }
-
-  return null;
+  return getDefaultRouteFromAuthContext(auth);
 }
