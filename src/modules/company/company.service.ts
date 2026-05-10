@@ -111,17 +111,6 @@ export async function getCompanyLastFiveClients() {
 }
 
 // ___ Client Create / Update for company client ___
-
-function resolvePriceFees(
-  form: ClientFormData,
-  companyPlan?: CompanyPricing | null,
-): number | null {
-  if (form.membershipPlan === "personalCoach") {
-    return form.personalCoachPrice ?? null;
-  }
-  return companyPlan?.standardPrice ?? null;
-}
-
 function resolveMembershipPlan(plan: string) {
   return plan === "personalCoach" ? "PERSONAL" : "STANDARD";
 }
@@ -151,7 +140,8 @@ function mapClientFormToClientRequest(
     },
     plan: {
       membershipPlan: resolveMembershipPlan(form.membershipPlan),
-      additionalFees: resolvePriceFees(form, companyPlan),
+      standardPrice: companyPlan?.standardPrice ?? undefined,
+      personalCoachingPrice: companyPlan?.personalCoachingPrice ?? undefined,
     },
     medicalConditions: form.medicalConditions || undefined,
     agreeTermsOfService: form.agreeTermsOfService,
