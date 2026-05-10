@@ -21,7 +21,7 @@ import {
   validatePhone,
   validateRequired,
 } from "@/lib/forms/formValidation";
-import Header from "../FormElements/common/header";
+import { Header } from "../FormElements/common";
 import { createPersonalCoachAction } from "@/app/(app)/dashboard/super-admin/coaches/actions";
 import { toast } from "sonner";
 

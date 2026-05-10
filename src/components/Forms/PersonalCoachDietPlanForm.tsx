@@ -2,11 +2,11 @@
 
 import { useEffect } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import Header from "@/components/FormElements/common/header";
 import InputGroup from "@/components/FormElements/InputGroup";
 import { Select } from "@/components/FormElements/select";
 import { Button } from "@/components/ui-elements/button";
 import type { PersonalCoachDietPlanFormData } from "@/types/forms";
+import { Header } from "../FormElements/common";
 
 const MEAL_TIME_OPTIONS = ["Breakfast", "Lunch", "Dinner", "Specific"] as const;
 

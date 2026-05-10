@@ -2,10 +2,8 @@ import { DashboardSection } from "@/components/Dashboard/dashboard-section";
 import { OverviewCard } from "@/components/Dashboard/overview-cards/card";
 import {
   getGymCoachCLientAssign,
-  getGymNewClient,
   getPersonalCoachAnnouncements,
 } from "@/services/dashboard.services";
-import { PaymentsOverview } from "@/components/Charts/payments-overview";
 import { createTimeFrameExtractor } from "@/utils/timeframe-extractor";
 import { SearchType } from "@/types/dashboard/dashboard-shared";
 import { Suspense } from "react";
@@ -22,6 +20,7 @@ import {
 import { getOverviewCompanyData } from "@/services/company/main";
 import { compactFormat } from "@/lib/formatters/format-number";
 import { getCompanyLastFiveClients } from "@/modules/company/company.service";
+import { PaymentsOverview } from "@/components/Charts/payments-overview";
 
 export default async function CompanyDashboardPage({
   searchParams,

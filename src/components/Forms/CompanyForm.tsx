@@ -4,21 +4,21 @@ import { Controller, useFieldArray, useForm } from "react-hook-form";
 import type { CompanyFormData, CompanyFormProps } from "@/types/forms";
 import { COMPANY_STATES } from "@/data/dashboardForm";
 import InputGroup from "../FormElements/InputGroup";
-import { TextAreaGroup } from "../FormElements/InputGroup/text-area";
 import { Select } from "../FormElements/select";
 import { Checkbox } from "../FormElements/checkbox";
 import { Button } from "../ui-elements/button";
 import { ImageUpload } from "../FormElements/ImageUpload";
 import { validatePhone, validateRequired } from "@/lib/forms/formValidation";
-import Header from "../FormElements/common/header";
 import Label from "../FormElements/common/label";
 import { useEffect, useRef } from "react";
+import { toast } from "sonner";
+import { fileToBase64 } from "@/utils/dashboard/shared";
+import { DEFAULT_COMPANY_FORM_VALUES } from "@/data/superAdmin";
 import {
   createCompanyAction,
   updateCompanyAction,
 } from "@/app/(app)/dashboard/super-admin/company/actions";
-import { toast } from "sonner";
-import { fileToBase64 } from "@/utils/dashboard/shared";
+import { Header, HeaderTitle } from "../FormElements/common";
 
 export default function CompanyForm({
   initialData,
@@ -38,56 +38,25 @@ export default function CompanyForm({
   } = useForm<CompanyFormData>({
     mode: "all",
     defaultValues: {
-      companyName: "",
-      brn: "",
-      email: "",
-      contactNumber: "",
-      addressLine1: "",
-      city: "",
-      postcode: "",
-      state: "",
-      branches: [],
-      standardPrice: undefined,
-      hasPremiumPlan: false,
-      premiumPrice: undefined,
-      disclaimer: "",
-      agreeTerms: false,
+      ...DEFAULT_COMPANY_FORM_VALUES,
       ...initialData,
     },
   });
 
+  const branches = watch("branches");
+  const hasPremiumPlan = watch("hasPersonalCoachingPrice");
+
   useEffect(() => {
     reset({
-      companyName: "",
-      brn: "",
-      email: "",
-      contactNumber: "",
-      addressLine1: "",
-      city: "",
-      postcode: "",
-      state: "",
-      branches: [],
-      standardPrice: undefined,
-      hasPremiumPlan: false,
-      premiumPrice: undefined,
-      disclaimer: "",
-      agreeTerms: false,
+      ...DEFAULT_COMPANY_FORM_VALUES,
       ...initialData,
       logo: undefined,
     });
   }, [initialData, reset]);
 
-  watch();
-
-  const branches = watch("branches");
-  const hasPremiumPlan = watch("hasPremiumPlan");
-  const canAddBranch = branches.every(
-    (branch) => branch.branchName.trim().length > 0,
-  );
-
   useEffect(() => {
     if (!hasPremiumPlan) {
-      setValue("premiumPrice", undefined, { shouldValidate: true });
+      setValue("personalCoachingPrice", undefined, { shouldValidate: true });
     }
   }, [hasPremiumPlan, setValue]);
 
@@ -97,30 +66,39 @@ export default function CompanyForm({
   });
 
   const logoRef = useRef<File | null>(null);
+  const canAddBranch = branches.every(
+    (branch) => branch.branchName.trim().length > 0,
+  );
 
   const onSubmit = async (data: CompanyFormData) => {
+    console.log("Payload sent to backend:", data);
     try {
       let logoBase64: string | null = null;
       if (logoRef.current) {
         logoBase64 = await fileToBase64(logoRef.current);
       }
 
-      const logoToSend =
-        logoBase64 ?? existingProfilePhotoUrl ?? data.logo ?? null;
+      const logo = logoBase64 ?? existingProfilePhotoUrl ?? data.logo ?? null;
+      const payload = { ...data, logo };
 
       if (mode === "edit") {
         if (!companyId) throw new Error("Missing companyId for edit mode");
-        await updateCompanyAction(companyId, { ...data, logo: logoToSend });
-        toast.success("Company updated successfully");
+        await updateCompanyAction(companyId, payload);
       } else {
-        await createCompanyAction({ ...data, logo: logoToSend });
-        toast.success("Company created successfully");
+        await createCompanyAction(payload);
       }
 
+      toast.success(
+        mode === "edit"
+          ? "Company updated successfully"
+          : "Company created successfully",
+      );
       onSuccess?.();
     } catch {
       toast.error(
-        mode === "edit" ? "Failed to update company" : "Failed to create company",
+        mode === "edit"
+          ? "Failed to update company"
+          : "Failed to create company",
       );
     }
   };
@@ -131,23 +109,19 @@ export default function CompanyForm({
         label="- Organization"
         title={mode === "edit" ? "Edit company" : "Register company"}
         subtitle={
-          mode === "edit" ? "Update the company details" : "Onboard your gym"
+          mode === "edit"
+            ? "Update the company details"
+            : "Onboard your company details"
         }
       />
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-7">
-        <div className="my-6 flex items-center gap-3">
-          <div className="h-px flex-1 bg-stroke dark:bg-dark-3" />
-          <span className="text-body-xs font-medium uppercase tracking-wider text-dark-5 dark:text-dark-6">
-            Basic Info
-          </span>
-          <div className="h-px flex-1 bg-stroke dark:bg-dark-3" />
-        </div>
+        <HeaderTitle title="Basic Info" />
 
         <InputGroup
           type="text"
           label="Company Name"
-          placeholder="MyFit Gym"
+          placeholder="Gym"
           required
           error={errors.companyName?.message}
           inputProps={register("companyName", {
@@ -158,7 +132,7 @@ export default function CompanyForm({
         <InputGroup
           type="text"
           label="Company Email"
-          placeholder="myfit@gmail.com"
+          placeholder="company@gmail.com"
           required
           error={errors.email?.message}
           inputProps={register("email", {
@@ -180,7 +154,7 @@ export default function CompanyForm({
           <InputGroup
             type="text"
             label="BRN / Business Reg. No."
-            placeholder="202401234567"
+            placeholder="C00000000"
             required
             error={errors.brn?.message}
             inputProps={register("brn", {
@@ -202,18 +176,12 @@ export default function CompanyForm({
           />
         </div>
 
-        <div className="my-6 flex items-center gap-3">
-          <div className="h-px flex-1 bg-stroke dark:bg-dark-3" />
-          <span className="text-body-xs font-medium uppercase tracking-wider text-dark-5 dark:text-dark-6">
-            Location
-          </span>
-          <div className="h-px flex-1 bg-stroke dark:bg-dark-3" />
-        </div>
+        <HeaderTitle title="Location" />
 
         <InputGroup
           type="text"
           label="Address Line 1"
-          placeholder="123 Trianon Avenue"
+          placeholder="Street address"
           required
           error={errors.addressLine1?.message}
           inputProps={register("addressLine1", {
@@ -262,18 +230,12 @@ export default function CompanyForm({
           )}
         />
 
-        <div className="my-6 flex items-center gap-3">
-          <div className="h-px flex-1 bg-stroke dark:bg-dark-3" />
-          <span className="text-body-xs font-medium uppercase tracking-wider text-dark-5 dark:text-dark-6">
-            Membership Pricing
-          </span>
-          <div className="h-px flex-1 bg-stroke dark:bg-dark-3" />
-        </div>
+        <HeaderTitle title="Membership Pricing" />
 
         <div className="grid grid-cols-1 gap-4">
           <InputGroup
             type="number"
-            label="Standard Price"
+            label="Standard Price(Rs)"
             placeholder="150"
             required
             error={errors.standardPrice?.message}
@@ -291,7 +253,7 @@ export default function CompanyForm({
               minimal
               radius="md"
               label="Premium Plan"
-              inputProps={register("hasPremiumPlan")}
+              inputProps={register("hasPersonalCoachingPrice")}
             />
           </div>
         </div>
@@ -299,16 +261,16 @@ export default function CompanyForm({
         {hasPremiumPlan && (
           <InputGroup
             type="number"
-            label="Premium Price"
+            label="Personal Coaching Price(Rs)"
             placeholder="250"
             required
-            error={errors.premiumPrice?.message}
+            error={errors.personalCoachingPrice?.message}
             inputProps={{
-              ...register("premiumPrice", {
+              ...register("personalCoachingPrice", {
                 valueAsNumber: true,
                 validate: (value) =>
                   hasPremiumPlan
-                    ? validateRequired(value, "Premium price is required")
+                    ? validateRequired(value, "Personal coaching price is required")
                     : true,
               }),
               min: 0,
@@ -322,16 +284,12 @@ export default function CompanyForm({
           <div className="h-px flex-1 bg-stroke dark:bg-dark-3" />
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-1">
           {fields.map((field, i) => (
             <div key={field.id} className="flex items-center gap-2">
               <input
                 type="text"
-                placeholder={
-                  i === 0
-                    ? "Branch name (e.g. HQ - KL Sentral)"
-                    : "Branch name (e.g. Petaling Jaya)"
-                }
+                placeholder={"Branch name (e.g. Gym 1)"}
                 className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5.5 py-3 text-dark outline-none transition placeholder:text-dark-6 focus:border-primary dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary"
                 {...register(`branches.${i}.branchName` as const)}
               />
@@ -355,61 +313,6 @@ export default function CompanyForm({
           onClick={() => canAddBranch && append({ branchName: "" })}
           disabled={!canAddBranch}
         />
-
-        <div className="my-6 flex items-center gap-3">
-          <div className="h-px flex-1 bg-stroke dark:bg-dark-3" />
-          <span className="text-body-xs font-medium uppercase tracking-wider text-dark-5 dark:text-dark-6">
-            Legal
-          </span>
-          <div className="h-px flex-1 bg-stroke dark:bg-dark-3" />
-        </div>
-
-        <TextAreaGroup
-          label="Disclaimer Text"
-          placeholder="Enter your organization disclaimer..."
-          required
-          error={errors.disclaimer?.message}
-          textareaProps={register("disclaimer", {
-            validate: (v) =>
-              validateRequired(v, "Disclaimer is required"),
-          })}
-        />
-
-        <div className="mb-5">
-          <label className="mb-2 block text-body-sm font-medium text-dark dark:text-white">
-            Terms &amp; Conditions <span className="text-red">*</span>
-          </label>
-          <div className="max-h-32 overflow-y-auto rounded-lg border border-stroke bg-gray-2 p-4 text-body-sm leading-relaxed text-dark-5 dark:border-dark-3 dark:bg-dark-2 dark:text-dark-6">
-            By registering on this platform, the company
-            (&quot;Registrant&quot;) acknowledges and agrees that all data
-            provided shall be used strictly for the purpose of gym management
-            operations. Registrant warrants that all information submitted is
-            accurate and complete.
-          </div>
-          <div className="mt-3">
-            <Checkbox
-              minimal
-              radius="md"
-              label={
-                <span className="text-body-sm text-dark-5 dark:text-dark-6">
-                  I have read and agree to the{" "}
-                  <a href="#" className="text-primary hover:underline">
-                    Terms &amp; Conditions
-                  </a>{" "}
-                  and{" "}
-                  <a href="#" className="text-primary hover:underline">
-                    Privacy Policy
-                  </a>{" "}
-                  <span className="text-red">*</span>
-                </span>
-              }
-              inputProps={register("agreeTerms", {
-                validate: (v) => (v ? true : "You must agree to the terms"),
-              })}
-              error={errors.agreeTerms?.message}
-            />
-          </div>
-        </div>
 
         <Button
           type="submit"

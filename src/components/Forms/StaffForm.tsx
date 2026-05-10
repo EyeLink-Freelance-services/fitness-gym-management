@@ -13,7 +13,7 @@ import {
   validatePhone,
   validateRequired,
 } from "@/lib/forms/formValidation";
-import Header from "../FormElements/common/header";
+import { Header } from "../FormElements/common";
 import Label from "../FormElements/common/label";
 
 export default function StaffForm({

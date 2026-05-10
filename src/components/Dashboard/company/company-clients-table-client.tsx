@@ -4,24 +4,21 @@ import { FormModalTrigger } from "@/components/Dashboard/form-modal-trigger";
 import { companyClientColumns } from "@/components/Dashboard/table-column/company-columns";
 import ClientForm from "@/components/Forms/ClientForm";
 import { DataTable } from "@/components/Tables";
-import type { CompanyClientRow, CompanyPricing } from "@/types/dashboard/company";
+import type { CompanyClientRow, CompanyClientsTableClientProps } from "@/types/dashboard/company";
 import { ClientFormData } from "@/types/forms";
+import { useRouter } from "next/navigation";
 import { useEffect, useId, useState } from "react";
 import { createPortal } from "react-dom";
-
-interface CompanyClientsTableClientProps {
-  data: CompanyClientRow[];
-  companyPricing: CompanyPricing | null;
-}
 
 export function CompanyClientsTableClient({
   data,
   companyPricing,
 }: CompanyClientsTableClientProps) {
-  const [selectedClient, setSelectedClient] = useState<CompanyClientRow | null>(
-    null,
-  );
+  const router = useRouter();
+  const [selectedClient, setSelectedClient] = useState<CompanyClientRow | null>(null);
   const [mounted, setMounted] = useState(false);
+
+  const defaultStandardPrice = companyPricing;
   const titleId = useId();
 
   useEffect(() => {
@@ -51,22 +48,22 @@ export function CompanyClientsTableClient({
     ? {
         firstName: selectedClient.name.split(" ")[0] ?? "",
         lastName: selectedClient.name.split(" ").slice(1).join(" ") || "",
-        dateOfBirth: "",
-        gender: "",
-        email: "",
-        phone: selectedClient.contact ?? "",
-        emergencyContactName: "",
-        emergencyContactPhone: "",
-        medicalConditions: "",
+        dateOfBirth: selectedClient.dateOfBirth,
+        gender: selectedClient.gender ?? "",
+        email: selectedClient.email ,
+        phoneNumber: selectedClient.contact ?? "",
+        emergencyContactName: selectedClient.emergencyContactName ?? "",
+        emergencyContactPhone: selectedClient.emergencyContactPhone ?? "",
+        medicalConditions: selectedClient.medicalConditions ?? "",
         membershipPlan:
-          selectedClient.plan?.trim().toLowerCase() === "premium"
-            ? "premium"
-            : "standard",
-        membershipPrice: selectedClient.price,
-        customFee: undefined,
+          selectedClient.plan?.trim().toLowerCase() === "standard"
+          ? "standard"
+            : "personalCoach",
+        standardPrice: selectedClient.standardPrice,
+        personalCoachPrice: selectedClient.personalCoachPrice,
         assignedCoach: selectedClient.coach ?? "",
         startDate: selectedClient.joinedAt ?? "",
-        agreeTerms: false,
+        agreeTermsOfService: true,
       }
     : undefined;
 
@@ -79,6 +76,8 @@ export function CompanyClientsTableClient({
             formType="client"
             clientContext="company"
             size="small"
+            companyPlan={defaultStandardPrice}
+            onSuccess={() => router.refresh()}
           />
         </div>
 
@@ -115,9 +114,13 @@ export function CompanyClientsTableClient({
                 <ClientForm
                   mode="edit"
                   clientContext="company"
+                  clientId={selectedClient.id}
                   initialData={selectedClientFormData}
-                  companyPricing={companyPricing}
-                  onSuccess={() => setSelectedClient(null)}
+                  companyPlan={defaultStandardPrice}
+                  onSuccess={() => {
+                    setSelectedClient(null);
+                    router.refresh();
+                  }}
                 />
               </div>
             </div>

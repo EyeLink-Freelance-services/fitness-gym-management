@@ -3,7 +3,7 @@
 import InputGroup from "../FormElements/InputGroup";
 import { TextAreaGroup } from "../FormElements/InputGroup/text-area";
 import { SearchableSelect } from "../FormElements/SearchableSelect";
-import Header from "../FormElements/common/header";
+import { Header } from "../FormElements/common";
 import Label from "../FormElements/common/label";
 import { Button } from "@/components/ui-elements/button";
 import { Select } from "../FormElements/select";

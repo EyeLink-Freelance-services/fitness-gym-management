@@ -55,8 +55,8 @@ export interface CompanyFormData {
   branches: CompanyBranchField[];
   disclaimer: string;
   standardPrice: number | undefined;
-  hasPremiumPlan: boolean;
-  premiumPrice?: number | undefined;
+  hasPersonalCoachingPrice: boolean;
+  personalCoachingPrice?: number | undefined;
   agreeTerms: boolean;
 }
 export interface StaffFormData {
@@ -129,7 +129,8 @@ export interface CompanyClientFormProps {
   initialData?: Partial<ClientFormData>;
   clientContext?: "company" | "personal";
   mode?: "create" | "edit";
-  companyPricing?: CompanyPricing | null;
+  clientId?: string;
+  companyPlan?: CompanyPricing | null;
   onSuccess?: () => void;
 }
 
@@ -145,16 +146,16 @@ export interface ClientFormData {
   dateOfBirth: string;
   gender: string;
   email: string;
-  phone: string;
+  phoneNumber: string;
   emergencyContactName: string;
   emergencyContactPhone: string;
   medicalConditions?: string;
   membershipPlan: string;
-  membershipPrice?: number;
-  customFee?: number;
+  standardPrice?: number;
+  personalCoachPrice?: number | null;
   assignedCoach: string;
   startDate: string;
-  agreeTerms: boolean;
+  agreeTermsOfService?: boolean;
 }
 
 export interface LoginFormProps {
@@ -263,5 +264,6 @@ export type FormModalTriggerProps = {
   clientContext?: "company" | "personal";
   coachContext?: "super-admin" | "company";
   size?: "default" | "small" | "xs";
+  companyPlan?: CompanyPricing | null;
   onSuccess?: () => void;
 };

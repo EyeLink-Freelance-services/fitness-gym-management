@@ -61,10 +61,10 @@ export default function CompanyTableClient({ data }: CompanyTableClientProps) {
           branchName: branch,
         })),
         standardPrice: selectedCompany.standard_price,
-        hasPremiumPlan: selectedCompany.has_premium_plan,
-        premiumPrice: selectedCompany.premium_price ?? undefined,
-        disclaimer: selectedCompany.disclaimer_text,
-        agreeTerms: false,
+        hasPersonalCoachingPrice: selectedCompany.has_personal_coaching_price,
+        personalCoachingPrice: selectedCompany.personal_coaching_price ?? undefined,
+        disclaimer: "N/A",
+        agreeTerms: true,
       }
     : undefined;
 

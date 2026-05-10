@@ -7,7 +7,7 @@ import type {
   RecoveryNewPasswordFormData,
   RecoveryRegisteredEmailFormData,
 } from "@/types/forms";
-import Header from "../FormElements/common/header";
+import { Header } from "../FormElements/common";
 import RecoveryNewPassword from "./Recovery/RecoveryNewPassword";
 import RecoverySuccess from "./Recovery/RecoverySuccess";
 import RegisteredEmail from "./Recovery/RegisteredEmail";

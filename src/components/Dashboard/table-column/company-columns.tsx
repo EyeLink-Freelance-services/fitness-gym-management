@@ -180,9 +180,9 @@ export const companyClientColumns: ColumnDef<CompanyClientRow>[] = [
     },
   },
   {
-    accessorKey: "price",
-    header: "Price",
-    cell: ({ row }) => `Rs ${row.original.price}`,
+    accessorKey: "standardPrice",
+    header: "Fee (Rs)",
+    cell: ({ row }) => row.original.standardPrice,
     meta: {
       align: "left",
       headClassName: "min-w-[120px]",

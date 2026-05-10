@@ -57,15 +57,14 @@ export function SessionCalendar({
 
   return (
     <div className="space-y-4">
-      <LocaleProvider locale="en-US">
+      {/* <LocaleProvider locale="en-US">
         <Calendar
           classNames={calendarClassNames}
-          value={value}
-          onChange={onChange}
+          defaultValue={value}
           minValue={minValue}
           weekdayStyle="short"
         />
-      </LocaleProvider>
+      </LocaleProvider> */}
 
       <div className="rounded-lg border border-stroke/80 bg-gray-100/80 px-4 py-3 dark:border-dark-3 dark:bg-dark-3/40">
         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-dark-5">

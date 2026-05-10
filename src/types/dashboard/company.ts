@@ -39,9 +39,18 @@ export interface CompanyStaffRow {
 export interface CompanyClientRow {
   id: string;
   name: string;
+  dateOfBirth?: any;
+  gender?: string;
+  email: string;
   contact?: string;
   plan?: string;
-  price?: number;
+  standardPrice?: number;
+  personalCoachPrice?: number | null;
+  hasPersonalCoachingPrice?: boolean;
+  emergencyContactName?: string;
+  emergencyContactPhone?: string;
+  medicalConditions?: string;
+  agreeTermsOfService?: boolean;
   joinedAt?: string;
   expiresAt?: string;
   coach?: string | null;
@@ -79,7 +88,9 @@ export interface ClientContactApiBean {
 export interface ClientFullPlanApiBean {
   id?: string;
   membershipPlan?: "NORMAL" | "PERSONAL" | string;
-  additionalFees?: number;
+  personalCoachingPrice?: number;
+  hasPersonalCoachingPrice?: boolean;
+  standardPrice?: number;
   status?: "ACTIVE" | "INACTIVE" | "EXPIRED" | string;
   startDate?: string;
   endDate?: string;
@@ -110,6 +121,11 @@ export interface SearchClientsApiBean {
 
 export type CompanyPricing = {
   standardPrice: number | undefined;
-  hasPremiumPrice: boolean | undefined;
-  premiumPrice: number | null | undefined;
+  hasPersonalCoachingPrice: boolean | undefined;
+  personalCoachingPrice: number | null | undefined;
 };
+
+export interface CompanyClientsTableClientProps {
+  data: CompanyClientRow[];
+  companyPricing: CompanyPricing | null;
+}

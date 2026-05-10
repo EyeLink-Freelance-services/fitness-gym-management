@@ -1,3 +1,5 @@
+import { CompanyFormData } from "@/types/forms";
+
 const logos = {
   google: "/images/logo/google.svg",
   x: "/images/logo/x.svg",
@@ -63,74 +65,19 @@ export const DUMMY_COACHES = [
   },
 ];
 
-export const DUMMY_GYMS = [
-  {
-    companyName: "MyFit",
-    logo: {},
-    brn: "23232332",
-    contactNumber: "59054043",
-    addressLine1: "Unit 3, 41-45 Glebe Street",
-    city: "Forest Hill",
-    postcode: "3131",
-    state: "Grand Port",
-    branches: [
-      {
-        value: "",
-      },
-    ],
-    standardPrice: 150,
-    hasPremiumPlan: true,
-    premiumPrice: 250,
-    disclaimer: "A simple disclaimer text",
-    agreeTerms: true,
-    status: "Active",
-    createdAt: "2023-01-10",
-  },
-  {
-    companyName: "YourFit",
-    logo: logos.google,
-    brn: "23238332",
-    contactNumber: "5982643",
-    addressLine1: "Unit 3, 41-45 Glebe Street",
-    city: "Forest Hill",
-    postcode: "3131",
-    state: "Moka",
-    branches: [
-      {
-        value: "ST-Pierre",
-      },
-    ],
-    standardPrice: 175,
-    hasPremiumPlan: false,
-    premiumPrice: undefined,
-    disclaimer: "A simple disclaimer text",
-    agreeTerms: true,
-    status: "Active",
-    createdAt: "2024-01-10",
-  },
-  {
-    companyName: "OurFit",
-    logo: logos.x,
-    brn: "23234782",
-    contactNumber: "5922643",
-    addressLine1: "Unit 3, 41-45 Glebe Street",
-    city: "Forest Hill",
-    postcode: "3131",
-    state: "Quatre Bornes",
-    branches: [
-      {
-        value: "Belle Roese",
-      },
-      {
-        value: "St-Jean",
-      },
-    ],
-    standardPrice: 180,
-    hasPremiumPlan: true,
-    premiumPrice: 300,
-    disclaimer: "A simple disclaimer text",
-    agreeTerms: true,
-    status: "Active",
-    createdAt: "2025-01-10",
-  },
-];
+export const DEFAULT_COMPANY_FORM_VALUES: CompanyFormData = {
+  companyName: "",
+  brn: "",
+  email: "",
+  contactNumber: "",
+  addressLine1: "",
+  city: "",
+  postcode: "",
+  state: "",
+  branches: [],
+  standardPrice: undefined,
+  hasPersonalCoachingPrice: false,
+  personalCoachingPrice: undefined,
+  disclaimer: "N/A",
+  agreeTerms: true,
+};

@@ -4,10 +4,10 @@ import { useForm } from "react-hook-form";
 import type { LoginFormData, LoginFormProps } from "@/types/forms";
 import { Button } from "../ui-elements/button";
 import InputGroup from "../FormElements/InputGroup";
-import Header from "../FormElements/common/header";
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRoleRedirect } from "@/hooks/useRoleRedirect";
+import { Header } from "../FormElements/common";
 
 export default function LoginForm({ onForgotPassword }: LoginFormProps) {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);

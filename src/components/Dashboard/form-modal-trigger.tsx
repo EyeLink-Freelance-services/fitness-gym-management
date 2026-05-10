@@ -15,9 +15,9 @@ import StaffForm from "../Forms/StaffForm";
 export function FormModalTrigger({
   buttonLabel,
   formType,
-  clientContext,
   coachContext = "super-admin",
   size,
+  companyPlan,
   onSuccess,
 }: FormModalTriggerProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -76,7 +76,7 @@ export function FormModalTrigger({
                   <div className="max-h-[85vh] overflow-y-auto p-4">
                     {formType === "client" && (
                       <ClientForm
-                        clientContext={clientContext}
+                        companyPlan={companyPlan}
                         onSuccess={handleSuccess}
                       />
                     )}

@@ -2,7 +2,7 @@
 
 import InputGroup from "@/components/FormElements/InputGroup";
 import { Checkbox } from "@/components/FormElements/checkbox";
-import Header from "@/components/FormElements/common/header";
+import { Header } from "@/components/FormElements/common";
 import Label from "@/components/FormElements/common/label";
 import { Select } from "@/components/FormElements/select";
 import { Button } from "@/components/ui-elements/button";

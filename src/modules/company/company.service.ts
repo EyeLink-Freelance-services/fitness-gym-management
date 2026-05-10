@@ -1,4 +1,8 @@
-import { backendGet } from "@/lib/api/backend-client";
+import {
+  backendGet,
+  backendPost,
+  backendPut,
+} from "@/lib/api/backend-client";
 import { getAuthContext } from "@/lib/auth/get-auth-context";
 import type {
   ClientResponseApiBean,
@@ -9,11 +13,12 @@ import type {
 import type { CompanyResponseApiBean } from "@/types/dashboard/super-admin";
 import { GetPageParams } from "@/types/dashboard/shared";
 import type { StatusTone } from "@/types/shared";
+import type { ClientFormData } from "@/types/forms";
 
 function formatMembershipPlan(plan?: string | null): string | undefined {
   if (!plan) return undefined;
   if (plan === "NORMAL") return "Standard";
-  if (plan === "PERSONAL") return "Premium";
+  if (plan === "PERSONAL") return "Personal Coaching";
   return plan;
 }
 
@@ -36,9 +41,12 @@ function mapClientApiToRow(client: ClientResponseApiBean): CompanyClientRow {
   return {
     id: client.id,
     name: fullName,
+    email: client.contact?.email ?? "",
     contact: client.contact?.phoneNumber ?? undefined,
     plan: formatMembershipPlan(client.activePlan?.membershipPlan),
-    price: client.activePlan?.additionalFees ?? undefined,
+    standardPrice: client.activePlan?.standardPrice ?? undefined,
+    hasPersonalCoachingPrice: client.activePlan?.hasPersonalCoachingPrice ?? undefined,
+    personalCoachPrice: client.activePlan?.personalCoachingPrice ?? undefined,
     joinedAt: client.auditData?.createdDate ?? undefined,
     expiresAt: client.activePlan?.endDate ?? undefined,
     coach: null,
@@ -71,12 +79,12 @@ export async function getCompanyPricingForCompany(): Promise<CompanyPricing> {
 
   return {
     standardPrice: company.price?.standardPrice ?? undefined,
-    hasPremiumPrice: company.price?.hasPremiumPrice ?? undefined,
-    premiumPrice: company.price?.premiumPrice ?? undefined,
+    hasPersonalCoachingPrice: company.price?.hasPersonalCoachingPrice ?? undefined,
+    personalCoachingPrice: company.price?.personalCoachingPrice ?? undefined,
   };
 }
 
-export async function getCompanyClientsForCompany({
+export async function getCompanyClients({
   pageNumber = 0,
   pageSize = 10,
 }: GetPageParams = {}) {
@@ -93,11 +101,84 @@ export async function getCompanyClientsForCompany({
 }
 
 export async function getCompanyAllClients() {
-  const { clients } = await getCompanyClientsForCompany({ pageSize: 10 });
+  const { clients } = await getCompanyClients({ pageSize: 10 });
   return clients;
 }
 
 export async function getCompanyLastFiveClients() {
-  const { clients } = await getCompanyClientsForCompany({ pageSize: 5 });
+  const { clients } = await getCompanyClients({ pageSize: 5 });
   return clients;
+}
+
+// ___ Client Create / Update for company client ___
+
+function resolvePriceFees(
+  form: ClientFormData,
+  companyPlan?: CompanyPricing | null,
+): number | null {
+  if (form.membershipPlan === "personalCoach") {
+    return form.personalCoachPrice ?? null;
+  }
+  return companyPlan?.standardPrice ?? null;
+}
+
+function resolveMembershipPlan(plan: string) {
+  return plan === "personalCoach" ? "PERSONAL" : "STANDARD";
+}
+
+function mapClientFormToClientRequest(
+  form: ClientFormData,
+  companyPlan?: CompanyPricing | null,
+) {
+  const trimmedEmail = (form.email ?? "").trim();
+
+  if (!trimmedEmail) {
+    throw new Error("Client email is required and cannot be empty");
+  }
+
+  return {
+    information: {
+      firstName: form.firstName,
+      lastName: form.lastName,
+      dateOfBirth: form.dateOfBirth,
+      gender: form.gender,
+    },
+    contact: {
+      email: trimmedEmail,
+      phoneNumber: form.phoneNumber,
+      emergencyContactName: form.emergencyContactName || undefined,
+      emergencyContactPhone: form.emergencyContactPhone || undefined,
+    },
+    plan: {
+      membershipPlan: resolveMembershipPlan(form.membershipPlan),
+      additionalFees: resolvePriceFees(form, companyPlan),
+    },
+    medicalConditions: form.medicalConditions || undefined,
+    agreeTermsOfService: form.agreeTermsOfService,
+  };
+}
+
+export async function createClientService(
+  form: ClientFormData,
+  companyPlan?: CompanyPricing | null,
+) {
+  const companyId = await requireCompanyId();
+
+  return await backendPost(
+    `${COMPANY_API_BASE}/${companyId}/clients`,
+    mapClientFormToClientRequest(form, companyPlan),
+  );
+}
+
+export async function updateClientService(
+  clientId: string,
+  form: ClientFormData,
+  companyPlan?: CompanyPricing | null,
+) {
+  const companyId = await requireCompanyId();
+
+  return await backendPut(
+    `${COMPANY_API_BASE}/${companyId}/clients/${clientId}`,
+    mapClientFormToClientRequest(form, companyPlan),
+  );
 }

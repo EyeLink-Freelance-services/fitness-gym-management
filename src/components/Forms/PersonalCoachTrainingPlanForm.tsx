@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect } from "react";
-import Header from "@/components/FormElements/common/header";
 import InputGroup from "@/components/FormElements/InputGroup";
 import { Button } from "@/components/ui-elements/button";
 import type { PersonalCoachTrainingPlanFormData } from "@/types/forms";
 import { useForm } from "react-hook-form";
+import { Header } from "../FormElements/common";
 
 const TRAINING_DAYS = [
   "monday",

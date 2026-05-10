@@ -1,10 +1,19 @@
 import Link from "next/link";
-import Header from "@/components/FormElements/common/header";
 import { Button } from "@/components/ui-elements/button";
 import { ROUTES } from "@/constants/route";
-import DietPlansList, {
-  type DietPlanListRow,
-} from "@/app/(app)/diet-plans/components/diet-plan-list";
+import { Header } from "@/components/FormElements/common";
+// import DietPlansList, {
+//   type DietPlanListRow,
+// } from "@/app/(app)/diet-plans/components/diet-plan-list";
+
+// type PersonalCoachDietPlanProps = {
+//   plans: DietPlanListRow[];
+// };
+
+export type DietPlanListRow = {
+  id: string;
+  name: string;
+};
 
 type PersonalCoachDietPlanProps = {
   plans: DietPlanListRow[];
@@ -25,7 +34,13 @@ export function PersonalCoachDietPlan({ plans }: PersonalCoachDietPlanProps) {
         </Link>
       </div>
 
-      <DietPlansList plans={plans} />
+      <div className="space-y-4">
+        {plans.map((plan) => (
+          <div key={plan.id} className="rounded-lg border border-stroke p-4">
+            <h3 className="font-semibold">{plan.name}</h3>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

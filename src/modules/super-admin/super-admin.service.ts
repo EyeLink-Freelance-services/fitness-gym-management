@@ -9,14 +9,21 @@ import { backendGet, backendPost, backendPut } from "@/lib/api/backend-client";
 import { GetPageParams } from "@/types/dashboard/shared";
 
 function mapCompanyFormToCompanyRequest(form: CompanyFormData) {
+  const trimmedEmail = (form.email ?? "").trim();
+  const trimmedDisclaimer = (form.disclaimer ?? "").trim();
+
+  if (!trimmedEmail) {
+    throw new Error("Company email is required and cannot be empty");
+  }
+
   return {
     information: {
       companyName: form.companyName,
       logo: form.logo ?? null,
-      email: form.email.trim(),
+      email: trimmedEmail,
       brn: form.brn,
       contactNumber: form.contactNumber,
-      branches: form.branches.map((b) => ({ name: b.branchName })),
+      branches: form.branches.map((b) => ({ branchName: b.branchName })),
     },
     address: {
       street: form.addressLine1,
@@ -26,11 +33,11 @@ function mapCompanyFormToCompanyRequest(form: CompanyFormData) {
     },
     price: {
       standardPrice: form.standardPrice ?? 0,
-      hasPremiumPrice: form.hasPremiumPlan,
-      premiumPrice: form.hasPremiumPlan ? (form.premiumPrice ?? null) : null,
+      hasPersonalCoachingPrice: form.hasPersonalCoachingPrice,
+      personalCoachingPrice: form.hasPersonalCoachingPrice ? (form.personalCoachingPrice ?? null) : null,
     },
     miscellaneous: {
-      disclaimer: form.disclaimer.trim(),
+      disclaimer: trimmedDisclaimer || "N/A",
       agreeTermsOfService: form.agreeTerms,
     },
   };
@@ -47,15 +54,15 @@ function mapCompanyApiToRow(
       ? `BRN-${company.information.brn}`
       : "N/A",
     contact_number: company.information.contactNumber ?? "",
-    email: company.information.email ?? "",
+    email: company.information.email,
     address_line_1: company.address.street,
     city: company.address.city,
     postcode: company.address.postalCode,
     district: company.address.state,
     branches: (company.information.branches ?? []).map((b) => b.name),
     standard_price: company.price.standardPrice ?? 0,
-    has_premium_plan: company.price.hasPremiumPrice ?? false,
-    premium_price: company.price.premiumPrice ?? null,
+    has_personal_coaching_price: company.price.hasPersonalCoachingPrice ?? false,
+    personal_coaching_price: company.price.personalCoachingPrice ?? null,
     disclaimer_text: company.miscellaneous.disclaimer ?? "",
     terms_and_conditions: company.miscellaneous.agreeTermsOfService
       ? "Agreed"
