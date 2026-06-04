@@ -9,7 +9,7 @@ import { SessionAutoRefresh } from "@/components/Auth/session-auto-refresh";
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <SessionProvider refetchOnWindowFocus>
-      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} forcedTheme="dark">
         <SidebarProvider>
           <SessionStorageSync />
           <SessionAutoRefresh />

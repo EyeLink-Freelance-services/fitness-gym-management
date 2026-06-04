@@ -1,8 +1,8 @@
 import type {
-  CompanyClientRow,
+  CompanyClient,
+  CompanyClientFormValues,
   CompanyStaffRow,
 } from "@/types/dashboard/company";
-import { ClientFormData } from "@/types/forms";
 import { buildCompanyClientRows } from "@/utils/dashboard/company-client-rows";
 
 export const PENDING_COACH = [
@@ -18,7 +18,7 @@ export const membershipPlanOptions = [
 ];
 
 
-export const GYM_CLIENTS: CompanyClientRow[] = [
+export const GYM_CLIENTS: CompanyClient[] = [
   // {
   //   id: "client-1",
   //   name: "Alex Brown",
@@ -83,7 +83,7 @@ export const COMPANY_STAFF_ROWS: CompanyStaffRow[] = [
   },
 ];
 
-export const DEFAULT_CLIENT_FORM_VALUES: ClientFormData = {
+export const DEFAULT_CLIENT_FORM_VALUES: CompanyClientFormValues = {
   firstName: "",
   lastName: "",
   dateOfBirth: "",
@@ -94,8 +94,7 @@ export const DEFAULT_CLIENT_FORM_VALUES: ClientFormData = {
   emergencyContactPhone: "",
   medicalConditions: "",
   membershipPlan: "standard",
-  standardPrice: undefined,
-  personalCoachPrice: undefined,
+  additionalFees: undefined,
   assignedCoach: "",
   startDate: new Date().toISOString().split("T")[0],
   agreeTermsOfService: true,

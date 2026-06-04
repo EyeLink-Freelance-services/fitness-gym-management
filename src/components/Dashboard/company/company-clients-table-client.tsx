@@ -4,22 +4,46 @@ import { FormModalTrigger } from "@/components/Dashboard/form-modal-trigger";
 import { companyClientColumns } from "@/components/Dashboard/table-column/company-columns";
 import ClientForm from "@/components/Forms/ClientForm";
 import { DataTable } from "@/components/Tables";
-import type { CompanyClientRow, CompanyClientsTableClientProps } from "@/types/dashboard/company";
-import { ClientFormData } from "@/types/forms";
+import type {
+  CompanyClient,
+  CompanyClientsTableClientProps,
+} from "@/types/dashboard/company";
+import { mapCompanyClientToFormValues } from "@/modules/company/company-client.mappers";
 import { useRouter } from "next/navigation";
 import { useEffect, useId, useState } from "react";
 import { createPortal } from "react-dom";
+import { usePagination } from "@/hooks/use-pagination";
+import { fetchCompanyClientPage } from "@/app/(app)/dashboard/company/clients/actions";
+import { Button } from "@/components/ui-elements/button";
+import { cn } from "@/lib/utils";
 
 export function CompanyClientsTableClient({
-  data,
+  initialData,
+  totalCount,
   companyPricing,
 }: CompanyClientsTableClientProps) {
   const router = useRouter();
-  const [selectedClient, setSelectedClient] = useState<CompanyClientRow | null>(null);
+  const [selectedClient, setSelectedClient] = useState<CompanyClient | null>(null);
   const [mounted, setMounted] = useState(false);
 
   const defaultStandardPrice = companyPricing;
   const titleId = useId();
+
+  const pagination = usePagination({
+    initialData,
+    initialTotalCount: totalCount,
+    pageSize: 10,
+    fetchFn: async (pageNumber, pageSize) => {
+      const { clients, totalCount } = await fetchCompanyClientPage(
+        pageNumber,
+        pageSize,
+      );
+      return {
+        data: clients,
+        totalCount,
+      };
+    },
+  });
 
   useEffect(() => {
     setMounted(true);
@@ -44,28 +68,15 @@ export function CompanyClientsTableClient({
     };
   }, [selectedClient]);
 
-  const selectedClientFormData: ClientFormData | undefined = selectedClient
-    ? {
-        firstName: selectedClient.name.split(" ")[0] ?? "",
-        lastName: selectedClient.name.split(" ").slice(1).join(" ") || "",
-        dateOfBirth: selectedClient.dateOfBirth,
-        gender: selectedClient.gender ?? "",
-        email: selectedClient.email ,
-        phoneNumber: selectedClient.contact ?? "",
-        emergencyContactName: selectedClient.emergencyContactName ?? "",
-        emergencyContactPhone: selectedClient.emergencyContactPhone ?? "",
-        medicalConditions: selectedClient.medicalConditions ?? "",
-        membershipPlan:
-          selectedClient.plan?.trim().toLowerCase() === "standard"
-          ? "standard"
-            : "personalCoach",
-        standardPrice: selectedClient.standardPrice,
-        personalCoachPrice: selectedClient.personalCoachPrice,
-        assignedCoach: selectedClient.coach ?? "",
-        startDate: selectedClient.joinedAt ?? "",
-        agreeTermsOfService: true,
-      }
+  const selectedClientFormData = selectedClient
+    ? mapCompanyClientToFormValues(selectedClient)
     : undefined;
+
+  const handleEditSuccess = () => {
+    setSelectedClient(null);
+    void pagination.refetchCurrentPage();
+    router.refresh();
+  };
 
   return (
     <>
@@ -74,25 +85,68 @@ export function CompanyClientsTableClient({
           <FormModalTrigger
             buttonLabel="+ Add Client"
             formType="client"
-            clientContext="company"
-            size="small"
             companyPlan={defaultStandardPrice}
-            onSuccess={() => router.refresh()}
+            onSuccess={() => {
+              void pagination.refetchCurrentPage();
+              router.refresh();
+            }}
           />
         </div>
 
         <DataTable
           title="Clients"
           description="Clients from the company"
-          data={data}
+          data={pagination.data}
           columns={companyClientColumns}
           getRowId={(row) => row.id}
           tableClassName="min-w-[780px]"
           searchPlaceholder="Search client, contact, plan..."
-          initialPageSize={8}
+          initialPageSize={10}
           emptyStateLabel="No clients available."
           onRowClick={setSelectedClient}
+          showFooter={false}
         />
+
+        <div className="mt-5 flex items-center justify-between border-t border-stroke pt-4 text-sm dark:border-dark-3">
+          <div className="text-dark-6 dark:text-dark-6">
+            Showing {pagination.data.length} of {pagination.totalCount} result
+            {pagination.totalCount === 1 ? "" : "s"}
+          </div>
+
+          <div className="flex items-center gap-3">
+            <span className="text-dark-6 dark:text-dark-6">
+              Page {pagination.currentPage + 1} of{" "}
+              {Math.max(pagination.totalPages, 1)}
+            </span>
+
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                label="Previous"
+                size="small"
+                variant="outlineDark"
+                onClick={pagination.previousPage}
+                disabled={!pagination.canGoPrevious || pagination.isLoading}
+                className={cn(
+                  (!pagination.canGoPrevious || pagination.isLoading) &&
+                    "cursor-not-allowed opacity-50 hover:bg-transparent dark:hover:bg-transparent",
+                )}
+              />
+              <Button
+                type="button"
+                label="Next"
+                size="small"
+                variant="outlineDark"
+                onClick={pagination.nextPage}
+                disabled={!pagination.canGoNext || pagination.isLoading}
+                className={cn(
+                  (!pagination.canGoNext || pagination.isLoading) &&
+                    "cursor-not-allowed opacity-50 hover:bg-transparent dark:hover:bg-transparent",
+                )}
+              />
+            </div>
+          </div>
+        </div>
       </div>
 
       {selectedClient &&
@@ -113,14 +167,10 @@ export function CompanyClientsTableClient({
               <div className="max-h-[85vh] overflow-y-auto p-4">
                 <ClientForm
                   mode="edit"
-                  clientContext="company"
                   clientId={selectedClient.id}
                   initialData={selectedClientFormData}
                   companyPlan={defaultStandardPrice}
-                  onSuccess={() => {
-                    setSelectedClient(null);
-                    router.refresh();
-                  }}
+                  onSuccess={handleEditSuccess}
                 />
               </div>
             </div>

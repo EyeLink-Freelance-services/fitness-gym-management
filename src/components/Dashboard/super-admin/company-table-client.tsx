@@ -9,17 +9,37 @@ import { CompanyFormData } from "@/types/forms";
 import { createPortal } from "react-dom";
 import CompanyForm from "@/components/Forms/CompanyForm";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui-elements/button";
+import { cn } from "@/lib/utils";
+import { usePagination } from "@/hooks/use-pagination";
+import { fetchCompaniesPage } from "@/app/(app)/dashboard/super-admin/company/actions";
+import { CompanyTableClientProps } from "@/types/dashboard/company";
 
-interface CompanyTableClientProps {
-  data: SuperAdminCompanyRow[];
-}
-
-export default function CompanyTableClient({ data }: CompanyTableClientProps) {
+export default function CompanyTableClient({
+  initialData,
+  totalCount,
+}: CompanyTableClientProps) {
   const router = useRouter();
   const [selectedCompany, setSelectedCompany] =
     useState<SuperAdminCompanyRow | null>(null);
   const [mounted, setMounted] = useState(false);
   const titleId = useId();
+
+  const pagination = usePagination({
+    initialData,
+    initialTotalCount: totalCount,
+    pageSize: 10,
+    fetchFn: async (pageNumber, pageSize) => {
+      const { companies, totalCount } = await fetchCompaniesPage(
+        pageNumber,
+        pageSize,
+      );
+      return {
+        data: companies,
+        totalCount,
+      };
+    },
+  });
 
   useEffect(() => {
     setMounted(true);
@@ -61,8 +81,6 @@ export default function CompanyTableClient({ data }: CompanyTableClientProps) {
           branchName: branch,
         })),
         standardPrice: selectedCompany.standard_price,
-        hasPersonalCoachingPrice: selectedCompany.has_personal_coaching_price,
-        personalCoachingPrice: selectedCompany.personal_coaching_price ?? undefined,
         disclaimer: "N/A",
         agreeTerms: true,
       }
@@ -72,17 +90,20 @@ export default function CompanyTableClient({ data }: CompanyTableClientProps) {
     <>
       <div className="flex flex-col gap-4">
         <div className="flex justify-end">
-             <FormModalTrigger
+          <FormModalTrigger
             buttonLabel="+ Add Company"
             formType="company"
-            onSuccess={() => router.refresh()}
+            onSuccess={() => {
+              void pagination.refetchCurrentPage();
+              router.refresh();
+            }}
           />
         </div>
 
         <DataTable
           title="Companies"
           description="Companies across all locations."
-          data={data}
+          data={pagination.data}
           columns={superAdminCompanyColumns}
           searchPlaceholder="Search company, brn, contact..."
           initialPageSize={10}
@@ -90,7 +111,50 @@ export default function CompanyTableClient({ data }: CompanyTableClientProps) {
           getRowId={(row) => row.id}
           onRowClick={setSelectedCompany}
           tableClassName="min-w-[760px]"
+          showFooter={false}
         />
+
+        {/* Server-Side Pagination */}
+        <div className="mt-5 flex items-center justify-between border-t border-stroke pt-4 text-sm dark:border-dark-3">
+          <div className="text-dark-6 dark:text-dark-6">
+            Showing {pagination.data.length} of {pagination.totalCount} result
+            {pagination.totalCount === 1 ? "" : "s"}
+          </div>
+
+          <div className="flex items-center gap-3">
+            <span className="text-dark-6 dark:text-dark-6">
+              Page {pagination.currentPage + 1} of{" "}
+              {Math.max(pagination.totalPages, 1)}
+            </span>
+
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                label="Previous"
+                size="small"
+                variant="outlineDark"
+                onClick={pagination.previousPage}
+                disabled={!pagination.canGoPrevious || pagination.isLoading}
+                className={cn(
+                  (!pagination.canGoPrevious || pagination.isLoading) &&
+                    "cursor-not-allowed opacity-50 hover:bg-transparent dark:hover:bg-transparent",
+                )}
+              />
+              <Button
+                type="button"
+                label="Next"
+                size="small"
+                variant="outlineDark"
+                onClick={pagination.nextPage}
+                disabled={!pagination.canGoNext || pagination.isLoading}
+                className={cn(
+                  (!pagination.canGoNext || pagination.isLoading) &&
+                    "cursor-not-allowed opacity-50 hover:bg-transparent dark:hover:bg-transparent",
+                )}
+              />
+            </div>
+          </div>
+        </div>
       </div>
 
       {selectedCompany &&

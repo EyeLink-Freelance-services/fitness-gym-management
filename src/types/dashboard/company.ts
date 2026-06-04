@@ -1,5 +1,5 @@
 import type { StatusTone } from "@/types/shared";
-import { StatusOpt } from "./super-admin";
+import { StatusOpt, SuperAdminCompanyRow } from "./super-admin";
 import { GenderOption } from "./shared";
 
 export interface CompanyCoachesRow {
@@ -36,32 +36,62 @@ export interface CompanyStaffRow {
   status: StatusOpt;
 }
 
-export interface CompanyClientRow {
+/** API / domain membership plan (backend values). */
+export type MembershipPlanKind = "NORMAL" | "PERSONAL";
+
+/** Form select values for membership plan. */
+export type MembershipPlanFormValue = "standard" | "personalCoach";
+
+/**
+ * Single source of truth for company-dashboard client data
+ * (list, edit, create, and API mapping).
+ */
+export interface CompanyClient {
   id: string;
-  name: string;
-  dateOfBirth?: any;
-  gender?: string;
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
+  gender: string;
   email: string;
-  contact?: string;
-  plan?: string;
-  standardPrice?: number;
-  personalCoachPrice?: number | null;
-  hasPersonalCoachingPrice?: boolean;
-  emergencyContactName?: string;
-  emergencyContactPhone?: string;
+  phoneNumber: string;
+  emergencyContactName: string;
+  emergencyContactPhone: string;
   medicalConditions?: string;
   agreeTermsOfService?: boolean;
+  membershipPlan: MembershipPlanKind;
+  additionalFees?: number;
+  standardPrice?: number;
+  coachId?: string | null;
+  planStatus?: string;
   joinedAt?: string;
   expiresAt?: string;
-  coach?: string | null;
+  /** Coach assignment */
   assignedOn?: string;
-  /** Coach assignment: Assigned | Pending | Unassigned */
   status?: string;
   statusTone?: StatusTone;
-  /** Membership: Active | Expiring | Expired */
   membershipStatus?: string;
   membershipStatusTone?: StatusTone;
 }
+
+/** Form state for create / edit client (company dashboard). */
+export interface CompanyClientFormValues {
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
+  gender: string;
+  email: string;
+  phoneNumber: string;
+  emergencyContactName: string;
+  emergencyContactPhone: string;
+  medicalConditions?: string;
+  membershipPlan: MembershipPlanFormValue;
+  additionalFees?: number;
+  assignedCoach?: string;
+  startDate: string;
+  agreeTermsOfService?: boolean;
+}
+
+export type CompanyClientRow = CompanyClient;
 
 
 export interface AuditableApiBean {
@@ -88,8 +118,8 @@ export interface ClientContactApiBean {
 export interface ClientFullPlanApiBean {
   id?: string;
   membershipPlan?: "NORMAL" | "PERSONAL" | string;
-  personalCoachingPrice?: number;
-  hasPersonalCoachingPrice?: boolean;
+  additionalFees?: number;
+  coachId?: string;
   standardPrice?: number;
   status?: "ACTIVE" | "INACTIVE" | "EXPIRED" | string;
   startDate?: string;
@@ -121,11 +151,16 @@ export interface SearchClientsApiBean {
 
 export type CompanyPricing = {
   standardPrice: number | undefined;
-  hasPersonalCoachingPrice: boolean | undefined;
-  personalCoachingPrice: number | null | undefined;
+  additionalFees: number | null | undefined;
 };
 
 export interface CompanyClientsTableClientProps {
-  data: CompanyClientRow[];
+  initialData: CompanyClient[];
+  totalCount: number;
   companyPricing: CompanyPricing | null;
+}
+
+export interface CompanyTableClientProps {
+  initialData: SuperAdminCompanyRow[];
+  totalCount: number;
 }

@@ -1,10 +1,10 @@
-import type { CompanyClientRow } from "@/types/dashboard/company";
+import type { CompanyClient } from "@/types/dashboard/company";
 import type { StatusTone } from "@/types/shared";
 import { getMembershipStatus } from "@/utils/dashboard/company-directory";
 
 export function getClientCoachAssignmentStatus(
-  status: CompanyClientRow["status"],
-  coach: CompanyClientRow["coach"],
+  status: CompanyClient["status"],
+  coachId: CompanyClient["coachId"],
 ): {
   label: string;
   tone: StatusTone;
@@ -32,7 +32,7 @@ export function getClientCoachAssignmentStatus(
     };
   }
 
-  if (!coach) {
+  if (!coachId) {
     return {
       label: "Unassigned",
       tone: "neutral",
@@ -46,24 +46,21 @@ export function getClientCoachAssignmentStatus(
 }
 
 export function buildCompanyClientRows(
-  clients: CompanyClientRow[],
-): CompanyClientRow[] {
+  clients: CompanyClient[],
+): CompanyClient[] {
   return clients.map((client) => {
     const assignmentStatus = getClientCoachAssignmentStatus(
       client.status,
-      client.coach,
+      client.coachId,
     );
 
-    const membership =
-      client.expiresAt && client.plan
-        ? getMembershipStatus(client.expiresAt)
-        : null;
+    const membership = client.expiresAt
+      ? getMembershipStatus(client.expiresAt)
+      : null;
 
     return {
       ...client,
-      contact: client.contact?.trim() || undefined,
-      plan: client.plan?.trim() || undefined,
-      coach: client.coach?.trim() || null,
+      coachId: client.coachId?.trim() || null,
       assignedOn: client.assignedOn,
       status: assignmentStatus.label,
       statusTone: assignmentStatus.tone,

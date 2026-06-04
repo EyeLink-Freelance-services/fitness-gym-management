@@ -6,10 +6,9 @@ import {
 } from "@/components/Dashboard/table-column/company-columns";
 import AssignClientForm from "@/components/Forms/AssignClientForm";
 import { DataTable } from "@/components/Tables";
-import { COMPANY_COACH_ROWS } from "@/data/company-coaches";
 import type { CompanyClientRow } from "@/types/dashboard/company";
 import type { AssignClientFormData, AssignClientStatus } from "@/types/forms";
-import { useEffect, useId, useMemo, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { createPortal } from "react-dom";
 
 interface CompanyClientCoachAssignTableClientProps {
@@ -29,7 +28,7 @@ function normalizeAssignmentStatus(
     return normalizedStatus;
   }
 
-  return assignment.coach ? "assigned" : "unassigned";
+  return assignment.coachId ? "assigned" : "unassigned";
 }
 
 export function CompanyClientCoachAssignTableClient({
@@ -63,24 +62,13 @@ export function CompanyClientCoachAssignTableClient({
     };
   }, [selectedAssignment]);
 
-  const coachNameToIdMap = useMemo(
-    () =>
-      new Map(
-        COMPANY_COACH_ROWS.map((coach) => [
-          `${coach.first_name} ${coach.last_name}`.trim(),
-          coach.id,
-        ]),
-      ),
-    [],
-  );
-
   const selectedAssignmentFormData: AssignClientFormData | undefined =
     selectedAssignment
       ? {
           clientId: selectedAssignment.id,
-          coachId: selectedAssignment.coach
-            ? (coachNameToIdMap.get(selectedAssignment.coach) ?? "")
-            : "",
+          coachId:
+            selectedAssignment.coachId ??
+            "",
           status: normalizeAssignmentStatus(selectedAssignment),
         }
       : undefined;

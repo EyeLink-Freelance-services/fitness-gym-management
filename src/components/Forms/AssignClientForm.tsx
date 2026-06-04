@@ -4,6 +4,7 @@ import { SearchableSelect } from "@/components/FormElements/SearchableSelect";
 import { Select } from "@/components/FormElements/select";
 import { Button } from "@/components/ui-elements/button";
 import { COMPANY_CLIENT_ROWS } from "@/data/company";
+import { getCompanyClientFullName } from "@/modules/company/company-client.mappers";
 import { COMPANY_COACH_ROWS } from "@/data/company-coaches";
 import {
   AssignClientCreateInput,
@@ -39,7 +40,7 @@ export default function AssignClientForm({
     () =>
       COMPANY_CLIENT_ROWS.map((client) => ({
         value: client.id,
-        label: client.name,
+        label: getCompanyClientFullName(client),
       })),
     [],
   );

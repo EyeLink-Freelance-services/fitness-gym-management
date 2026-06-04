@@ -223,7 +223,7 @@ export async function getGymCoachCLientAssign(limit = 5) {
   await new Promise((r) => setTimeout(r, 200));
 
   const sorted = [...COMPANY_CLIENT_ROWS]
-    .filter((client) => client.coach || client.status || client.assignedOn)
+    .filter((client) => client.coachId || client.status || client.assignedOn)
     .sort(
       (a, b) =>
         new Date(b.assignedOn ?? 0).getTime() -

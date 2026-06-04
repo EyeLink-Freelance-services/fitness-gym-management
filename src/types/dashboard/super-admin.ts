@@ -35,8 +35,6 @@ export interface SuperAdminCompanyRow {
   district: string;
   branches: string[];
   standard_price: number;
-  has_personal_coaching_price: boolean;
-  personal_coaching_price?: number | null;
   disclaimer_text: string;
   terms_and_conditions: string;
   status: StatusOpt;
@@ -67,8 +65,7 @@ export interface CompanyResponseApiBean {
   };
   price: {
     standardPrice: number;
-    hasPersonalCoachingPrice: boolean;
-    personalCoachingPrice?: number | null;
+    additionalFees: number;
   };
   miscellaneous: {
     disclaimer: string;

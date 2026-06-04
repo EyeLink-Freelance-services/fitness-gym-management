@@ -92,5 +92,5 @@ export async function backendPut<T>(path: string, body: unknown): Promise<T> {
   }
 
   if (res.status === 204) return {} as T;
-  return res.json() as Promise<T>;
+  return {} as Promise<T>;
 }

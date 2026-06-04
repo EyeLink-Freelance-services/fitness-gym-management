@@ -5,7 +5,6 @@ import type { CompanyFormData, CompanyFormProps } from "@/types/forms";
 import { COMPANY_STATES } from "@/data/dashboardForm";
 import InputGroup from "../FormElements/InputGroup";
 import { Select } from "../FormElements/select";
-import { Checkbox } from "../FormElements/checkbox";
 import { Button } from "../ui-elements/button";
 import { ImageUpload } from "../FormElements/ImageUpload";
 import { validatePhone, validateRequired } from "@/lib/forms/formValidation";
@@ -31,7 +30,6 @@ export default function CompanyForm({
     register,
     control,
     handleSubmit,
-    setValue,
     watch,
     reset,
     formState: { errors, isValid, isSubmitting },
@@ -44,7 +42,6 @@ export default function CompanyForm({
   });
 
   const branches = watch("branches");
-  const hasPremiumPlan = watch("hasPersonalCoachingPrice");
 
   useEffect(() => {
     reset({
@@ -53,12 +50,6 @@ export default function CompanyForm({
       logo: undefined,
     });
   }, [initialData, reset]);
-
-  useEffect(() => {
-    if (!hasPremiumPlan) {
-      setValue("personalCoachingPrice", undefined, { shouldValidate: true });
-    }
-  }, [hasPremiumPlan, setValue]);
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -71,7 +62,6 @@ export default function CompanyForm({
   );
 
   const onSubmit = async (data: CompanyFormData) => {
-    console.log("Payload sent to backend:", data);
     try {
       let logoBase64: string | null = null;
       if (logoRef.current) {
@@ -232,7 +222,6 @@ export default function CompanyForm({
 
         <HeaderTitle title="Membership Pricing" />
 
-        <div className="grid grid-cols-1 gap-4">
           <InputGroup
             type="number"
             label="Standard Price(Rs)"
@@ -248,35 +237,6 @@ export default function CompanyForm({
               min: 0,
             }}
           />
-          <div className="flex items-end">
-            <Checkbox
-              minimal
-              radius="md"
-              label="Premium Plan"
-              inputProps={register("hasPersonalCoachingPrice")}
-            />
-          </div>
-        </div>
-
-        {hasPremiumPlan && (
-          <InputGroup
-            type="number"
-            label="Personal Coaching Price(Rs)"
-            placeholder="250"
-            required
-            error={errors.personalCoachingPrice?.message}
-            inputProps={{
-              ...register("personalCoachingPrice", {
-                valueAsNumber: true,
-                validate: (value) =>
-                  hasPremiumPlan
-                    ? validateRequired(value, "Personal coaching price is required")
-                    : true,
-              }),
-              min: 0,
-            }}
-          />
-        )}
 
         <div className="my-6 flex items-center gap-3">
           <div className="h-px flex-1 bg-stroke dark:bg-dark-3" />

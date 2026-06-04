@@ -1,6 +1,11 @@
 import { StatusBadge } from "@/components/ui-elements/status-badge";
+import {
+  getClientDisplayFee,
+  getCompanyClientFullName,
+  getMembershipPlanLabel,
+} from "@/modules/company/company-client.mappers";
 import type {
-  CompanyClientRow,
+  CompanyClient,
   CompanyCoachesRow,
   CompanyStaffRow,
 } from "@/types/dashboard/company";
@@ -14,14 +19,21 @@ function formatDate(date?: string) {
     year: "numeric",
   });
 }
-export const expiringSoonColumns: TableUIColumn<CompanyClientRow>[] = [
+export const expiringSoonColumns: TableUIColumn<CompanyClient>[] = [
   {
-    key: "name",
+    key: "firstName",
     label: "Client Name",
     align: "left",
+    render: (row) => getCompanyClientFullName(row),
     headClassName: "min-w-[140px]",
   },
-  { key: "plan", label: "Plan", align: "left", headClassName: "min-w-[120px]" },
+  {
+    key: "membershipPlan",
+    label: "Plan",
+    align: "left",
+    render: (row) => getMembershipPlanLabel(row.membershipPlan),
+    headClassName: "min-w-[120px]",
+  },
   {
     key: "expiresAt",
     label: "Expires At",
@@ -29,21 +41,28 @@ export const expiringSoonColumns: TableUIColumn<CompanyClientRow>[] = [
     headClassName: "min-w-[140px]",
   },
 ];
-export const newSignupColumns: TableUIColumn<CompanyClientRow>[] = [
+export const newSignupColumns: TableUIColumn<CompanyClient>[] = [
   {
-    key: "name",
+    key: "firstName",
     label: "Client Name",
     align: "left",
+    render: (row) => getCompanyClientFullName(row),
     headClassName: "min-w-[140px]",
   },
   {
-    key: "contact",
+    key: "phoneNumber",
     label: "Contact",
     align: "left",
-    render: (row) => row.contact ?? "N/A",
+    render: (row) => row.phoneNumber || "N/A",
     headClassName: "min-w-[140px]",
   },
-  { key: "plan", label: "Plan", align: "left", headClassName: "min-w-[120px]" },
+  {
+    key: "membershipPlan",
+    label: "Plan",
+    align: "left",
+    render: (row) => getMembershipPlanLabel(row.membershipPlan),
+    headClassName: "min-w-[120px]",
+  },
   {
     key: "joinedAt",
     label: "Joined At",
@@ -51,25 +70,26 @@ export const newSignupColumns: TableUIColumn<CompanyClientRow>[] = [
     headClassName: "min-w-[140px]",
   },
 ];
-export const coachAssignmentColumns: TableUIColumn<CompanyClientRow>[] = [
+export const coachAssignmentColumns: TableUIColumn<CompanyClient>[] = [
   {
-    key: "coach",
+    key: "coachId",
     label: "Coach Name",
     align: "left",
-    render: (row) => row.coach ?? "Unassigned",
+    render: (row) => row.coachId ?? "Unassigned",
     headClassName: "min-w-[160px]",
   },
   {
-    key: "name",
+    key: "firstName",
     label: "Client Name",
     align: "left",
+    render: (row) => getCompanyClientFullName(row),
     headClassName: "min-w-[140px]",
   },
   {
-    key: "plan",
+    key: "membershipPlan",
     label: "Membership Plan",
     align: "left",
-    render: (row) => row.plan ?? "Normal",
+    render: (row) => getMembershipPlanLabel(row.membershipPlan),
     headClassName: "min-w-[120px]",
   },
   {
@@ -80,13 +100,13 @@ export const coachAssignmentColumns: TableUIColumn<CompanyClientRow>[] = [
   },
 ];
 
-export const companyClientCoachAssignmentColumns: ColumnDef<CompanyClientRow>[] = [
+export const companyClientCoachAssignmentColumns: ColumnDef<CompanyClient>[] = [
   {
-    accessorKey: "name",
+    id: "name",
     header: "Client Name",
     cell: ({ row }) => (
       <span className="font-medium text-dark dark:text-white">
-        {row.original.name}
+        {getCompanyClientFullName(row.original)}
       </span>
     ),
     meta: {
@@ -95,27 +115,27 @@ export const companyClientCoachAssignmentColumns: ColumnDef<CompanyClientRow>[] 
     },
   },
   {
-    accessorKey: "contact",
+    accessorKey: "phoneNumber",
     header: "Contact",
-    cell: ({ row }) => row.original.contact ?? "N/A",
+    cell: ({ row }) => row.original.phoneNumber || "N/A",
     meta: {
       align: "left",
       headClassName: "min-w-[180px]",
     },
   },
   {
-    accessorKey: "plan",
+    id: "plan",
     header: "Plan",
-    cell: ({ row }) => row.original.plan ?? "-",
+    cell: ({ row }) => getMembershipPlanLabel(row.original.membershipPlan),
     meta: {
       align: "left",
       headClassName: "min-w-[140px]",
     },
   },
   {
-    accessorKey: "coach",
+    accessorKey: "coachId",
     header: "Coach",
-    cell: ({ row }) => row.original.coach ?? "Unassigned",
+    cell: ({ row }) => row.original.coachId ?? "Unassigned",
     meta: {
       align: "left",
       headClassName: "min-w-[180px]",
@@ -148,13 +168,13 @@ export const companyClientCoachAssignmentColumns: ColumnDef<CompanyClientRow>[] 
   },
 ];
 
-export const companyClientColumns: ColumnDef<CompanyClientRow>[] = [
+export const companyClientColumns: ColumnDef<CompanyClient>[] = [
   {
-    accessorKey: "name",
+    id: "name",
     header: "Name",
     cell: ({ row }) => (
       <span className="font-medium text-dark dark:text-white">
-        {row.original.name}
+        {getCompanyClientFullName(row.original)}
       </span>
     ),
     meta: {
@@ -163,35 +183,38 @@ export const companyClientColumns: ColumnDef<CompanyClientRow>[] = [
     },
   },
   {
-    accessorKey: "contact",
+    accessorKey: "phoneNumber",
     header: "Contact",
-    cell: ({ row }) => row.original.contact ?? "N/A",
+    cell: ({ row }) => row.original.phoneNumber || "N/A",
     meta: {
       align: "left",
       headClassName: "min-w-[140px]",
     },
   },
   {
-    accessorKey: "plan",
+    id: "plan",
     header: "Plan",
-    cell: ({ row }) => row.original.plan ?? "-",
+    cell: ({ row }) => getMembershipPlanLabel(row.original.membershipPlan),
     meta: {
       align: "left",
     },
   },
   {
-    accessorKey: "standardPrice",
+    id: "fee",
     header: "Fee (Rs)",
-    cell: ({ row }) => row.original.standardPrice,
+    cell: ({ row }) => {
+      const fee = getClientDisplayFee(row.original);
+      return fee != null ? fee : "-";
+    },
     meta: {
       align: "left",
       headClassName: "min-w-[120px]",
     },
   },
   {
-    accessorKey: "coachAssign",
+    accessorKey: "coachId",
     header: "Coach Assigned",
-    cell: ({ row }) => row.original.coach ?? " - ",
+    cell: ({ row }) => row.original.coachId ?? " - ",
     meta: {
       headClassName: "min-w-[140px]",
     },
@@ -206,6 +229,7 @@ export const companyClientColumns: ColumnDef<CompanyClientRow>[] = [
     ),
   },
 ];
+
 export const companyStaffColumns: ColumnDef<CompanyStaffRow>[] = [
   {
     accessorKey: "first_name",

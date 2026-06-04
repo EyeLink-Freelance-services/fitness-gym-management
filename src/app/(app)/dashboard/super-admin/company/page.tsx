@@ -1,8 +1,8 @@
 import CompanyTableClient from "@/components/Dashboard/super-admin/company-table-client";
-import { getAllCompanies } from "@/modules/super-admin/super-admin.service";
+import { getCompanies } from "@/modules/super-admin/super-admin.service";
 
 export default async function SuperAdminCompanyPage() {
-  const allCompanies = await getAllCompanies();
+  const { companies, totalCount } = await getCompanies({ pageNumber: 0, pageSize: 10 });
 
-  return <CompanyTableClient data={allCompanies} />;
+  return <CompanyTableClient initialData={companies} totalCount={totalCount} />;
 }

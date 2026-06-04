@@ -128,11 +128,6 @@ export const superAdminCompanyColumns: ColumnDef<SuperAdminCompanyRow>[] = [
     header: "Standard Price",
     meta: { align: "left", headClassName: "min-w-[140px]" },
   },
-  {
-    accessorKey: "premium_price",
-    header: "Premium Price",
-    meta: { align: "left", headClassName: "min-w-[140px]" },
-  },
 ];
 
 export const superAdminCompanyPreviewColumns: TableUIColumn<SuperAdminCompanyRow>[] =

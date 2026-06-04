@@ -1,8 +1,9 @@
 import { CompanyClientCoachAssignTableClient } from "@/components/Dashboard/company/company-client-coach-assign-table-client";
-import { getCompanyAllClients } from "@/modules/company/company.service";
+import { getCompanyClients } from "@/modules/company/company.service";
 
 export default async function ClientCoachAssignPage() {
-  const assignments = await getCompanyAllClients();
+  // const assignments = (await getCompanyClients()).clients;
 
-  return <CompanyClientCoachAssignTableClient data={assignments} />;
+  // return <CompanyClientCoachAssignTableClient data={assignments} />;
+  return null;
 }

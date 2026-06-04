@@ -10,17 +10,23 @@ import type {
 } from "@/types/dashboard/payment";
 import { DashboardOverviewItem } from "@/types/shared";
 import { GYM_CLIENTS } from "@/data/company";
+import {
+  getCompanyClientFullName,
+  getMembershipPlanLabel,
+} from "@/modules/company/company-client.mappers";
+import type { CompanyClient } from "@/types/dashboard/company";
 
-function toPaymentMember(client: { name: string; contact?: string }): PaymentMemberSummary {
-  const initials = client.name
+function toPaymentMember(client: CompanyClient): PaymentMemberSummary {
+  const name = getCompanyClientFullName(client);
+  const initials = name
     .split(" ")
     .map((n) => n[0])
     .join("")
     .slice(0, 2)
     .toUpperCase();
   return {
-    name: client.name,
-    email: `${client.name.toLowerCase().replace(/\s/g, ".")}@example.com`,
+    name,
+    email: `${name.toLowerCase().replace(/\s/g, ".")}@example.com`,
     initials: initials || "-",
     avatarTone: "emerald",
   };
@@ -108,7 +114,7 @@ export const COMPANY_PAYMENT_TRANSACTIONS: PaymentTransactionRow[] = MEMBER && S
       {
         invoice: "#INV-2026-0341",
         member: MEMBER,
-        plan: SINGLE_CLIENT.plan ?? "Premium",
+        plan: getMembershipPlanLabel(SINGLE_CLIENT.membershipPlan),
         amount: "Rs 250.00",
         method: "Online",
         date: "1 Mar 2026",
@@ -122,7 +128,7 @@ export const COMPANY_PAYMENT_TRANSACTIONS: PaymentTransactionRow[] = MEMBER && S
       {
         invoice: "#INV-2026-0338",
         member: MEMBER,
-        plan: SINGLE_CLIENT.plan ?? "Premium",
+        plan: getMembershipPlanLabel(SINGLE_CLIENT.membershipPlan),
         amount: "Rs 250.00",
         method: "Card",
         date: "1 Feb 2026",
@@ -136,7 +142,7 @@ export const COMPANY_PAYMENT_TRANSACTIONS: PaymentTransactionRow[] = MEMBER && S
       {
         invoice: "#INV-2026-0330",
         member: MEMBER,
-        plan: SINGLE_CLIENT.plan ?? "Premium",
+        plan: getMembershipPlanLabel(SINGLE_CLIENT.membershipPlan),
         amount: "Rs 250.00",
         method: "Cash",
         date: "1 Jan 2026",
@@ -154,7 +160,7 @@ export const COMPANY_PAYMENT_RENEWALS: PaymentRenewalRow[] = MEMBER && SINGLE_CL
   ? [
       {
         member: MEMBER,
-        plan: SINGLE_CLIENT.plan ?? "Premium",
+        plan: getMembershipPlanLabel(SINGLE_CLIENT.membershipPlan),
         amountDue: "Rs 250.00",
         dueDate: SINGLE_CLIENT.expiresAt ?? "2026-03-20",
         daysLeft: "29 days",

@@ -5,7 +5,8 @@ import {
   validatePhone,
   validateRequired,
 } from "@/lib/forms/formValidation";
-import { ClientFormData, CompanyClientFormProps } from "@/types/forms";
+import type { CompanyClientFormValues } from "@/types/dashboard/company";
+import { CompanyClientFormProps } from "@/types/forms";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import InputGroup from "../FormElements/InputGroup";
@@ -35,7 +36,7 @@ export default function ClientForm({
     watch,
     reset,
     formState: { errors, isValid, isSubmitting },
-  } = useForm<ClientFormData>({
+  } = useForm<CompanyClientFormValues>({
     mode: "all",
     defaultValues: {
       ...DEFAULT_CLIENT_FORM_VALUES,
@@ -53,17 +54,12 @@ export default function ClientForm({
   }, [initialData, reset]);
 
   useEffect(() => {
-    if (!membershipPlan) {
-      setValue("membershipPlan", "standard", { shouldValidate: true });
-    }
-
-    if (membershipPlan !== "personalCoach") {
-      setValue("personalCoachPrice", undefined, { shouldValidate: false });
-      setValue("membershipPlan", "standard", { shouldValidate: true });
+    if (membershipPlan === "standard") {
+      setValue("additionalFees", undefined, { shouldValidate: false });
     }
   }, [membershipPlan, setValue]);
 
-  const onSubmit = async (data: ClientFormData) => {
+  const onSubmit = async (data: CompanyClientFormValues) => {
     try {
       if (mode === "edit") {
         if (!clientId) throw new Error("Missing clientId for edit mode");
@@ -226,11 +222,11 @@ export default function ClientForm({
               label="Personal Coaching Price"
               placeholder="200"
               required
-              error={errors.personalCoachPrice?.message}
+              error={errors.additionalFees?.message}
               inputProps={{
-                ...register("personalCoachPrice", {
+                ...register("additionalFees", {
                   valueAsNumber: true,
-                  validate: (value) => validateRequired(value, "Personal coaching price is required")
+                  validate: (value) => validateRequired(value, "Additional fees are required")
                 }),
                 min: 0,
               }}
@@ -240,7 +236,7 @@ export default function ClientForm({
               type="number"
               label="Standard Price"
               placeholder="Selected plan price"
-              error={errors.standardPrice?.message}
+              error={errors.membershipPlan?.message}
               inputProps={{
                 value: companyPlan?.standardPrice,
                 readOnly: true,

@@ -76,8 +76,6 @@ export const DEFAULT_COMPANY_FORM_VALUES: CompanyFormData = {
   state: "",
   branches: [],
   standardPrice: undefined,
-  hasPersonalCoachingPrice: false,
-  personalCoachingPrice: undefined,
   disclaimer: "N/A",
   agreeTerms: true,
 };

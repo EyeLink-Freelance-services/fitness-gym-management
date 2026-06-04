@@ -1,7 +1,10 @@
 import type { ReactNode } from "react";
 import { UseFormReturn } from "react-hook-form";
 import type { CoachMealTimeOption } from "@/types/dashboard/client";
-import { CompanyPricing } from "../dashboard/company";
+import {
+  CompanyClientFormValues,
+  CompanyPricing,
+} from "../dashboard/company";
 
 export interface FormHeader {
   label: string;
@@ -55,8 +58,6 @@ export interface CompanyFormData {
   branches: CompanyBranchField[];
   disclaimer: string;
   standardPrice: number | undefined;
-  hasPersonalCoachingPrice: boolean;
-  personalCoachingPrice?: number | undefined;
   agreeTerms: boolean;
 }
 export interface StaffFormData {
@@ -126,7 +127,7 @@ export interface CompanyStaffFormProps {
 }
 
 export interface CompanyClientFormProps {
-  initialData?: Partial<ClientFormData>;
+  initialData?: Partial<CompanyClientFormValues>;
   clientContext?: "company" | "personal";
   mode?: "create" | "edit";
   clientId?: string;
@@ -140,23 +141,7 @@ export interface AssignClientFormProps {
   onSuccess?: () => void;
 }
 
-export interface ClientFormData {
-  firstName: string;
-  lastName: string;
-  dateOfBirth: string;
-  gender: string;
-  email: string;
-  phoneNumber: string;
-  emergencyContactName: string;
-  emergencyContactPhone: string;
-  medicalConditions?: string;
-  membershipPlan: string;
-  standardPrice?: number;
-  personalCoachPrice?: number | null;
-  assignedCoach: string;
-  startDate: string;
-  agreeTermsOfService?: boolean;
-}
+export type ClientFormData = CompanyClientFormValues;
 
 export interface LoginFormProps {
   onForgotPassword: () => void;

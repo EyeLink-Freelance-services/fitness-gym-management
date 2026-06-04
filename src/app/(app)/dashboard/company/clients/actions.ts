@@ -2,22 +2,45 @@
 
 import {
   createClientService,
+  getCompanyClients,
   updateClientService,
 } from "@/modules/company/company.service";
-import type { CompanyPricing } from "@/types/dashboard/company";
-import type { ClientFormData } from "@/types/forms";
+import type {
+  CompanyClientFormValues,
+  CompanyPricing,
+} from "@/types/dashboard/company";
+import { revalidatePath } from "next/cache";
 
 export async function createClientAction(
-  data: ClientFormData,
+  data: CompanyClientFormValues,
   companyPlan?: CompanyPricing | null,
 ) {
-  return await createClientService(data, companyPlan);
+  const result = await createClientService(data, companyPlan);
+  revalidatePath("/dashboard/company/clients");
+  return result;
 }
 
 export async function updateClientAction(
   clientId: string,
-  data: ClientFormData,
+  data: CompanyClientFormValues,
   companyPlan?: CompanyPricing | null,
 ) {
-  return await updateClientService(clientId, data, companyPlan);
+  const result = await updateClientService(clientId, data, companyPlan);
+  revalidatePath("/dashboard/company/clients");
+  return result;
+}
+
+export async function fetchCompanyClientPage(
+  pageNumber: number,
+  pageSize: number,
+) {
+  const { clients, totalCount } = await getCompanyClients({
+    pageNumber,
+    pageSize,
+  });
+
+  return {
+    clients,
+    totalCount,
+  };
 }

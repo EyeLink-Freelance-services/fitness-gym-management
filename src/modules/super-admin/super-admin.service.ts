@@ -33,8 +33,6 @@ function mapCompanyFormToCompanyRequest(form: CompanyFormData) {
     },
     price: {
       standardPrice: form.standardPrice ?? 0,
-      hasPersonalCoachingPrice: form.hasPersonalCoachingPrice,
-      personalCoachingPrice: form.hasPersonalCoachingPrice ? (form.personalCoachingPrice ?? null) : null,
     },
     miscellaneous: {
       disclaimer: trimmedDisclaimer || "N/A",
@@ -61,8 +59,6 @@ function mapCompanyApiToRow(
     district: company.address.state,
     branches: (company.information.branches ?? []).map((b) => b.name),
     standard_price: company.price.standardPrice ?? 0,
-    has_personal_coaching_price: company.price.hasPersonalCoachingPrice ?? false,
-    personal_coaching_price: company.price.personalCoachingPrice ?? null,
     disclaimer_text: company.miscellaneous.disclaimer ?? "",
     terms_and_conditions: company.miscellaneous.agreeTermsOfService
       ? "Agreed"
@@ -72,16 +68,14 @@ function mapCompanyApiToRow(
   };
 }
 
-// ─── Service ──────────────────────────────────────────────────────────────────
+const COMPANY_API_BASE = "/api/companies";
 
 export async function createCompanyService(form: CompanyFormData) {
   return await backendPost(
-    "/api/companies",
+    COMPANY_API_BASE,
     mapCompanyFormToCompanyRequest(form),
   );
 }
-
-const COMPANY_API_BASE = "/api/companies";
 
 export async function getCompanies({
   pageNumber = 0,
@@ -95,11 +89,6 @@ export async function getCompanies({
     companies: (data.companies ?? []).map(mapCompanyApiToRow),
     totalCount: data.totalElements ?? 0,
   };
-}
-
-export async function getAllCompanies() {
-  const { companies } = await getCompanies({ pageSize: 10 });
-  return companies;
 }
 
 export async function getLastFiveCompanies() {
