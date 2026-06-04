@@ -1,8 +1,17 @@
+import type { AuditableApiBean } from "./shared";
+
+// ---------------------------------------------------------------------------
+// Status union – used across super-admin and company UI rows.
+// ---------------------------------------------------------------------------
+
 export type StatusOpt = "Active" | "Inactive" | "Disabled" | "Pending";
+
+// ---------------------------------------------------------------------------
+// Super Admin UI rows – flat, denormalised shapes used by table components.
+// ---------------------------------------------------------------------------
 
 export interface SuperAdminCoachesRow {
   id: string;
-
   first_name: string;
   last_name: string;
   phone_num: string;
@@ -41,42 +50,51 @@ export interface SuperAdminCompanyRow {
   createdAt: string;
 }
 
+// ---------------------------------------------------------------------------
+// Company API DTOs – direct mapping to/from the OpenAPI spec.
+// ---------------------------------------------------------------------------
 
-interface CompanyBranchApiBean {
+/** Branch as returned by the backend. Swagger field: branchName. */
+export interface CompanyBranchApiBean {
   id?: string;
+  /** NOTE: backend currently serialises this as `name` (not `branchName` per spec). */
   name: string;
+}
+
+export interface CompanyInformationApiBean {
+  companyName: string;
+  logo?: string | null;
+  brn: string;
+  email: string;
+  contactNumber?: string;
+  branches: CompanyBranchApiBean[];
+}
+
+export interface CompanyAddressApiBean {
+  street: string;
+  city: string;
+  state: string;
+  postalCode: string;
+}
+
+export interface CompanyPriceApiBean {
+  standardPrice: number;
+  additionalFees?: number;
+}
+
+export interface CompanyMiscellaneousApiBean {
+  disclaimer: string;
+  agreeTermsOfService: boolean;
 }
 
 export interface CompanyResponseApiBean {
   id: string;
-  information: {
-    companyName: string;
-    email: string;
-    logo?: string | null;
-    brn: string;
-    contactNumber?: string;
-    branches: CompanyBranchApiBean[];
-  };
-  address: {
-    street: string;
-    city: string;
-    state: string;
-    postalCode: string;
-  };
-  price: {
-    standardPrice: number;
-    additionalFees: number;
-  };
-  miscellaneous: {
-    disclaimer: string;
-    agreeTermsOfService: boolean;
-  };
-  auditData?: {
-    createdDate?: string;
-    createdBy?: string;
-    lastModifiedDate?: string;
-    lastModifiedBy?: string;
-  };
+  information: CompanyInformationApiBean;
+  address: CompanyAddressApiBean;
+  price: CompanyPriceApiBean;
+  miscellaneous: CompanyMiscellaneousApiBean;
+  auditData?: AuditableApiBean;
+  version?: number;
 }
 
 export interface SearchCompaniesApiBean {
@@ -87,3 +105,11 @@ export interface SearchCompaniesApiBean {
   totalPages: number;
 }
 
+// ---------------------------------------------------------------------------
+// Component prop interfaces.
+// ---------------------------------------------------------------------------
+
+export interface CompanyTableClientProps {
+  initialData: SuperAdminCompanyRow[];
+  totalCount: number;
+}

@@ -2,6 +2,7 @@
 
 import {
   createClientService,
+  getCompanyClientById,
   getCompanyClients,
   updateClientService,
 } from "@/modules/company/company.service";
@@ -27,6 +28,7 @@ export async function updateClientAction(
 ) {
   const result = await updateClientService(clientId, data, companyPlan);
   revalidatePath("/dashboard/company/clients");
+  revalidatePath(`/dashboard/company/clients/${clientId}`);
   return result;
 }
 
@@ -43,4 +45,8 @@ export async function fetchCompanyClientPage(
     clients,
     totalCount,
   };
+}
+
+export async function getCompanyClientAction(clientId: string) {
+  return getCompanyClientById(clientId);
 }

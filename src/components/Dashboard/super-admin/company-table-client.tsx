@@ -13,7 +13,7 @@ import { Button } from "@/components/ui-elements/button";
 import { cn } from "@/lib/utils";
 import { usePagination } from "@/hooks/use-pagination";
 import { fetchCompaniesPage } from "@/app/(app)/dashboard/super-admin/company/actions";
-import { CompanyTableClientProps } from "@/types/dashboard/company";
+import { CompanyTableClientProps } from "@/types/dashboard/super-admin";
 
 export default function CompanyTableClient({
   initialData,

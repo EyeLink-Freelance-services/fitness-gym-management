@@ -141,8 +141,6 @@ export interface AssignClientFormProps {
   onSuccess?: () => void;
 }
 
-export type ClientFormData = CompanyClientFormValues;
-
 export interface LoginFormProps {
   onForgotPassword: () => void;
 }

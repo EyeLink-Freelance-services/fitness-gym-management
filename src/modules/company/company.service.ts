@@ -5,6 +5,7 @@ import {
 } from "@/lib/api/backend-client";
 import { getAuthContext } from "@/lib/auth/get-auth-context";
 import type {
+  ClientResponseApiBean,
   CompanyClient,
   CompanyClientFormValues,
   CompanyPricing,
@@ -64,6 +65,20 @@ export async function getCompanyClients({
 export async function getCompanyLastFiveClients() {
   const { clients } = await getCompanyClients({ pageSize: 5 });
   return clients;
+}
+
+export async function getCompanyClientById(
+  clientId: string,
+): Promise<CompanyClient | null> {
+  try {
+    const companyId = await requireCompanyId();
+    const data = await backendGet<ClientResponseApiBean>(
+      `${COMPANY_API_BASE}/${companyId}/clients/${clientId}`,
+    );
+    return mapClientResponseToCompanyClient(data);
+  } catch {
+    return null;
+  }
 }
 
 export async function createClientService(

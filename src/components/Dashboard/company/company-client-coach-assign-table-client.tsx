@@ -6,17 +6,17 @@ import {
 } from "@/components/Dashboard/table-column/company-columns";
 import AssignClientForm from "@/components/Forms/AssignClientForm";
 import { DataTable } from "@/components/Tables";
-import type { CompanyClientRow } from "@/types/dashboard/company";
+import type { CompanyClient } from "@/types/dashboard/company";
 import type { AssignClientFormData, AssignClientStatus } from "@/types/forms";
 import { useEffect, useId, useState } from "react";
 import { createPortal } from "react-dom";
 
 interface CompanyClientCoachAssignTableClientProps {
-  data: CompanyClientRow[];
+  data: CompanyClient[];
 }
 
 function normalizeAssignmentStatus(
-  assignment: CompanyClientRow,
+  assignment: CompanyClient,
 ): AssignClientStatus {
   const normalizedStatus = assignment.status?.trim().toLowerCase();
 
@@ -35,7 +35,7 @@ export function CompanyClientCoachAssignTableClient({
   data,
 }: CompanyClientCoachAssignTableClientProps) {
   const [selectedAssignment, setSelectedAssignment] =
-    useState<CompanyClientRow | null>(null);
+    useState<CompanyClient | null>(null);
   const [mounted, setMounted] = useState(false);
   const titleId = useId();
 

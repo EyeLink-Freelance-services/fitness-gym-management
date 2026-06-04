@@ -6,6 +6,8 @@ export const ROUTES = {
       ANNOUNCEMENT: "/dashboard/company/announcement",
       CLIENT_COACH_ASSIGN: "/dashboard/company/client-coach-assign",
       CLIENTS: "/dashboard/company/clients",
+      CLIENT_PROFILE: (clientId: string) =>
+        `/dashboard/company/clients/${clientId}`,
       COACHES: "/dashboard/company/coaches",
       MEMBERSHIP: "/dashboard/company/membership",
       PAYMENT: "/dashboard/company/payment",

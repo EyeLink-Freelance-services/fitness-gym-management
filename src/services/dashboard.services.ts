@@ -40,7 +40,6 @@ import type {
   SuperAdminCoachesRow,
 } from "@/types/dashboard/super-admin";
 import type {
-  CompanyClientRow,
   CompanyCoachesRow,
   CompanyStaffRow,
 } from "@/types/dashboard/company";

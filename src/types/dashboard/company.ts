@@ -1,10 +1,13 @@
 import type { StatusTone } from "@/types/shared";
-import { StatusOpt, SuperAdminCompanyRow } from "./super-admin";
-import { GenderOption } from "./shared";
+import type { SuperAdminCompanyRow } from "./super-admin";
+import type { AuditableApiBean, Gender, MembershipPlan } from "./shared";
+
+// ---------------------------------------------------------------------------
+// Company Coach UI row (displayed in the company coaches table).
+// ---------------------------------------------------------------------------
 
 export interface CompanyCoachesRow {
   id: string;
-
   first_name: string;
   last_name: string;
   phone_num: string;
@@ -20,9 +23,13 @@ export interface CompanyCoachesRow {
   bio: string;
   profile_photo?: string | null;
   availability: string[];
-  status: StatusOpt;
+  status: import("./super-admin").StatusOpt;
   createdAt: string;
 }
+
+// ---------------------------------------------------------------------------
+// Company Staff UI row.
+// ---------------------------------------------------------------------------
 
 export interface CompanyStaffRow {
   id: string;
@@ -33,19 +40,24 @@ export interface CompanyStaffRow {
   email: string;
   role: string;
   notes?: string;
-  status: StatusOpt;
+  status: import("./super-admin").StatusOpt;
 }
 
-/** API / domain membership plan (backend values). */
-export type MembershipPlanKind = "NORMAL" | "PERSONAL";
+// ---------------------------------------------------------------------------
+// Membership plan – two representations.
+// ---------------------------------------------------------------------------
+
+/** API / domain membership plan (backend enum values). */
+export type MembershipPlanKind = MembershipPlan;
 
 /** Form select values for membership plan. */
 export type MembershipPlanFormValue = "standard" | "personalCoach";
 
-/**
- * Single source of truth for company-dashboard client data
- * (list, edit, create, and API mapping).
- */
+// ---------------------------------------------------------------------------
+// Company Client – single source of truth for the company dashboard.
+// Used for: list display, edit form seed data, API response mapping.
+// ---------------------------------------------------------------------------
+
 export interface CompanyClient {
   id: string;
   firstName: string;
@@ -65,7 +77,6 @@ export interface CompanyClient {
   planStatus?: string;
   joinedAt?: string;
   expiresAt?: string;
-  /** Coach assignment */
   assignedOn?: string;
   status?: string;
   statusTone?: StatusTone;
@@ -91,21 +102,37 @@ export interface CompanyClientFormValues {
   agreeTermsOfService?: boolean;
 }
 
-export type CompanyClientRow = CompanyClient;
+// ---------------------------------------------------------------------------
+// Company Pricing – used when displaying / computing client fees.
+// ---------------------------------------------------------------------------
 
+export type CompanyPricing = {
+  standardPrice: number | undefined;
+  additionalFees: number | null | undefined;
+};
 
-export interface AuditableApiBean {
-  createdDate?: string;
-  createdBy?: string;
-  lastModifiedDate?: string;
-  lastModifiedBy?: string;
+// ---------------------------------------------------------------------------
+// Component prop interfaces.
+// ---------------------------------------------------------------------------
+
+export interface CompanyClientsTableClientProps {
+  initialData: CompanyClient[];
+  totalCount: number;
+  companyPricing: CompanyPricing | null;
 }
+
+// CompanyTableClientProps lives in super-admin.ts (it references SuperAdminCompanyRow).
+export type { SuperAdminCompanyRow };
+
+// ---------------------------------------------------------------------------
+// Client API DTOs – direct mapping to/from the OpenAPI spec.
+// ---------------------------------------------------------------------------
 
 export interface ClientInformationApiBean {
   firstName?: string;
   lastName?: string;
   dateOfBirth?: string;
-  gender?: GenderOption;
+  gender?: Gender;
 }
 
 export interface ClientContactApiBean {
@@ -115,9 +142,14 @@ export interface ClientContactApiBean {
   emergencyContactPhone?: string;
 }
 
+export interface ClientPlanApiBean {
+  membershipPlan?: MembershipPlan;
+  additionalFees?: number;
+}
+
 export interface ClientFullPlanApiBean {
   id?: string;
-  membershipPlan?: "NORMAL" | "PERSONAL" | string;
+  membershipPlan?: MembershipPlan | string;
   additionalFees?: number;
   coachId?: string;
   standardPrice?: number;
@@ -134,7 +166,7 @@ export interface ClientResponseApiBean {
   userId?: string;
   information?: ClientInformationApiBean;
   contact?: ClientContactApiBean;
-  activePlan?: ClientFullPlanApiBean;
+  plan?: ClientFullPlanApiBean;
   medicalConditions?: string;
   agreeTermsOfService?: boolean;
   auditData?: AuditableApiBean;
@@ -147,20 +179,4 @@ export interface SearchClientsApiBean {
   pageNumber?: number;
   totalElements?: number;
   totalPages?: number;
-}
-
-export type CompanyPricing = {
-  standardPrice: number | undefined;
-  additionalFees: number | null | undefined;
-};
-
-export interface CompanyClientsTableClientProps {
-  initialData: CompanyClient[];
-  totalCount: number;
-  companyPricing: CompanyPricing | null;
-}
-
-export interface CompanyTableClientProps {
-  initialData: SuperAdminCompanyRow[];
-  totalCount: number;
 }

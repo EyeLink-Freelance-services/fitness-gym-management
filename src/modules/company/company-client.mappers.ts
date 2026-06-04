@@ -4,9 +4,12 @@ import type {
   CompanyClientFormValues,
   MembershipPlanFormValue,
   MembershipPlanKind,
+  CompanyPricing,
 } from "@/types/dashboard/company";
 
-export function getCompanyClientFullName(client: Pick<CompanyClient, "firstName" | "lastName">): string {
+export function getCompanyClientFullName(
+  client: Pick<CompanyClient, "firstName" | "lastName">,
+): string {
   return `${client.firstName} ${client.lastName}`.trim() || "Client";
 }
 
@@ -15,10 +18,14 @@ export function getMembershipPlanLabel(kind: MembershipPlanKind): string {
   return "Standard";
 }
 
-export function getClientDisplayFee(client: CompanyClient): number | undefined {
-  return client.membershipPlan === "PERSONAL"
-    ? client.additionalFees
-    : client.standardPrice;
+export function getClientDisplayFee(
+  client: CompanyClient,
+  companyPricing?: CompanyPricing,
+): number | undefined {
+  if (client.membershipPlan === "PERSONAL") {
+    return client.additionalFees;
+  }
+  return client.standardPrice ?? companyPricing?.standardPrice;
 }
 
 function toDateInputValue(value?: string): string {
@@ -49,9 +56,7 @@ export function membershipPlanFormValueToKind(
 export function mapClientResponseToCompanyClient(
   api: ClientResponseApiBean,
 ): CompanyClient {
-  const membershipPlan = normalizeMembershipPlanKind(
-    api.activePlan?.membershipPlan,
-  );
+  const membershipPlan = normalizeMembershipPlanKind(api.plan?.membershipPlan);
 
   return {
     id: api.id,
@@ -66,12 +71,12 @@ export function mapClientResponseToCompanyClient(
     medicalConditions: api.medicalConditions,
     agreeTermsOfService: api.agreeTermsOfService ?? true,
     membershipPlan,
-    additionalFees: api.activePlan?.additionalFees,
-    standardPrice: api.activePlan?.standardPrice,
-    coachId: api.activePlan?.coachId ?? null,
-    planStatus: api.activePlan?.status,
-    joinedAt: api.activePlan?.startDate ?? api.auditData?.createdDate,
-    expiresAt: api.activePlan?.endDate,
+    additionalFees: api.plan?.additionalFees,
+    standardPrice: api.plan?.standardPrice,
+    coachId: api.plan?.coachId ?? null,
+    planStatus: api.plan?.status,
+    joinedAt: api.plan?.startDate ?? api.auditData?.createdDate,
+    expiresAt: api.plan?.endDate,
   };
 }
 

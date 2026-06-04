@@ -8,6 +8,7 @@ import type {
   CompanyClient,
   CompanyCoachesRow,
   CompanyStaffRow,
+  CompanyPricing,
 } from "@/types/dashboard/company";
 import type { TableUIColumn } from "@/types/shared";
 import type { ColumnDef } from "@tanstack/react-table";
@@ -168,67 +169,74 @@ export const companyClientCoachAssignmentColumns: ColumnDef<CompanyClient>[] = [
   },
 ];
 
-export const companyClientColumns: ColumnDef<CompanyClient>[] = [
-  {
-    id: "name",
-    header: "Name",
-    cell: ({ row }) => (
-      <span className="font-medium text-dark dark:text-white">
-        {getCompanyClientFullName(row.original)}
-      </span>
-    ),
-    meta: {
-      align: "left",
-      headClassName: "min-w-[140px]",
+export function getCompanyClientColumns(
+  companyPricing?: CompanyPricing | null,
+): ColumnDef<CompanyClient>[] {
+  return [
+    {
+      id: "name",
+      header: "Name",
+      cell: ({ row }) => (
+        <span className="font-medium text-dark dark:text-white">
+          {getCompanyClientFullName(row.original)}
+        </span>
+      ),
+      meta: {
+        align: "left",
+        headClassName: "min-w-[140px]",
+      },
     },
-  },
-  {
-    accessorKey: "phoneNumber",
-    header: "Contact",
-    cell: ({ row }) => row.original.phoneNumber || "N/A",
-    meta: {
-      align: "left",
-      headClassName: "min-w-[140px]",
+    {
+      accessorKey: "phoneNumber",
+      header: "Contact",
+      cell: ({ row }) => row.original.phoneNumber || "N/A",
+      meta: {
+        align: "left",
+        headClassName: "min-w-[140px]",
+      },
     },
-  },
-  {
-    id: "plan",
-    header: "Plan",
-    cell: ({ row }) => getMembershipPlanLabel(row.original.membershipPlan),
-    meta: {
-      align: "left",
+    {
+      id: "plan",
+      header: "Plan",
+      cell: ({ row }) => getMembershipPlanLabel(row.original.membershipPlan),
+      meta: {
+        align: "left",
+      },
     },
-  },
-  {
-    id: "fee",
-    header: "Fee (Rs)",
-    cell: ({ row }) => {
-      const fee = getClientDisplayFee(row.original);
-      return fee != null ? fee : "-";
+    {
+      id: "fee",
+      header: "Fee (Rs)",
+      cell: ({ row }) => {
+        const fee = getClientDisplayFee(
+          row.original,
+          companyPricing ?? undefined,
+        );
+        return fee != null ? fee : "-";
+      },
+      meta: {
+        align: "left",
+        headClassName: "min-w-[120px]",
+      },
     },
-    meta: {
-      align: "left",
-      headClassName: "min-w-[120px]",
+    {
+      accessorKey: "coachId",
+      header: "Coach Assigned",
+      cell: ({ row }) => row.original.coachId ?? " - ",
+      meta: {
+        headClassName: "min-w-[140px]",
+      },
     },
-  },
-  {
-    accessorKey: "coachId",
-    header: "Coach Assigned",
-    cell: ({ row }) => row.original.coachId ?? " - ",
-    meta: {
-      headClassName: "min-w-[140px]",
+    {
+      accessorKey: "joinedAt",
+      header: "Joined At",
+      cell: ({ row }) => (
+        <span className="text-dark-6 dark:text-dark-6">
+          {formatDate(row.original.joinedAt)}
+        </span>
+      ),
     },
-  },
-  {
-    accessorKey: "joinedAt",
-    header: "Joined At",
-    cell: ({ row }) => (
-      <span className="text-dark-6 dark:text-dark-6">
-        {formatDate(row.original.joinedAt)}
-      </span>
-    ),
-  },
-];
+  ];
+}
 
 export const companyStaffColumns: ColumnDef<CompanyStaffRow>[] = [
   {
@@ -263,7 +271,6 @@ export const companyStaffColumns: ColumnDef<CompanyStaffRow>[] = [
     meta: { align: "left", headClassName: "min-w-[200px]" },
   },
 ];
-
 
 export const companyCoachColumns: ColumnDef<CompanyCoachesRow>[] = [
   {
