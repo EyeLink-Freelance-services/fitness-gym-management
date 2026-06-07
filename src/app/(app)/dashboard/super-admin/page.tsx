@@ -48,31 +48,18 @@ export default async function SuperAdminDashboardPage({
         className="col-span-12 xl:col-span-5"
       />
 
-      <div className="grid grid-cols-12 gap-4 md:gap-6 2xl:gap-7.5">
-        <div className="col-span-12 mt-8 grid xl:col-span-6">
-          <Suspense fallback={<Skeleton />}>
-            <TableUI
-              title="Last 5 Companies"
-              data={last5Companies}
-              columns={superAdminCompanyPreviewColumns}
-              buttonLabel="View All"
-              buttonPath="/dashboard/super-admin/company"
-            />
-          </Suspense>
-        </div>
-
-        <div className="col-span-12 mt-8 grid xl:col-span-6">
-          <Suspense fallback={<Skeleton />}>
-            <TableUI
-              title="Last 5 Coaches"
-              data={lastFiveCoaches}
-              columns={superAdminCoachPreviewColumns}
-              buttonLabel="View All"
-              buttonPath="/dashboard/super-admin/coaches"
-            />
-          </Suspense>
-        </div>
+      <div className="col-span-12 mt-8 grid">
+        <Suspense fallback={<Skeleton />}>
+          <TableUI
+            title="Last 5 Companies"
+            data={last5Companies}
+            columns={superAdminCompanyPreviewColumns}
+            buttonLabel="View All"
+            buttonPath="/dashboard/super-admin/company"
+          />
+        </Suspense>
       </div>
+      <div className="grid grid-cols-12 gap-4 md:gap-6 2xl:gap-7.5"></div>
     </div>
   );
 }

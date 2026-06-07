@@ -26,14 +26,14 @@ const SIDEBAR_ITEM_CONFIG: SidebarItemConfig[] = [
     icon: Icons.User,
     items: [],
   },
-  {
-    sectionLabel: "SUPER ADMIN",
-    roles: ["super-admin"],
-    title: "Personal Coaches",
-    url: ROUTES.DASHBOARD.SUPER_ADMIN.COACHES,
-    icon: Icons.User,
-    items: [],
-  },
+  // {
+  //   sectionLabel: "SUPER ADMIN",
+  //   roles: ["super-admin"],
+  //   title: "Personal Coaches",
+  //   url: ROUTES.DASHBOARD.SUPER_ADMIN.COACHES,
+  //   icon: Icons.User,
+  //   items: [],
+  // },
   {
     sectionLabel: "COMPANY",
     roles: ["company"],
