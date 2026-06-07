@@ -66,14 +66,14 @@ const SIDEBAR_ITEM_CONFIG: SidebarItemConfig[] = [
   //   icon: Icons.User,
   //   items: [],
   // },
-  {
-    sectionLabel: "COMPANY",
-    roles: ["company"],
-    title: "Staff",
-    url: ROUTES.DASHBOARD.COMPANY.STAFF,
-    icon: Icons.User,
-    items: [],
-  },
+  // {
+  //   sectionLabel: "COMPANY",
+  //   roles: ["company"],
+  //   title: "Staff",
+  //   url: ROUTES.DASHBOARD.COMPANY.STAFF,
+  //   icon: Icons.User,
+  //   items: [],
+  // },
   {
     sectionLabel: "COMPANY",
     roles: ["company"],

@@ -10,30 +10,26 @@ import {
 } from "@/services/company/company.service";
 
 export async function getOverviewCompanyData() {
-  // const [clientsResult, coachesResult] = await Promise.all([
-  //   getCompanyClients({ pageSize: 1 }),
-  //   getCompanyCoaches({ pageSize: 1 }),
-  // ]);
-  const [clientsResult] = await Promise.all([
+  const [clientsResult, coachesResult] = await Promise.all([
     getCompanyClients({ pageSize: 1 }),
+    getCompanyCoaches({ pageSize: 1 }),
   ]);
 
-  console.log('clientsResult', clientsResult);
 
   const clientCount = clientsResult.totalCount;
-  // const coachCount = coachesResult.totalCount;
+  const coachCount = coachesResult.totalCount;
   const revenue = clientCount * 520;
 
   return [
-    {
-      name: "Total Staff",
-      value: clientCount || 0,
-      growthRate: -0.95,
-      icon: Users,
-    },
+    // {
+    //   name: "Total Staff",
+    //   value: clientCount || 0,
+    //   growthRate: -0.95,
+    //   icon: Users,
+    // },
     {
       name: "Total Coaches",
-      value: clientCount || 0,
+      value: coachCount || 0,
       growthRate: 0.43,
       icon: Gym,
     },

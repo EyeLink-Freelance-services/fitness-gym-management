@@ -30,9 +30,7 @@ export default async function CompanyDashboardPage({
   const overviewData = await getOverviewCompanyData();
   const last5Clients = await getCompanyLastFiveClients();
 
-  const [announcements] = await Promise.all([
-    getPersonalCoachAnnouncements(4),
-  ]);
+  const [announcements] = await Promise.all([getPersonalCoachAnnouncements(4)]);
 
   return (
     <div>
@@ -63,37 +61,28 @@ export default async function CompanyDashboardPage({
       <div className="mb-8 grid gap-6 lg:grid-cols-2">
         <Suspense fallback={<Skeleton />}>
           <TableUI
-            title="Coach & Client Assignments"
-            data={getGymCoachCLientAssign(5)}
-            columns={coachAssignmentColumns}
-            buttonLabel="View All"
-            buttonPath="/dashboard/company/client-coach-assign"
-          />
-        </Suspense>
-        <Suspense fallback={<Skeleton />}>
-          <TableUI
             title="New Clients"
             data={last5Clients}
             columns={newSignupColumns}
             buttonLabel="View All"
             buttonPath="/dashboard/company/clients"
           />
-        </Suspense>{" "}
+        </Suspense>
+        <Suspense fallback={<Skeleton />}>
+          <TableUI
+            title="Announcements"
+            description="Recent client communications and scheduled updates."
+            data={announcements}
+            columns={announcementColumns}
+            rowKey={(row) => row.id}
+            headerActions={
+              <Link href={ROUTES.DASHBOARD.COMPANY.ANNOUNCEMENT}>
+                <Button label="View All" size="small" />
+              </Link>
+            }
+          />
+        </Suspense>
       </div>
-
-      <TableUI
-        title="Announcements"
-        description="Recent client communications and scheduled updates."
-        data={announcements}
-        columns={announcementColumns}
-        rowKey={(row) => row.id}
-        className="col-span-12 xl:col-span-5"
-        headerActions={
-          <Link href={ROUTES.DASHBOARD.COMPANY.ANNOUNCEMENT}>
-            <Button label="View All" size="small" />
-          </Link>
-        }
-      />
     </div>
   );
 }
