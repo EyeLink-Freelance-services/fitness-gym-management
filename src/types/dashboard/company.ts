@@ -3,6 +3,18 @@ import type { SuperAdminCompanyRow } from "./super-admin";
 import type { AuditableApiBean, Gender, MembershipPlan } from "./shared";
 
 // ---------------------------------------------------------------------------
+// Coach enums – exact values from OpenAPI spec.
+// ---------------------------------------------------------------------------
+
+export type CoachingMode = "IN_PERSON" | "ONLINE" | "HYBRID";
+
+export type CoachAvailability =
+  | "WEEKDAYS"
+  | "WEEKEND"
+  | "WEEKDAYS_WEEKEND"
+  | "FLEXIBLE";
+
+// ---------------------------------------------------------------------------
 // Company Coach UI row (displayed in the company coaches table).
 // ---------------------------------------------------------------------------
 
@@ -12,18 +24,15 @@ export interface CompanyCoachesRow {
   last_name: string;
   phone_num: string;
   email: string;
-  specialization: string;
   coaching_mode: string;
   location: string;
-  qualifications: string;
   certifications: string[];
   years_of_experience: number;
   hourly_rate: number;
   languages_spoken: string[];
   bio: string;
   profile_photo?: string | null;
-  availability: string[];
-  status: import("./super-admin").StatusOpt;
+  availability: string;
   createdAt: string;
 }
 
@@ -74,6 +83,7 @@ export interface CompanyClient {
   additionalFees?: number;
   standardPrice?: number;
   coachId?: string | null;
+  coachName?: string | null;
   planStatus?: string;
   joinedAt?: string;
   expiresAt?: string;
@@ -121,6 +131,11 @@ export interface CompanyClientsTableClientProps {
   companyPricing: CompanyPricing | null;
 }
 
+export interface CompanyCoachesTableClientProps {
+  initialData: CompanyCoachesRow[];
+  totalCount: number;
+}
+
 // CompanyTableClientProps lives in super-admin.ts (it references SuperAdminCompanyRow).
 export type { SuperAdminCompanyRow };
 
@@ -164,6 +179,8 @@ export interface ClientResponseApiBean {
   id: string;
   companyId?: string;
   userId?: string;
+  coachId?: string | null;
+  coachName?: string | null;
   information?: ClientInformationApiBean;
   contact?: ClientContactApiBean;
   plan?: ClientFullPlanApiBean;
@@ -173,8 +190,67 @@ export interface ClientResponseApiBean {
   version?: number;
 }
 
+export interface ClientRequestApiBean {
+  coachId?: string | null;
+  information?: ClientInformationApiBean;
+  contact?: ClientContactApiBean;
+  plan?: ClientPlanApiBean;
+  medicalConditions?: string;
+  agreeTermsOfService?: boolean;
+}
+
 export interface SearchClientsApiBean {
   clients?: ClientResponseApiBean[];
+  pageSize?: number;
+  pageNumber?: number;
+  totalElements?: number;
+  totalPages?: number;
+}
+
+// ---------------------------------------------------------------------------
+// Coach API DTOs – direct mapping to/from the OpenAPI spec.
+// ---------------------------------------------------------------------------
+
+export interface CoachInformationApiBean {
+  firstName?: string;
+  lastName?: string;
+  picture?: string;
+  location?: string;
+}
+
+export interface CoachContactApiBean {
+  email?: string;
+  contactNumber?: string;
+}
+
+export interface CoachDetailsApiBean {
+  coachingMode?: CoachingMode;
+  availability?: CoachAvailability;
+  yearsOfExperience?: number;
+  spokenLanguages?: string;
+  biography?: string;
+  hourlyRate?: number;
+  certifications?: string;
+}
+
+export interface CoachRequestApiBean {
+  information?: CoachInformationApiBean;
+  contact?: CoachContactApiBean;
+  details?: CoachDetailsApiBean;
+}
+
+export interface CoachResponseApiBean {
+  id: string;
+  companyId?: string;
+  information?: CoachInformationApiBean;
+  contact?: CoachContactApiBean;
+  details?: CoachDetailsApiBean;
+  auditData?: AuditableApiBean;
+  version?: number;
+}
+
+export interface SearchCoachesApiBean {
+  coaches?: CoachResponseApiBean[];
   pageSize?: number;
   pageNumber?: number;
   totalElements?: number;

@@ -58,7 +58,6 @@ export function CoachesTableClient({ data }: CoachesTableClientProps) {
         yearsExperience: selectedCoach.years_of_experience,
         languages: selectedCoach.languages_spoken.join(", "),
         bio: selectedCoach.bio,
-        availability: selectedCoach.availability,
       }
     : undefined;
 

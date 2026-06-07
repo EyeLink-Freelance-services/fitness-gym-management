@@ -35,14 +35,7 @@ import {
   COMPANY_MEMBERSHIP_PROMOTIONS,
   COMPANY_MEMBERSHIP_REVENUE,
 } from "@/data/company-membership";
-import type {
-  StatusOpt,
-  SuperAdminCoachesRow,
-} from "@/types/dashboard/super-admin";
-import type {
-  CompanyCoachesRow,
-  CompanyStaffRow,
-} from "@/types/dashboard/company";
+import type { CompanyStaffRow } from "@/types/dashboard/company";
 import type { PaymentCollectionsTimeFrame } from "@/types/dashboard/payment";
 import type { MembershipRevenueTimeFrame } from "@/types/dashboard/membership";
 import {
@@ -52,56 +45,12 @@ import {
   COMPANY_PAYMENT_RENEWALS,
   COMPANY_PAYMENT_TRANSACTIONS,
 } from "@/data/company-payment";
-import { DUMMY_COACHES } from "@/data/superAdmin";
-import { COMPANY_COACH_ROWS } from "@/data/company-coaches";
-
-// Coaches
-export async function getAllCoaches() {
-  await new Promise((r) => setTimeout(r, 200));
-
-  return DUMMY_COACHES.map(
-    (coach, i): SuperAdminCoachesRow => ({
-      id: `coach-${i + 1}`,
-      first_name: coach.firstName,
-      last_name: coach.lastName,
-      phone_num: coach.contactNumber,
-      email: `${coach.email}`,
-      specialization: coach.specialization,
-      coaching_mode: coach.coachingMode,
-      location: coach.location,
-      qualifications: coach.certifications,
-      certifications: coach.certifications
-        ? coach.certifications.split(",").map((item) => item.trim())
-        : ["ACE-CPT"],
-      years_of_experience: Number(coach.yearsExperience) || 0,
-      hourly_rate: coach.hourlyRate,
-      languages_spoken: coach.languages
-        ? coach.languages.split(",").map((item) => item.trim())
-        : ["English"],
-      bio: coach.bio,
-      profile_photo: coach.profilePhoto,
-      availability: coach.availability
-        .split(",")
-        .map((item) => item.trim())
-        .join(", "),
-      status: coach.status as StatusOpt,
-      createdAt: coach.createdAt,
-    }),
-  );
-}
-
 // Company overview data
 
 export async function getCompanyStaff() {
   await new Promise((r) => setTimeout(r, 200));
   return COMPANY_STAFF_ROWS.map((staff): CompanyStaffRow => ({ ...staff }));
 }
-
-export async function getCompanyCoaches() {
-  await new Promise((r) => setTimeout(r, 200));
-  return COMPANY_COACH_ROWS.map((coach): CompanyCoachesRow => ({ ...coach }));
-}
-
 
 // Personal coach overview data
 export async function getPersonalCoachOverviewData() {

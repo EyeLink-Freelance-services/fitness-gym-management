@@ -2,9 +2,7 @@
 
 import { useState } from "react";
 import type { CompanyClient, CompanyPricing } from "@/types/dashboard/company";
-import {
-  getCompanyClientFullName,
-} from "@/modules/company/company-client.mappers";
+import { getCompanyClientFullName } from "@/modules/company/company-client.mappers";
 import type { ActivePlanDialog } from "@/modules/client-records/coach-plan.types";
 import type {
   CoachDietPlanRecord,
@@ -12,7 +10,6 @@ import type {
 } from "@/types/dashboard/client";
 import { ClientProfileBreadcrumb } from "./client-profile-breadcrumb";
 import { ClientProfileHeader } from "./client-profile-header";
-import { ClientProfileSummary } from "./client-profile-summary";
 import { CoachSection } from "./coach-section";
 import { EmergencyContactSection } from "./emergency-contact-section";
 import { MedicalSection } from "./medical-section";
@@ -65,8 +62,6 @@ export function ClientProfilePage({
         onOpenDietPlan={() => setActivePlanDialog(createDietPlanDialog())}
         onOpenTrainingPlan={() => setActivePlanDialog(createTrainingPlanDialog())}
       />
-
-      <ClientProfileSummary client={client} companyPricing={companyPricing} />
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">

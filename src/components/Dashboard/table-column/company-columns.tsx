@@ -1,5 +1,6 @@
 import { StatusBadge } from "@/components/ui-elements/status-badge";
 import {
+  getClientCoachDisplayName,
   getClientDisplayFee,
   getCompanyClientFullName,
   getMembershipPlanLabel,
@@ -73,10 +74,10 @@ export const newSignupColumns: TableUIColumn<CompanyClient>[] = [
 ];
 export const coachAssignmentColumns: TableUIColumn<CompanyClient>[] = [
   {
-    key: "coachId",
+    key: "coachName",
     label: "Coach Name",
     align: "left",
-    render: (row) => row.coachId ?? "Unassigned",
+    render: (row) => getClientCoachDisplayName(row),
     headClassName: "min-w-[160px]",
   },
   {
@@ -134,9 +135,9 @@ export const companyClientCoachAssignmentColumns: ColumnDef<CompanyClient>[] = [
     },
   },
   {
-    accessorKey: "coachId",
+    accessorKey: "coachName",
     header: "Coach",
-    cell: ({ row }) => row.original.coachId ?? "Unassigned",
+    cell: ({ row }) => getClientCoachDisplayName(row.original),
     meta: {
       align: "left",
       headClassName: "min-w-[180px]",
@@ -219,9 +220,9 @@ export function getCompanyClientColumns(
       },
     },
     {
-      accessorKey: "coachId",
+      accessorKey: "coachName",
       header: "Coach Assigned",
-      cell: ({ row }) => row.original.coachId ?? " - ",
+      cell: ({ row }) => getClientCoachDisplayName(row.original),
       meta: {
         headClassName: "min-w-[140px]",
       },
@@ -292,15 +293,5 @@ export const companyCoachColumns: ColumnDef<CompanyCoachesRow>[] = [
     accessorKey: "email",
     header: "Email",
     meta: { align: "left", headClassName: "min-w-[200px]" },
-  },
-  {
-    accessorKey: "specialization",
-    header: "Specialization",
-    meta: { align: "left", headClassName: "min-w-[160px]" },
-  },
-  {
-    accessorKey: "location",
-    header: "Location",
-    meta: { align: "left", headClassName: "min-w-[160px]" },
   },
 ];

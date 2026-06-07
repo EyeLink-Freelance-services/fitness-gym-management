@@ -1,8 +1,8 @@
 import { CompanyClientsTableClient } from "@/components/Dashboard/company/company-clients-table-client";
 import {
   getCompanyPricingForCompany,
-  getCompanyClients
-} from "@/modules/company/company.service";
+  getCompanyClients,
+} from "@/services/company/company.service";
 
 export default async function CompanyClientsPage() {
   const [clientsResult, companyPricing] = await Promise.all([
@@ -11,10 +11,10 @@ export default async function CompanyClientsPage() {
   ]);
 
   return (
-    <CompanyClientsTableClient 
-      initialData={clientsResult.clients} 
+    <CompanyClientsTableClient
+      initialData={clientsResult.clients}
       totalCount={clientsResult.totalCount}
-      companyPricing={companyPricing} 
+      companyPricing={companyPricing}
     />
   );
 }

@@ -8,9 +8,9 @@ import type {
   PersonalCoachFormProps,
 } from "@/types/forms";
 import {
-  SPECIALIZATIONS,
   AVAILABILITY_OPTIONS,
   COACHING_MODES,
+  SPECIALIZATIONS,
 } from "@/data/dashboardForm";
 import InputGroup from "../FormElements/InputGroup";
 import { Select } from "../FormElements/select";
@@ -22,6 +22,10 @@ import {
   validateRequired,
 } from "@/lib/forms/formValidation";
 import { Header } from "../FormElements/common";
+import {
+  createCoachAction,
+  updateCoachAction,
+} from "@/app/(app)/dashboard/company/coaches/actions";
 import { createPersonalCoachAction } from "@/app/(app)/dashboard/super-admin/coaches/actions";
 import { toast } from "sonner";
 
@@ -30,6 +34,7 @@ export default function PersonalCoachForm({
   existingProfilePhotoUrl,
   mode = "create",
   context = "super-admin",
+  coachId,
   onSuccess,
 }: PersonalCoachFormProps) {
   const isCompanyContext = context === "company";
@@ -86,14 +91,29 @@ export default function PersonalCoachForm({
 
   const onSubmit = async (data: PersonalCoachFormData) => {
     try {
-      await createPersonalCoachAction({
+      const payload = {
         ...data,
         profilePhoto: logoRef.current,
-      });
+      };
+
+      if (isCompanyContext) {
+        if (mode === "edit" && coachId) {
+          await updateCoachAction(coachId, payload);
+          toast.success("Coach updated successfully");
+        } else {
+          await createCoachAction(payload);
+          toast.success("Coach created successfully");
+        }
+      } else {
+        await createPersonalCoachAction(payload);
+        toast.success("Coach created successfully");
+      }
+
       onSuccess?.();
-      toast.success("Coach created successfully");
     } catch {
-      toast.error("Failed to create coach");
+      toast.error(
+        mode === "edit" ? "Failed to update coach" : "Failed to create coach",
+      );
     }
   };
 
@@ -157,20 +177,22 @@ export default function PersonalCoachForm({
           })}
         />
 
-        <Controller
-          name="specialization"
-          control={control}
-          rules={{ required: "Specialization is required" }}
-          render={({ field }) => (
-            <Select
-              label="Specialization / Role"
-              placeholder="Select specialization"
-              items={SPECIALIZATIONS.map((s) => ({ value: s, label: s }))}
-              error={errors.specialization?.message}
-              selectProps={{ ...field, required: true }}
-            />
-          )}
-        />
+        {!isCompanyContext && (
+          <Controller
+            name="specialization"
+            control={control}
+            rules={{ required: "Specialization is required" }}
+            render={({ field }) => (
+              <Select
+                label="Specialization / Role"
+                placeholder="Select specialization"
+                items={SPECIALIZATIONS.map((s) => ({ value: s, label: s }))}
+                error={errors.specialization?.message}
+                selectProps={{ ...field, required: true }}
+              />
+            )}
+          />
+        )}
 
         {!isCompanyContext && (
           <Controller
@@ -189,12 +211,12 @@ export default function PersonalCoachForm({
           />
         )}
 
-        <InputGroup
+        {/* <InputGroup
           type="text"
           label="Location"
           placeholder="e.g. Port Louis/ Quatre-Bornes"
           inputProps={register("location")}
-        />
+        /> */}
 
         <div className="my-6 flex items-center gap-3">
           <div className="h-px flex-1 bg-stroke dark:bg-dark-3" />

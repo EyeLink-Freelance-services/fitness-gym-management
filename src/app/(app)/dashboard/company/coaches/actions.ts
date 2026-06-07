@@ -2,7 +2,9 @@
 
 import {
   createCoachService,
+  getCompanyCoachOptions as getCompanyCoachOptionsService,
   getCompanyCoaches,
+  searchCompanyCoachOptions as searchCompanyCoachOptionsService,
   updateCoachService,
 } from "@/services/company/company.service";
 import type { PersonalCoachFormData } from "@/types/forms";
@@ -41,13 +43,9 @@ export async function fetchCompanyCoachPage(
 }
 
 export async function getCompanyCoachOptions() {
-  const { coaches } = await getCompanyCoaches({
-    pageNumber: 0,
-    pageSize: 100,
-  });
+  return getCompanyCoachOptionsService();
+}
 
-  return coaches.map((coach) => ({
-    value: coach.id,
-    label: `${coach.first_name} ${coach.last_name}`.trim(),
-  }));
+export async function searchCompanyCoachOptions(search?: string) {
+  return searchCompanyCoachOptionsService(search);
 }

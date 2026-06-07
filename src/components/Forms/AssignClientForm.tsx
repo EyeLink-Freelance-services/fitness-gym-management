@@ -3,9 +3,9 @@
 import { SearchableSelect } from "@/components/FormElements/SearchableSelect";
 import { Select } from "@/components/FormElements/select";
 import { Button } from "@/components/ui-elements/button";
+import { getCompanyCoachOptions } from "@/app/(app)/dashboard/company/coaches/actions";
 import { COMPANY_CLIENT_ROWS } from "@/data/company";
 import { getCompanyClientFullName } from "@/modules/company/company-client.mappers";
-import { COMPANY_COACH_ROWS } from "@/data/company-coaches";
 import {
   AssignClientCreateInput,
   AssignClientCreateSchema,
@@ -14,7 +14,7 @@ import type { AssignClientOption, AssignCoachOption } from "@/types/dashboard/as
 import type { AssignClientFormProps } from "@/types/forms";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useMemo, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { Header } from "../FormElements/common";
 
 const ASSIGN_CLIENT_STATUS_OPTIONS: { value: string; label: string }[] = [
@@ -45,14 +45,21 @@ export default function AssignClientForm({
     [],
   );
 
-  const coachOptions = useMemo<AssignCoachOption[]>(
-    () =>
-      COMPANY_COACH_ROWS.map((coach) => ({
-        value: coach.id,
-        label: `${coach.first_name} ${coach.last_name}`.trim(),
-      })),
-    [],
-  );
+  const [coachOptions, setCoachOptions] = useState<AssignCoachOption[]>([]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    void getCompanyCoachOptions().then((options) => {
+      if (isMounted) {
+        setCoachOptions(options);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const {
     handleSubmit,

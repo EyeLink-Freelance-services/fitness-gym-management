@@ -1,8 +1,13 @@
 import { CompanyCoachesTableClient } from "@/components/Dashboard/company/company-coaches-table-client";
-import { getCompanyCoaches } from "@/services/dashboard.services";
+import { getCompanyCoaches } from "@/services/company/company.service";
 
 export default async function CompanyCoachesPage() {
-  const coaches = await getCompanyCoaches();
+  const { coaches, totalCount } = await getCompanyCoaches({
+    pageNumber: 0,
+    pageSize: 10,
+  });
 
-  return <CompanyCoachesTableClient data={coaches} />;
+  return (
+    <CompanyCoachesTableClient initialData={coaches} totalCount={totalCount} />
+  );
 }

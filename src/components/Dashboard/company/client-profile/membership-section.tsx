@@ -29,9 +29,13 @@ export function MembershipSection({
           value={draft.membershipPlan}
           isEditing={isEditing}
           options={[...MEMBERSHIP_PLAN_FORM_OPTIONS]}
-          onChange={(v) =>
-            onPatch({ membershipPlan: v as "standard" | "personalCoach" })
-          }
+          onChange={(v) => {
+            const nextPlan = v as "standard" | "personalCoach";
+            onPatch({
+              membershipPlan: nextPlan,
+              ...(nextPlan === "standard" ? { assignedCoach: "" } : {}),
+            });
+          }}
         />
 
         {showPersonalFees && (
@@ -91,10 +95,6 @@ export function MembershipSection({
               </p>
             )}
           </div>
-          <ReadOnlyField
-            label="Expires"
-            value={formatProfileDate(client.expiresAt)}
-          />
         </div>
       </div>
     </ProfileSection>

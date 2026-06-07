@@ -11,11 +11,8 @@ import type {
   CompanyCoachesRow,
   CompanyPricing,
   SearchClientsApiBean,
-} from "@/types/dashboard/company";
-import type {
-  CoachSearchSortField,
   SearchCoachesApiBean,
-} from "@/types/dashboard/coach";
+} from "@/types/dashboard/company";
 import type { CompanyResponseApiBean } from "@/types/dashboard/super-admin";
 import { GetPageParams } from "@/types/dashboard/shared";
 import type { PersonalCoachFormData } from "@/types/forms";
@@ -25,8 +22,10 @@ import {
 } from "@/modules/company/company-client.mappers";
 import {
   mapCoachFormToApiRequest,
+  mapCoachesToCoachOptions,
   mapCoachResponseToCompanyCoachesRow,
 } from "@/modules/company/company-coach.mappers";
+import type { AssignCoachOption } from "@/types/dashboard/assign-client";
 
 const COMPANY_API_BASE = "/api/companies";
 
@@ -116,64 +115,61 @@ export async function updateClientService(
   );
 }
 
+export async function getCompanyCoachOptions(): Promise<AssignCoachOption[]> {
+  return searchCompanyCoachOptions();
+}
+
+export async function searchCompanyCoachOptions(
+  search?: string,
+): Promise<AssignCoachOption[]> {
+  const { coaches } = await getCompanyCoaches({
+    pageNumber: 0,
+    pageSize: 20,
+    search,
+  });
+
+  return mapCoachesToCoachOptions(coaches);
+}
+
 export async function getCompanyCoaches({
   pageNumber = 0,
   pageSize = 10,
-}: GetPageParams = {}) {
+  search,
+  sort = "CREATION_DATE",
+  descendingSort = true,
+}: GetPageParams & {
+  search?: string;
+  sort?: string;
+  descendingSort?: boolean;
+} = {}) {
   const companyId = await requireCompanyId();
+  const params = new URLSearchParams({
+    pageNumber: String(pageNumber),
+    pageSize: String(pageSize),
+    descendingSort: String(descendingSort),
+    sort,
+  });
+
+  const trimmedSearch = search?.trim();
+  if (trimmedSearch) {
+    if (trimmedSearch.includes("@")) {
+      params.set("email", trimmedSearch);
+    } else if (/^[+\d\s-]+$/.test(trimmedSearch)) {
+      params.set("contactNumber", trimmedSearch);
+    } else {
+      params.set("firstName", trimmedSearch);
+    }
+  }
 
   const data = await backendGet<SearchCoachesApiBean>(
-    `${COMPANY_API_BASE}/${companyId}/coaches?pageNumber=${pageNumber}&pageSize=${pageSize}&descendingSort=true`,
+    `${COMPANY_API_BASE}/${companyId}/coaches?${params.toString()}`,
   );
 
   return {
-    clients: (data.coaches ?? []).map(mapCoachResponseToCompanyCoachesRow),
+    coaches: (data.coaches ?? []).map(mapCoachResponseToCompanyCoachesRow),
     totalCount: data.totalElements ?? 0,
   };
 }
-
-// export async function getCompanyCoaches({
-//   pageNumber = 0,
-//   pageSize = 10,
-//   search,
-//   sort = "CREATION_DATE",
-//   descendingSort = true,
-// }: GetPageParams & {
-//   search?: string;
-//   sort?: CoachSearchSortField;
-//   descendingSort?: boolean;
-// } = {}): Promise<{
-//   coaches: CompanyCoachesRow[];
-//   totalCount: number;
-// }> {
-//   const companyId = await requireCompanyId();
-//   const params = new URLSearchParams({
-//     pageNumber: String(pageNumber),
-//     pageSize: String(pageSize),
-//     descendingSort: String(descendingSort),
-//     sort,
-//   });
-
-//   const trimmedSearch = search?.trim();
-//   if (trimmedSearch) {
-//     if (trimmedSearch.includes("@")) {
-//       params.set("email", trimmedSearch);
-//     } else if (/^[+\d\s-]+$/.test(trimmedSearch)) {
-//       params.set("contactNumber", trimmedSearch);
-//     } else {
-//       params.set("firstName", trimmedSearch);
-//     }
-//   }
-
-//   const data = await backendGet<SearchCoachesApiBean>(
-//     `${COMPANY_API_BASE}/${companyId}/coaches?${params.toString()}`,
-//   );
-
-//   return {
-//     coaches: (data.coaches ?? []).map(mapCoachResponseToCompanyCoachesRow),
-//     totalCount: data.totalElements ?? 0,
-//   };
-// }
 
 export async function createCoachService(form: PersonalCoachFormData) {
   const companyId = await requireCompanyId();

@@ -58,14 +58,14 @@ const SIDEBAR_ITEM_CONFIG: SidebarItemConfig[] = [
     icon: Icons.User,
     items: [],
   },
-  {
-    sectionLabel: "COMPANY",
-    roles: ["company"],
-    title: "Coach Assignments",
-    url: ROUTES.DASHBOARD.COMPANY.CLIENT_COACH_ASSIGN,
-    icon: Icons.User,
-    items: [],
-  },
+  // {
+  //   sectionLabel: "COMPANY",
+  //   roles: ["company"],
+  //   title: "Coach Assignments",
+  //   url: ROUTES.DASHBOARD.COMPANY.CLIENT_COACH_ASSIGN,
+  //   icon: Icons.User,
+  //   items: [],
+  // },
   {
     sectionLabel: "COMPANY",
     roles: ["company"],

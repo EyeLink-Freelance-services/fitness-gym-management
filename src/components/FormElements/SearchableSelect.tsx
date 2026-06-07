@@ -19,6 +19,10 @@ type SearchableSelectProps = {
   value?: string;
   onChange?: (value: string) => void;
   onBlur?: () => void;
+  onSearch?: (query: string) => void;
+  isLoading?: boolean;
+  filterLocally?: boolean;
+  debounceMs?: number;
   disabled?: boolean;
   id?: string;
 };
@@ -32,6 +36,10 @@ export function SearchableSelect({
   value,
   onChange,
   onBlur,
+  onSearch,
+  isLoading = false,
+  filterLocally = !onSearch,
+  debounceMs = 300,
   disabled,
   id: providedId,
 }: SearchableSelectProps) {
@@ -45,9 +53,21 @@ export function SearchableSelect({
   const selectedOption = options.find((opt) => opt.value === safeValue);
   const displayValue = selectedOption?.label ?? "";
 
-  const filteredOptions = options.filter((opt) =>
-    opt.label.toLowerCase().includes(searchQuery.trim().toLowerCase()),
-  );
+  const filteredOptions = filterLocally
+    ? options.filter((opt) =>
+        opt.label.toLowerCase().includes(searchQuery.trim().toLowerCase()),
+      )
+    : options;
+
+  useEffect(() => {
+    if (!onSearch || !isOpen) return;
+
+    const timeoutId = window.setTimeout(() => {
+      onSearch(searchQuery);
+    }, debounceMs);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [searchQuery, onSearch, debounceMs, isOpen]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -68,6 +88,9 @@ export function SearchableSelect({
   const handleInputFocus = () => {
     setIsOpen(true);
     setSearchQuery(displayValue);
+    if (onSearch && !searchQuery.trim()) {
+      onSearch("");
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -128,7 +151,11 @@ export function SearchableSelect({
             className="absolute z-50 mt-1 max-h-48 w-full overflow-auto rounded-lg border border-stroke bg-white py-1 shadow-lg dark:border-dark-3 dark:bg-dark-2"
             role="listbox"
           >
-            {filteredOptions.length > 0 ? (
+            {isLoading ? (
+              <li className="px-5.5 py-4 text-center text-body-sm text-dark-5 dark:text-dark-6">
+                Searching...
+              </li>
+            ) : filteredOptions.length > 0 ? (
               filteredOptions.map((opt) => (
                 <li
                   key={opt.value}

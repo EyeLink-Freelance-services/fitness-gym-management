@@ -18,6 +18,15 @@ export function getMembershipPlanLabel(kind: MembershipPlanKind): string {
   return "Standard";
 }
 
+export function getClientCoachDisplayName(
+  client: Pick<CompanyClient, "coachId" | "coachName">,
+): string {
+  const name = client.coachName?.trim();
+  if (name) return name;
+  if (client.coachId) return "Unassigned";
+  return "-";
+}
+
 export function getClientDisplayFee(
   client: CompanyClient,
   companyPricing?: CompanyPricing,
@@ -73,7 +82,8 @@ export function mapClientResponseToCompanyClient(
     membershipPlan,
     additionalFees: api.plan?.additionalFees,
     standardPrice: api.plan?.standardPrice,
-    coachId: api.plan?.coachId ?? null,
+    coachId: api.coachId ?? api.plan?.coachId ?? null,
+    coachName: api.coachName ?? null,
     planStatus: api.plan?.status,
     joinedAt: api.plan?.startDate ?? api.auditData?.createdDate,
     expiresAt: api.plan?.endDate,
@@ -123,7 +133,12 @@ export function mapClientFormValuesToApiRequest(form: CompanyClientFormValues) {
     }
   }
 
+  const assignedCoach = form.assignedCoach?.trim();
+  const coachId =
+    membershipPlan === "PERSONAL" && assignedCoach ? assignedCoach : null;
+
   return {
+    coachId,
     information: {
       firstName: form.firstName,
       lastName: form.lastName,

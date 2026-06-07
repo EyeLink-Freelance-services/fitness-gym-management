@@ -1,11 +1,21 @@
 import type { PersonalCoachFormData } from "@/types/forms";
 import type { CompanyCoachesRow } from "@/types/dashboard/company";
+import type { AssignCoachOption } from "@/types/dashboard/assign-client";
 import type {
   CoachAvailability,
   CoachRequestApiBean,
   CoachResponseApiBean,
   CoachingMode,
-} from "@/types/dashboard/coach";
+} from "@/types/dashboard/company";
+
+export function mapCoachesToCoachOptions(
+  coaches: CompanyCoachesRow[],
+): AssignCoachOption[] {
+  return coaches.map((coach) => ({
+    value: coach.id,
+    label: getCompanyCoachFullName(coach),
+  }));
+}
 
 const COACHING_MODE_TO_DISPLAY: Record<CoachingMode, string> = {
   IN_PERSON: "In-person",
@@ -73,10 +83,10 @@ export function mapCoachResponseToCompanyCoachesRow(
     last_name: api.information?.lastName ?? "",
     phone_num: api.contact?.contactNumber ?? "",
     email: api.contact?.email ?? "",
-    specialization: certifications[0] ?? "",
+    // specialization: certifications[0] ?? "",
     coaching_mode: mapCoachingModeToDisplay(api.details?.coachingMode),
     location: api.information?.location ?? "",
-    qualifications: api.details?.certifications ?? "",
+    // qualifications: api.details?.certifications ?? "",
     certifications,
     years_of_experience: api.details?.yearsOfExperience ?? 0,
     hourly_rate: api.details?.hourlyRate ?? 0,
@@ -96,7 +106,7 @@ export function mapCompanyCoachesRowToFormValues(
     lastName: coach.last_name,
     contactNumber: coach.phone_num,
     email: coach.email,
-    specialization: coach.specialization ?? "",
+    // specialization: coach.specialization ?? "",
     coachingMode: coach.coaching_mode || "In-person",
     location: coach.location,
     certifications: joinCommaList(coach.certifications),

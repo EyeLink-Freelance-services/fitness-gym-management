@@ -5,7 +5,7 @@ import {
   getCompanyClientById,
   getCompanyClients,
   updateClientService,
-} from "@/modules/company/company.service";
+} from "@/services/company/company.service";
 import type {
   CompanyClientFormValues,
   CompanyPricing,

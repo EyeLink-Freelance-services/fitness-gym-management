@@ -75,7 +75,7 @@ export interface PersonalCoachFormData {
   lastName: string;
   contactNumber: string;
   email: string;
-  specialization: string;
+  specialization?: string;
   coachingMode: string;
   location?: string;
   certifications?: string;
@@ -87,28 +87,12 @@ export interface PersonalCoachFormData {
   availability?: string;
 }
 
-export interface CompanyCoachFormData {
-  firstName: string;
-  lastName: string;
-  contactNumber: string;
-  email: string;
-  specialization: string;
-  coachingMode: string;
-  location?: string;
-  certifications?: string;
-  hourlyRate: number;
-  yearsExperience?: number;
-  languages: string;
-  bio: string;
-  profilePhoto?: FileList;
-  availability?: string;
-}
-
 export interface PersonalCoachFormProps {
   initialData?: Partial<PersonalCoachFormData>;
   existingProfilePhotoUrl?: string;
   mode?: "create" | "edit";
   context?: "super-admin" | "company";
+  coachId?: string;
   onSuccess?: () => void;
 }
 

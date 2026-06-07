@@ -1,4 +1,7 @@
-import { EditableField } from "./editable-field";
+"use client";
+
+import { CoachSearchSelect } from "@/components/FormElements/CoachSearchSelect";
+import { getClientCoachDisplayName } from "@/modules/company/company-client.mappers";
 import { ProfileSection } from "./profile-section";
 import type { ClientProfileSectionProps } from "./types";
 import { formatProfileDate } from "./utils";
@@ -9,16 +12,31 @@ export function CoachSection({
   isEditing,
   onPatch,
 }: ClientProfileSectionProps) {
+  const showCoachAssignment =
+    draft.membershipPlan === "personalCoach" ||
+    client.membershipPlan === "PERSONAL";
+
+  const coachName = getClientCoachDisplayName(client);
+
+  if (!showCoachAssignment) {
+    return null;
+  }
+
   return (
     <ProfileSection title="Assigned coach">
-      {client.coachId && !isEditing ? (
+      {!isEditing && client.coachId ? (
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-green/15 text-sm font-bold text-green">
-            CO
+            {coachName
+              .split(" ")
+              .map((part) => part[0])
+              .join("")
+              .slice(0, 2)
+              .toUpperCase()}
           </div>
           <div className="min-w-0">
             <p className="truncate text-sm font-medium text-dark dark:text-white">
-              {client.coachId}
+              {coachName}
             </p>
             {client.assignedOn && (
               <p className="text-xs text-dark-6">
@@ -27,17 +45,15 @@ export function CoachSection({
             )}
           </div>
         </div>
-      ) : !client.coachId && !isEditing ? (
+      ) : !isEditing ? (
         <p className="text-sm text-dark-6">No coach assigned.</p>
-      ) : null}
-
-      {isEditing && (
-        <EditableField
-          label="Coach ID"
-          display={client.coachId ?? ""}
+      ) : (
+        <CoachSearchSelect
+          label="Coach"
+          placeholder="Search coach by name, email, or phone..."
           value={draft.assignedCoach ?? ""}
-          isEditing
-          onChange={(v) => onPatch({ assignedCoach: v })}
+          selectedCoachLabel={client.coachName ?? undefined}
+          onChange={(value) => onPatch({ assignedCoach: value })}
         />
       )}
     </ProfileSection>

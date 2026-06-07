@@ -39,11 +39,6 @@ export const superAdminCoachColumns: ColumnDef<SuperAdminCoachesRow>[] = [
     meta: { align: "left", headClassName: "min-w-[160px]" },
   },
   {
-    accessorKey: "coaching_mode",
-    header: "Coaching Mode",
-    meta: { align: "left", headClassName: "min-w-[160px]" },
-  },
-  {
     accessorKey: "location",
     header: "Location",
     meta: { align: "left", headClassName: "min-w-[160px]" },
@@ -76,12 +71,6 @@ export const superAdminCoachPreviewColumns: TableUIColumn<SuperAdminCoachesRow>[
       align: "left",
       render: (row) => row.phone_num,
       headClassName: "min-w-[160px]",
-    },
-    {
-      key: "coaching_mode",
-      label: "Coaching Mode",
-      align: "left",
-      headClassName: "min-w-[150px]",
     },
     {
       key: "location",

@@ -8,7 +8,8 @@ import {
 import type { CompanyClientFormValues } from "@/types/dashboard/company";
 import { CompanyClientFormProps } from "@/types/forms";
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
+import { CoachSearchSelect } from "@/components/FormElements/CoachSearchSelect";
 import InputGroup from "../FormElements/InputGroup";
 import { Select } from "../FormElements/select";
 import { TextAreaGroup } from "../FormElements/InputGroup/text-area";
@@ -35,6 +36,7 @@ export default function ClientForm({
     setValue,
     watch,
     reset,
+    control,
     formState: { errors, isValid, isSubmitting },
   } = useForm<CompanyClientFormValues>({
     mode: "all",
@@ -56,6 +58,7 @@ export default function ClientForm({
   useEffect(() => {
     if (membershipPlan === "standard") {
       setValue("additionalFees", undefined, { shouldValidate: false });
+      setValue("assignedCoach", "", { shouldValidate: false });
     }
   }, [membershipPlan, setValue]);
 
@@ -245,6 +248,30 @@ export default function ClientForm({
             />
           )}
         </div>
+
+        {membershipPlan === "personalCoach" && (
+          <Controller
+            name="assignedCoach"
+            control={control}
+            rules={{
+              validate: (value) =>
+                membershipPlan === "personalCoach"
+                  ? validateRequired(value, "Coach assignment is required")
+                  : true,
+            }}
+            render={({ field }) => (
+              <CoachSearchSelect
+                label="Assigned Coach"
+                placeholder="Search coach by name, email, or phone..."
+                required
+                value={field.value}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+                error={errors.assignedCoach?.message}
+              />
+            )}
+          />
+        )}
 
         <Button
           type="submit"

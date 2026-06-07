@@ -19,7 +19,7 @@ import {
 } from "@/components/Dashboard/table-column/company-columns";
 import { getOverviewCompanyData } from "@/services/company/main";
 import { compactFormat } from "@/lib/formatters/format-number";
-import { getCompanyLastFiveClients } from "@/modules/company/company.service";
+import { getCompanyLastFiveClients } from "@/services/company/company.service";
 import { PaymentsOverview } from "@/components/Charts/payments-overview";
 
 export default async function CompanyDashboardPage({

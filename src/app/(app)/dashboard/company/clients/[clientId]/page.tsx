@@ -5,7 +5,7 @@ import {
 } from "@/app/(app)/dashboard/company/clients/client-coaching-actions";
 import { getCompanyClientAction } from "@/app/(app)/dashboard/company/clients/actions";
 import { ClientProfilePage } from "@/components/Dashboard/company/client-profile/client-profile-page";
-import { getCompanyPricingForCompany } from "@/modules/company/company.service";
+import { getCompanyPricingForCompany } from "@/services/company/company.service";
 
 interface Props {
   params: Promise<{ clientId: string }>;

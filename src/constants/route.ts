@@ -4,7 +4,7 @@ export const ROUTES = {
     COMPANY: {
       ROOT: "/dashboard/company",
       ANNOUNCEMENT: "/dashboard/company/announcement",
-      CLIENT_COACH_ASSIGN: "/dashboard/company/client-coach-assign",
+      // CLIENT_COACH_ASSIGN: "/dashboard/company/client-coach-assign",
       CLIENTS: "/dashboard/company/clients",
       CLIENT_PROFILE: (clientId: string) =>
         `/dashboard/company/clients/${clientId}`,
