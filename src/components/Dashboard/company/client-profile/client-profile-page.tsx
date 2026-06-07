@@ -1,7 +1,15 @@
 "use client";
 
+import { useState } from "react";
 import type { CompanyClient, CompanyPricing } from "@/types/dashboard/company";
-import { getCompanyClientFullName } from "@/modules/company/company-client.mappers";
+import {
+  getCompanyClientFullName,
+} from "@/modules/company/company-client.mappers";
+import type { ActivePlanDialog } from "@/modules/client-records/coach-plan.types";
+import type {
+  CoachDietPlanRecord,
+  CoachTrainingPlanRecord,
+} from "@/types/dashboard/client";
 import { ClientProfileBreadcrumb } from "./client-profile-breadcrumb";
 import { ClientProfileHeader } from "./client-profile-header";
 import { ClientProfileSummary } from "./client-profile-summary";
@@ -11,17 +19,30 @@ import { MedicalSection } from "./medical-section";
 import { MembershipSection } from "./membership-section";
 import { PersonalInfoSection } from "./personal-info-section";
 import { useClientProfileEdit } from "./use-client-profile-edit";
+import { CompanyClientCoachingSection } from "./company-client-coaching-section";
+import {
+  createDietPlanDialog,
+  createTrainingPlanDialog,
+} from "./client-coaching-actions";
 
 export type ClientProfilePageProps = {
   client: CompanyClient;
   companyPricing: CompanyPricing | null;
+  initialDietPlans?: CoachDietPlanRecord[];
+  initialTrainingPlans?: CoachTrainingPlanRecord[];
 };
 
 export function ClientProfilePage({
   client,
   companyPricing,
+  initialDietPlans = [],
+  initialTrainingPlans = [],
 }: ClientProfilePageProps) {
   const edit = useClientProfileEdit(client, companyPricing);
+  const [activePlanDialog, setActivePlanDialog] = useState<ActivePlanDialog>(null);
+  const isPersonalCoaching = client.membershipPlan === "PERSONAL";
+  const clientName = getCompanyClientFullName(client);
+
   const sectionProps = {
     client,
     draft: edit.draft,
@@ -31,9 +52,7 @@ export function ClientProfilePage({
 
   return (
     <div className="pb-12">
-      <ClientProfileBreadcrumb
-        clientName={getCompanyClientFullName(client)}
-      />
+      <ClientProfileBreadcrumb clientName={clientName} />
 
       <ClientProfileHeader
         client={client}
@@ -42,6 +61,9 @@ export function ClientProfilePage({
         onEdit={edit.startEdit}
         onSave={edit.save}
         onCancel={edit.cancelEdit}
+        showCoachingActions={isPersonalCoaching}
+        onOpenDietPlan={() => setActivePlanDialog(createDietPlanDialog())}
+        onOpenTrainingPlan={() => setActivePlanDialog(createTrainingPlanDialog())}
       />
 
       <ClientProfileSummary client={client} companyPricing={companyPricing} />
@@ -58,6 +80,19 @@ export function ClientProfilePage({
           <CoachSection {...sectionProps} />
         </div>
       </div>
+
+      {isPersonalCoaching && (
+        <div className="mt-8">
+          <CompanyClientCoachingSection
+            clientId={client.id}
+            clientName={clientName}
+            initialDietPlans={initialDietPlans}
+            initialTrainingPlans={initialTrainingPlans}
+            activeDialog={activePlanDialog}
+            onActiveDialogChange={setActivePlanDialog}
+          />
+        </div>
+      )}
     </div>
   );
 }

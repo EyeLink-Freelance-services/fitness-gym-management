@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
 import { ComputedResultsPanel } from "@/components/Dashboard/client-records/computed-results-panel";
 import { DynamicFormGroup } from "@/components/Dashboard/client-records/dynamic-form-group";
 import { Button } from "@/components/ui-elements/button";
@@ -10,11 +11,18 @@ import type {
   FormulaSnapshotPreview,
 } from "@/types/dashboard/client-records";
 import type { FormulaDefinition } from "@/types/dashboard/formula-builder";
-import { useMemo, useState } from "react";
+import { initials } from "@/utils/dashboard/shared";
+
+type DataEntrySaveInput = {
+  values: Record<string, string>;
+  notes: string;
+  sessionDate: string;
+};
 
 type DataEntryWorkspaceProps = {
   draft: ClientRecordDraft;
   formulas: FormulaDefinition[];
+  onSave?: (input: DataEntrySaveInput) => Promise<void>;
 };
 
 function formatMetricValue(value: number, decimals: number) {
@@ -35,9 +43,20 @@ function getNumericScope(values: Record<string, string>) {
 export function DataEntryWorkspace({
   draft,
   formulas,
+  onSave,
 }: DataEntryWorkspaceProps) {
   const [values, setValues] = useState<Record<string, string>>(draft.values);
   const [notes, setNotes] = useState(draft.notes);
+  const [sessionDate, setSessionDate] = useState(draft.sessionDate);
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    setValues(draft.values);
+    setNotes(draft.notes);
+    setSessionDate(draft.sessionDate);
+  }, [draft]);
+
+  const clientInitials = initials(draft.clientName);
 
   const { computedMetrics, formulaSnapshots } = useMemo(() => {
     const numericScope = getNumericScope(values);
@@ -69,6 +88,19 @@ export function DataEntryWorkspace({
     return { computedMetrics: metrics, formulaSnapshots: snapshots };
   }, [formulas, values]);
 
+  const handleSave = async () => {
+    if (!onSave) {
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      await onSave({ values, notes, sessionDate });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
     <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_350px]">
       <div className="grid gap-6">
@@ -76,16 +108,19 @@ export function DataEntryWorkspace({
           <div className="grid gap-3 xl:grid-cols-[280px_minmax(0,1fr)] xl:items-center">
             <div className="flex items-center gap-3">
               <span className="flex h-10 w-10 items-center justify-center rounded-full bg-green/15 text-sm font-bold text-green">
-                WL
+                {clientInitials}
               </span>
               <h2 className="text-lg font-bold text-dark dark:text-white">
                 {draft.clientName}
               </h2>
             </div>
             <div className="flex items-center gap-3">
-              <p className="min-w-[120px] rounded-[10px] border border-stroke bg-transparent px-4 py-3 text-center text-sm text-dark dark:border-dark-3 dark:text-white">
-                {new Date().toISOString().split("T")[0]}
-              </p>
+              <input
+                type="date"
+                value={sessionDate}
+                onChange={(event) => setSessionDate(event.target.value)}
+                className="min-w-[120px] rounded-[10px] border border-stroke bg-transparent px-4 py-3 text-sm text-dark dark:border-dark-3 dark:text-white"
+              />
 
               <input
                 value={notes}
@@ -112,10 +147,14 @@ export function DataEntryWorkspace({
         ))}
 
         <Button
-          label="Save"
+          label={isSaving ? "Saving…" : "Save"}
           variant="outlineDark"
           size="small"
-          toastMessage="Draft storage will be connected in phase 2."
+          onClick={handleSave}
+          disabled={isSaving}
+          toastMessage={
+            onSave ? undefined : "Draft storage will be connected in phase 2."
+          }
         />
       </div>
 

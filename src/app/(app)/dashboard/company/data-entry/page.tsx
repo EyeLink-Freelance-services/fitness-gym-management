@@ -1,18 +1,36 @@
-import { DataEntryWorkspace } from "@/components/Dashboard/client-records/data-entry-workspace";
-import {
-  getCompanyFormulas,
-  getCompanyRecordDraft,
-} from "@/services/coach-schema.services";
+import { notFound, redirect } from "next/navigation";
+import { fetchCompanyClientRecordDraftAction } from "@/app/(app)/dashboard/company/clients/client-data-entry-actions";
+import { CompanyDataEntry } from "@/components/Dashboard/company/data-entry";
+import { ROUTES } from "@/constants/route";
+import { getCompanyFormulas } from "@/services/coach-schema.services";
 
-export default async function CompanyDataEntryPage() {
+type PageProps = {
+  searchParams: Promise<{ clientId?: string }>;
+};
+
+export default async function CompanyDataEntryPage({
+  searchParams,
+}: PageProps) {
+  const { clientId } = await searchParams;
+
+  if (!clientId) {
+    redirect(ROUTES.DASHBOARD.COMPANY.CLIENTS);
+  }
+
   const [draft, formulas] = await Promise.all([
-    getCompanyRecordDraft(),
+    fetchCompanyClientRecordDraftAction(clientId),
     getCompanyFormulas(),
   ]);
 
+  if (!draft) {
+    notFound();
+  }
+
   return (
-    <div>
-      <DataEntryWorkspace draft={draft} formulas={formulas} />
-    </div>
+    <CompanyDataEntry
+      clientId={clientId}
+      draft={draft}
+      formulas={formulas}
+    />
   );
 }

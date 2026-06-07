@@ -6,6 +6,7 @@ import {
 } from "@/modules/company/company-client.mappers";
 import type { CompanyClient } from "@/types/dashboard/company";
 import { formatProfileDate, getClientInitials, planStatusTone } from "./utils";
+import { ClientCoachingActions } from "./client-coaching-actions";
 
 type ClientProfileHeaderProps = {
   client: CompanyClient;
@@ -14,6 +15,9 @@ type ClientProfileHeaderProps = {
   onEdit: () => void;
   onSave: () => void;
   onCancel: () => void;
+  showCoachingActions?: boolean;
+  onOpenDietPlan?: () => void;
+  onOpenTrainingPlan?: () => void;
 };
 
 export function ClientProfileHeader({
@@ -23,6 +27,9 @@ export function ClientProfileHeader({
   onEdit,
   onSave,
   onCancel,
+  showCoachingActions = false,
+  onOpenDietPlan,
+  onOpenTrainingPlan,
 }: ClientProfileHeaderProps) {
   const fullName = getCompanyClientFullName(client);
   const initials = getClientInitials(client.firstName, client.lastName);
@@ -68,6 +75,13 @@ export function ClientProfileHeader({
         </div>
 
         <div className="flex shrink-0 flex-wrap items-center gap-2">
+          {!isEditing && showCoachingActions && onOpenDietPlan && onOpenTrainingPlan && (
+            <ClientCoachingActions
+              clientId={client.id}
+              onOpenDietPlan={onOpenDietPlan}
+              onOpenTrainingPlan={onOpenTrainingPlan}
+            />
+          )}
           {isEditing ? (
             <>
               <Button
