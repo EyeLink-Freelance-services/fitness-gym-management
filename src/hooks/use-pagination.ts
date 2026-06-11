@@ -38,7 +38,8 @@ export function usePagination<T>({
 
   const goToPage = useCallback(
     async (newPageIndex: number) => {
-      if (newPageIndex < 0 || newPageIndex >= totalPages) return;
+      if (newPageIndex < 0) return;
+      if (totalPages > 0 && newPageIndex >= totalPages) return;
 
       setIsLoading(true);
       try {

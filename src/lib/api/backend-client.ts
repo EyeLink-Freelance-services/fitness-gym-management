@@ -38,24 +38,35 @@ export async function backendGet<T>(path: string): Promise<T> {
 
 export async function backendPost<T>(path: string, body: unknown): Promise<T> {
   const token = await getBearerToken();
+  const url = backendUrl(path);
 
-  const res = await fetch(backendUrl(path), {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(body),
-    cache: "no-store",
-  });
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+      cache: "no-store",
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    throw new Error(`Backend API request failed: ${message}`);
+  }
 
   if (!res.ok) {
     const text = await res.text().catch(() => "");
     throw new Error(`Backend API error ${res.status}: ${text}`);
   }
 
-  if (res.status === 201) return {} as T;
-  return res.json() as Promise<T>;
+  if (res.status === 201 || res.status === 204) return {} as T;
+
+  const text = await res.text();
+  if (!text.trim()) return {} as T;
+
+  return JSON.parse(text) as T;
 }
 
 export async function backendPut<T>(path: string, body: unknown): Promise<T> {

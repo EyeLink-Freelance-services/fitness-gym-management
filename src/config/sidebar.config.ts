@@ -53,6 +53,14 @@ const SIDEBAR_ITEM_CONFIG: SidebarItemConfig[] = [
   {
     sectionLabel: "COMPANY",
     roles: ["company"],
+    title: "Payment",
+    url: ROUTES.DASHBOARD.COMPANY.PAYMENT,
+    icon: Icons.PaymentsIcon,
+    items: [],
+  },
+  {
+    sectionLabel: "COMPANY",
+    roles: ["company"],
     title: "Coaches",
     url: ROUTES.DASHBOARD.COMPANY.COACHES,
     icon: Icons.User,

@@ -27,14 +27,31 @@ export function getClientCoachDisplayName(
   return "-";
 }
 
+export function getMembershipAmount(
+  plan: MembershipPlanKind,
+  standardPrice?: number,
+  additionalFees?: number,
+  companyPricing?: CompanyPricing,
+): number {
+  const standard = standardPrice ?? companyPricing?.standardPrice ?? 0;
+
+  if (plan === "PERSONAL") {
+    return standard + (additionalFees ?? 0);
+  }
+
+  return standard;
+}
+
 export function getClientDisplayFee(
   client: CompanyClient,
   companyPricing?: CompanyPricing,
 ): number | undefined {
-  if (client.membershipPlan === "PERSONAL") {
-    return client.additionalFees;
-  }
-  return client.standardPrice ?? companyPricing?.standardPrice;
+  return getMembershipAmount(
+    client.membershipPlan,
+    client.standardPrice,
+    client.additionalFees,
+    companyPricing,
+  );
 }
 
 function toDateInputValue(value?: string): string {
