@@ -5,7 +5,7 @@ import type { CompanyClient, CompanyPricing } from "@/types/dashboard/company";
 import { getCompanyClientFullName } from "@/modules/company/company-client.mappers";
 import type { ActivePlanDialog } from "@/modules/client-records/coach-plan.types";
 import type {
-  CoachDietPlanRecord,
+  ClientDietPlanRow,
   CoachTrainingPlanRecord,
 } from "@/types/dashboard/client";
 import { ClientProfileBreadcrumb } from "./client-profile-breadcrumb";
@@ -25,14 +25,14 @@ import {
 export type ClientProfilePageProps = {
   client: CompanyClient;
   companyPricing: CompanyPricing | null;
-  initialDietPlans?: CoachDietPlanRecord[];
+  initialDiets?: ClientDietPlanRow[];
   initialTrainingPlans?: CoachTrainingPlanRecord[];
 };
 
 export function ClientProfilePage({
   client,
   companyPricing,
-  initialDietPlans = [],
+  initialDiets = [],
   initialTrainingPlans = [],
 }: ClientProfilePageProps) {
   const edit = useClientProfileEdit(client, companyPricing);
@@ -60,7 +60,9 @@ export function ClientProfilePage({
         onCancel={edit.cancelEdit}
         showCoachingActions={isPersonalCoaching}
         onOpenDietPlan={() => setActivePlanDialog(createDietPlanDialog())}
-        onOpenTrainingPlan={() => setActivePlanDialog(createTrainingPlanDialog())}
+        onOpenTrainingPlan={() =>
+          setActivePlanDialog(createTrainingPlanDialog())
+        }
       />
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -81,7 +83,7 @@ export function ClientProfilePage({
           <CompanyClientCoachingSection
             clientId={client.id}
             clientName={clientName}
-            initialDietPlans={initialDietPlans}
+            initialDiets={initialDiets}
             initialTrainingPlans={initialTrainingPlans}
             activeDialog={activePlanDialog}
             onActiveDialogChange={setActivePlanDialog}

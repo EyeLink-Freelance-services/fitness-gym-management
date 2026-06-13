@@ -1,11 +1,15 @@
 "use server";
 
+import { fetchClientDietsPage } from "@/app/(app)/dashboard/company/clients/client-diet-actions";
 import {
-  getCompanyClientDietPlans,
   getCompanyClientTrainingPlans,
-  saveCompanyClientDietPlan,
   saveCompanyClientTrainingPlan,
 } from "@/modules/company/company-client-coaching.service";
+import { mapCoachMealToApiRequest } from "@/modules/company/client-diet.mappers";
+import {
+  createClientDiets,
+  updateClientDiet,
+} from "@/services/company/client-diet.service";
 import type {
   CoachDietPlanRecord,
   CoachTrainingPlanRecord,
@@ -16,9 +20,7 @@ function clientProfilePath(clientId: string) {
   return `/dashboard/company/clients/${clientId}`;
 }
 
-export async function fetchCompanyClientDietPlansAction(clientId: string) {
-  return getCompanyClientDietPlans(clientId);
-}
+export { fetchClientDietsPage };
 
 export async function fetchCompanyClientTrainingPlansAction(clientId: string) {
   return getCompanyClientTrainingPlans(clientId);
@@ -27,10 +29,17 @@ export async function fetchCompanyClientTrainingPlansAction(clientId: string) {
 export async function saveCompanyClientDietPlanAction(
   clientId: string,
   record: CoachDietPlanRecord,
+  dietId?: string,
 ) {
-  const saved = await saveCompanyClientDietPlan(clientId, record);
+  const meals = record.meals.map(mapCoachMealToApiRequest);
+
+  if (dietId) {
+    await updateClientDiet(clientId, dietId, meals[0]);
+  } else {
+    await createClientDiets(clientId, meals);
+  }
+
   revalidatePath(clientProfilePath(clientId));
-  return saved;
 }
 
 export async function saveCompanyClientTrainingPlanAction(

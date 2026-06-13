@@ -136,6 +136,15 @@ export interface CoachDietPlanRow {
   updatedAt: string;
 }
 
+export interface ClientDietPlanRow {
+  id: string;
+  mealInterval: string;
+  mealTime?: string;
+  mealDescription: string;
+  updatedAt: string;
+}
+
+
 export interface CoachTrainingPlanRow {
   id: string;
   clientName: string;

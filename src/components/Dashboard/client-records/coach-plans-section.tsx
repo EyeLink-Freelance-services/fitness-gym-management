@@ -1,10 +1,20 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { coachDietPlanColumns, coachTrainingPlanColumns } from "@/components/Dashboard/table-column/personal-coach-plan-columns";
+import {
+  clientDietPlanColumns,
+  coachDietPlanColumns,
+  coachTrainingPlanColumns,
+} from "@/components/Dashboard/table-column/personal-coach-plan-columns";
 import PersonalCoachDietPlanForm from "@/components/Forms/PersonalCoachDietPlanForm";
 import PersonalCoachTrainingPlanForm from "@/components/Forms/PersonalCoachTrainingPlanForm";
 import { DataTable } from "@/components/Tables";
+import { Button } from "@/components/ui-elements/button";
+import {
+  allDietSlotsTaken,
+  createDietFormData,
+  dietRowToFormData,
+  formatDietTimeSlotLabel,
+} from "@/modules/company/client-diet.mappers";
 import {
   toDietFormData,
   toDietRecord,
@@ -15,6 +25,7 @@ import {
 } from "@/modules/client-records/coach-plan.mappers";
 import type { ActivePlanDialog, CoachPlanClient } from "@/modules/client-records/coach-plan.types";
 import type {
+  ClientDietPlanRow,
   CoachDietPlanRecord,
   CoachTrainingPlanRecord,
 } from "@/types/dashboard/client";
@@ -22,6 +33,12 @@ import type {
   PersonalCoachDietPlanFormData,
   PersonalCoachTrainingPlanFormData,
 } from "@/types/forms";
+import { useEffect, useMemo, useState } from "react";
+
+type ServerDietsConfig = {
+  clientId: string;
+  initialRows: ClientDietPlanRow[];
+};
 
 type CoachPlansSectionProps = {
   client: CoachPlanClient;
@@ -29,8 +46,12 @@ type CoachPlansSectionProps = {
   initialTrainingPlans: CoachTrainingPlanRecord[];
   activeDialog?: ActivePlanDialog;
   onActiveDialogChange?: (dialog: ActivePlanDialog) => void;
-  onDietPlanSave?: (record: CoachDietPlanRecord) => Promise<void> | void;
+  onDietPlanSave?: (
+    record: CoachDietPlanRecord,
+    dietId?: string,
+  ) => Promise<void> | void;
   onTrainingPlanSave?: (record: CoachTrainingPlanRecord) => Promise<void> | void;
+  serverDiets?: ServerDietsConfig;
 };
 
 export function CoachPlansSection({
@@ -41,6 +62,7 @@ export function CoachPlansSection({
   onActiveDialogChange,
   onDietPlanSave,
   onTrainingPlanSave,
+  serverDiets,
 }: CoachPlansSectionProps) {
   const [dietPlans, setDietPlans] = useState(initialDietPlans);
   const [trainingPlans, setTrainingPlans] = useState(initialTrainingPlans);
@@ -85,15 +107,20 @@ export function CoachPlansSection({
     };
   }, [activeDialog]);
 
-  const dietRows = useMemo(() => dietPlans.map(toDietRow), [dietPlans]);
+  const legacyDietRows = useMemo(() => dietPlans.map(toDietRow), [dietPlans]);
   const trainingRows = useMemo(
     () => trainingPlans.map(toTrainingRow),
     [trainingPlans],
   );
 
   const selectedDietPlan =
-    activeDialog?.type === "diet" && activeDialog.planId
+    activeDialog?.type === "diet" && activeDialog.planId && !serverDiets
       ? dietPlans.find((plan) => plan.id === activeDialog.planId)
+      : undefined;
+
+  const selectedDietRow =
+    activeDialog?.type === "diet" && activeDialog.planId && serverDiets
+      ? serverDiets.initialRows.find((row) => row.id === activeDialog.planId)
       : undefined;
 
   const selectedTrainingPlan =
@@ -117,13 +144,20 @@ export function CoachPlansSection({
 
   const handleDietSubmit = async (values: PersonalCoachDietPlanFormData) => {
     const nextRecord = toDietRecord(values, selectedDietPlan?.id);
+    const dietId =
+      serverDiets && activeDialog?.type === "diet" && activeDialog.mode === "edit"
+        ? activeDialog.planId
+        : undefined;
 
     try {
       if (onDietPlanSave) {
-        await onDietPlanSave(nextRecord);
+        await onDietPlanSave(nextRecord, dietId);
       }
 
-      upsertDietPlan(nextRecord);
+      if (!serverDiets) {
+        upsertDietPlan(nextRecord);
+      }
+
       setActiveDialog(null);
     } catch {
       // Keep the dialog open when persistence fails.
@@ -147,22 +181,78 @@ export function CoachPlansSection({
     }
   };
 
+  const isDietEdit = activeDialog?.type === "diet" && activeDialog.mode === "edit";
+
+  const dietFormData = serverDiets
+    ? isDietEdit
+      ? dietRowToFormData(client, selectedDietRow)
+      : createDietFormData(client, serverDiets.initialRows)
+    : toDietFormData(client, selectedDietPlan);
+
+  const existingDietRowsForForm =
+    serverDiets && isDietEdit && selectedDietRow
+      ? serverDiets.initialRows.filter((row) => row.id !== selectedDietRow.id)
+      : serverDiets?.initialRows ?? [];
+
+  const canAddDietPlan =
+    !serverDiets || !allDietSlotsTaken(serverDiets.initialRows);
+
   return (
     <>
       <div className="grid gap-6">
-        <DataTable
-          title="Diet Plans"
-          description="Click a row to review or update the client's meal plan."
-          data={dietRows}
-          columns={coachDietPlanColumns}
-          getRowId={(row) => row.id}
-          onRowClick={(row) =>
-            setActiveDialog({ type: "diet", mode: "edit", planId: row.id })
-          }
-          emptyStateLabel="No diet plan has been created for this client yet."
-          searchPlaceholder="Search diet plans..."
-          tableClassName="min-w-[760px]"
-        />
+        {serverDiets ? (
+          <DataTable
+            title="Diet Plans"
+            description="Click a row to review or update the client's diet plan."
+            data={serverDiets.initialRows}
+            columns={clientDietPlanColumns}
+            getRowId={(row) => row.id}
+            onRowClick={(row) =>
+              setActiveDialog({
+                type: "diet",
+                mode: "edit",
+                planId: row.id,
+              })
+            }
+            emptyStateLabel="No diet plans have been added for this client yet."
+            searchPlaceholder="Search diet plans..."
+            headerActions={
+              <Button
+                type="button"
+                label="Add Diet"
+                disabled={!canAddDietPlan}
+                title={
+                  canAddDietPlan
+                    ? undefined
+                    : "All meal slots are filled (Breakfast, Lunch, Dinner, Specific Time)."
+                }
+                onClick={() =>
+                  setActiveDialog({ type: "diet", mode: "create" })
+                }
+              />
+            }
+            tableClassName="min-w-[640px]"
+            showFooter={false}
+          />
+        ) : (
+          <DataTable
+            title="Diet Plans"
+            description="Click a row to review or update the client's meal plan."
+            data={legacyDietRows}
+            columns={coachDietPlanColumns}
+            getRowId={(row) => row.id}
+            onRowClick={(row) =>
+              setActiveDialog({
+                type: "diet",
+                mode: "edit",
+                planId: row.id,
+              })
+            }
+            emptyStateLabel="No diet plan has been created for this client yet."
+            searchPlaceholder="Search diet plans..."
+            tableClassName="min-w-[760px]"
+          />
+        )}
 
         <DataTable
           title="Training Plans"
@@ -199,7 +289,10 @@ export function CoachPlansSection({
               {activeDialog.type === "diet" ? (
                 <PersonalCoachDietPlanForm
                   mode={activeDialog.mode}
-                  initialData={toDietFormData(client, selectedDietPlan)}
+                  initialData={dietFormData}
+                  allowAddMeal={!serverDiets || activeDialog.mode === "create"}
+                  allowRemoveMeal={!serverDiets || activeDialog.mode === "create"}
+                  existingDietRows={existingDietRowsForForm}
                   onCancel={() => setActiveDialog(null)}
                   onSubmit={handleDietSubmit}
                 />

@@ -1,7 +1,12 @@
 import type {
+  ClientDietPlanRow,
   CoachDietPlanRow,
   CoachTrainingPlanRow,
 } from "@/types/dashboard/client";
+import {
+  formatDietUpdatedAt,
+  formatMealIntervalLabel,
+} from "@/modules/company/client-diet.mappers";
 import type { ColumnDef } from "@tanstack/react-table";
 
 function formatDate(date: string) {
@@ -11,6 +16,42 @@ function formatDate(date: string) {
     year: "numeric",
   });
 }
+
+export const clientDietPlanColumns: ColumnDef<ClientDietPlanRow>[] = [
+  {
+    id: "mealTime",
+    header: "Meal Time",
+    cell: ({ row }) => (
+      <span className="font-medium text-dark dark:text-white">
+        {formatMealIntervalLabel(
+          row.original.mealInterval,
+          row.original.mealTime,
+        )}
+      </span>
+    ),
+    meta: {
+      align: "left",
+      headClassName: "min-w-[160px]",
+    },
+  },
+  {
+    accessorKey: "mealDescription",
+    header: "Meal Description",
+    meta: {
+      align: "left",
+      headClassName: "min-w-[240px]",
+    },
+  },
+  {
+    id: "updatedAt",
+    header: "Last Updated",
+    cell: ({ row }) => formatDietUpdatedAt(row.original.updatedAt),
+    meta: {
+      align: "left",
+      headClassName: "min-w-[180px]",
+    },
+  },
+];
 
 export const coachDietPlanColumns: ColumnDef<CoachDietPlanRow>[] = [
   {

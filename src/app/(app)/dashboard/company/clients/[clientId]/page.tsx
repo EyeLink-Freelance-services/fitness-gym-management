@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
 import {
-  fetchCompanyClientDietPlansAction,
   fetchCompanyClientTrainingPlansAction,
 } from "@/app/(app)/dashboard/company/clients/client-coaching-actions";
+import { fetchClientDietsPage } from "@/app/(app)/dashboard/company/clients/client-diet-actions";
 import { getCompanyClientAction } from "@/app/(app)/dashboard/company/clients/actions";
 import { ClientProfilePage } from "@/components/Dashboard/company/client-profile/client-profile-page";
 import { getCompanyPricingForCompany } from "@/services/company/company.service";
@@ -24,18 +24,20 @@ export default async function ClientProfileRoute({ params }: Props) {
   }
 
   const isPersonalCoaching = client.membershipPlan === "PERSONAL";
-  const [initialDietPlans, initialTrainingPlans] = isPersonalCoaching
+  const [initialDietsResult, initialTrainingPlans] = isPersonalCoaching
     ? await Promise.all([
-        fetchCompanyClientDietPlansAction(clientId),
+        fetchClientDietsPage(clientId, 0, 100).catch(() => ({
+          diets: [],
+        })),
         fetchCompanyClientTrainingPlansAction(clientId),
       ])
-    : [[], []];
+    : [{ diets: [] }, []];
 
   return (
     <ClientProfilePage
       client={client}
       companyPricing={companyPricing}
-      initialDietPlans={initialDietPlans}
+      initialDiets={initialDietsResult.diets}
       initialTrainingPlans={initialTrainingPlans}
     />
   );

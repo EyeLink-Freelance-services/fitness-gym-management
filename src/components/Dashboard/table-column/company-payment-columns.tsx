@@ -99,7 +99,7 @@ export function getCompanyPaymentColumns({
     },
     {
       id: "date",
-      header: "Date",
+      header: "Paid On",
       cell: ({ row }) => (
         <span className="text-dark-6 dark:text-dark-6">
           {formatDate(row.original.paidDate)}

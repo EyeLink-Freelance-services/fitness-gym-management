@@ -3,12 +3,17 @@
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
+  getDietSaveErrorMessage,
+  validateDietMealsBeforeSave,
+} from "@/modules/company/client-diet.mappers";
+import {
   saveCompanyClientDietPlanAction,
   saveCompanyClientTrainingPlanAction,
 } from "@/app/(app)/dashboard/company/clients/client-coaching-actions";
 import { CoachPlansSection } from "@/components/Dashboard/client-records/coach-plans-section";
 import type { ActivePlanDialog } from "@/modules/client-records/coach-plan.types";
 import type {
+  ClientDietPlanRow,
   CoachDietPlanRecord,
   CoachTrainingPlanRecord,
 } from "@/types/dashboard/client";
@@ -16,7 +21,7 @@ import type {
 type CompanyClientCoachingSectionProps = {
   clientId: string;
   clientName: string;
-  initialDietPlans: CoachDietPlanRecord[];
+  initialDiets: ClientDietPlanRow[];
   initialTrainingPlans: CoachTrainingPlanRecord[];
   activeDialog: ActivePlanDialog;
   onActiveDialogChange: (dialog: ActivePlanDialog) => void;
@@ -25,21 +30,34 @@ type CompanyClientCoachingSectionProps = {
 export function CompanyClientCoachingSection({
   clientId,
   clientName,
-  initialDietPlans,
+  initialDiets,
   initialTrainingPlans,
   activeDialog,
   onActiveDialogChange,
 }: CompanyClientCoachingSectionProps) {
   const router = useRouter();
 
-  const handleDietPlanSave = async (record: CoachDietPlanRecord) => {
+  const handleDietPlanSave = async (
+    record: CoachDietPlanRecord,
+    dietId?: string,
+  ) => {
     try {
-      await saveCompanyClientDietPlanAction(clientId, record);
+      const validationError = validateDietMealsBeforeSave(
+        initialDiets,
+        record.meals,
+        dietId,
+      );
+
+      if (validationError) {
+        throw new Error(validationError);
+      }
+
+      await saveCompanyClientDietPlanAction(clientId, record, dietId);
       toast.success("Diet plan saved.");
       router.refresh();
-    } catch {
-      toast.error("Unable to save diet plan.");
-      throw new Error("Unable to save diet plan.");
+    } catch (error) {
+      toast.error(getDietSaveErrorMessage(error));
+      throw error instanceof Error ? error : new Error(getDietSaveErrorMessage(error));
     }
   };
 
@@ -57,12 +75,16 @@ export function CompanyClientCoachingSection({
   return (
     <CoachPlansSection
       client={{ id: clientId, name: clientName }}
-      initialDietPlans={initialDietPlans}
+      initialDietPlans={[]}
       initialTrainingPlans={initialTrainingPlans}
       activeDialog={activeDialog}
       onActiveDialogChange={onActiveDialogChange}
       onDietPlanSave={handleDietPlanSave}
       onTrainingPlanSave={handleTrainingPlanSave}
+      serverDiets={{
+        clientId,
+        initialRows: initialDiets,
+      }}
     />
   );
 }
