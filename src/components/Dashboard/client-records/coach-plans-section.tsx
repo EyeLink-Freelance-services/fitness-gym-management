@@ -2,19 +2,32 @@
 
 import {
   clientDietPlanColumns,
+  clientTrainingPlanColumns,
   coachDietPlanColumns,
   coachTrainingPlanColumns,
 } from "@/components/Dashboard/table-column/personal-coach-plan-columns";
+
 import PersonalCoachDietPlanForm from "@/components/Forms/PersonalCoachDietPlanForm";
+
 import PersonalCoachTrainingPlanForm from "@/components/Forms/PersonalCoachTrainingPlanForm";
+
 import { DataTable } from "@/components/Tables";
+
 import { Button } from "@/components/ui-elements/button";
+
 import {
   allDietSlotsTaken,
   createDietFormData,
   dietRowToFormData,
-  formatDietTimeSlotLabel,
 } from "@/modules/company/client-diet.mappers";
+
+import {
+  allTrainingDaysTaken,
+  createTrainingFormData,
+  getAvailableTrainingDays,
+  trainingRowToFormData,
+} from "@/modules/company/client-training.mappers";
+
 import {
   toDietFormData,
   toDietRecord,
@@ -23,58 +36,101 @@ import {
   toTrainingRecord,
   toTrainingRow,
 } from "@/modules/client-records/coach-plan.mappers";
-import type { ActivePlanDialog, CoachPlanClient } from "@/modules/client-records/coach-plan.types";
+
+import type {
+  ActivePlanDialog,
+  CoachPlanClient,
+} from "@/modules/client-records/coach-plan.types";
+
 import type {
   ClientDietPlanRow,
+  ClientTrainingPlanRow,
   CoachDietPlanRecord,
   CoachTrainingPlanRecord,
 } from "@/types/dashboard/client";
+
 import type {
   PersonalCoachDietPlanFormData,
   PersonalCoachTrainingPlanFormData,
 } from "@/types/forms";
+
 import { useEffect, useMemo, useState } from "react";
 
 type ServerDietsConfig = {
   clientId: string;
+
   initialRows: ClientDietPlanRow[];
+};
+
+type ServerTrainingsConfig = {
+  clientId: string;
+
+  initialRows: ClientTrainingPlanRow[];
 };
 
 type CoachPlansSectionProps = {
   client: CoachPlanClient;
+
   initialDietPlans: CoachDietPlanRecord[];
+
   initialTrainingPlans: CoachTrainingPlanRecord[];
+
   activeDialog?: ActivePlanDialog;
+
   onActiveDialogChange?: (dialog: ActivePlanDialog) => void;
+
   onDietPlanSave?: (
     record: CoachDietPlanRecord,
+
     dietId?: string,
   ) => Promise<void> | void;
-  onTrainingPlanSave?: (record: CoachTrainingPlanRecord) => Promise<void> | void;
+
+  onTrainingPlanSave?: (
+    values: PersonalCoachTrainingPlanFormData,
+
+    trainingPlanId?: string,
+  ) => Promise<void> | void;
+
   serverDiets?: ServerDietsConfig;
+
+  serverTrainings?: ServerTrainingsConfig;
 };
 
 export function CoachPlansSection({
   client,
+
   initialDietPlans,
+
   initialTrainingPlans,
+
   activeDialog: controlledDialog,
+
   onActiveDialogChange,
+
   onDietPlanSave,
+
   onTrainingPlanSave,
+
   serverDiets,
+
+  serverTrainings,
 }: CoachPlansSectionProps) {
   const [dietPlans, setDietPlans] = useState(initialDietPlans);
+
   const [trainingPlans, setTrainingPlans] = useState(initialTrainingPlans);
+
   const [internalDialog, setInternalDialog] = useState<ActivePlanDialog>(null);
 
-  const activeDialog = controlledDialog !== undefined ? controlledDialog : internalDialog;
+  const activeDialog =
+    controlledDialog !== undefined ? controlledDialog : internalDialog;
 
   const setActiveDialog = (dialog: ActivePlanDialog) => {
     if (onActiveDialogChange) {
       onActiveDialogChange(dialog);
+
       return;
     }
+
     setInternalDialog(dialog);
   };
 
@@ -98,18 +154,23 @@ export function CoachPlansSection({
     };
 
     const previousOverflow = document.body.style.overflow;
+
     document.body.style.overflow = "hidden";
+
     document.addEventListener("keydown", onKeyDown);
 
     return () => {
       document.body.style.overflow = previousOverflow;
+
       document.removeEventListener("keydown", onKeyDown);
     };
   }, [activeDialog]);
 
   const legacyDietRows = useMemo(() => dietPlans.map(toDietRow), [dietPlans]);
-  const trainingRows = useMemo(
+
+  const legacyTrainingRows = useMemo(
     () => trainingPlans.map(toTrainingRow),
+
     [trainingPlans],
   );
 
@@ -124,28 +185,44 @@ export function CoachPlansSection({
       : undefined;
 
   const selectedTrainingPlan =
-    activeDialog?.type === "training" && activeDialog.planId
+    activeDialog?.type === "training" && activeDialog.planId && !serverTrainings
       ? trainingPlans.find((plan) => plan.id === activeDialog.planId)
+      : undefined;
+
+  const selectedTrainingRow =
+    activeDialog?.type === "training" && activeDialog.planId && serverTrainings
+      ? serverTrainings.initialRows.find(
+          (row) => row.id === activeDialog.planId,
+        )
       : undefined;
 
   const upsertDietPlan = (nextRecord: CoachDietPlanRecord) => {
     setDietPlans((current) => {
-      const withoutCurrent = current.filter((plan) => plan.id !== nextRecord.id);
+      const withoutCurrent = current.filter(
+        (plan) => plan.id !== nextRecord.id,
+      );
+
       return [nextRecord, ...withoutCurrent];
     });
   };
 
   const upsertTrainingPlan = (nextRecord: CoachTrainingPlanRecord) => {
     setTrainingPlans((current) => {
-      const withoutCurrent = current.filter((plan) => plan.id !== nextRecord.id);
+      const withoutCurrent = current.filter(
+        (plan) => plan.id !== nextRecord.id,
+      );
+
       return [nextRecord, ...withoutCurrent];
     });
   };
 
   const handleDietSubmit = async (values: PersonalCoachDietPlanFormData) => {
     const nextRecord = toDietRecord(values, selectedDietPlan?.id);
+
     const dietId =
-      serverDiets && activeDialog?.type === "diet" && activeDialog.mode === "edit"
+      serverDiets &&
+      activeDialog?.type === "diet" &&
+      activeDialog.mode === "edit"
         ? activeDialog.planId
         : undefined;
 
@@ -167,21 +244,35 @@ export function CoachPlansSection({
   const handleTrainingSubmit = async (
     values: PersonalCoachTrainingPlanFormData,
   ) => {
-    const nextRecord = toTrainingRecord(values, selectedTrainingPlan?.id);
+    const trainingPlanId =
+      serverTrainings &&
+      activeDialog?.type === "training" &&
+      activeDialog.mode === "edit"
+        ? activeDialog.planId
+        : undefined;
 
     try {
       if (onTrainingPlanSave) {
-        await onTrainingPlanSave(nextRecord);
+        await onTrainingPlanSave(values, trainingPlanId);
       }
 
-      upsertTrainingPlan(nextRecord);
+      if (!serverTrainings) {
+        const nextRecord = toTrainingRecord(values, selectedTrainingPlan?.id);
+
+        upsertTrainingPlan(nextRecord);
+      }
+
       setActiveDialog(null);
     } catch {
       // Keep the dialog open when persistence fails.
     }
   };
 
-  const isDietEdit = activeDialog?.type === "diet" && activeDialog.mode === "edit";
+  const isDietEdit =
+    activeDialog?.type === "diet" && activeDialog.mode === "edit";
+
+  const isTrainingEdit =
+    activeDialog?.type === "training" && activeDialog.mode === "edit";
 
   const dietFormData = serverDiets
     ? isDietEdit
@@ -189,13 +280,28 @@ export function CoachPlansSection({
       : createDietFormData(client, serverDiets.initialRows)
     : toDietFormData(client, selectedDietPlan);
 
+  const trainingFormData = serverTrainings
+    ? isTrainingEdit
+      ? trainingRowToFormData(client, selectedTrainingRow)
+      : createTrainingFormData(client)
+    : toTrainingFormData(client, selectedTrainingPlan);
+
   const existingDietRowsForForm =
     serverDiets && isDietEdit && selectedDietRow
       ? serverDiets.initialRows.filter((row) => row.id !== selectedDietRow.id)
-      : serverDiets?.initialRows ?? [];
+      : (serverDiets?.initialRows ?? []);
+
+  const trainingVisibleDays = serverTrainings
+    ? isTrainingEdit && selectedTrainingRow
+      ? [selectedTrainingRow.day]
+      : getAvailableTrainingDays(serverTrainings.initialRows)
+    : undefined;
 
   const canAddDietPlan =
     !serverDiets || !allDietSlotsTaken(serverDiets.initialRows);
+
+  const canAddTrainingPlan =
+    !serverTrainings || !allTrainingDaysTaken(serverTrainings.initialRows);
 
   return (
     <>
@@ -210,12 +316,13 @@ export function CoachPlansSection({
             onRowClick={(row) =>
               setActiveDialog({
                 type: "diet",
+
                 mode: "edit",
+
                 planId: row.id,
               })
             }
             emptyStateLabel="No diet plans have been added for this client yet."
-            searchPlaceholder="Search diet plans..."
             headerActions={
               <Button
                 type="button"
@@ -244,33 +351,72 @@ export function CoachPlansSection({
             onRowClick={(row) =>
               setActiveDialog({
                 type: "diet",
+
                 mode: "edit",
+
                 planId: row.id,
               })
             }
             emptyStateLabel="No diet plan has been created for this client yet."
-            searchPlaceholder="Search diet plans..."
             tableClassName="min-w-[760px]"
           />
         )}
 
-        <DataTable
-          title="Training Plans"
-          description="Click a row to review or update the client's weekly training split."
-          data={trainingRows}
-          columns={coachTrainingPlanColumns}
-          getRowId={(row) => row.id}
-          onRowClick={(row) =>
-            setActiveDialog({
-              type: "training",
-              mode: "edit",
-              planId: row.id,
-            })
-          }
-          emptyStateLabel="No training plan has been created for this client yet."
-          searchPlaceholder="Search training plans..."
-          tableClassName="min-w-[1240px]"
-        />
+        {serverTrainings ? (
+          <DataTable
+            title="Training Plans"
+            description="Click a row to review or update the client's training plan."
+            data={serverTrainings.initialRows}
+            columns={clientTrainingPlanColumns}
+            getRowId={(row) => row.id}
+            onRowClick={(row) =>
+              setActiveDialog({
+                type: "training",
+
+                mode: "edit",
+
+                planId: row.id,
+              })
+            }
+            emptyStateLabel="No training plans have been added for this client yet."
+            headerActions={
+              <Button
+                type="button"
+                label="Add Plan"
+                disabled={!canAddTrainingPlan}
+                title={
+                  canAddTrainingPlan
+                    ? undefined
+                    : "All days of the week already have a training plan."
+                }
+                onClick={() =>
+                  setActiveDialog({ type: "training", mode: "create" })
+                }
+              />
+            }
+            tableClassName="min-w-[640px]"
+            showFooter={false}
+          />
+        ) : (
+          <DataTable
+            title="Training Plans"
+            description="Click a row to review or update the client's weekly training split."
+            data={legacyTrainingRows}
+            columns={coachTrainingPlanColumns}
+            getRowId={(row) => row.id}
+            onRowClick={(row) =>
+              setActiveDialog({
+                type: "training",
+
+                mode: "edit",
+
+                planId: row.id,
+              })
+            }
+            emptyStateLabel="No training plan has been created for this client yet."
+            tableClassName="min-w-[1240px]"
+          />
+        )}
       </div>
 
       {activeDialog && (
@@ -291,7 +437,9 @@ export function CoachPlansSection({
                   mode={activeDialog.mode}
                   initialData={dietFormData}
                   allowAddMeal={!serverDiets || activeDialog.mode === "create"}
-                  allowRemoveMeal={!serverDiets || activeDialog.mode === "create"}
+                  allowRemoveMeal={
+                    !serverDiets || activeDialog.mode === "create"
+                  }
                   existingDietRows={existingDietRowsForForm}
                   onCancel={() => setActiveDialog(null)}
                   onSubmit={handleDietSubmit}
@@ -299,7 +447,8 @@ export function CoachPlansSection({
               ) : (
                 <PersonalCoachTrainingPlanForm
                   mode={activeDialog.mode}
-                  initialData={toTrainingFormData(client, selectedTrainingPlan)}
+                  initialData={trainingFormData}
+                  visibleDays={trainingVisibleDays}
                   onCancel={() => setActiveDialog(null)}
                   onSubmit={handleTrainingSubmit}
                 />

@@ -6,7 +6,7 @@ import { getCompanyClientFullName } from "@/modules/company/company-client.mappe
 import type { ActivePlanDialog } from "@/modules/client-records/coach-plan.types";
 import type {
   ClientDietPlanRow,
-  CoachTrainingPlanRecord,
+  ClientTrainingPlanRow,
 } from "@/types/dashboard/client";
 import { ClientProfileBreadcrumb } from "./client-profile-breadcrumb";
 import { ClientProfileHeader } from "./client-profile-header";
@@ -26,7 +26,7 @@ export type ClientProfilePageProps = {
   client: CompanyClient;
   companyPricing: CompanyPricing | null;
   initialDiets?: ClientDietPlanRow[];
-  initialTrainingPlans?: CoachTrainingPlanRecord[];
+  initialTrainingPlans?: ClientTrainingPlanRow[];
 };
 
 export function ClientProfilePage({

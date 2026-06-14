@@ -67,8 +67,6 @@ export function mapTrainingPlanResponseToRecord(
     clientId,
     clientName: api.clientName ?? "",
     updatedAt: api.updatedAt ?? api.auditData?.lastModifiedDate ?? new Date().toISOString(),
-    repeatEveryWeek: api.repeatEveryWeek ?? true,
-    repeatEveryMonth: api.repeatEveryMonth ?? false,
     days: TRAINING_DAYS.map((day) => ({
       day,
       exercise: byDay[day] ?? "",
@@ -98,8 +96,6 @@ export function mapTrainingPlanFormToApiRequest(
   }));
 
   return {
-    repeatEveryWeek: record.repeatEveryWeek,
-    repeatEveryMonth: record.repeatEveryMonth,
     days,
   };
 }

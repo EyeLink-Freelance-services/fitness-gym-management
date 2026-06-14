@@ -175,8 +175,6 @@ export interface PersonalCoachTrainingPlanFormData {
   friday: string;
   saturday: string;
   sunday: string;
-  repeatEveryWeek: boolean;
-  repeatEveryMonth: boolean;
 }
 
 /** Client-coach assignment status for Assign Client form */

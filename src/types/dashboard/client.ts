@@ -123,8 +123,6 @@ export interface CoachTrainingPlanRecord {
   clientId: string;
   clientName: string;
   days: CoachTrainingPlanEntry[];
-  repeatEveryWeek: boolean;
-  repeatEveryMonth: boolean;
   updatedAt: string;
 }
 
@@ -144,6 +142,13 @@ export interface ClientDietPlanRow {
   updatedAt: string;
 }
 
+export interface ClientTrainingPlanRow {
+  id: string;
+  planId: string;
+  day: CoachTrainingPlanDay;
+  trainingActivity: string;
+  updatedAt: string;
+}
 
 export interface CoachTrainingPlanRow {
   id: string;

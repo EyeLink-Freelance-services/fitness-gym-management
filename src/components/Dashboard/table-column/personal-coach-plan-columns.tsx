@@ -1,5 +1,6 @@
 import type {
   ClientDietPlanRow,
+  ClientTrainingPlanRow,
   CoachDietPlanRow,
   CoachTrainingPlanRow,
 } from "@/types/dashboard/client";
@@ -7,6 +8,7 @@ import {
   formatDietUpdatedAt,
   formatMealIntervalLabel,
 } from "@/modules/company/client-diet.mappers";
+import { formatTrainingUpdatedAt } from "@/modules/company/client-training.mappers";
 import type { ColumnDef } from "@tanstack/react-table";
 
 function formatDate(date: string) {
@@ -83,6 +85,39 @@ export const coachDietPlanColumns: ColumnDef<CoachDietPlanRow>[] = [
     cell: ({ row }) => formatDate(row.original.updatedAt),
     meta: {
       headClassName: "min-w-[140px]",
+    },
+  },
+];
+
+export const clientTrainingPlanColumns: ColumnDef<ClientTrainingPlanRow>[] = [
+  {
+    accessorKey: "day",
+    header: "Day",
+    meta: {
+      align: "left",
+      headClassName: "min-w-[140px]",
+    },
+  },
+  {
+    accessorKey: "trainingActivity",
+    header: "Training Activity",
+    cell: ({ row }) => (
+      <span className="text-dark dark:text-white">
+        {row.original.trainingActivity}
+      </span>
+    ),
+    meta: {
+      align: "left",
+      headClassName: "min-w-[240px]",
+    },
+  },
+  {
+    id: "updatedAt",
+    header: "Last Updated",
+    cell: ({ row }) => formatTrainingUpdatedAt(row.original.updatedAt),
+    meta: {
+      align: "left",
+      headClassName: "min-w-[180px]",
     },
   },
 ];

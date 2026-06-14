@@ -356,8 +356,6 @@ export const COACH_TRAINING_PLAN_RECORDS: Record<
       clientId: "client-wei-liang",
       clientName: "Wei Liang",
       updatedAt: "2026-03-06T08:00:00.000Z",
-      repeatEveryWeek: true,
-      repeatEveryMonth: false,
       days: [
         { day: "Monday", exercise: "Chest + triceps" },
         { day: "Tuesday", exercise: "Legs + mobility" },
@@ -375,8 +373,6 @@ export const COACH_TRAINING_PLAN_RECORDS: Record<
       clientId: "client-nurul-ain",
       clientName: "Nurul Ain",
       updatedAt: "2026-03-02T08:00:00.000Z",
-      repeatEveryWeek: true,
-      repeatEveryMonth: false,
       days: [
         { day: "Monday", exercise: "Lower body strength" },
         { day: "Tuesday", exercise: "Light cardio" },

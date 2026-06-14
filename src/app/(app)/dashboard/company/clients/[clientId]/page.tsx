@@ -1,8 +1,6 @@
 import { notFound } from "next/navigation";
-import {
-  fetchCompanyClientTrainingPlansAction,
-} from "@/app/(app)/dashboard/company/clients/client-coaching-actions";
 import { fetchClientDietsPage } from "@/app/(app)/dashboard/company/clients/client-diet-actions";
+import { fetchClientTrainingPlansPage } from "@/app/(app)/dashboard/company/clients/client-coaching-actions";
 import { getCompanyClientAction } from "@/app/(app)/dashboard/company/clients/actions";
 import { ClientProfilePage } from "@/components/Dashboard/company/client-profile/client-profile-page";
 import { getCompanyPricingForCompany } from "@/services/company/company.service";
@@ -24,21 +22,23 @@ export default async function ClientProfileRoute({ params }: Props) {
   }
 
   const isPersonalCoaching = client.membershipPlan === "PERSONAL";
-  const [initialDietsResult, initialTrainingPlans] = isPersonalCoaching
+  const [initialDietsResult, initialTrainingPlansResult] = isPersonalCoaching
     ? await Promise.all([
         fetchClientDietsPage(clientId, 0, 100).catch(() => ({
           diets: [],
         })),
-        fetchCompanyClientTrainingPlansAction(clientId),
+        fetchClientTrainingPlansPage(clientId, 0, 100).catch(() => ({
+          trainingPlans: [],
+        })),
       ])
-    : [{ diets: [] }, []];
+    : [{ diets: [] }, { trainingPlans: [] }];
 
   return (
     <ClientProfilePage
       client={client}
       companyPricing={companyPricing}
       initialDiets={initialDietsResult.diets}
-      initialTrainingPlans={initialTrainingPlans}
+      initialTrainingPlans={initialTrainingPlansResult.trainingPlans}
     />
   );
 }
