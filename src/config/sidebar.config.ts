@@ -2,7 +2,6 @@ import type { NavItem, NavSection } from "@/types/dashboard/dashboard-shared";
 import type { AppRole } from "@/config/routes.config";
 import * as Icons from "@/components/IconsCollection/icons";
 import { ROUTES } from "@/constants/route";
-import { CLIENT_HAS_ASSIGNED_COACH } from "@/data/client";
 
 type SidebarItemConfig = NavItem & {
   roles: readonly AppRole[];
@@ -214,18 +213,9 @@ const SIDEBAR_ITEM_CONFIG: SidebarItemConfig[] = [
     sectionLabel: "CLIENT",
     roles: ["client"],
     title: "Overview",
-    url: ROUTES.DASHBOARD.CLIENT.ROOT,
+    url: ROUTES.DASHBOARD.COMPANY.ROOT,
     icon: Icons.HomeIcon,
     items: [],
-  },
-  {
-    sectionLabel: "CLIENT",
-    roles: ["client"],
-    title: "Sessions",
-    url: ROUTES.DASHBOARD.CLIENT.SESSIONS,
-    icon: Icons.Calendar,
-    items: [],
-    disabled: !CLIENT_HAS_ASSIGNED_COACH,
   },
 ];
 

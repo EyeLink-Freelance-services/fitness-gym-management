@@ -30,6 +30,7 @@ type CompanyClientCoachingSectionProps = {
   initialTrainingPlans: ClientTrainingPlanRow[];
   activeDialog: ActivePlanDialog;
   onActiveDialogChange: (dialog: ActivePlanDialog) => void;
+  readOnly?: boolean;
 };
 
 export function CompanyClientCoachingSection({
@@ -39,6 +40,7 @@ export function CompanyClientCoachingSection({
   initialTrainingPlans,
   activeDialog,
   onActiveDialogChange,
+  readOnly = false,
 }: CompanyClientCoachingSectionProps) {
   const router = useRouter();
 
@@ -104,8 +106,8 @@ export function CompanyClientCoachingSection({
       initialTrainingPlans={[]}
       activeDialog={activeDialog}
       onActiveDialogChange={onActiveDialogChange}
-      onDietPlanSave={handleDietPlanSave}
-      onTrainingPlanSave={handleTrainingPlanSave}
+      onDietPlanSave={readOnly ? undefined : handleDietPlanSave}
+      onTrainingPlanSave={readOnly ? undefined : handleTrainingPlanSave}
       serverDiets={{
         clientId,
         initialRows: initialDiets,
@@ -114,6 +116,7 @@ export function CompanyClientCoachingSection({
         clientId,
         initialRows: initialTrainingPlans,
       }}
+      readOnly={readOnly}
     />
   );
 }

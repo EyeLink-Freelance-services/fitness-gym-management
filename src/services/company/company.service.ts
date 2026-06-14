@@ -90,6 +90,31 @@ export async function getCompanyClientById(
   }
 }
 
+export async function getCompanyClientByUserId(
+  clientUserId: string,
+): Promise<CompanyClient | null> {
+  try {
+    const companyId = await requireCompanyId();
+    const data = await backendGet<ClientResponseApiBean>(
+      `${COMPANY_API_BASE}/${companyId}/clients/users/${clientUserId}`,
+    );
+    return mapClientResponseToCompanyClient(data);
+  } catch {
+    return null;
+  }
+}
+
+export async function getMyCompanyClientProfile(): Promise<CompanyClient | null> {
+  const auth = await getAuthContext();
+  if (!auth?.userId) return null;
+
+  return getCompanyClientByUserId(auth.userId);
+}
+
+export async function getCompanyClientForCurrentUser(): Promise<CompanyClient | null> {
+  return getMyCompanyClientProfile();
+}
+
 export async function createClientService(
   form: CompanyClientFormValues,
   _companyPlan?: CompanyPricing | null,

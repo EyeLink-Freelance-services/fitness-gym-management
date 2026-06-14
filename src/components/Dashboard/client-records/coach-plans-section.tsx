@@ -94,6 +94,8 @@ type CoachPlansSectionProps = {
   serverDiets?: ServerDietsConfig;
 
   serverTrainings?: ServerTrainingsConfig;
+
+  readOnly?: boolean;
 };
 
 export function CoachPlansSection({
@@ -114,6 +116,8 @@ export function CoachPlansSection({
   serverDiets,
 
   serverTrainings,
+
+  readOnly = false,
 }: CoachPlansSectionProps) {
   const [dietPlans, setDietPlans] = useState(initialDietPlans);
 
@@ -309,34 +313,41 @@ export function CoachPlansSection({
         {serverDiets ? (
           <DataTable
             title="Diet Plans"
-            description="Click a row to review or update the client's diet plan."
+            description={
+              readOnly
+                ? "Your assigned diet plans."
+                : "Click a row to review or update the client's diet plan."
+            }
             data={serverDiets.initialRows}
             columns={clientDietPlanColumns}
             getRowId={(row) => row.id}
-            onRowClick={(row) =>
-              setActiveDialog({
-                type: "diet",
-
-                mode: "edit",
-
-                planId: row.id,
-              })
+            onRowClick={
+              readOnly
+                ? undefined
+                : (row) =>
+                    setActiveDialog({
+                      type: "diet",
+                      mode: "edit",
+                      planId: row.id,
+                    })
             }
             emptyStateLabel="No diet plans have been added for this client yet."
             headerActions={
-              <Button
-                type="button"
-                label="Add Diet"
-                disabled={!canAddDietPlan}
-                title={
-                  canAddDietPlan
-                    ? undefined
-                    : "All meal slots are filled (Breakfast, Lunch, Dinner, Specific Time)."
-                }
-                onClick={() =>
-                  setActiveDialog({ type: "diet", mode: "create" })
-                }
-              />
+              readOnly ? undefined : (
+                <Button
+                  type="button"
+                  label="Add Diet"
+                  disabled={!canAddDietPlan}
+                  title={
+                    canAddDietPlan
+                      ? undefined
+                      : "All meal slots are filled (Breakfast, Lunch, Dinner, Specific Time)."
+                  }
+                  onClick={() =>
+                    setActiveDialog({ type: "diet", mode: "create" })
+                  }
+                />
+              )
             }
             tableClassName="min-w-[640px]"
             showFooter={false}
@@ -365,34 +376,41 @@ export function CoachPlansSection({
         {serverTrainings ? (
           <DataTable
             title="Training Plans"
-            description="Click a row to review or update the client's training plan."
+            description={
+              readOnly
+                ? "Your assigned training plans."
+                : "Click a row to review or update the client's training plan."
+            }
             data={serverTrainings.initialRows}
             columns={clientTrainingPlanColumns}
             getRowId={(row) => row.id}
-            onRowClick={(row) =>
-              setActiveDialog({
-                type: "training",
-
-                mode: "edit",
-
-                planId: row.id,
-              })
+            onRowClick={
+              readOnly
+                ? undefined
+                : (row) =>
+                    setActiveDialog({
+                      type: "training",
+                      mode: "edit",
+                      planId: row.id,
+                    })
             }
             emptyStateLabel="No training plans have been added for this client yet."
             headerActions={
-              <Button
-                type="button"
-                label="Add Plan"
-                disabled={!canAddTrainingPlan}
-                title={
-                  canAddTrainingPlan
-                    ? undefined
-                    : "All days of the week already have a training plan."
-                }
-                onClick={() =>
-                  setActiveDialog({ type: "training", mode: "create" })
-                }
-              />
+              readOnly ? undefined : (
+                <Button
+                  type="button"
+                  label="Add Plan"
+                  disabled={!canAddTrainingPlan}
+                  title={
+                    canAddTrainingPlan
+                      ? undefined
+                      : "All days of the week already have a training plan."
+                  }
+                  onClick={() =>
+                    setActiveDialog({ type: "training", mode: "create" })
+                  }
+                />
+              )
             }
             tableClassName="min-w-[640px]"
             showFooter={false}
@@ -419,7 +437,7 @@ export function CoachPlansSection({
         )}
       </div>
 
-      {activeDialog && (
+      {activeDialog && !readOnly && (
         <div
           className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm"
           role="dialog"

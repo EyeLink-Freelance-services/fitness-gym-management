@@ -1,6 +1,8 @@
 export interface IAuthContext {
   userId: string;
   email: string;
+  contextType?: string;
+  clientId?: string | null;
   profile: IProfile;
   companyId: string | null;
   company: ICompany | null;

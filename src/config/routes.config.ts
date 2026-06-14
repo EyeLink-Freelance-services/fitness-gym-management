@@ -41,8 +41,8 @@ export const ROUTE_CONFIG: Record<AppRole, RoleRouteConfig> = {
     allowedRoutes: [ROUTES.DASHBOARD.PERSONAL_COACH.ROOT],
   },
   client: {
-    defaultRoute: ROUTES.DASHBOARD.CLIENT.ROOT,
-    allowedRoutes: [ROUTES.DASHBOARD.CLIENT.ROOT],
+    defaultRoute: ROUTES.DASHBOARD.COMPANY.ROOT,
+    allowedRoutes: [ROUTES.DASHBOARD.COMPANY.ROOT],
   },
 } as const;
 
@@ -85,12 +85,36 @@ function inferRoleFromRoleNames(roles: readonly string[] = []): AppRole | null {
 
     if (role.includes("super")) return "super-admin";
     if (role.includes("personal")) return "personal-coach";
+    if (role.includes("client")) return "client";
     if (role.includes("company") && role.includes("coach")) return "company-coach";
     if (role === "admin" || role.includes("company")) return "company";
-    if (role.includes("client")) return "client";
   }
 
   return null;
+}
+
+function resolveAppRole(
+  contextType: string | null | undefined,
+  permissions: readonly string[] = [],
+  roleNames: readonly string[] = [],
+): AppRole | null {
+  if (roleNames.some((role) => normalize(role) === "client")) {
+    return "client";
+  }
+
+  const fromContext = inferRoleFromContextType(contextType);
+
+  if (fromContext && fromContext !== "company") {
+    return fromContext;
+  }
+
+  const fromPermissions = inferRoleFromPermissions(permissions);
+  if (fromPermissions) return fromPermissions;
+
+  const fromRoles = inferRoleFromRoleNames(roleNames);
+  if (fromRoles) return fromRoles;
+
+  return fromContext;
 }
 
 function enforceCompanyCoachByPermission(
@@ -111,10 +135,11 @@ export function getRoleFromClaims(claims: AccessTokenClaims | null): AppRole | n
   if (!claims) return null;
 
   const permissions = claims.permissions ?? [];
-  const candidate =
-    inferRoleFromContextType(claims.contextType) ??
-    inferRoleFromPermissions(permissions) ??
-    inferRoleFromRoleNames(claims.roles ?? []);
+  const candidate = resolveAppRole(
+    claims.contextType,
+    permissions,
+    claims.roles ?? [],
+  );
 
   return enforceCompanyCoachByPermission(candidate, permissions);
 }
@@ -123,8 +148,7 @@ export function getRoleFromAuthContext(auth: IAuthContext | null): AppRole | nul
   if (!auth) return null;
 
   const candidate =
-    inferRoleFromPermissions(auth.permissions ?? []) ??
-    inferRoleFromRoleNames(auth.roles ?? []) ??
+    resolveAppRole(auth.contextType, auth.permissions ?? [], auth.roles ?? []) ??
     (auth.company?.mode ? inferRoleFromContextType(auth.company.mode) : null);
 
   return enforceCompanyCoachByPermission(candidate, auth.permissions ?? []);
@@ -153,6 +177,11 @@ export function isDashboardPath(pathname: string): boolean {
 
 export function isPathAllowedForRole(pathname: string, role: AppRole | null): boolean {
   if (!role) return false;
+
+  if (role === "client") {
+    return pathname === ROUTES.DASHBOARD.COMPANY.ROOT;
+  }
+
   const allowedRoutes = getAllowedRoutesForRole(role);
   return allowedRoutes.some((prefix) => pathname.startsWith(prefix));
 }

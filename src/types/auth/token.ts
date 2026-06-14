@@ -14,6 +14,8 @@ export interface AccessTokenClaims {
   tokenType?: string;
   contextType?: string;
   businessId?: string;
+  companyId?: string;
+  clientId?: string;
   roles?: string[];
   permissions?: string[];
   availableContexts?: AvailableContextClaim[];

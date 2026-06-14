@@ -12,8 +12,7 @@ type ClientProfileHeaderProps = {
   onSave: () => void;
   onCancel: () => void;
   showCoachingActions?: boolean;
-  onOpenDietPlan?: () => void;
-  onOpenTrainingPlan?: () => void;
+  readOnly?: boolean;
 };
 
 export function ClientProfileHeader({
@@ -24,8 +23,7 @@ export function ClientProfileHeader({
   onSave,
   onCancel,
   showCoachingActions = false,
-  onOpenDietPlan,
-  onOpenTrainingPlan,
+  readOnly = false,
 }: ClientProfileHeaderProps) {
   const fullName = getCompanyClientFullName(client);
   const initials = getClientInitials(client.firstName, client.lastName);
@@ -49,40 +47,37 @@ export function ClientProfileHeader({
         </div>
 
         <div className="flex shrink-0 flex-wrap items-center gap-2">
-          {!isEditing &&
-            showCoachingActions &&
-            onOpenDietPlan &&
-            onOpenTrainingPlan && (
-              <ClientCoachingActions
-                clientId={client.id}
-                onOpenDietPlan={onOpenDietPlan}
-                onOpenTrainingPlan={onOpenTrainingPlan}
-              />
-            )}
-          {isEditing ? (
+          {!readOnly && (
             <>
-              <Button
-                label={isPending ? "Saving…" : "Save"}
-                variant="primary"
-                size="small"
-                onClick={onSave}
-                disabled={isPending}
-              />
-              <Button
-                label="Cancel"
-                variant="outlineDark"
-                size="small"
-                onClick={onCancel}
-                disabled={isPending}
-              />
+              {!isEditing && showCoachingActions && (
+                <ClientCoachingActions clientId={client.id} />
+              )}
+              {isEditing ? (
+                <>
+                  <Button
+                    label={isPending ? "Saving…" : "Save"}
+                    variant="primary"
+                    size="small"
+                    onClick={onSave}
+                    disabled={isPending}
+                  />
+                  <Button
+                    label="Cancel"
+                    variant="outlineDark"
+                    size="small"
+                    onClick={onCancel}
+                    disabled={isPending}
+                  />
+                </>
+              ) : (
+                <Button
+                  label="Edit"
+                  variant="outlineDark"
+                  size="small"
+                  onClick={onEdit}
+                />
+              )}
             </>
-          ) : (
-            <Button
-              label="Edit"
-              variant="outlineDark"
-              size="small"
-              onClick={onEdit}
-            />
           )}
         </div>
       </div>

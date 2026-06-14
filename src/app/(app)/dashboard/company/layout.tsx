@@ -11,7 +11,8 @@ export default async function CompanyDashboardLayout({
 }) {
   const auth = await getAuthContext();
   const role = getRoleFromAuthContext(auth);
-  const isCompanyRole = role === "company" || role === "company-coach";
+  const isCompanyRole =
+    role === "company" || role === "company-coach" || role === "client";
 
   if (!isCompanyRole) {
     redirect(getDefaultRouteFromAuthContext(auth) ?? ROUTES.LOGIN);

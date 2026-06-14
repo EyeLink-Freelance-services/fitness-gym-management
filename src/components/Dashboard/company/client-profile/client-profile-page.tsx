@@ -17,16 +17,13 @@ import { MembershipSection } from "./membership-section";
 import { PersonalInfoSection } from "./personal-info-section";
 import { useClientProfileEdit } from "./use-client-profile-edit";
 import { CompanyClientCoachingSection } from "./company-client-coaching-section";
-import {
-  createDietPlanDialog,
-  createTrainingPlanDialog,
-} from "./client-coaching-actions";
 
 export type ClientProfilePageProps = {
   client: CompanyClient;
   companyPricing: CompanyPricing | null;
   initialDiets?: ClientDietPlanRow[];
   initialTrainingPlans?: ClientTrainingPlanRow[];
+  readOnly?: boolean;
 };
 
 export function ClientProfilePage({
@@ -34,6 +31,7 @@ export function ClientProfilePage({
   companyPricing,
   initialDiets = [],
   initialTrainingPlans = [],
+  readOnly = false,
 }: ClientProfilePageProps) {
   const edit = useClientProfileEdit(client, companyPricing);
   const [activePlanDialog, setActivePlanDialog] = useState<ActivePlanDialog>(null);
@@ -43,26 +41,23 @@ export function ClientProfilePage({
   const sectionProps = {
     client,
     draft: edit.draft,
-    isEditing: edit.isEditing,
+    isEditing: readOnly ? false : edit.isEditing,
     onPatch: edit.patch,
   };
 
   return (
     <div className="pb-12">
-      <ClientProfileBreadcrumb clientName={clientName} />
+      {!readOnly && <ClientProfileBreadcrumb clientName={clientName} />}
 
       <ClientProfileHeader
         client={client}
-        isEditing={edit.isEditing}
+        isEditing={readOnly ? false : edit.isEditing}
         isPending={edit.isPending}
         onEdit={edit.startEdit}
         onSave={edit.save}
         onCancel={edit.cancelEdit}
-        showCoachingActions={isPersonalCoaching}
-        onOpenDietPlan={() => setActivePlanDialog(createDietPlanDialog())}
-        onOpenTrainingPlan={() =>
-          setActivePlanDialog(createTrainingPlanDialog())
-        }
+        showCoachingActions={!readOnly && isPersonalCoaching}
+        readOnly={readOnly}
       />
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -87,6 +82,7 @@ export function ClientProfilePage({
             initialTrainingPlans={initialTrainingPlans}
             activeDialog={activePlanDialog}
             onActiveDialogChange={setActivePlanDialog}
+            readOnly={readOnly}
           />
         </div>
       )}

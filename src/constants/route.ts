@@ -37,11 +37,6 @@ export const ROUTES = {
       COACHES: "/dashboard/super-admin/coaches",
       COMPANY: "/dashboard/super-admin/company"
     },
-    CLIENT: {
-      ROOT: "/dashboard/client",
-      SESSIONS: "/dashboard/client/sessions",
-      WEEKLY_CALENDAR: "/dashboard/client/sessions",
-    },
   },
   LOGIN: "/auth/sign-in",
   FORGOT_PASSWORD: "/auth/forgot-password",

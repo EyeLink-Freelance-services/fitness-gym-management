@@ -1,7 +1,11 @@
+import { notFound } from "next/navigation";
+import { getAuthContext } from "@/lib/auth/get-auth-context";
+import { getRoleFromAuthContext } from "@/config/routes.config";
+import { loadCurrentClientProfile } from "@/app/(app)/dashboard/company/clients/actions";
+import { ClientProfilePage } from "@/components/Dashboard/company/client-profile/client-profile-page";
 import { DashboardSection } from "@/components/Dashboard/dashboard-section";
 import { OverviewCard } from "@/components/Dashboard/overview-cards/card";
 import {
-  getGymCoachCLientAssign,
   getPersonalCoachAnnouncements,
 } from "@/services/dashboard.services";
 import { createTimeFrameExtractor } from "@/utils/timeframe-extractor";
@@ -14,7 +18,6 @@ import { Button } from "@/components/ui-elements/button";
 import { ROUTES } from "@/constants/route";
 import { announcementColumns } from "@/components/Dashboard/table-column/personal-coach-preview-columns";
 import {
-  coachAssignmentColumns,
   newSignupColumns,
 } from "@/components/Dashboard/table-column/company-columns";
 import { getOverviewCompanyData } from "@/services/company/main";
@@ -25,6 +28,24 @@ import { PaymentsOverview } from "@/components/Charts/payments-overview";
 export default async function CompanyDashboardPage({
   searchParams,
 }: SearchType) {
+  const auth = await getAuthContext();
+  const role = getRoleFromAuthContext(auth);
+
+  if (role === "client") {
+    const profileData = await loadCurrentClientProfile();
+    if (!profileData) notFound();
+
+    return (
+      <ClientProfilePage
+        client={profileData.client}
+        companyPricing={profileData.companyPricing}
+        initialDiets={profileData.initialDiets}
+        initialTrainingPlans={profileData.initialTrainingPlans}
+        readOnly
+      />
+    );
+  }
+
   const { selected_time_frame } = await searchParams;
   const extractTimeFrame = createTimeFrameExtractor(selected_time_frame);
   const overviewData = await getOverviewCompanyData();

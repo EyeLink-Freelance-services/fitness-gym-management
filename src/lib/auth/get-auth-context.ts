@@ -14,24 +14,28 @@ function mapClaimsToAuthContext(claims: AccessTokenClaims): IAuthContext {
   const email = claims.email ?? claims.sub ?? "";
   const contextType = claims.contextType ?? "COMPANY";
   const businessId = claims.businessId ?? null;
+  const companyId = claims.companyId ?? businessId;
+  const clientId = claims.clientId ?? null;
   const companyMode = inferCompanyMode(contextType);
   const [firstName = "User", ...lastNameParts] = email.split("@")[0]?.split(".") ?? [];
 
   return {
     userId: claims.userId ?? claims.sub ?? "",
     email,
+    contextType,
+    clientId,
     profile: {
       id: claims.userId ?? claims.sub ?? "",
       first_name: firstName,
       last_name: lastNameParts.join(" "),
       picture_url: "",
-      active_company_id: businessId,
+      active_company_id: companyId,
     },
-    companyId: businessId,
-    company: businessId
+    companyId,
+    company: companyId
       ? {
-          id: businessId,
-          name: businessId,
+          id: companyId,
+          name: companyId,
           mode: companyMode,
         }
       : null,
