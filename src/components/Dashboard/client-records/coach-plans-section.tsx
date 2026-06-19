@@ -5,11 +5,11 @@ import {
   clientTrainingPlanColumns,
   coachDietPlanColumns,
   coachTrainingPlanColumns,
-} from "@/components/Dashboard/table-column/personal-coach-plan-columns";
+} from "@/components/Dashboard/table-column/coach-plan-columns";
 
-import PersonalCoachDietPlanForm from "@/components/Forms/PersonalCoachDietPlanForm";
+import CoachDietPlanForm from "@/components/Forms/CoachDietPlanForm";
 
-import PersonalCoachTrainingPlanForm from "@/components/Forms/PersonalCoachTrainingPlanForm";
+import CoachTrainingPlanForm from "@/components/Forms/CoachTrainingPlanForm";
 
 import { DataTable } from "@/components/Tables";
 
@@ -50,8 +50,8 @@ import type {
 } from "@/types/dashboard/client";
 
 import type {
-  PersonalCoachDietPlanFormData,
-  PersonalCoachTrainingPlanFormData,
+  CoachDietPlanFormData,
+  CoachTrainingPlanFormData,
 } from "@/types/forms";
 
 import { useEffect, useMemo, useState } from "react";
@@ -86,7 +86,7 @@ type CoachPlansSectionProps = {
   ) => Promise<void> | void;
 
   onTrainingPlanSave?: (
-    values: PersonalCoachTrainingPlanFormData,
+    values: CoachTrainingPlanFormData,
 
     trainingPlanId?: string,
   ) => Promise<void> | void;
@@ -220,7 +220,7 @@ export function CoachPlansSection({
     });
   };
 
-  const handleDietSubmit = async (values: PersonalCoachDietPlanFormData) => {
+  const handleDietSubmit = async (values: CoachDietPlanFormData) => {
     const nextRecord = toDietRecord(values, selectedDietPlan?.id);
 
     const dietId =
@@ -246,7 +246,7 @@ export function CoachPlansSection({
   };
 
   const handleTrainingSubmit = async (
-    values: PersonalCoachTrainingPlanFormData,
+    values: CoachTrainingPlanFormData,
   ) => {
     const trainingPlanId =
       serverTrainings &&
@@ -451,7 +451,7 @@ export function CoachPlansSection({
           <div className="w-full max-w-4xl overflow-hidden rounded-2xl bg-white shadow-xl dark:bg-dark-2">
             <div className="max-h-[85vh] overflow-y-auto p-4">
               {activeDialog.type === "diet" ? (
-                <PersonalCoachDietPlanForm
+                <CoachDietPlanForm
                   mode={activeDialog.mode}
                   initialData={dietFormData}
                   allowAddMeal={!serverDiets || activeDialog.mode === "create"}
@@ -463,7 +463,7 @@ export function CoachPlansSection({
                   onSubmit={handleDietSubmit}
                 />
               ) : (
-                <PersonalCoachTrainingPlanForm
+                <CoachTrainingPlanForm
                   mode={activeDialog.mode}
                   initialData={trainingFormData}
                   visibleDays={trainingVisibleDays}

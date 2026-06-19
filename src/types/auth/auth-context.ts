@@ -46,7 +46,7 @@ export interface IPermission {
 export interface ICompany {
   id: string;
   name: string;
-  mode: "company" | "personal" | "super-admin";
+  mode: "company" | "super-admin";
 }
 
 export interface IAvailableContext {

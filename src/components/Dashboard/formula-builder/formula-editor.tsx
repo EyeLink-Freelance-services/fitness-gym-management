@@ -1,7 +1,6 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import CustomSelect from "@/components/ui/custom-select";
 import { Button } from "@/components/ui-elements/button";
 import type {
   FormulaDefinition,
@@ -64,7 +63,7 @@ export function FormulaEditor({
       </div>
 
       <div className="grid gap-5">
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2">
           <div className="grid gap-2">
             <span className="text-xs font-medium uppercase tracking-[0.18em] text-dark-5">
               Label
@@ -85,39 +84,6 @@ export function FormulaEditor({
               onChange={(e) => onFormulaChange({ unit: e.target.value })}
               placeholder="e.g. kg"
               className="rounded-[10px] border border-stroke bg-transparent px-4 py-3 text-sm text-dark outline-none focus:border-primary dark:border-dark-3 dark:text-white"
-            />
-          </div>
-          <div className="grid gap-2">
-            <span className="text-xs font-medium uppercase tracking-[0.18em] text-dark-5">
-              Decimals
-            </span>
-            <input
-              type="number"
-              min={0}
-              max={10}
-              value={formula.decimals}
-              onChange={(e) => {
-                const n = Number.parseInt(e.target.value, 10);
-                if (!Number.isNaN(n)) {
-                  onFormulaChange({
-                    decimals: Math.min(10, Math.max(0, n)),
-                  });
-                }
-              }}
-              className="rounded-[10px] border border-stroke bg-transparent px-4 py-3 text-sm text-dark outline-none focus:border-primary dark:border-dark-3 dark:text-white"
-            />
-          </div>
-          <div className="grid gap-2">
-            <span className="text-xs font-medium uppercase tracking-[0.18em] text-dark-5">
-              Show
-            </span>
-            <CustomSelect
-              options={[
-                { label: "No", value: "no" },
-                { label: "Yes", value: "yes" },
-              ]}
-              value={formula.showPortal ? "yes" : "no"}
-              onChange={(v) => onFormulaChange({ showPortal: v === "yes" })}
             />
           </div>
         </div>

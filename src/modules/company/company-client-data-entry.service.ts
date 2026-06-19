@@ -5,7 +5,7 @@ import {
   buildClientRecordDraft,
   seedFieldValuesFromProfile,
 } from "@/modules/client-records/client-record-draft.mappers";
-import { getCompanyClientById } from "@/modules/company/company.service";
+import { getCompanyClientById } from "@/services/company/company.service";
 import { getCompanyClientFullName } from "@/modules/company/company-client.mappers";
 import type { ClientRecordDraft } from "@/types/dashboard/client-records";
 import type {
@@ -120,8 +120,6 @@ export async function getCompanyClientRecordDraft(
 
 export type SaveCompanyClientRecordDraftInput = {
   values: Record<string, string>;
-  notes: string;
-  sessionDate: string;
 };
 
 export async function saveCompanyClientRecordDraft(
@@ -134,18 +132,19 @@ export async function saveCompanyClientRecordDraft(
   }
 
   const clientName = getCompanyClientFullName(client);
+  const sessionDate = new Date().toISOString().split("T")[0];
   const draft = buildClientRecordDraft({
     clientId,
     clientName,
     groups: COMPANY_FIELD_GROUPS,
     values: input.values,
-    notes: input.notes,
-    sessionDate: input.sessionDate,
+    notes: "",
+    sessionDate,
   });
 
   const payload: ClientRecordDraftRequestApiBean = {
-    sessionDate: input.sessionDate,
-    notes: input.notes,
+    sessionDate,
+    notes: "",
     values: input.values,
   };
 

@@ -5,9 +5,7 @@ import { loadCurrentClientProfile } from "@/app/(app)/dashboard/company/clients/
 import { ClientProfilePage } from "@/components/Dashboard/company/client-profile/client-profile-page";
 import { DashboardSection } from "@/components/Dashboard/dashboard-section";
 import { OverviewCard } from "@/components/Dashboard/overview-cards/card";
-import {
-  getPersonalCoachAnnouncements,
-} from "@/services/dashboard.services";
+import { getCompanyAnnouncements } from "@/services/dashboard.services";
 import { createTimeFrameExtractor } from "@/utils/timeframe-extractor";
 import { SearchType } from "@/types/dashboard/dashboard-shared";
 import { Suspense } from "react";
@@ -16,7 +14,7 @@ import { TableUI } from "@/components/Tables";
 import Link from "next/link";
 import { Button } from "@/components/ui-elements/button";
 import { ROUTES } from "@/constants/route";
-import { announcementColumns } from "@/components/Dashboard/table-column/personal-coach-preview-columns";
+import { announcementColumns } from "@/components/Dashboard/table-column/announcement-preview-columns";
 import {
   newSignupColumns,
 } from "@/components/Dashboard/table-column/company-columns";
@@ -51,7 +49,7 @@ export default async function CompanyDashboardPage({
   const overviewData = await getOverviewCompanyData();
   const last5Clients = await getCompanyLastFiveClients();
 
-  const [announcements] = await Promise.all([getPersonalCoachAnnouncements(4)]);
+  const [announcements] = await Promise.all([getCompanyAnnouncements(4)]);
 
   return (
     <div>

@@ -1,4 +1,4 @@
-export type SchemaOwnerType = "company" | "personal_coach";
+export type SchemaOwnerType = "company";
 
 export type FieldType = "number" | "text" | "dropdown";
 
@@ -55,11 +55,4 @@ export interface SchemaSummary {
   linkedClients: number;
   updatedAt: string;
   status: "active" | "draft";
-}
-
-export interface SchemaValidationRuleSummary {
-  id: string;
-  title: string;
-  description: string;
-  value: string;
 }

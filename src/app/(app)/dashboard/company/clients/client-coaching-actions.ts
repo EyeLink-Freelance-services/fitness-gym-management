@@ -24,7 +24,7 @@ import type {
   ClientTrainingPlanRow,
   CoachDietPlanRecord,
 } from "@/types/dashboard/client";
-import type { PersonalCoachTrainingPlanFormData } from "@/types/forms";
+import type { CoachTrainingPlanFormData } from "@/types/forms";
 import { revalidatePath } from "next/cache";
 
 function clientProfilePath(clientId: string) {
@@ -70,7 +70,7 @@ async function resolvePlanIdForClient(clientId: string) {
 
 export async function saveCompanyClientTrainingPlanAction(
   clientId: string,
-  values: PersonalCoachTrainingPlanFormData,
+  values: CoachTrainingPlanFormData,
   existingRows: ClientTrainingPlanRow[],
   editingRowId?: string,
 ) {
@@ -110,11 +110,13 @@ export async function saveCompanyClientTrainingPlanAction(
     }
 
     const resolved = await resolvePlanIdForClient(clientId);
-    planId = resolved.planId;
+    const resolvedPlanId = resolved.planId;
 
-    if (!planId) {
+    if (!resolvedPlanId) {
       throw error;
     }
+
+    planId = resolvedPlanId;
 
     await updateClientTrainingPlan(
       clientId,

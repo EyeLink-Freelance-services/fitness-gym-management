@@ -5,9 +5,8 @@ import { createPortal } from "react-dom";
 import AnnouncementForm from "@/components/Forms/AnnouncementForm";
 import AssignClientForm from "@/components/Forms/AssignClientForm";
 import ClientForm from "@/components/Forms/ClientForm";
+import CoachForm from "@/components/Forms/CoachForm";
 import CompanyForm from "@/components/Forms/CompanyForm";
-import MedicalNotesForm from "@/components/Forms/MedicalNotesForm";
-import PersonalCoachForm from "@/components/Forms/PersonalCoachForm";
 import { Button } from "@/components/ui-elements/button";
 import { FormModalTriggerProps } from "@/types/forms";
 import StaffForm from "../Forms/StaffForm";
@@ -15,7 +14,6 @@ import StaffForm from "../Forms/StaffForm";
 export function FormModalTrigger({
   buttonLabel,
   formType,
-  coachContext = "super-admin",
   size,
   companyPlan,
   onSuccess,
@@ -86,18 +84,12 @@ export function FormModalTrigger({
                     {formType === "company" && (
                       <CompanyForm onSuccess={handleSuccess} />
                     )}
-                    {formType === "personal" && (
-                      <PersonalCoachForm
-                        context={coachContext}
-                        onSuccess={handleSuccess}
-                      />
+                    {formType === "coach" && (
+                      <CoachForm onSuccess={handleSuccess} />
                     )}
                     {formType === "staff" && <StaffForm />}
                     {formType === "announcement" && (
                       <AnnouncementForm onSuccess={handleSuccess} />
-                    )}
-                    {formType === "medicalNotes" && (
-                      <MedicalNotesForm onSuccess={handleSuccess} />
                     )}
                   </div>
                 </div>

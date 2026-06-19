@@ -21,7 +21,7 @@ import type {
   ClientTrainingPlanRow,
   CoachDietPlanRecord,
 } from "@/types/dashboard/client";
-import type { PersonalCoachTrainingPlanFormData } from "@/types/forms";
+import type { CoachTrainingPlanFormData } from "@/types/forms";
 
 type CompanyClientCoachingSectionProps = {
   clientId: string;
@@ -69,7 +69,7 @@ export function CompanyClientCoachingSection({
   };
 
   const handleTrainingPlanSave = async (
-    values: PersonalCoachTrainingPlanFormData,
+    values: CoachTrainingPlanFormData,
     trainingPlanId?: string,
   ) => {
     try {

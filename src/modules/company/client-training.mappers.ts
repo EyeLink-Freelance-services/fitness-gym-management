@@ -9,7 +9,7 @@ import type {
   TrainingDayApiField,
   TrainingPlanDayField,
 } from "@/types/dashboard/client-training";
-import type { PersonalCoachTrainingPlanFormData } from "@/types/forms";
+import type { CoachTrainingPlanFormData } from "@/types/forms";
 import type { CoachPlanClient } from "@/modules/client-records/coach-plan.types";
 
 const TRAINING_DAYS: CoachTrainingPlanDay[] = [
@@ -109,7 +109,7 @@ export function extractTrainingPlansFromSearchResponse(
 }
 
 export function getFormValueForDay(
-  values: PersonalCoachTrainingPlanFormData,
+  values: CoachTrainingPlanFormData,
   day: CoachTrainingPlanDay,
 ) {
   return values[FORM_DAY_KEYS[day]] ?? "";
@@ -171,7 +171,7 @@ export function allTrainingDaysTaken(rows: ClientTrainingPlanRow[]) {
 
 export function createTrainingFormData(
   client: CoachPlanClient,
-): PersonalCoachTrainingPlanFormData {
+): CoachTrainingPlanFormData {
   return {
     clientId: client.id,
     clientName: client.name,
@@ -188,7 +188,7 @@ export function createTrainingFormData(
 export function trainingRowToFormData(
   client: CoachPlanClient,
   row?: ClientTrainingPlanRow,
-): PersonalCoachTrainingPlanFormData {
+): CoachTrainingPlanFormData {
   const base = createTrainingFormData(client);
 
   if (!row) {
@@ -202,7 +202,7 @@ export function trainingRowToFormData(
 }
 
 export function getFilledTrainingEntriesFromForm(
-  values: PersonalCoachTrainingPlanFormData,
+  values: CoachTrainingPlanFormData,
   allowedDays: CoachTrainingPlanDay[],
 ) {
   return allowedDays
@@ -225,7 +225,7 @@ function setDayOnRequest(
 
 export function mapTrainingPlanToApiRequest(
   existingRows: ClientTrainingPlanRow[],
-  values: PersonalCoachTrainingPlanFormData,
+  values: CoachTrainingPlanFormData,
   daysToUpdate: CoachTrainingPlanDay[],
 ): ClientTrainingPlanRequestApiBean {
   const body: ClientTrainingPlanRequestApiBean = {};
@@ -257,7 +257,7 @@ export function isTrainingPlanConflict(error: unknown) {
 
 export function validateTrainingBeforeSave(
   existingRows: ClientTrainingPlanRow[],
-  values: PersonalCoachTrainingPlanFormData,
+  values: CoachTrainingPlanFormData,
   editingRowId?: string,
 ): string | null {
   const rows = editingRowId

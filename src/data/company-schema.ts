@@ -1,7 +1,6 @@
 import {
   SCHEMA_FIELD_GROUPS,
   SCHEMA_FORMULAS_BASE,
-  SCHEMA_VALIDATION_RULES,
 } from "@/data/schema-dummy-data";
 import type { SchemaSummary } from "@/types/dashboard/coach-schema";
 
@@ -26,5 +25,4 @@ export const COMPANY_SCHEMA_SUMMARY: SchemaSummary = {
 };
 
 export const COMPANY_FIELD_GROUPS = SCHEMA_FIELD_GROUPS;
-export const COMPANY_SCHEMA_VALIDATION_RULES = SCHEMA_VALIDATION_RULES;
 export const COMPANY_FORMULAS = SCHEMA_FORMULAS_BASE;

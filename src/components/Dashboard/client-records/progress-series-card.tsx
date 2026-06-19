@@ -3,7 +3,7 @@ import type {
   ProgressSeries,
 } from "@/types/dashboard/client-records";
 import { BarChart } from "@/components/Dashboard/charts/bar-chart";
-import { ClientProgressChart } from "@/components/Dashboard/personal-coach/client-progress-chart";
+import { ClientProgressChart } from "@/components/Dashboard/client-records/client-progress-chart";
 
 type ProgressSeriesCardProps = {
   series: ProgressSeries;

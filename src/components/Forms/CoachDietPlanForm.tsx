@@ -12,22 +12,22 @@ import {
   isSpecificTimeTaken,
 } from "@/modules/company/client-diet.mappers";
 import type { ClientDietPlanRow } from "@/types/dashboard/client";
-import type { PersonalCoachDietPlanFormData } from "@/types/forms";
+import type { CoachDietPlanFormData } from "@/types/forms";
 import { Header } from "../FormElements/common";
 
-type PersonalCoachDietPlanFormProps = {
-  initialData: PersonalCoachDietPlanFormData;
+type CoachDietPlanFormProps = {
+  initialData: CoachDietPlanFormData;
   mode?: "create" | "edit";
   allowAddMeal?: boolean;
   allowRemoveMeal?: boolean;
   existingDietRows?: ClientDietPlanRow[];
-  onSubmit: (values: PersonalCoachDietPlanFormData) => void;
+  onSubmit: (values: CoachDietPlanFormData) => void;
   onCancel: () => void;
 };
 
 function createEmptyMeal(
   existingRows: ClientDietPlanRow[],
-  formMeals: PersonalCoachDietPlanFormData["meals"],
+  formMeals: CoachDietPlanFormData["meals"],
 ) {
   const available = getAvailableDietTimeSlots(
     existingRows,
@@ -42,7 +42,7 @@ function createEmptyMeal(
   };
 }
 
-function isMealComplete(meal: PersonalCoachDietPlanFormData["meals"][number]) {
+function isMealComplete(meal: CoachDietPlanFormData["meals"][number]) {
   if (!meal.meal.trim()) {
     return false;
   }
@@ -54,7 +54,7 @@ function isMealComplete(meal: PersonalCoachDietPlanFormData["meals"][number]) {
   return true;
 }
 
-export default function PersonalCoachDietPlanForm({
+export default function CoachDietPlanForm({
   initialData,
   mode = "create",
   allowAddMeal = true,
@@ -62,7 +62,7 @@ export default function PersonalCoachDietPlanForm({
   existingDietRows = [],
   onSubmit,
   onCancel,
-}: PersonalCoachDietPlanFormProps) {
+}: CoachDietPlanFormProps) {
   const {
     control,
     register,
@@ -70,7 +70,7 @@ export default function PersonalCoachDietPlanForm({
     reset,
     watch,
     formState: { errors, isSubmitting, isValid },
-  } = useForm<PersonalCoachDietPlanFormData>({
+  } = useForm<CoachDietPlanFormData>({
     mode: "all",
     defaultValues: {
       ...initialData,

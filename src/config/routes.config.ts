@@ -7,7 +7,6 @@ export type AppRole =
   | "super-admin"
   | "company"
   | "company-coach"
-  | "personal-coach"
   | "client";
 
 type RoleRouteConfig = {
@@ -36,10 +35,6 @@ export const ROUTE_CONFIG: Record<AppRole, RoleRouteConfig> = {
     defaultRoute: ROUTES.DASHBOARD.COMPANY.ROOT,
     allowedRoutes: [ROUTES.DASHBOARD.COMPANY.ROOT],
   },
-  "personal-coach": {
-    defaultRoute: ROUTES.DASHBOARD.PERSONAL_COACH.ROOT,
-    allowedRoutes: [ROUTES.DASHBOARD.PERSONAL_COACH.ROOT],
-  },
   client: {
     defaultRoute: ROUTES.DASHBOARD.COMPANY.ROOT,
     allowedRoutes: [ROUTES.DASHBOARD.COMPANY.ROOT],
@@ -48,7 +43,6 @@ export const ROUTE_CONFIG: Record<AppRole, RoleRouteConfig> = {
 
 const DASHBOARD_PERMISSION_ROLE_PRIORITY: Array<[string, AppRole]> = [
   [AuthPermission.dashboard.superAdmin, "super-admin"],
-  [AuthPermission.dashboard.personalCoach, "personal-coach"],
   [AuthPermission.dashboard.company, "company"],
   [AuthPermission.dashboard.companyCoach, "company-coach"],
   [AuthPermission.dashboard.client, "client"],
@@ -63,7 +57,6 @@ function inferRoleFromContextType(contextType?: string | null): AppRole | null {
   if (!context) return null;
 
   if (context.includes("super")) return "super-admin";
-  if (context.includes("personal")) return "personal-coach";
   if (context.includes("client")) return "client";
   if (context.includes("company")) return "company";
 
@@ -78,13 +71,11 @@ function inferRoleFromPermissions(permissions: readonly string[] = []): AppRole 
 }
 
 function inferRoleFromRoleNames(roles: readonly string[] = []): AppRole | null {
-  // TODO: confirm exact backend role values
   for (const roleName of roles) {
     const role = normalize(roleName);
     if (!role) continue;
 
     if (role.includes("super")) return "super-admin";
-    if (role.includes("personal")) return "personal-coach";
     if (role.includes("client")) return "client";
     if (role.includes("company") && role.includes("coach")) return "company-coach";
     if (role === "admin" || role.includes("company")) return "company";

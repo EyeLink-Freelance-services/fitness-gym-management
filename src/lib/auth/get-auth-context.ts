@@ -3,9 +3,8 @@ import type { IAuthContext } from "@/types/auth/auth-context";
 import { getAuthSession } from "@/auth";
 import type { AccessTokenClaims } from "@/types/auth/token";
 
-function inferCompanyMode(contextType?: string): "company" | "personal" | "super-admin" {
+function inferCompanyMode(contextType?: string): "company" | "super-admin" {
   const value = (contextType ?? "").toUpperCase();
-  if (value.includes("PERSONAL")) return "personal";
   if (value.includes("SUPER")) return "super-admin";
   return "company";
 }

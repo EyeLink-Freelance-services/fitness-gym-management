@@ -13,13 +13,6 @@ type FormulaTestPanelProps = {
   variableReferences: FormulaVariableReference[];
 };
 
-function formatNumber(value: number, decimals: number) {
-  return new Intl.NumberFormat("en-US", {
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals,
-  }).format(value);
-}
-
 function formatKeyAsLabel(key: string): string {
   return key.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
@@ -117,7 +110,7 @@ export function FormulaTestPanel({
           </div>
           <div className="mt-3 text-3xl font-bold text-primary">
             {result.valid && typeof result.value === "number"
-              ? `${formatNumber(result.value, formula.decimals)}${
+              ? `${result.value.toLocaleString("en-US")}${
                   formula.unit ? ` ${formula.unit}` : ""
                 }`
               : "-"}

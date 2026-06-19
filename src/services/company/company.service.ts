@@ -1,30 +1,18 @@
-import {
-  backendGet,
-  backendPost,
-  backendPut,
-} from "@/lib/api/backend-client";
+import { backendGet, backendPost, backendPut} from "@/lib/api/backend-client";
 import { getAuthContext } from "@/lib/auth/get-auth-context";
 import type {
   ClientResponseApiBean,
   CompanyClient,
   CompanyClientFormValues,
-  CompanyCoachesRow,
   CompanyPricing,
   SearchClientsApiBean,
   SearchCoachesApiBean,
 } from "@/types/dashboard/company";
 import type { CompanyResponseApiBean } from "@/types/dashboard/super-admin";
 import { GetPageParams } from "@/types/dashboard/shared";
-import type { PersonalCoachFormData } from "@/types/forms";
-import {
-  mapClientFormValuesToApiRequest,
-  mapClientResponseToCompanyClient,
-} from "@/modules/company/company-client.mappers";
-import {
-  mapCoachFormToApiRequest,
-  mapCoachesToCoachOptions,
-  mapCoachResponseToCompanyCoachesRow,
-} from "@/modules/company/company-coach.mappers";
+import type { CoachFormData } from "@/types/forms";
+import { mapClientFormValuesToApiRequest, mapClientResponseToCompanyClient} from "@/modules/company/company-client.mappers";
+import { mapCoachFormToApiRequest, mapCoachesToCoachOptions, mapCoachResponseToCompanyCoachesRow} from "@/modules/company/company-coach.mappers";
 import type { AssignCoachOption } from "@/types/dashboard/assign-client";
 
 const COMPANY_API_BASE = "/api/companies";
@@ -196,7 +184,7 @@ export async function getCompanyCoaches({
   };
 }
 
-export async function createCoachService(form: PersonalCoachFormData) {
+export async function createCoachService(form: CoachFormData) {
   const companyId = await requireCompanyId();
 
   return await backendPost(
@@ -207,7 +195,7 @@ export async function createCoachService(form: PersonalCoachFormData) {
 
 export async function updateCoachService(
   coachId: string,
-  form: PersonalCoachFormData,
+  form: CoachFormData,
 ) {
   const companyId = await requireCompanyId();
 

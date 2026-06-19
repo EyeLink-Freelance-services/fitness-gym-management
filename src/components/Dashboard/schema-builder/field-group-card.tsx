@@ -5,14 +5,12 @@ import type { FieldGroup, SchemaField } from "@/types/dashboard/coach-schema";
 type FieldGroupCardProps = {
   group: FieldGroup;
   onAddField?: () => void;
-  onEditGroup?: () => void;
   onEditField?: (field: SchemaField) => void;
 };
 
 export function FieldGroupCard({
   group,
   onAddField,
-  onEditGroup,
   onEditField,
 }: FieldGroupCardProps) {
   return (
@@ -36,15 +34,6 @@ export function FieldGroupCard({
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          {onEditGroup && (
-            <Button
-              type="button"
-              label="Edit group"
-              size="small"
-              variant="outlineDark"
-              onClick={onEditGroup}
-            />
-          )}
           <Button
             type="button"
             label="+ Field"

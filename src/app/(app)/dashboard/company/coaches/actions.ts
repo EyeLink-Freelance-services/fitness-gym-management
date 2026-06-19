@@ -7,10 +7,10 @@ import {
   searchCompanyCoachOptions as searchCompanyCoachOptionsService,
   updateCoachService,
 } from "@/services/company/company.service";
-import type { PersonalCoachFormData } from "@/types/forms";
+import type { CoachFormData } from "@/types/forms";
 import { revalidatePath } from "next/cache";
 
-export async function createCoachAction(data: PersonalCoachFormData) {
+export async function createCoachAction(data: CoachFormData) {
   const result = await createCoachService(data);
   revalidatePath("/dashboard/company/coaches");
   return result;
@@ -18,7 +18,7 @@ export async function createCoachAction(data: PersonalCoachFormData) {
 
 export async function updateCoachAction(
   coachId: string,
-  data: PersonalCoachFormData,
+  data: CoachFormData,
 ) {
   const result = await updateCoachService(coachId, data);
   revalidatePath("/dashboard/company/coaches");

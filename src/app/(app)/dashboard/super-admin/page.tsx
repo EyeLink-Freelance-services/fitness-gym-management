@@ -7,12 +7,8 @@ import { Suspense } from "react";
 import { Skeleton } from "@/components/Tables/skeleton";
 import { TableUI } from "@/components/Tables";
 import { SearchType } from "@/types/dashboard/dashboard-shared";
-import {
-  superAdminCoachPreviewColumns,
-  superAdminCompanyPreviewColumns,
-} from "@/components/Dashboard/table-column/super-admin-column";
+import { superAdminCompanyPreviewColumns } from "@/components/Dashboard/table-column/super-admin-column";
 import { getLastFiveCompanies } from "@/modules/super-admin/super-admin.service";
-import { getLastFivePersonalCoaches } from "@/modules/personal-coach/personal-coach.service";
 import { getOverviewSuperAdminData } from "@/services/super-admin/main";
 
 export default async function SuperAdminDashboardPage({
@@ -21,7 +17,6 @@ export default async function SuperAdminDashboardPage({
   const { selected_time_frame } = await searchParams;
   const extractTimeFrame = createTimeFrameExtractor(selected_time_frame);
   const last5Companies = await getLastFiveCompanies();
-  const lastFiveCoaches = await getLastFivePersonalCoaches();
   const overviewData = await getOverviewSuperAdminData();
 
   return (

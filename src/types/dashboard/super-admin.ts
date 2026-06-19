@@ -10,27 +10,6 @@ export type StatusOpt = "Active" | "Inactive" | "Disabled" | "Pending";
 // Super Admin UI rows – flat, denormalised shapes used by table components.
 // ---------------------------------------------------------------------------
 
-export interface SuperAdminCoachesRow {
-  id: string;
-  first_name: string;
-  last_name: string;
-  phone_num: string;
-  email: string;
-  specialization: string;
-  coaching_mode: string;
-  location: string;
-  qualifications: string;
-  certifications: string[];
-  years_of_experience: number;
-  hourly_rate: number;
-  languages_spoken: string[];
-  bio: string;
-  profile_photo?: string | null;
-  availability: string;
-  status: StatusOpt;
-  createdAt: string;
-}
-
 export interface SuperAdminCompanyRow {
   id: string;
   company_name: string;

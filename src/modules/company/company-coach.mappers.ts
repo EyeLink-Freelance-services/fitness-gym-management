@@ -1,4 +1,4 @@
-import type { PersonalCoachFormData } from "@/types/forms";
+import type { CoachFormData } from "@/types/forms";
 import type { CompanyCoachesRow } from "@/types/dashboard/company";
 import type { AssignCoachOption } from "@/types/dashboard/assign-client";
 import type {
@@ -100,7 +100,7 @@ export function mapCoachResponseToCompanyCoachesRow(
 
 export function mapCompanyCoachesRowToFormValues(
   coach: CompanyCoachesRow,
-): PersonalCoachFormData {
+): CoachFormData {
   return {
     firstName: coach.first_name,
     lastName: coach.last_name,
@@ -119,7 +119,7 @@ export function mapCompanyCoachesRowToFormValues(
 }
 
 export function mapCoachFormToApiRequest(
-  form: PersonalCoachFormData,
+  form: CoachFormData,
 ): CoachRequestApiBean {
   const trimmedEmail = (form.email ?? "").trim();
 

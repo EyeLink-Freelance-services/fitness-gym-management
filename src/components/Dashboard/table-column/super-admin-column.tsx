@@ -1,85 +1,8 @@
-import { StatusBadge } from "@/components/ui-elements/status-badge";
 import {
-  SuperAdminCoachesRow,
   SuperAdminCompanyRow,
-  type StatusOpt,
 } from "@/types/dashboard/super-admin";
-import type { StatusTone } from "@/types/shared";
 import type { TableUIColumn } from "@/types/shared";
 import { ColumnDef } from "@tanstack/react-table";
-
-function getStatusTone(status: StatusOpt): StatusTone {
-  return status === "Active" ? "success" : "neutral";
-}
-
-export const superAdminCoachColumns: ColumnDef<SuperAdminCoachesRow>[] = [
-  {
-    accessorKey: "first_name",
-    header: "First Name",
-    meta: { align: "left", headClassName: "min-w-[160px]" },
-  },
-  {
-    accessorKey: "last_name",
-    header: "Last Name",
-    meta: { align: "left", headClassName: "min-w-[160px]" },
-  },
-  {
-    accessorKey: "phone_num",
-    header: "Phone",
-    meta: { align: "left", headClassName: "min-w-[140px]" },
-  },
-  {
-    accessorKey: "email",
-    header: "Email",
-    meta: { align: "left", headClassName: "min-w-[200px]" },
-  },
-  {
-    accessorKey: "specialization",
-    header: "Specialization",
-    meta: { align: "left", headClassName: "min-w-[160px]" },
-  },
-  {
-    accessorKey: "location",
-    header: "Location",
-    meta: { align: "left", headClassName: "min-w-[160px]" },
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => (
-      <StatusBadge
-        label={row.original.status}
-        tone={getStatusTone(row.original.status)}
-      />
-    ),
-    meta: { align: "left", headClassName: "min-w-[120px]" },
-  },
-];
-
-export const superAdminCoachPreviewColumns: TableUIColumn<SuperAdminCoachesRow>[] =
-  [
-    {
-      key: "coach_name",
-      label: "Name",
-      align: "left",
-      render: (row) => `${row.first_name} ${row.last_name}`,
-      headClassName: "min-w-[180px]",
-    },
-    {
-      key: "contact_num",
-      label: "Phone",
-      align: "left",
-      render: (row) => row.phone_num,
-      headClassName: "min-w-[160px]",
-    },
-    {
-      key: "location",
-      label: "Location",
-      align: "left",
-      render: (row) => row.location || "N/A",
-      headClassName: "min-w-[150px]",
-    },
-  ];
 
 export const superAdminCompanyColumns: ColumnDef<SuperAdminCompanyRow>[] = [
   {

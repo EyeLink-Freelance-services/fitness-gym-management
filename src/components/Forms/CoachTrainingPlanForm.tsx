@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import InputGroup from "@/components/FormElements/InputGroup";
 import { Button } from "@/components/ui-elements/button";
 import type { CoachTrainingPlanDay } from "@/types/dashboard/client";
-import type { PersonalCoachTrainingPlanFormData } from "@/types/forms";
+import type { CoachTrainingPlanFormData } from "@/types/forms";
 import { useForm } from "react-hook-form";
 import { Header } from "../FormElements/common";
 
@@ -18,11 +18,11 @@ const TRAINING_DAYS = [
   "sunday",
 ] as const;
 
-type PersonalCoachTrainingPlanFormProps = {
-  initialData: PersonalCoachTrainingPlanFormData;
+type CoachTrainingPlanFormProps = {
+  initialData: CoachTrainingPlanFormData;
   mode?: "create" | "edit";
   visibleDays?: CoachTrainingPlanDay[];
-  onSubmit: (values: PersonalCoachTrainingPlanFormData) => void;
+  onSubmit: (values: CoachTrainingPlanFormData) => void;
   onCancel: () => void;
 };
 
@@ -30,13 +30,13 @@ function toFormDayKey(day: CoachTrainingPlanDay) {
   return day.toLowerCase() as (typeof TRAINING_DAYS)[number];
 }
 
-export default function PersonalCoachTrainingPlanForm({
+export default function CoachTrainingPlanForm({
   initialData,
   mode = "create",
   visibleDays,
   onSubmit,
   onCancel,
-}: PersonalCoachTrainingPlanFormProps) {
+}: CoachTrainingPlanFormProps) {
   const daysToRender = visibleDays?.map(toFormDayKey) ?? TRAINING_DAYS;
 
   const {
@@ -45,7 +45,7 @@ export default function PersonalCoachTrainingPlanForm({
     reset,
     watch,
     formState: { errors, isSubmitting, isValid },
-  } = useForm<PersonalCoachTrainingPlanFormData>({
+  } = useForm<CoachTrainingPlanFormData>({
     mode: "all",
     defaultValues: initialData,
   });

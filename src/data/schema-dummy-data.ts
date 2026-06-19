@@ -1,7 +1,4 @@
-import type {
-  FieldGroup,
-  SchemaValidationRuleSummary,
-} from "@/types/dashboard/coach-schema";
+import type { FieldGroup } from "@/types/dashboard/coach-schema";
 import type { FormulaDefinition } from "@/types/dashboard/formula-builder";
 
 export const SCHEMA_FIELD_GROUPS: FieldGroup[] = [
@@ -241,72 +238,37 @@ export const SCHEMA_FIELD_GROUPS: FieldGroup[] = [
   },
 ];
 
-export const SCHEMA_VALIDATION_RULES: SchemaValidationRuleSummary[] = [
-  {
-    id: "rule-weight",
-    title: "Weight",
-    description: "Required for every weekly check-in.",
-    value: "30-200 kg",
-  },
-  {
-    id: "rule-waist",
-    title: "Waist",
-    description: "Primary circumference field for progress tracking.",
-    value: "20-200 cm",
-  },
-  {
-    id: "rule-skinfold",
-    title: "Skinfold Set",
-    description: "Compact 3-site body fat calculation.",
-    value: "1-100 mm",
-  },
-  {
-    id: "rule-steps",
-    title: "Average Steps",
-    description: "Used in adherence reviews.",
-    value: "0-50000 steps",
-  },
-];
-
 export const SCHEMA_FORMULAS_BASE: FormulaDefinition[] = [
   {
     id: "formula-bmi",
     label: "BMI",
     key: "bmi",
     unit: "kg/m²",
-    decimals: 1,
     expression: "weight / (height / 100) ^ 2",
-    showPortal: true,
   },
   {
     id: "formula-bmr",
     label: "BMR",
     key: "bmr",
     unit: "kcal",
-    decimals: 0,
     expression: "(10 * weight) + (6.25 * height) - (5 * age) - 161",
     description: "Mifflin-St Jeor baseline metabolic rate.",
-    showPortal: true,
   },
   {
     id: "formula-body-fat",
     label: "Body Fat %",
     key: "body_fat_pct",
     unit: "%",
-    decimals: 1,
     expression:
       "495 / (1.0994921 - (0.0009929 * (chest_mm + abdominal_mm + thigh_mm)) + (0.0000023 * (chest_mm + abdominal_mm + thigh_mm) ^ 2) - (0.0001392 * age)) - 450",
     description: "Compact 3-site estimate for body fat.",
-    showPortal: true,
   },
   {
     id: "formula-fat-mass",
     label: "Fat Mass",
     key: "fat_mass",
     unit: "kg",
-    decimals: 1,
     expression: "(body_fat_pct / 100) * weight",
     description: "Derived fat mass for recomposition tracking.",
-    showPortal: true,
   },
 ];

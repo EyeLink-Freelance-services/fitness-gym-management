@@ -70,7 +70,7 @@ export interface StaffFormData {
   notes?: string;
 }
 
-export interface PersonalCoachFormData {
+export interface CoachFormData {
   firstName: string;
   lastName: string;
   contactNumber: string;
@@ -87,11 +87,10 @@ export interface PersonalCoachFormData {
   availability?: string;
 }
 
-export interface PersonalCoachFormProps {
-  initialData?: Partial<PersonalCoachFormData>;
+export interface CoachFormProps {
+  initialData?: Partial<CoachFormData>;
   existingProfilePhotoUrl?: string;
   mode?: "create" | "edit";
-  context?: "super-admin" | "company";
   coachId?: string;
   onSuccess?: () => void;
 }
@@ -112,7 +111,7 @@ export interface CompanyStaffFormProps {
 
 export interface CompanyClientFormProps {
   initialData?: Partial<CompanyClientFormValues>;
-  clientContext?: "company" | "personal";
+  clientContext?: "company";
   mode?: "create" | "edit";
   clientId?: string;
   companyPlan?: CompanyPricing | null;
@@ -135,37 +134,26 @@ export interface RecoveryFormProps {
   resetToken?: string | null;
 }
 
-export interface StaffCoachFormProps {
-  onPersonalCoach: () => void;
-}
-
-export type FormModalId = "client" | "company" | "personal" | "staff";
+export type FormModalId = "client" | "company" | "coach" | "staff";
 
 export interface AnnouncementFormData {
   title: string;
   message: string;
 }
 
-export interface MedicalNoteFormData {
-  clientId: string;
-  condition: string;
-  restrictionNotes: string;
-  severity: "high" | "moderate" | "low";
-}
-
-export interface PersonalCoachDietPlanMealFormData {
+export interface CoachDietPlanMealFormData {
   timeSlot: CoachMealTimeOption;
   specificTime?: string;
   meal: string;
 }
 
-export interface PersonalCoachDietPlanFormData {
+export interface CoachDietPlanFormData {
   clientId: string;
   clientName: string;
-  meals: PersonalCoachDietPlanMealFormData[];
+  meals: CoachDietPlanMealFormData[];
 }
 
-export interface PersonalCoachTrainingPlanFormData {
+export interface CoachTrainingPlanFormData {
   clientId: string;
   clientName: string;
   monday: string;
@@ -217,17 +205,15 @@ export type RecoveryCodeProps = {
 type FormType =
   | "client"
   | "company"
-  | "personal"
+  | "coach"
   | "announcement"
-  | "medicalNotes"
   | "assignClient"
   | "staff";
 
 export type FormModalTriggerProps = {
   buttonLabel: string;
   formType: FormType;
-  clientContext?: "company" | "personal";
-  coachContext?: "super-admin" | "company";
+  clientContext?: "company";
   size?: "default" | "small" | "xs";
   companyPlan?: CompanyPricing | null;
   onSuccess?: () => void;

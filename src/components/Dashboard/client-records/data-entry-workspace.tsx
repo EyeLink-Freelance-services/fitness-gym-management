@@ -5,18 +5,12 @@ import { ComputedResultsPanel } from "@/components/Dashboard/client-records/comp
 import { DynamicFormGroup } from "@/components/Dashboard/client-records/dynamic-form-group";
 import { Button } from "@/components/ui-elements/button";
 import { evaluateFormulaCollection } from "@/lib/formula/preview-engine";
-import type {
-  ClientRecordDraft,
-  ComputedMetric,
-  FormulaSnapshotPreview,
-} from "@/types/dashboard/client-records";
+import type { ClientRecordDraft, ComputedMetric, FormulaSnapshotPreview} from "@/types/dashboard/client-records";
 import type { FormulaDefinition } from "@/types/dashboard/formula-builder";
 import { initials } from "@/utils/dashboard/shared";
 
 type DataEntrySaveInput = {
   values: Record<string, string>;
-  notes: string;
-  sessionDate: string;
 };
 
 type DataEntryWorkspaceProps = {
@@ -24,13 +18,6 @@ type DataEntryWorkspaceProps = {
   formulas: FormulaDefinition[];
   onSave?: (input: DataEntrySaveInput) => Promise<void>;
 };
-
-function formatMetricValue(value: number, decimals: number) {
-  return new Intl.NumberFormat("en-US", {
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals,
-  }).format(value);
-}
 
 function getNumericScope(values: Record<string, string>) {
   return Object.fromEntries(
@@ -46,14 +33,10 @@ export function DataEntryWorkspace({
   onSave,
 }: DataEntryWorkspaceProps) {
   const [values, setValues] = useState<Record<string, string>>(draft.values);
-  const [notes, setNotes] = useState(draft.notes);
-  const [sessionDate, setSessionDate] = useState(draft.sessionDate);
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     setValues(draft.values);
-    setNotes(draft.notes);
-    setSessionDate(draft.sessionDate);
   }, [draft]);
 
   const clientInitials = initials(draft.clientName);
@@ -72,7 +55,7 @@ export function DataEntryWorkspace({
       key: formula.key,
       value:
         resolved[formula.key] !== undefined
-          ? formatMetricValue(resolved[formula.key], formula.decimals)
+          ? resolved[formula.key].toLocaleString("en-US")
           : "-",
       unit: formula.unit,
     }));
@@ -82,7 +65,7 @@ export function DataEntryWorkspace({
       expression: formula.expression,
       result:
         resolved[formula.key] !== undefined
-          ? `${formatMetricValue(resolved[formula.key], formula.decimals)} ${formula.unit ?? ""}`.trim()
+          ? `${resolved[formula.key].toLocaleString("en-US")} ${formula.unit ?? ""}`.trim()
           : "-",
     }));
     return { computedMetrics: metrics, formulaSnapshots: snapshots };
@@ -95,7 +78,7 @@ export function DataEntryWorkspace({
 
     setIsSaving(true);
     try {
-      await onSave({ values, notes, sessionDate });
+      await onSave({ values });
     } finally {
       setIsSaving(false);
     }
@@ -105,30 +88,13 @@ export function DataEntryWorkspace({
     <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_350px]">
       <div className="grid gap-6">
         <section className="rounded-[12px] border border-stroke/70 bg-white p-3 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card">
-          <div className="grid gap-3 xl:grid-cols-[280px_minmax(0,1fr)] xl:items-center">
-            <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-green/15 text-sm font-bold text-green">
-                {clientInitials}
-              </span>
-              <h2 className="text-lg font-bold text-dark dark:text-white">
-                {draft.clientName}
-              </h2>
-            </div>
-            <div className="flex items-center gap-3">
-              <input
-                type="date"
-                value={sessionDate}
-                onChange={(event) => setSessionDate(event.target.value)}
-                className="min-w-[120px] rounded-[10px] border border-stroke bg-transparent px-4 py-3 text-sm text-dark dark:border-dark-3 dark:text-white"
-              />
-
-              <input
-                value={notes}
-                onChange={(event) => setNotes(event.target.value)}
-                placeholder="Session notes..."
-                className="w-full rounded-[10px] border border-stroke bg-transparent px-4 py-3 text-sm text-dark dark:border-dark-3 dark:text-white"
-              />
-            </div>
+          <div className="flex items-center gap-3">
+            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-green/15 text-sm font-bold text-green">
+              {clientInitials}
+            </span>
+            <h2 className="text-lg font-bold text-dark dark:text-white">
+              {draft.clientName}
+            </h2>
           </div>
         </section>
 

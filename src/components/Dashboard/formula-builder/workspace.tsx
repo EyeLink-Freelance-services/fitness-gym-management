@@ -20,10 +20,8 @@ function emptyFormula(): FormulaDefinition {
     id: "",
     label: "",
     key: "",
-    decimals: 2,
     expression: "",
     description: "",
-    showPortal: true,
   };
 }
 

@@ -1,17 +1,14 @@
 import { ClientDataSchemaClient } from "@/components/Dashboard/schema-builder/client-data-schema-client";
 import { SchemaSummaryCard } from "@/components/Dashboard/schema-builder/schema-summary-card";
-import { SchemaValidationCard } from "@/components/Dashboard/schema-builder/schema-validation-card";
 import {
   getCompanyFieldGroups,
   getCompanySchemaOverview,
-  getCompanySchemaValidationRules,
 } from "@/services/coach-schema.services";
 
 export default async function CompanySchemaPage() {
-  const [summary, groups, rules] = await Promise.all([
+  const [summary, groups] = await Promise.all([
     getCompanySchemaOverview(),
     getCompanyFieldGroups(),
-    getCompanySchemaValidationRules(),
   ]);
 
   const { totalFields, totalFormulas, linkedClients } = summary;
@@ -29,8 +26,6 @@ export default async function CompanySchemaPage() {
             totalFormulas={totalFormulas}
             linkedClients={linkedClients}
           />
-
-          <SchemaValidationCard rules={rules} />
         </div>
       </div>
     </div>

@@ -1,43 +1,24 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { ImageUpload } from "../FormElements/ImageUpload";
-import type {
-  PersonalCoachFormData,
-  PersonalCoachFormProps,
-} from "@/types/forms";
-import {
-  AVAILABILITY_OPTIONS,
-  COACHING_MODES,
-  SPECIALIZATIONS,
-} from "@/data/dashboardForm";
+import type { CoachFormData, CoachFormProps } from "@/types/forms";
 import InputGroup from "../FormElements/InputGroup";
-import { Select } from "../FormElements/select";
 import { TextAreaGroup } from "../FormElements/InputGroup/text-area";
 import { Button } from "../ui-elements/button";
-import {
-  validateEmail,
-  validatePhone,
-  validateRequired,
-} from "@/lib/forms/formValidation";
+import { validateEmail, validatePhone, validateRequired} from "@/lib/forms/formValidation";
 import { Header } from "../FormElements/common";
-import {
-  createCoachAction,
-  updateCoachAction,
-} from "@/app/(app)/dashboard/company/coaches/actions";
-import { createPersonalCoachAction } from "@/app/(app)/dashboard/super-admin/coaches/actions";
+import { createCoachAction, updateCoachAction} from "@/app/(app)/dashboard/company/coaches/actions";
 import { toast } from "sonner";
 
-export default function PersonalCoachForm({
+export default function CoachForm({
   initialData,
   existingProfilePhotoUrl,
   mode = "create",
-  context = "super-admin",
   coachId,
   onSuccess,
-}: PersonalCoachFormProps) {
-  const isCompanyContext = context === "company";
+}: CoachFormProps) {
   const {
     register,
     control,
@@ -45,7 +26,7 @@ export default function PersonalCoachForm({
     watch,
     reset,
     formState: { errors, isValid, isSubmitting },
-  } = useForm<PersonalCoachFormData>({
+  } = useForm<CoachFormData>({
     mode: "all",
     defaultValues: {
       firstName: "",
@@ -53,14 +34,14 @@ export default function PersonalCoachForm({
       contactNumber: "",
       email: "",
       specialization: "",
-      coachingMode: isCompanyContext ? "Company coach" : "",
+      coachingMode: "Company coach",
       location: "",
       certifications: "",
-      hourlyRate: isCompanyContext ? 0 : (undefined as unknown as number),
+      hourlyRate: 0,
       yearsExperience: undefined,
       languages: "",
       bio: "",
-      availability: isCompanyContext ? "Assigned by company" : "",
+      availability: "Assigned by company",
       ...initialData,
     },
   });
@@ -72,40 +53,35 @@ export default function PersonalCoachForm({
       contactNumber: "",
       email: "",
       specialization: "",
-      coachingMode: isCompanyContext ? "Company coach" : "",
+      coachingMode: "Company coach",
       location: "",
       certifications: "",
-      hourlyRate: isCompanyContext ? 0 : (undefined as unknown as number),
+      hourlyRate: 0,
       yearsExperience: undefined,
       languages: "",
       bio: "",
-      availability: isCompanyContext ? "Assigned by company" : "",
+      availability: "Assigned by company",
       profilePhoto: undefined,
       ...initialData,
     });
-  }, [initialData, isCompanyContext, reset]);
+  }, [initialData, reset]);
 
   watch();
 
   const logoRef = useRef<File | null>(null);
 
-  const onSubmit = async (data: PersonalCoachFormData) => {
+  const onSubmit = async (data: CoachFormData) => {
     try {
       const payload = {
         ...data,
         profilePhoto: logoRef.current,
       };
 
-      if (isCompanyContext) {
-        if (mode === "edit" && coachId) {
-          await updateCoachAction(coachId, payload);
-          toast.success("Coach updated successfully");
-        } else {
-          await createCoachAction(payload);
-          toast.success("Coach created successfully");
-        }
+      if (mode === "edit" && coachId) {
+        await updateCoachAction(coachId, payload);
+        toast.success("Coach updated successfully");
       } else {
-        await createPersonalCoachAction(payload);
+        await createCoachAction(payload);
         toast.success("Coach created successfully");
       }
 
@@ -124,12 +100,8 @@ export default function PersonalCoachForm({
         title={mode === "edit" ? "Edit coach" : "Register coach"}
         subtitle={
           mode === "edit"
-            ? isCompanyContext
-              ? "Update the company coach details"
-              : "Update the personal trainer details"
-            : isCompanyContext
-              ? "Add a coach to your company roster"
-              : "Onboard an independent personal trainer"
+            ? "Update the company coach details"
+            : "Add a coach to your company roster"
         }
       />
 
@@ -177,47 +149,6 @@ export default function PersonalCoachForm({
           })}
         />
 
-        {!isCompanyContext && (
-          <Controller
-            name="specialization"
-            control={control}
-            rules={{ required: "Specialization is required" }}
-            render={({ field }) => (
-              <Select
-                label="Specialization / Role"
-                placeholder="Select specialization"
-                items={SPECIALIZATIONS.map((s) => ({ value: s, label: s }))}
-                error={errors.specialization?.message}
-                selectProps={{ ...field, required: true }}
-              />
-            )}
-          />
-        )}
-
-        {!isCompanyContext && (
-          <Controller
-            name="coachingMode"
-            control={control}
-            rules={{ required: "Coaching mode is required" }}
-            render={({ field }) => (
-              <Select
-                label="Coaching Mode"
-                placeholder="Select coaching mode"
-                items={COACHING_MODES.map((m) => ({ value: m, label: m }))}
-                error={errors.coachingMode?.message}
-                selectProps={{ ...field, required: true }}
-              />
-            )}
-          />
-        )}
-
-        {/* <InputGroup
-          type="text"
-          label="Location"
-          placeholder="e.g. Port Louis/ Quatre-Bornes"
-          inputProps={register("location")}
-        /> */}
-
         <div className="my-6 flex items-center gap-3">
           <div className="h-px flex-1 bg-stroke dark:bg-dark-3" />
           <span className="text-body-xs font-medium uppercase tracking-wider text-dark-5 dark:text-dark-6">
@@ -243,21 +174,6 @@ export default function PersonalCoachForm({
             max: 60,
           }}
         />
-        {!isCompanyContext && (
-          <InputGroup
-            type="number"
-            label="Hourly Rate"
-            placeholder="150"
-            required
-            inputProps={{
-              ...register("hourlyRate", {
-                valueAsNumber: true,
-                validate: (v) => validateRequired(v, "Hourly rate is required"),
-              }),
-              min: 0,
-            }}
-          />
-        )}
         <InputGroup
           type="text"
           label="Languages Spoken"
@@ -284,27 +200,6 @@ export default function PersonalCoachForm({
           hint="PNG, JPG, SVG - max 5MB"
         />
 
-        {!isCompanyContext && (
-          <Controller
-            name="availability"
-            control={control}
-            render={({ field }) => (
-              <Select
-                label="Availability"
-                placeholder="Select availability"
-                items={AVAILABILITY_OPTIONS.map((a) => ({
-                  value: a,
-                  label: a,
-                }))}
-                error={errors.availability?.message}
-                selectProps={{
-                  ...field,
-                  value: field.value || "",
-                }}
-              />
-            )}
-          />
-        )}
         <Button
           type="submit"
           label={mode === "edit" ? "Save Changes" : "Register"}

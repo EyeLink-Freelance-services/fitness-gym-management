@@ -11,10 +11,8 @@ export interface FormulaDefinition {
   label: string;
   key: string;
   unit?: string;
-  decimals: number;
   expression: string;
   description?: string;
-  showPortal: boolean;
 }
 
 export interface FormulaDependencyNode {

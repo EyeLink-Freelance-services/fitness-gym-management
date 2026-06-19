@@ -2,13 +2,6 @@ import {
   COMPANY_CLIENT_ROWS,
   COMPANY_STAFF_ROWS,
 } from "@/data/company";
-import { COACH_CLIENTS } from "@/data/coach-clients";
-import {
-  ANNOUNCEMENTS,
-  PERSONAL_COACH_MEDICAL_NOTES,
-  PERSONAL_COACH_OVERVIEW,
-  PERSONAL_COACH_TODAY_SESSIONS,
-} from "@/data/personal-coach";
 import {
   COMPANY_ANNOUNCEMENT_FILTERS,
   COMPANY_ANNOUNCEMENT_OVERVIEW,
@@ -32,67 +25,12 @@ import {
   COMPANY_PAYMENT_RENEWALS,
   COMPANY_PAYMENT_TRANSACTIONS,
 } from "@/data/company-payment";
-// Company overview data
 
 export async function getCompanyStaff() {
   await new Promise((r) => setTimeout(r, 200));
   return COMPANY_STAFF_ROWS.map((staff): CompanyStaffRow => ({ ...staff }));
 }
 
-// Personal coach overview data
-export async function getPersonalCoachOverviewData() {
-  await new Promise((r) => setTimeout(r, 200));
-  return PERSONAL_COACH_OVERVIEW;
-}
-
-export async function getPersonalCoachTodaySessions(limit = 5) {
-  await new Promise((r) => setTimeout(r, 200));
-
-  const sorted = [...PERSONAL_COACH_TODAY_SESSIONS].sort(
-    (a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime(),
-  );
-
-  return sorted.slice(0, limit);
-}
-
-export async function getPersonalCoachProgressSeries() {
-  await new Promise((r) => setTimeout(r, 200));
-  return COACH_CLIENTS.filter(
-    (
-      c,
-    ): c is typeof c & {
-      progressSeries: NonNullable<typeof c.progressSeries>;
-    } => !!c.progressSeries?.points?.length,
-  ).map((c) => c.progressSeries!);
-}
-
-/** Returns coach clients for My Clients table. Same source as clients page. */
-export async function getPersonalCoachClientProgress(limit = 5) {
-  await new Promise((r) => setTimeout(r, 200));
-  return COACH_CLIENTS.slice(0, limit);
-}
-
-export async function getPersonalCoachMedicalNotes(limit = 5) {
-  await new Promise((r) => setTimeout(r, 200));
-
-  const sorted = [...PERSONAL_COACH_MEDICAL_NOTES].sort(
-    (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
-  );
-
-  return sorted.slice(0, limit);
-}
-
-export async function getPersonalCoachAnnouncements(limit = 5) {
-  await new Promise((r) => setTimeout(r, 200));
-
-  const sorted = [...ANNOUNCEMENTS].sort(
-    (a, b) => new Date(b.publishAt).getTime() - new Date(a.publishAt).getTime(),
-  );
-
-  return sorted.slice(0, limit);
-}
-
-// clients assigned to a coach
 export async function getGymCoachCLientAssign(limit = 5) {
   await new Promise((r) => setTimeout(r, 200));
 
@@ -107,7 +45,6 @@ export async function getGymCoachCLientAssign(limit = 5) {
   return sorted.slice(0, limit);
 }
 
-// Recent 5 new gym clients
 export async function getGymNewClient(limit = 5) {
   await new Promise((r) => setTimeout(r, 200));
 
@@ -205,9 +142,14 @@ export async function getCompanyAnnouncementOverviewData() {
   return COMPANY_ANNOUNCEMENT_OVERVIEW;
 }
 
-export async function getCompanyAnnouncements() {
+export async function getCompanyAnnouncements(limit?: number) {
   await new Promise((r) => setTimeout(r, 200));
-  return COMPANY_ANNOUNCEMENTS;
+
+  if (!limit) {
+    return COMPANY_ANNOUNCEMENTS;
+  }
+
+  return COMPANY_ANNOUNCEMENTS.slice(0, limit);
 }
 
 export async function getCompanyAnnouncementFilters() {

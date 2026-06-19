@@ -8,7 +8,7 @@ import type {
   ClientDietResponseApiBean,
   MealInterval,
 } from "@/types/dashboard/client-diet";
-import type { PersonalCoachDietPlanFormData } from "@/types/forms";
+import type { CoachDietPlanFormData } from "@/types/forms";
 import type { CoachPlanClient } from "@/modules/client-records/coach-plan.types";
 
 const MEAL_INTERVAL_LABELS: Record<string, string> = {
@@ -131,7 +131,7 @@ export function allDietSlotsTaken(existingRows: ClientDietPlanRow[]): boolean {
 
 export function countDietMealSlots(
   existingRows: ClientDietPlanRow[],
-  formMeals: PersonalCoachDietPlanFormData["meals"],
+  formMeals: CoachDietPlanFormData["meals"],
   excludeFormIndex?: number,
 ) {
   const counts = { breakfast: 0, lunch: 0, dinner: 0, specific: 0 };
@@ -158,7 +158,7 @@ export function countDietMealSlots(
 
 export function getAvailableDietTimeSlots(
   existingRows: ClientDietPlanRow[],
-  formMeals: PersonalCoachDietPlanFormData["meals"],
+  formMeals: CoachDietPlanFormData["meals"],
   currentIndex: number,
 ): CoachMealTimeOption[] {
   const counts = countDietMealSlots(existingRows, formMeals, currentIndex);
@@ -174,7 +174,7 @@ export function getAvailableDietTimeSlots(
 
 export function canAddAnotherDietMeal(
   existingRows: ClientDietPlanRow[],
-  formMeals: PersonalCoachDietPlanFormData["meals"],
+  formMeals: CoachDietPlanFormData["meals"],
 ) {
   if (formMeals.length >= MAX_DIET_MEALS_PER_CLIENT) {
     return false;
@@ -191,7 +191,7 @@ export function canAddAnotherDietMeal(
 
 function getFirstAvailableDietSlot(
   existingRows: ClientDietPlanRow[],
-  formMeals: PersonalCoachDietPlanFormData["meals"],
+  formMeals: CoachDietPlanFormData["meals"],
 ): CoachMealTimeOption {
   const available = getAvailableDietTimeSlots(
     existingRows,
@@ -204,7 +204,7 @@ function getFirstAvailableDietSlot(
 export function createDietFormData(
   client: CoachPlanClient,
   existingRows: ClientDietPlanRow[] = [],
-): PersonalCoachDietPlanFormData {
+): CoachDietPlanFormData {
   return {
     clientId: client.id,
     clientName: client.name,
@@ -221,7 +221,7 @@ export function createDietFormData(
 export function isSpecificTimeTaken(
   time: string,
   existingRows: ClientDietPlanRow[],
-  formMeals: PersonalCoachDietPlanFormData["meals"],
+  formMeals: CoachDietPlanFormData["meals"],
   excludeFormIndex: number,
 ) {
   const normalized = time.trim();
@@ -336,7 +336,7 @@ export function getDietSaveErrorMessage(error: unknown): string {
 export function dietRowToFormData(
   client: CoachPlanClient,
   row?: ClientDietPlanRow,
-): PersonalCoachDietPlanFormData {
+): CoachDietPlanFormData {
   if (!row) {
     return {
       clientId: client.id,
