@@ -76,14 +76,6 @@ const SIDEBAR_ITEM_CONFIG: SidebarItemConfig[] = [
   {
     sectionLabel: "COMPANY",
     roles: ["company"],
-    title: "Data Entry",
-    url: ROUTES.DASHBOARD.COMPANY.DATA_ENTRY,
-    icon: Icons.FourCircle,
-    items: [],
-  },
-  {
-    sectionLabel: "COMPANY",
-    roles: ["company"],
     title: "Schema Builder",
     url: ROUTES.DASHBOARD.COMPANY.SCHEMA,
     icon: Icons.FourCircle,
@@ -111,14 +103,6 @@ const SIDEBAR_ITEM_CONFIG: SidebarItemConfig[] = [
     title: "Overview",
     url: ROUTES.DASHBOARD.COMPANY.ROOT,
     icon: Icons.HomeIcon,
-    items: [],
-  },
-  {
-    sectionLabel: "COMPANY COACH",
-    roles: ["company-coach"],
-    title: "Data Entry",
-    url: ROUTES.DASHBOARD.COMPANY.DATA_ENTRY,
-    icon: Icons.FourCircle,
     items: [],
   },
   {

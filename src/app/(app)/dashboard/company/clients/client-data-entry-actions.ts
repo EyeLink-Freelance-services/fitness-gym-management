@@ -1,26 +1,23 @@
 "use server";
 
 import {
-  getCompanyClientRecordDraft,
-  saveCompanyClientRecordDraft,
-  type SaveCompanyClientRecordDraftInput,
-} from "@/modules/company/company-client-data-entry.service";
+  getCompanyClientMetricValueDraft,
+  saveCompanyClientMetricValues,
+} from "@/services/company/client-metric-value.service";
+import type { SaveClientMetricValuesInput } from "@/types/dashboard/client-metric-value";
+import { ROUTES } from "@/constants/route";
 import { revalidatePath } from "next/cache";
 
-function clientProfilePath(clientId: string) {
-  return `/dashboard/company/clients/${clientId}`;
+export async function fetchCompanyClientMetricValueDraftAction(clientId: string) {
+  return getCompanyClientMetricValueDraft(clientId);
 }
 
-export async function fetchCompanyClientRecordDraftAction(clientId: string) {
-  return getCompanyClientRecordDraft(clientId);
-}
-
-export async function saveCompanyClientRecordDraftAction(
+export async function saveCompanyClientMetricValuesAction(
   clientId: string,
-  input: SaveCompanyClientRecordDraftInput,
+  input: SaveClientMetricValuesInput,
 ) {
-  const saved = await saveCompanyClientRecordDraft(clientId, input);
-  revalidatePath(clientProfilePath(clientId));
-  revalidatePath(`/dashboard/company/data-entry?clientId=${clientId}`);
+  const saved = await saveCompanyClientMetricValues(clientId, input);
+  revalidatePath(ROUTES.DASHBOARD.COMPANY.CLIENT_PROFILE(clientId));
+  revalidatePath(ROUTES.DASHBOARD.COMPANY.CLIENT_DATA_ENTRY(clientId));
   return saved;
 }
