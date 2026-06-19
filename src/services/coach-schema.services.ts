@@ -1,7 +1,6 @@
 import {
   COMPANY_FIELD_GROUPS,
   COMPANY_FORMULAS,
-  COMPANY_SCHEMA_SUMMARY,
 } from "@/data/company-schema";
 import {
   COACH_DIET_PLAN_RECORDS,
@@ -15,10 +14,6 @@ import {
 async function withLatency<T>(value: T) {
   await new Promise((resolve) => setTimeout(resolve, 120));
   return value;
-}
-
-export async function getCompanySchemaOverview() {
-  return withLatency(COMPANY_SCHEMA_SUMMARY);
 }
 
 export async function getCompanyFieldGroups() {
