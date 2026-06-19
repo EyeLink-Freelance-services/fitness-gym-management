@@ -10,7 +10,7 @@ import type {
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { usePagination } from "@/hooks/use-pagination";
-import { fetchCompanyClientPage } from "@/app/(app)/dashboard/company/clients/actions";
+import { fetchCompanyClientPage, fetchCoachClientPage } from "@/app/(app)/dashboard/company/clients/actions";
 import { Button } from "@/components/ui-elements/button";
 import { ROUTES } from "@/constants/route";
 import { cn } from "@/lib/utils";
@@ -19,6 +19,7 @@ export function CompanyClientsTableClient({
   initialData,
   totalCount,
   companyPricing,
+  coachView = false,
 }: CompanyClientsTableClientProps) {
   const router = useRouter();
 
@@ -27,10 +28,9 @@ export function CompanyClientsTableClient({
     initialTotalCount: totalCount,
     pageSize: 10,
     fetchFn: async (pageNumber, pageSize) => {
-      const { clients, totalCount } = await fetchCompanyClientPage(
-        pageNumber,
-        pageSize,
-      );
+      const { clients, totalCount } = coachView
+        ? await fetchCoachClientPage(pageNumber, pageSize)
+        : await fetchCompanyClientPage(pageNumber, pageSize);
       return {
         data: clients,
         totalCount,
@@ -44,21 +44,27 @@ export function CompanyClientsTableClient({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex justify-end">
-        <FormModalTrigger
-          buttonLabel="+ Add Client"
-          formType="client"
-          companyPlan={companyPricing}
-          onSuccess={() => {
-            void pagination.refetchCurrentPage();
-            router.refresh();
-          }}
-        />
-      </div>
+      {!coachView && (
+        <div className="flex justify-end">
+          <FormModalTrigger
+            buttonLabel="+ Add Client"
+            formType="client"
+            companyPlan={companyPricing}
+            onSuccess={() => {
+              void pagination.refetchCurrentPage();
+              router.refresh();
+            }}
+          />
+        </div>
+      )}
 
       <DataTable
         title="Clients"
-        description="Clients from the company"
+        description={
+          coachView
+            ? "Clients assigned to you"
+            : "Clients from the company"
+        }
         data={pagination.data}
         columns={getCompanyClientColumns(companyPricing)}
         getRowId={(row) => row.id}

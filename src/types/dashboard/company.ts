@@ -129,6 +129,7 @@ export interface CompanyClientsTableClientProps {
   initialData: CompanyClient[];
   totalCount: number;
   companyPricing: CompanyPricing | null;
+  coachView?: boolean;
 }
 
 export interface CompanyCoachesTableClientProps {

@@ -10,14 +10,17 @@ import {
 } from "@/services/company/company.service";
 
 export async function getOverviewCompanyData() {
-  const [clientsResult, coachesResult] = await Promise.all([
-    getCompanyClients({ pageSize: 1 }),
-    getCompanyCoaches({ pageSize: 1 }),
-  ]);
+  const clientsResult = await getCompanyClients({ pageSize: 1 });
 
+  let coachCount = 0;
+  try {
+    const coachesResult = await getCompanyCoaches({ pageSize: 1 });
+    coachCount = coachesResult.totalCount;
+  } catch {
+    coachCount = 0;
+  }
 
   const clientCount = clientsResult.totalCount;
-  const coachCount = coachesResult.totalCount;
   const revenue = clientCount * 520;
 
   return [

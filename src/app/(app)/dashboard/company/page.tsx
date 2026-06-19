@@ -44,6 +44,17 @@ export default async function CompanyDashboardPage({
     );
   }
 
+  if (role === "company-coach") {
+    return (
+      <DashboardSection title="Overview">
+        <p className="text-dark-6 dark:text-dark-6">
+          Welcome to your coach dashboard. Use the Clients menu to view your
+          assigned clients and their data entry.
+        </p>
+      </DashboardSection>
+    );
+  }
+
   const { selected_time_frame } = await searchParams;
   const extractTimeFrame = createTimeFrameExtractor(selected_time_frame);
   const overviewData = await getOverviewCompanyData();

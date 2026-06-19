@@ -24,6 +24,8 @@ export type ClientProfilePageProps = {
   initialDiets?: ClientDietPlanRow[];
   initialTrainingPlans?: ClientTrainingPlanRow[];
   readOnly?: boolean;
+  showDataEntry?: boolean;
+  showBreadcrumb?: boolean;
 };
 
 export function ClientProfilePage({
@@ -32,6 +34,8 @@ export function ClientProfilePage({
   initialDiets = [],
   initialTrainingPlans = [],
   readOnly = false,
+  showDataEntry = false,
+  showBreadcrumb = false,
 }: ClientProfilePageProps) {
   const edit = useClientProfileEdit(client, companyPricing);
   const [activePlanDialog, setActivePlanDialog] = useState<ActivePlanDialog>(null);
@@ -47,7 +51,9 @@ export function ClientProfilePage({
 
   return (
     <div className="pb-12">
-      {!readOnly && <ClientProfileBreadcrumb clientName={clientName} />}
+      {(showBreadcrumb || !readOnly) && (
+        <ClientProfileBreadcrumb clientName={clientName} />
+      )}
 
       <ClientProfileHeader
         client={client}
@@ -56,7 +62,7 @@ export function ClientProfilePage({
         onEdit={edit.startEdit}
         onSave={edit.save}
         onCancel={edit.cancelEdit}
-        showCoachingActions={!readOnly && isPersonalCoaching}
+        showDataEntry={showDataEntry}
         readOnly={readOnly}
       />
 

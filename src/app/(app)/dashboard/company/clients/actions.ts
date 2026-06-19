@@ -56,6 +56,21 @@ export async function fetchCompanyClientPage(
   };
 }
 
+export async function fetchCoachClientPage(
+  pageNumber: number,
+  pageSize: number,
+) {
+  const { clients, totalCount } = await getCompanyClients({
+    pageNumber,
+    pageSize,
+  });
+
+  return {
+    clients,
+    totalCount,
+  };
+}
+
 export async function getCompanyClientAction(clientId: string) {
   return getCompanyClientById(clientId);
 }
