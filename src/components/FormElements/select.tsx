@@ -1,18 +1,20 @@
 "use client";
 
-import { ChevronUpIcon } from "@/assets/icons";
+import { ChevronUpIcon } from "@/components/IconsCollection/icons";
 import { cn } from "@/lib/utils";
 import { useId, useState } from "react";
 import Label from "@/components/FormElements/common/label";
 
 type PropsType = {
   label: React.ReactNode;
-  items: { value: string; label: string }[];
+  labelClassName?: string;
+  items: { value: string | undefined; label: string }[];
   prefixIcon?: React.ReactNode;
   className?: string;
   selectProps?: React.ComponentPropsWithRef<"select">;
   error?: string;
   id?: string;
+  required?: boolean;
 } & (
   | { placeholder?: string; defaultValue: string }
   | { placeholder: string; defaultValue?: string }
@@ -21,6 +23,7 @@ type PropsType = {
 export function Select({
   items,
   label,
+  labelClassName,
   defaultValue,
   placeholder,
   prefixIcon,
@@ -28,11 +31,12 @@ export function Select({
   selectProps,
   error,
   id: providedId,
+  required,
 }: PropsType) {
   const { className: selectClassName, onChange, ...restSelectProps } = selectProps ?? {};
   const autoId = useId();
   const id = providedId ?? restSelectProps.id ?? autoId;
-  const isRequired = restSelectProps.required;
+  const isRequired = restSelectProps.required ?? required;
   const defaultFormValue = (restSelectProps.defaultValue ?? defaultValue) || "";
 
   const [isOptionSelected, setIsOptionSelected] = useState(false);
@@ -44,6 +48,7 @@ export function Select({
         htmlFor={id}
         value={label}
         required={Boolean(isRequired)}
+        className={labelClassName}
       />
 
       <div className="relative">
@@ -55,13 +60,15 @@ export function Select({
 
         <select
           id={id}
-          defaultValue={defaultFormValue}
+          {...(restSelectProps.value !== undefined
+            ? { value: restSelectProps.value ?? "" }
+            : { defaultValue: defaultFormValue })}
           onChange={(e) => {
             setIsOptionSelected(true);
             onChange?.(e);
           }}
           className={cn(
-            "w-full appearance-none rounded-lg border border-stroke bg-transparent px-5.5 py-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary [&>option]:text-dark-5 dark:[&>option]:text-dark-6",
+            "w-full appearance-none rounded-lg border border-stroke bg-transparent px-5.5 py-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary [&>option]:text-white dark:[&>option]:text-white active:text-white dark:active:text-white",
             isOptionSelected && "text-dark dark:text-white",
             prefixIcon && "pl-11.5",
             error && "border-red-500 focus:border-red-500 dark:border-red-400 dark:focus:border-red-400",
@@ -75,8 +82,8 @@ export function Select({
             </option>
           )}
 
-          {items.map((item) => (
-            <option key={item.value} value={item.value}>
+          {items.map((item, index) => (
+            <option key={index} value={item.value}>
               {item.label}
             </option>
           ))}

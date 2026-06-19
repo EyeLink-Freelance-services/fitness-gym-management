@@ -9,23 +9,25 @@ import NextTopLoader from "nextjs-toploader";
 import type { PropsWithChildren } from "react";
 
 import { Providers } from "./(app)/providers";
+import { ToastProvider } from "@/components/Toast";
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | NextAdmin - Next.js Dashboard Kit",
-    default: "NextAdmin - Next.js Dashboard Kit",
+    template: "%s | Fitness | Coaching Management",
+    default: "Fitness | Coaching Management",
   },
   description:
-    "Next.js admin dashboard toolkit with 200+ templates, UI components, and integrations for fast dashboard development.",
+    "A modern gym management platform for coaches, gyms, and clients. Track progress, manage onboarding, analytics, sessions, and more...",
 };
 
 export default function RootLayout({ children }: PropsWithChildren) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="bg-[url(/images/common/bg.jpg)] bg-cover bg-center bg-no-repeat">
+      <body suppressHydrationWarning>
         <Providers>
           <NextTopLoader color="#5750F1" showSpinner={false} />
           {children}
+          <ToastProvider />
         </Providers>
       </body>
     </html>

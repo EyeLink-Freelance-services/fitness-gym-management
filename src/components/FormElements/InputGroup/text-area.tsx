@@ -9,6 +9,7 @@ interface PropsType {
   disabled?: boolean;
   active?: boolean;
   className?: string;
+  labelClassName?: string;
   icon?: React.ReactNode;
   defaultValue?: string;
   textareaProps?: React.ComponentPropsWithRef<"textarea">;
@@ -23,6 +24,7 @@ export function TextAreaGroup({
   disabled,
   active,
   className,
+  labelClassName,
   icon,
   defaultValue,
   textareaProps,
@@ -43,7 +45,7 @@ export function TextAreaGroup({
         htmlFor={id}
         value={label}
         required={Boolean(isRequired)}
-        className="mb-3"
+        className={cn('mb-3', labelClassName)}
       />
 
       <div className="relative mt-3 [&_svg]:pointer-events-none [&_svg]:absolute [&_svg]:left-5.5 [&_svg]:top-5.5">

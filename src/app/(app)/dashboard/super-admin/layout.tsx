@@ -1,0 +1,20 @@
+import { ReactNode } from "react";
+import { redirect } from "next/navigation";
+import { getAuthContext } from "@/lib/auth/get-auth-context";
+import { getDefaultRouteFromAuthContext, getRoleFromAuthContext } from "@/config/routes.config";
+import { ROUTES } from "@/constants/route";
+
+export default async function SuperAdminDashboardLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const auth = await getAuthContext();
+  const role = getRoleFromAuthContext(auth);
+
+  if (role !== "super-admin") {
+    redirect(getDefaultRouteFromAuthContext(auth) ?? ROUTES.LOGIN);
+  }
+
+  return <>{children}</>;
+}

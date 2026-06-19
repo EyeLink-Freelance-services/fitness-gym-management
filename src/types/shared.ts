@@ -1,10 +1,94 @@
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import type { ButtonHTMLAttributes, ReactNode, SVGProps, JSX } from "react";
 import type { VariantProps } from "class-variance-authority";
 import { buttonVariants } from "@/components/ui-elements/button";
+import { IAuthContext } from "./auth/auth-context";
+
+export type IconProps = React.SVGProps<SVGSVGElement>;
+
+export type TableRowData = object;
+
+export type DashboardCampaignStatus =
+  | "All"
+  | "Published"
+  | "Scheduled"
+  | "Draft";
+
+export type StatusTone =
+  | "primary"
+  | "success"
+  | "warning"
+  | "danger"
+  | "neutral";
+
+export type ButtonColorVariant =
+  | "primary"
+  | "green"
+  | "dark"
+  | "outlinePrimary"
+  | "outlineGreen"
+  | "outlineDark";
+
+export interface HeaderProps {
+  mode: string | React.ReactNode;
+  workspaceName: string | React.ReactNode;
+}
+
+export interface DashboardOverviewItem {
+  label: string;
+  value: string;
+  trend: number;
+  note: string;
+  Icon: (props: SVGProps<SVGSVGElement>) => JSX.Element;
+}
+
+export interface StatusBadgeProps {
+  label: string;
+  tone: StatusTone;
+}
 
 export interface ButtonProps
   extends ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
-  label: string;
+  label?: string;
   icon?: ReactNode;
+  toastMessage?: string;
 }
+
+export interface TableUIColumn<TData extends TableRowData = TableRowData> {
+  key: keyof TData | string;
+  label?: string;
+  className?: string;
+  headClassName?: string;
+  cellClassName?: string;
+  align?: "left" | "center" | "right";
+  render?: (row: TData, rowIndex: number) => ReactNode;
+}
+
+export interface TableUIProps<TData extends TableRowData = TableRowData> {
+  className?: string;
+  title?: string;
+  description?: string;
+  data: TData[] | Promise<TData[]>;
+  buttonLabel?: string;
+  buttonPath?: string;
+  buttonToast?: string;
+  headerActions?: ReactNode;
+  columns?: TableUIColumn<TData>[];
+  rowKey?: (row: TData, rowIndex: number) => string;
+  tableClassName?: string;
+  emptyStateLabel?: string;
+}
+
+export interface sidebarProps {
+  auth?: IAuthContext | null;
+}
+
+type SidebarState = "expanded" | "collapsed";
+
+export type SidebarContextType = {
+  state: SidebarState;
+  isOpen: boolean;
+  setIsOpen: (open: boolean) => void;
+  isMobile: boolean;
+  toggleSidebar: () => void;
+};

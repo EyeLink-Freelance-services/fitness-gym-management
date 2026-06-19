@@ -13,3 +13,11 @@ export function standardFormat(value: number) {
     maximumFractionDigits: 2,
   });
 }
+
+export const formatCurrency = (value: number) =>
+  new Intl.NumberFormat("en-MU", {
+    style: "currency",
+    currency: "MUR",
+    maximumFractionDigits: 2,
+  }).format(value);
+

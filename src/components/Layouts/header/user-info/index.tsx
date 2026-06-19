@@ -1,6 +1,10 @@
 "use client";
 
-import { ChevronUpIcon } from "@/assets/icons";
+import {
+  ChevronUpIcon,
+  LogOutIcon,
+  Users,
+} from "@/components/IconsCollection/icons";
 import {
   Dropdown,
   DropdownContent,
@@ -8,40 +12,55 @@ import {
 } from "@/components/ui/dropdown";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import Link from "next/link";
 import { useState } from "react";
-import { LogOutIcon, SettingsIcon, UserIcon } from "./icons";
+import { ROUTES } from "@/constants/route";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/app/context/auth-context";
+import { signOut } from "next-auth/react";
+import { getUserDetails } from "@/lib/auth/user-details";
 
 export function UserInfo() {
+  const auth = useAuth();
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
 
-  const USER = {
-    name: "John Smith",
-    email: "johnson@nextadmin.com",
-    img: "/images/user/user-03.png",
+  const logout = async () => {
+    await signOut({ redirect: false });
+
+    setIsOpen(false);
+
+    router.push(ROUTES.LOGIN);
+    router.refresh();
+  };
+
+  const { firstName, displayName, role, profilePic } = getUserDetails(auth);
+
+  const displayAvatar = () => {
+    return profilePic ? (
+      <Image
+        src={profilePic}
+        alt={`Picture Picture of ${displayName}`}
+        width={48}
+        height={48}
+        className="size-12 rounded-full object-cover"
+      />
+    ) : (
+      <Users className="size-12 text-gray-500" />
+    );
   };
 
   return (
     <Dropdown isOpen={isOpen} setIsOpen={setIsOpen}>
-      <DropdownTrigger className="rounded align-middle outline-none ring-primary ring-offset-2 focus-visible:ring-1 dark:ring-offset-gray-dark">
+      <DropdownTrigger className="rounded-xl bg-[#374151] align-middle outline-none">
         <span className="sr-only">My Account</span>
 
-        <figure className="flex items-center gap-3">
-          <Image
-            src={USER.img}
-            className="size-12"
-            alt={`Avatar of ${USER.name}`}
-            role="presentation"
-            width={200}
-            height={200}
-          />
-          <figcaption className="flex items-center gap-1 font-medium text-dark dark:text-dark-6 max-[1024px]:sr-only">
-            <span>{USER.name}</span>
-
+        <figure className="flex items-center gap-1">
+          {displayAvatar()}
+          <figcaption className="flex items-center gap-1 font-medium max-[1024px]:sr-only">
             <ChevronUpIcon
               aria-hidden
               className={cn(
-                "rotate-180 transition-transform",
+                "mr-2 rotate-180 transition-transform",
                 isOpen && "rotate-0",
               )}
               strokeWidth={1.5}
@@ -57,27 +76,19 @@ export function UserInfo() {
         <h2 className="sr-only">User information</h2>
 
         <figure className="flex items-center gap-2.5 px-5 py-3.5">
-          <Image
-            src={USER.img}
-            className="size-12"
-            alt={`Avatar for ${USER.name}`}
-            role="presentation"
-            width={200}
-            height={200}
-          />
-
+          {displayAvatar()}
           <figcaption className="space-y-1 text-base font-medium">
             <div className="mb-2 leading-none text-dark dark:text-white">
-              {USER.name}
+              {firstName}
             </div>
 
-            <div className="leading-none text-gray-6">{USER.email}</div>
+            <div className="leading-none text-gray-6">{role}</div>
           </figcaption>
         </figure>
 
         <hr className="border-[#E8E8E8] dark:border-dark-3" />
 
-        <div className="p-2 text-base text-[#4B5563] dark:text-dark-6 [&>*]:cursor-pointer">
+        {/* <div className="p-2 text-base text-[#4B5563] dark:text-dark-6 [&>*]:cursor-pointer">
           <Link
             href={"/profile"}
             onClick={() => setIsOpen(false)}
@@ -99,14 +110,14 @@ export function UserInfo() {
               Account Settings
             </span>
           </Link>
-        </div>
+        </div> */}
 
-        <hr className="border-[#E8E8E8] dark:border-dark-3" />
+        {/* <hr className="border-[#E8E8E8] dark:border-dark-3" /> */}
 
         <div className="p-2 text-base text-[#4B5563] dark:text-dark-6">
           <button
             className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-[9px] hover:bg-gray-2 hover:text-dark dark:hover:bg-dark-3 dark:hover:text-white"
-            onClick={() => setIsOpen(false)}
+            onClick={logout}
           >
             <LogOutIcon />
 

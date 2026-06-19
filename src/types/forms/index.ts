@@ -1,5 +1,10 @@
 import type { ReactNode } from "react";
 import { UseFormReturn } from "react-hook-form";
+import type { CoachMealTimeOption } from "@/types/dashboard/client";
+import {
+  CompanyClientFormValues,
+  CompanyPricing,
+} from "../dashboard/company";
 
 export interface FormHeader {
   label: string;
@@ -17,11 +22,13 @@ export interface FormLabel {
 }
 
 export interface LoginFormData {
-  email: string;
+  username: string;
   password: string;
+  contextType?: string;
+  businessId?: string;
 }
 
-export interface RecoveryStep1FormData {
+export interface RecoveryRegisteredEmailFormData {
   email: string;
 }
 
@@ -29,17 +36,19 @@ export interface RecoveryStep2FormData {
   code: string;
 }
 
-export interface RecoveryStep3FormData {
+export interface RecoveryNewPasswordFormData {
   newPassword: string;
   confirmPassword: string;
 }
 
 export interface CompanyBranchField {
-  value: string;
+  branchName: string;
 }
 
 export interface CompanyFormData {
   companyName: string;
+  logo?: string | null;
+  email: string;
   brn: string;
   contactNumber: string;
   addressLine1: string;
@@ -48,52 +57,71 @@ export interface CompanyFormData {
   state: string;
   branches: CompanyBranchField[];
   disclaimer: string;
+  standardPrice: number | undefined;
   agreeTerms: boolean;
 }
-
-export type UserType = "staff" | "coach";
-
-export interface StaffCoachFormData {
-  userType: UserType;
+export interface StaffFormData {
   gymBranch: string;
   firstName: string;
   lastName: string;
   contactNumber: string;
   email: string;
   role: string;
-  accessLevel: string;
   notes?: string;
 }
 
-export interface PersonalCoachFormData {
+export interface CoachFormData {
   firstName: string;
   lastName: string;
   contactNumber: string;
   email: string;
-  specialization: string;
-  operatingLocation: string;
-  certifications: string;
-  yearsExperience: number;
+  specialization?: string;
+  coachingMode: string;
+  location?: string;
+  certifications?: string;
   hourlyRate: number;
+  yearsExperience?: number;
   languages: string;
   bio: string;
-  availability: string;
+  profilePhoto?: File | null;
+  availability?: string;
 }
 
-export interface ClientFormData {
-  firstName: string;
-  lastName: string;
-  dateOfBirth: string;
-  gender: string;
-  email: string;
-  phone: string;
-  emergencyContact: string;
-  medicalConditions?: string;
-  activityLevel: string;
-  membershipPlan: string;
-  assignedCoach: string;
-  startDate: string;
-  agreeTerms: boolean;
+export interface CoachFormProps {
+  initialData?: Partial<CoachFormData>;
+  existingProfilePhotoUrl?: string;
+  mode?: "create" | "edit";
+  coachId?: string;
+  onSuccess?: () => void;
+}
+
+export interface CompanyFormProps {
+  initialData?: Partial<CompanyFormData>;
+  existingProfilePhotoUrl?: string;
+  mode?: "create" | "edit";
+  companyId?: string;
+  onSuccess?: () => void;
+}
+
+export interface CompanyStaffFormProps {
+  initialData?: Partial<StaffFormData>;
+  mode?: "create" | "edit";
+  onSuccess?: () => void;
+}
+
+export interface CompanyClientFormProps {
+  initialData?: Partial<CompanyClientFormValues>;
+  clientContext?: "company";
+  mode?: "create" | "edit";
+  clientId?: string;
+  companyPlan?: CompanyPricing | null;
+  onSuccess?: () => void;
+}
+
+export interface AssignClientFormProps {
+  initialData?: Partial<AssignClientFormData>;
+  mode?: "create" | "edit";
+  onSuccess?: () => void;
 }
 
 export interface LoginFormProps {
@@ -101,42 +129,92 @@ export interface LoginFormProps {
 }
 
 export interface RecoveryFormProps {
+  step: number;
   onBackToLogin: () => void;
+  resetToken?: string | null;
 }
 
-export interface CompanyFormProps {
-  onBackToLogin: () => void;
+export type FormModalId = "client" | "company" | "coach" | "staff";
+
+export interface AnnouncementFormData {
+  title: string;
+  message: string;
 }
 
-export interface StaffCoachFormProps {
-  onPersonalCoach: () => void;
+export interface CoachDietPlanMealFormData {
+  timeSlot: CoachMealTimeOption;
+  specificTime?: string;
+  meal: string;
 }
 
-export type FormModalId = "client" | "company" | "personal" | "staff";
+export interface CoachDietPlanFormData {
+  clientId: string;
+  clientName: string;
+  meals: CoachDietPlanMealFormData[];
+}
+
+export interface CoachTrainingPlanFormData {
+  clientId: string;
+  clientName: string;
+  monday: string;
+  tuesday: string;
+  wednesday: string;
+  thursday: string;
+  friday: string;
+  saturday: string;
+  sunday: string;
+}
+
+/** Client-coach assignment status for Assign Client form */
+export type AssignClientStatus = "assigned" | "pending" | "unassigned";
+
+export interface AssignClientFormData {
+  clientId: string;
+  coachId: string;
+  status: AssignClientStatus;
+}
 
 export type ValidateResult = true | string;
 
 /* Recover Password */
 
 export type RegisteredEmailConfirmations = {
-  form: UseFormReturn<RecoveryStep1FormData>;
-  onNext: (data: RecoveryStep1FormData) => void;
+  form: UseFormReturn<RecoveryRegisteredEmailFormData>;
+  onNext: (data: RecoveryRegisteredEmailFormData) => void;
   onBackToLogin: () => void;
 };
 
 export type PasswordRecoverySuccess = {
-  onBackToLogin: () => void;
+  goToApp: () => void;
 };
 
 export type NewPasswordProps = {
-  form: UseFormReturn<RecoveryStep3FormData>;
-  onNext: () => void;
+  form: UseFormReturn<RecoveryNewPasswordFormData>;
+  onNext: (values: RecoveryNewPasswordFormData) => void;
 };
-
 
 export type RecoveryCodeProps = {
   form: UseFormReturn<RecoveryStep2FormData>;
   recoverEmail: string;
   onNext: () => void;
   onResend: () => void;
+};
+
+// Dashboard form
+
+type FormType =
+  | "client"
+  | "company"
+  | "coach"
+  | "announcement"
+  | "assignClient"
+  | "staff";
+
+export type FormModalTriggerProps = {
+  buttonLabel: string;
+  formType: FormType;
+  clientContext?: "company";
+  size?: "default" | "small" | "xs";
+  companyPlan?: CompanyPricing | null;
+  onSuccess?: () => void;
 };

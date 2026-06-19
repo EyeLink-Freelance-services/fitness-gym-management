@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-export function Skeleton({
+export function SkeletonUI({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {

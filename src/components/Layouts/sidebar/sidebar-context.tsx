@@ -1,17 +1,8 @@
 "use client";
 
 import { useIsMobile } from "@/hooks/use-mobile";
+import { SidebarContextType } from "@/types/shared";
 import { createContext, useContext, useEffect, useState } from "react";
-
-type SidebarState = "expanded" | "collapsed";
-
-type SidebarContextType = {
-  state: SidebarState;
-  isOpen: boolean;
-  setIsOpen: (open: boolean) => void;
-  isMobile: boolean;
-  toggleSidebar: () => void;
-};
 
 const SidebarContext = createContext<SidebarContextType | null>(null);
 

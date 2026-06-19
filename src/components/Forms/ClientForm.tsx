@@ -1,105 +1,153 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import type { ClientFormData } from "@/types/forms";
-import {
-  MEMBERSHIP_PLANS,
-  ACTIVITY_LEVELS,
-  COACH_OPTIONS,
-} from "@/data/constants";
-import InputGroup from "../FormElements/InputGroup";
-import { Select } from "../FormElements/select";
-import { TextAreaGroup } from "../FormElements/InputGroup/text-area";
-import { Checkbox } from "../FormElements/checkbox";
-import { Button } from "../ui-elements/button";
 import {
   validateEmail,
   validatePhone,
   validateRequired,
 } from "@/lib/forms/formValidation";
-import Header from "../FormElements/common/header";
-import Label from "../FormElements/common/label";
+import type { CompanyClientFormValues } from "@/types/dashboard/company";
+import { CompanyClientFormProps } from "@/types/forms";
+import { useEffect } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { CoachSearchSelect } from "@/components/FormElements/CoachSearchSelect";
+import InputGroup from "../FormElements/InputGroup";
+import { Select } from "../FormElements/select";
+import { TextAreaGroup } from "../FormElements/InputGroup/text-area";
+import { Header, HeaderTitle } from "../FormElements/common";
+import { Button } from "@/components/ui-elements/button";
+import { genderOptions } from "@/data/shared";
+import { DEFAULT_CLIENT_FORM_VALUES, membershipPlanOptions } from "@/data/company";
+import { toast } from "sonner";
+import {
+  createClientAction,
+  updateClientAction,
+} from "@/app/(app)/dashboard/company/clients/actions";
 
-export default function ClientForm() {
-  
+export default function ClientForm({
+  initialData,
+  mode = "create",
+  clientId,
+  companyPlan,
+  onSuccess,
+}: CompanyClientFormProps) {
   const {
     register,
     handleSubmit,
-    formState: { errors },
-  } = useForm<ClientFormData>();
+    setValue,
+    watch,
+    reset,
+    control,
+    formState: { errors, isValid, isSubmitting },
+  } = useForm<CompanyClientFormValues>({
+    mode: "all",
+    defaultValues: {
+      ...DEFAULT_CLIENT_FORM_VALUES,
+      ...initialData,
+    },
+  });
 
-  const onSubmit = (data: ClientFormData) => {
-    console.log(data);
+  const membershipPlan = watch("membershipPlan");
+
+  useEffect(() => {
+    reset({
+      ...DEFAULT_CLIENT_FORM_VALUES,
+      ...initialData,
+    });
+  }, [initialData, reset]);
+
+  useEffect(() => {
+    if (membershipPlan === "standard") {
+      setValue("additionalFees", undefined, { shouldValidate: false });
+      setValue("assignedCoach", "", { shouldValidate: false });
+    }
+  }, [membershipPlan, setValue]);
+
+  const onSubmit = async (data: CompanyClientFormValues) => {
+    try {
+      if (mode === "edit") {
+        if (!clientId) throw new Error("Missing clientId for edit mode");
+        await updateClientAction(clientId, data, companyPlan);
+      } else {
+        await createClientAction(data, companyPlan);
+      }
+
+      toast.success(
+        mode === "edit"
+          ? "Client updated successfully"
+          : "Client created successfully",
+      );
+      onSuccess?.();
+    } catch {
+      toast.error(
+        mode === "edit" ? "Failed to update client" : "Failed to create client",
+      );
+    }
   };
 
   return (
-    <div className="form-panel space-y-4">
+    <div className="form-panel space-y-4 bg-white py-10 dark:bg-transparent">
       <Header
         label="- Members"
-        title="New client"
-        subtitle="Register a new gym member"
+        title={mode === "edit" ? "Edit client" : "Register client"}
+        subtitle={
+          mode === "edit" ? "Update client information" : "Onboard your client"
+        }
       />
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-7">
-        <div className="my-6 flex items-center gap-3">
-          <div className="h-px flex-1 bg-stroke dark:bg-dark-3" />
-          <span className="text-body-xs font-medium uppercase tracking-wider text-dark-5 dark:text-dark-6">
-            Personal Details
-          </span>
-          <div className="h-px flex-1 bg-stroke dark:bg-dark-3" />
-        </div>
+        <HeaderTitle title="Personal Details" />
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <InputGroup
             type="text"
             label="First Name"
-            placeholder="Asha"
+            placeholder="Ovi"
             required
             inputProps={register("firstName", {
-              validate: (v) => validateRequired(v, "First name is required"),
+              validate: (value) =>
+                validateRequired(value, "First name is required"),
             })}
+            error={errors?.firstName?.message}
           />
           <InputGroup
             type="text"
             label="Last Name"
-            placeholder="Ramsahoy"
+            placeholder="Joy"
             required
             inputProps={register("lastName", {
-              validate: (v) => validateRequired(v, "Last name is required"),
+              validate: (value) =>
+                validateRequired(value, "Last name is required"),
             })}
+            error={errors?.lastName?.message}
           />
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <InputGroup
-            type="text"
+            type="date"
             label="Date of Birth"
             placeholder="DD / MM / YYYY"
             required
             inputProps={register("dateOfBirth", {
-              required: "Date of birth is required",
+              validate: (value) =>
+                validateRequired(value, "Date of birth is required"),
             })}
+            error={errors?.dateOfBirth?.message}
           />
           <Select
             label="Gender"
             placeholder="Select"
-            items={[
-              { value: "Male", label: "Male" },
-              { value: "Female", label: "Female" },
-              { value: "Non-binary", label: "Non-binary" },
-              { value: "Prefer not to say", label: "Prefer not to say" },
-            ]}
-            selectProps={register("gender", { required: "Gender is required" })}
+            items={genderOptions}
+            required
+            error={errors.gender?.message}
+            selectProps={register("gender", {
+              validate: (value) =>
+                validateRequired(value, "Gender is required"),
+            })}
           />
         </div>
 
-        <div className="my-6 flex items-center gap-3">
-          <div className="h-px flex-1 bg-stroke dark:bg-dark-3" />
-          <span className="text-body-xs font-medium uppercase tracking-wider text-dark-5 dark:text-dark-6">
-            Contact Details
-          </span>
-          <div className="h-px flex-1 bg-stroke dark:bg-dark-3" />
-        </div>
+        <HeaderTitle title="Contact Details" />
 
         <InputGroup
           type="email"
@@ -108,8 +156,9 @@ export default function ClientForm() {
           required
           inputProps={register("email", {
             required: "Email is required",
-            validate: (v) => validateEmail(v),
+            validate: (value) => validateEmail(value),
           })}
+          error={errors?.email?.message}
         />
 
         <InputGroup
@@ -117,120 +166,119 @@ export default function ClientForm() {
           label="Phone Number"
           placeholder="+230 5XXX XXXX"
           required
-          inputProps={register("phone", {
+          inputProps={register("phoneNumber", {
             required: "Phone number is required",
-            validate: (v) => validatePhone(v),
+            validate: (value) => validatePhone(value),
           })}
+          error={errors?.phoneNumber?.message}
         />
 
         <InputGroup
           type="text"
-          label="Emergency Contact"
-          placeholder="Name & phone number"
+          label="Emergency Contact Name"
+          placeholder="Name"
           required
-          inputProps={register("emergencyContact", {
-            validate: (v) =>
-              validateRequired(v, "Emergency contact is required"),
+          inputProps={register("emergencyContactName", {
+            required: "Emergency contact name is required",
+            validate: (value) => validateRequired(value, "Emergency contact name is required"),
           })}
+          error={errors?.emergencyContactName?.message}
         />
 
-        <div className="my-6 flex items-center gap-3">
-          <div className="h-px flex-1 bg-stroke dark:bg-dark-3" />
-          <span className="text-body-xs font-medium uppercase tracking-wider text-dark-5 dark:text-dark-6">
-            Medical Notes
-          </span>
-          <div className="h-px flex-1 bg-stroke dark:bg-dark-3" />
-        </div>
+          <InputGroup
+            type="tel"
+            label="Emergency Contact"
+            placeholder="phone number +230 XXXXXX"
+            required
+            inputProps={register("emergencyContactPhone", {
+              required: "Emergency contact number is required",
+              validate: (value) => validatePhone(value),
+            })}
+            error={errors?.emergencyContactPhone?.message}
+          />
+
+        <HeaderTitle title="Medical Notes" />
 
         <TextAreaGroup
-          label={<Label value="Known Medical Condition" optional />}
-          placeholder="e.g. Hypertension, Asthma, Knee injury, Pregnancy... Leave blank if none."
+          label="Known Medical Condition"
+          placeholder="e.g. Hypertension, Asthma, Knee injury, Pregnancy..."
           textareaProps={register("medicalConditions")}
         />
 
-        <Select
-          label="Physical Activity Level"
-          placeholder="Select activity level"
-          items={ACTIVITY_LEVELS.map((a) => ({ value: a, label: a }))}
-          selectProps={register("activityLevel", {
-            required: "Activity level is required",
-          })}
-        />
+        <HeaderTitle title="Membership Details" />
 
-        <div className="my-6 flex items-center gap-3">
-          <div className="h-px flex-1 bg-stroke dark:bg-dark-3" />
-          <span className="text-body-xs font-medium uppercase tracking-wider text-dark-5 dark:text-dark-6">
-            Membership
-          </span>
-          <div className="h-px flex-1 bg-stroke dark:bg-dark-3" />
-        </div>
-
-        <Select
-          label="Membership Plan"
-          placeholder="Select a plan"
-          items={MEMBERSHIP_PLANS.map((p) => ({ value: p, label: p }))}
-          selectProps={register("membershipPlan", {
-            required: "Membership plan is required",
-          })}
-        />
-
-        <Select
-          label={<Label value="Assigned Coach" optional />}
-          placeholder="No coach assigned"
-          items={COACH_OPTIONS.map((c) => ({ value: c, label: c }))}
-          selectProps={register("assignedCoach")}
-        />
-
-        <InputGroup
-          type="text"
-          label="Start Date"
-          placeholder="DD / MM / YYYY"
-          required
-          inputProps={register("startDate", {
-            required: "Start date is required",
-          })}
-        />
-
-        <div className="my-6 flex items-center gap-3">
-          <div className="h-px flex-1 bg-stroke dark:bg-dark-3" />
-          <span className="text-body-xs font-medium uppercase tracking-wider text-dark-5 dark:text-dark-6">
-            Agreement
-          </span>
-          <div className="h-px flex-1 bg-stroke dark:bg-dark-3" />
-        </div>
-
-        <div className="max-h-32 overflow-y-auto rounded-lg border border-stroke bg-gray-2 p-4 text-body-sm leading-relaxed text-dark-5 dark:border-dark-3 dark:bg-dark-2 dark:text-dark-6">
-          The undersigned acknowledges that physical exercise involves inherent
-          risks of injury. By registering as a member, I voluntarily assume
-          these risks. I confirm that I am in adequate physical condition to
-          participate in gym activities.
-        </div>
-
-        <div className="mb-5">
-          <Checkbox
-            minimal
-            radius="md"
-            label={
-              <span className="text-body-sm text-dark-5 dark:text-dark-6">
-                I confirm the member has read, understood, and accepted the{" "}
-                <a href="#" className="text-primary hover:underline">
-                  Terms &amp; Conditions
-                </a>
-                , and{" "}
-                <a href="#" className="text-primary hover:underline">
-                  Privacy Policy
-                </a>
-                .
-              </span>
-            }
-            inputProps={register("agreeTerms", {
-              validate: (v) => (v ? true : "You must confirm agreement"),
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <Select
+            label="Membership Plan"
+            placeholder="Select plan"
+            items={membershipPlanOptions}
+            error={errors.membershipPlan?.message}
+            selectProps={register("membershipPlan", {
+              validate: (value) =>
+                validateRequired(value, "Membership plan is required"),
             })}
-            error={errors.agreeTerms?.message}
           />
+
+          {membershipPlan === "personalCoach" ? (
+            <InputGroup
+              type="number"
+              label="Personal Coaching Price"
+              placeholder="200"
+              required
+              error={errors.additionalFees?.message}
+              inputProps={{
+                ...register("additionalFees", {
+                  valueAsNumber: true,
+                  validate: (value) => validateRequired(value, "Additional fees are required")
+                }),
+                min: 0,
+              }}
+            />
+          ) : (
+            <InputGroup
+              type="number"
+              label="Standard Price"
+              placeholder="Selected plan price"
+              error={errors.membershipPlan?.message}
+              inputProps={{
+                value: companyPlan?.standardPrice,
+                readOnly: true,
+                disabled: true,
+              }}
+            />
+          )}
         </div>
 
-        <Button type="submit" label="Register Client" className="w-full" />
+        {membershipPlan === "personalCoach" && (
+          <Controller
+            name="assignedCoach"
+            control={control}
+            rules={{
+              validate: (value) =>
+                membershipPlan === "personalCoach"
+                  ? validateRequired(value, "Coach assignment is required")
+                  : true,
+            }}
+            render={({ field }) => (
+              <CoachSearchSelect
+                label="Assigned Coach"
+                placeholder="Search coach by name, email, or phone..."
+                required
+                value={field.value}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+                error={errors.assignedCoach?.message}
+              />
+            )}
+          />
+        )}
+
+        <Button
+          type="submit"
+          disabled={!isValid || isSubmitting}
+          label={mode === "edit" ? "Save changes" : "Create Client"}
+          className="w-full"
+        />
       </form>
     </div>
   );

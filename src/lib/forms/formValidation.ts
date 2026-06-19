@@ -68,6 +68,7 @@ export function validatePhone(
   message = "Enter a valid phone number",
 ): ValidateResult {
   const v = (val ?? "").trim();
+  if (/[A-Za-z]/.test(v)) return message;
   // Accepted formats: +230xxxxxxxx, 230xxxxxxxx, or local 7–15 digits.
   const digits = v.replace(/[^\d+]/g, "");
   const normalized = digits.startsWith("+") ? digits.slice(1) : digits;
