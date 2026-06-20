@@ -257,3 +257,12 @@ export interface SearchCoachesApiBean {
   totalElements?: number;
   totalPages?: number;
 }
+
+export interface CoachUpcomingSessionRow {
+  id: string;
+  session: string;
+  clientName: string;
+  startsAt: string;
+  durationMinutes: number;
+  status: string;
+}

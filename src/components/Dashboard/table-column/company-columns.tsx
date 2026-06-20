@@ -6,6 +6,7 @@ import {
   getMembershipPlanLabel,
 } from "@/modules/company/company-client.mappers";
 import type {
+  CoachUpcomingSessionRow,
   CompanyClient,
   CompanyCoachesRow,
   CompanyStaffRow,
@@ -19,6 +20,15 @@ function formatDate(date?: string) {
     day: "2-digit",
     month: "short",
     year: "numeric",
+  });
+}
+
+function formatTime(date?: string) {
+  if (!date) return "-";
+  return new Date(date).toLocaleTimeString("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
   });
 }
 export const expiringSoonColumns: TableUIColumn<CompanyClient>[] = [
@@ -72,6 +82,49 @@ export const newSignupColumns: TableUIColumn<CompanyClient>[] = [
     headClassName: "min-w-[140px]",
   },
 ];
+
+export const coachClientColumns: TableUIColumn<CompanyClient>[] =
+  newSignupColumns.filter((col) => col.key !== "membershipPlan");
+export const coachUpcomingSessionColumns: TableUIColumn<CoachUpcomingSessionRow>[] =
+  [
+    {
+      key: "session",
+      label: "Session",
+      align: "left",
+      headClassName: "min-w-[160px]",
+    },
+    {
+      key: "clientName",
+      label: "Client Name",
+      align: "left",
+      headClassName: "min-w-[140px]",
+    },
+    {
+      key: "startsAt",
+      label: "Date",
+      render: (row) => formatDate(row.startsAt),
+      headClassName: "min-w-[120px]",
+    },
+    {
+      key: "time",
+      label: "Time",
+      render: (row) => formatTime(row.startsAt),
+      headClassName: "min-w-[80px]",
+    },
+    {
+      key: "durationMinutes",
+      label: "Duration",
+      render: (row) => `${row.durationMinutes} min`,
+      headClassName: "min-w-[100px]",
+    },
+    {
+      key: "status",
+      label: "Status",
+      align: "left",
+      headClassName: "min-w-[100px]",
+    },
+  ];
+
 export const coachAssignmentColumns: TableUIColumn<CompanyClient>[] = [
   {
     key: "coachName",
@@ -172,6 +225,7 @@ export const companyClientCoachAssignmentColumns: ColumnDef<CompanyClient>[] = [
 
 export function getCompanyClientColumns(
   companyPricing?: CompanyPricing | null,
+  coachView?: boolean,
 ): ColumnDef<CompanyClient>[] {
   return [
     {
@@ -197,14 +251,6 @@ export function getCompanyClientColumns(
       },
     },
     {
-      id: "plan",
-      header: "Plan",
-      cell: ({ row }) => getMembershipPlanLabel(row.original.membershipPlan),
-      meta: {
-        align: "left",
-      },
-    },
-    {
       id: "fee",
       header: "Fee (Rs)",
       cell: ({ row }) => {
@@ -219,14 +265,27 @@ export function getCompanyClientColumns(
         headClassName: "min-w-[120px]",
       },
     },
-    {
-      accessorKey: "coachName",
-      header: "Coach Assigned",
-      cell: ({ row }) => getClientCoachDisplayName(row.original),
-      meta: {
-        headClassName: "min-w-[140px]",
-      },
-    },
+    ...(!coachView
+      ? [
+          {
+            id: "plan",
+            header: "Plan",
+            cell: ({ row }) =>
+              getMembershipPlanLabel(row.original.membershipPlan),
+            meta: {
+              align: "left",
+            },
+          } satisfies ColumnDef<CompanyClient>,
+          {
+            accessorKey: "coachName",
+            header: "Coach Assigned",
+            cell: ({ row }) => getClientCoachDisplayName(row.original),
+            meta: {
+              headClassName: "min-w-[140px]",
+            },
+          } satisfies ColumnDef<CompanyClient>,
+        ]
+      : []),
     {
       accessorKey: "joinedAt",
       header: "Joined At",

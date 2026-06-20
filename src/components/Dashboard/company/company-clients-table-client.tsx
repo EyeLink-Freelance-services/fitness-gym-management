@@ -66,7 +66,7 @@ export function CompanyClientsTableClient({
             : "Clients from the company"
         }
         data={pagination.data}
-        columns={getCompanyClientColumns(companyPricing)}
+        columns={getCompanyClientColumns(companyPricing, coachView)}
         getRowId={(row) => row.id}
         tableClassName="min-w-[780px]"
         searchPlaceholder="Search client, contact, plan..."

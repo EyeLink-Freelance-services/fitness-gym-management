@@ -16,11 +16,18 @@ import { Button } from "@/components/ui-elements/button";
 import { ROUTES } from "@/constants/route";
 import { announcementColumns } from "@/components/Dashboard/table-column/announcement-preview-columns";
 import {
+  coachClientColumns,
+  coachUpcomingSessionColumns,
   newSignupColumns,
 } from "@/components/Dashboard/table-column/company-columns";
 import { getOverviewCompanyData } from "@/services/company/main";
 import { compactFormat } from "@/lib/formatters/format-number";
-import { getCompanyLastFiveClients } from "@/services/company/company.service";
+import {
+  getCompanyClients,
+  getCompanyLastFiveClients,
+} from "@/services/company/company.service";
+import { coachUpcomingSessions } from "@/data/coach-upcoming-sessions";
+import { Trainer } from "@/components/IconsCollection/icons";
 import { PaymentsOverview } from "@/components/Charts/payments-overview";
 
 export default async function CompanyDashboardPage({
@@ -45,13 +52,37 @@ export default async function CompanyDashboardPage({
   }
 
   if (role === "company-coach") {
+    const { clients, totalCount } = await getCompanyClients({ pageSize: 5 });
+
     return (
-      <DashboardSection title="Overview">
-        <p className="text-dark-6 dark:text-dark-6">
-          Welcome to your coach dashboard. Use the Clients menu to view your
-          assigned clients and their data entry.
-        </p>
-      </DashboardSection>
+      <div>
+        <DashboardSection title="Overview">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <OverviewCard
+              label="Total Clients"
+              data={{ value: compactFormat(totalCount) }}
+              Icon={Trainer}
+            />
+          </div>
+        </DashboardSection>
+
+        <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-[2fr_3fr]">
+          <TableUI
+            title="Clients"
+            data={clients}
+            columns={coachClientColumns}
+            buttonLabel="View All"
+            buttonPath="/dashboard/company/clients"
+          />
+          <TableUI
+            title="Upcoming Sessions"
+            description="Your next booked sessions with clients, time, and current status."
+            data={coachUpcomingSessions}
+            columns={coachUpcomingSessionColumns}
+            rowKey={(row) => row.id}
+          />
+        </div>
+      </div>
     );
   }
 
