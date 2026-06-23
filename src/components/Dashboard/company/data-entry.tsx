@@ -30,11 +30,6 @@ export function CompanyDataEntry({
     setMetricValues(initialMetricValues);
   }, [initialDraft, initialMetricValues]);
 
-  useEffect(() => {
-    console.log("[Data Entry] GET metric values:", metricValues);
-    console.log("[Data Entry] mapped draft:", { draft, formulas });
-  }, [draft, formulas, metricValues]);
-
   return (
     <div>
       <DataEntryWorkspace
