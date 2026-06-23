@@ -59,8 +59,7 @@ export default function StaffForm({
     setValue("role", "");
   }, [setValue]);
 
-  const onSubmit = (data: StaffFormData) => {
-    console.log(data);
+  const onSubmit = (_data: StaffFormData) => {
     onSuccess?.();
   };
 

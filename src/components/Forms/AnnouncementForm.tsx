@@ -36,7 +36,6 @@ export default function AnnouncementForm({ onSuccess }: Props) {
   const onSubmit = (values: AnnouncementCreateInput) => {
     startTransition(async () => {
       // TODO: Connect to announcement create action when backend is ready
-      console.log("Announcement form submitted:", values);
       onSuccess?.();
     });
   };

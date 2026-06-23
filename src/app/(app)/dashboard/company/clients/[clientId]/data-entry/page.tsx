@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { CompanyDataEntry } from "@/components/Dashboard/company/data-entry";
 import { ClientDataEntryBreadcrumb } from "@/components/Dashboard/company/client-profile/client-data-entry-breadcrumb";
-import { getCompanyFormulas } from "@/services/coach-schema.services";
+import { getMetricFormulas } from "@/services/company/metric-formula.service";
 import { getCompanyClientMetricValueDraft } from "@/services/company/client-metric-value.service";
 import { assertCoachCanAccessClient } from "@/lib/auth/coach-client-access";
 
@@ -14,14 +14,16 @@ export default async function ClientDataEntryPage({ params }: PageProps) {
 
   await assertCoachCanAccessClient(clientId);
 
-  const [draft, formulas] = await Promise.all([
+  const [metricData, formulas] = await Promise.all([
     getCompanyClientMetricValueDraft(clientId),
-    getCompanyFormulas(),
+    getMetricFormulas(),
   ]);
 
-  if (!draft) {
+  if (!metricData) {
     notFound();
   }
+
+  const { draft, metricValues } = metricData;
 
   return (
     <div>
@@ -29,7 +31,11 @@ export default async function ClientDataEntryPage({ params }: PageProps) {
         clientId={clientId}
         clientName={draft.clientName}
       />
-      <CompanyDataEntry draft={draft} formulas={formulas} />
+      <CompanyDataEntry
+        draft={draft}
+        formulas={formulas}
+        metricValues={metricValues}
+      />
     </div>
   );
 }

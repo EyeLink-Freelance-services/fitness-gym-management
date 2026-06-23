@@ -5,10 +5,11 @@ import {
   mapMetricValuesToDraft,
 } from "@/modules/company/client-metric-value.mappers";
 import { getCompanyClientFullName } from "@/modules/company/company-client.mappers";
+import { getClientMetricDefinitionFieldGroups } from "@/services/company/client-metric-definition.service";
 import { getCompanyClientById } from "@/services/company/company.service";
 import type {
-  ClientMetricValueDraft,
   ClientMetricValueRequestBody,
+  CompanyClientMetricValueDraftResult,
   SaveClientMetricValuesInput,
   SearchClientMetricValueResponseBody,
 } from "@/types/dashboard/client-metric-value";
@@ -56,25 +57,32 @@ export async function createClientMetricValues(
 
 export async function getCompanyClientMetricValueDraft(
   clientId: string,
-): Promise<ClientMetricValueDraft | null> {
+): Promise<CompanyClientMetricValueDraftResult | null> {
   const client = await getCompanyClientById(clientId);
   if (!client) {
     return null;
   }
 
-  const response = await getClientMetricValues(clientId);
+  const [definitionGroups, metricValues] = await Promise.all([
+    getClientMetricDefinitionFieldGroups(),
+    getClientMetricValues(clientId),
+  ]);
 
-  return mapMetricValuesToDraft(
-    response,
-    clientId,
-    getCompanyClientFullName(client),
-  );
+  return {
+    metricValues,
+    draft: mapMetricValuesToDraft(
+      definitionGroups,
+      metricValues,
+      clientId,
+      getCompanyClientFullName(client),
+    ),
+  };
 }
 
 export async function saveCompanyClientMetricValues(
   clientId: string,
   input: SaveClientMetricValuesInput,
-): Promise<ClientMetricValueDraft> {
+): Promise<CompanyClientMetricValueDraftResult> {
   const payload = mapChangedValuesToRequest(
     input.values,
     input.originalValues,
@@ -85,10 +93,10 @@ export async function saveCompanyClientMetricValues(
     await createClientMetricValues(clientId, payload);
   }
 
-  const draft = await getCompanyClientMetricValueDraft(clientId);
-  if (!draft) {
+  const result = await getCompanyClientMetricValueDraft(clientId);
+  if (!result) {
     throw new Error("Client not found.");
   }
 
-  return draft;
+  return result;
 }

@@ -13,6 +13,7 @@ export interface FormulaDefinition {
   unit?: string;
   expression: string;
   description?: string;
+  definitionIds?: string[];
 }
 
 export interface FormulaDependencyNode {
@@ -21,14 +22,6 @@ export interface FormulaDependencyNode {
   depth: number;
   dependsOn: string[];
   source: FormulaVariableSource;
-}
-
-export interface FormulaTestInput {
-  key: string;
-  label: string;
-  source: FormulaVariableSource;
-  value: number | string;
-  unit?: string;
 }
 
 export interface FormulaValidationResult {

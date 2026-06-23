@@ -1,30 +1,16 @@
 import { FormulaBuilderWorkspace } from "@/components/Dashboard/formula-builder/workspace";
-import {
-  getCompanyFieldGroups,
-  getCompanyFormulas,
-  getCompanyRecordDraft,
-} from "@/services/coach-schema.services";
+import { getClientMetricDefinitionFieldGroups } from "@/services/company/client-metric-definition.service";
+import { getMetricFormulas } from "@/services/company/metric-formula.service";
 
 export default async function CompanyFormulaPage() {
-  const [groups, formulas, draft] = await Promise.all([
-    getCompanyFieldGroups(),
-    getCompanyFormulas(),
-    getCompanyRecordDraft(),
+  const [groups, formulas] = await Promise.all([
+    getClientMetricDefinitionFieldGroups(),
+    getMetricFormulas(),
   ]);
-
-  const previewValues = Object.fromEntries(
-    Object.entries(draft.values)
-      .map(([key, value]) => [key, Number(value)])
-      .filter(([, value]) => !Number.isNaN(value)),
-  );
 
   return (
     <div>
-      <FormulaBuilderWorkspace
-        formulas={formulas}
-        fieldGroups={groups}
-        sampleValues={previewValues}
-      />
+      <FormulaBuilderWorkspace formulas={formulas} fieldGroups={groups} />
     </div>
   );
 }
