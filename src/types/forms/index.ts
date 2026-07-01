@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-import { UseFormReturn } from "react-hook-form";
 import type { CoachMealTimeOption } from "@/types/dashboard/client";
 import {
   CompanyClientFormValues,
@@ -26,19 +25,6 @@ export interface LoginFormData {
   password: string;
   contextType?: string;
   businessId?: string;
-}
-
-export interface RecoveryRegisteredEmailFormData {
-  email: string;
-}
-
-export interface RecoveryStep2FormData {
-  code: string;
-}
-
-export interface RecoveryNewPasswordFormData {
-  newPassword: string;
-  confirmPassword: string;
 }
 
 export interface ChangePasswordFormData {
@@ -130,12 +116,6 @@ export interface AssignClientFormProps {
   onSuccess?: () => void;
 }
 
-export interface RecoveryFormProps {
-  step: number;
-  onBackToLogin: () => void;
-  resetToken?: string | null;
-}
-
 export type FormModalId = "client" | "company" | "coach" | "staff";
 
 export interface AnnouncementFormData {
@@ -177,30 +157,6 @@ export interface AssignClientFormData {
 }
 
 export type ValidateResult = true | string;
-
-/* Recover Password */
-
-export type RegisteredEmailConfirmations = {
-  form: UseFormReturn<RecoveryRegisteredEmailFormData>;
-  onNext: (data: RecoveryRegisteredEmailFormData) => void;
-  onBackToLogin: () => void;
-};
-
-export type PasswordRecoverySuccess = {
-  goToApp: () => void;
-};
-
-export type NewPasswordProps = {
-  form: UseFormReturn<RecoveryNewPasswordFormData>;
-  onNext: (values: RecoveryNewPasswordFormData) => void;
-};
-
-export type RecoveryCodeProps = {
-  form: UseFormReturn<RecoveryStep2FormData>;
-  recoverEmail: string;
-  onNext: () => void;
-  onResend: () => void;
-};
 
 // Dashboard form
 
