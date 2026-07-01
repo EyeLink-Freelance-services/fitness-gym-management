@@ -10,6 +10,8 @@ import {
 } from "@/services/company/company.service";
 import { fetchClientDietsPage } from "@/app/(app)/dashboard/company/clients/client-diet-actions";
 import { fetchClientTrainingPlansPage } from "@/app/(app)/dashboard/company/clients/client-coaching-actions";
+import { getClientCoachDisplayName } from "@/modules/company/company-client.mappers";
+import { getClientTrainingSessionRows } from "@/services/company/training-session.service";
 import type {
   CompanyClientFormValues,
   CompanyClient,
@@ -18,6 +20,7 @@ import type {
 import type {
   ClientDietPlanRow,
   ClientTrainingPlanRow,
+  ClientTrainingSessionRow,
 } from "@/types/dashboard/client";
 import { revalidatePath } from "next/cache";
 
@@ -101,21 +104,31 @@ export async function loadClientProfileData(
   if (!client) return null;
 
   const isPersonalCoaching = client.membershipPlan === "PERSONAL";
-  const [initialDietsResult, initialTrainingPlansResult] = isPersonalCoaching
-    ? await Promise.all([
-        fetchClientDietsPage(clientId, 0, 100).catch(() => ({
-          diets: [] as ClientDietPlanRow[],
-        })),
-        fetchClientTrainingPlansPage(clientId, 0, 100).catch(() => ({
-          trainingPlans: [] as ClientTrainingPlanRow[],
-        })),
-      ])
-    : [{ diets: [] as ClientDietPlanRow[] }, { trainingPlans: [] as ClientTrainingPlanRow[] }];
+  const coachName = getClientCoachDisplayName(client);
+  const [initialDietsResult, initialTrainingPlansResult, initialTrainingSessions] =
+    isPersonalCoaching
+      ? await Promise.all([
+          fetchClientDietsPage(clientId, 0, 100).catch(() => ({
+            diets: [] as ClientDietPlanRow[],
+          })),
+          fetchClientTrainingPlansPage(clientId, 0, 100).catch(() => ({
+            trainingPlans: [] as ClientTrainingPlanRow[],
+          })),
+          getClientTrainingSessionRows(clientId, coachName).catch(
+            () => [] as ClientTrainingSessionRow[],
+          ),
+        ])
+      : [
+          { diets: [] as ClientDietPlanRow[] },
+          { trainingPlans: [] as ClientTrainingPlanRow[] },
+          [] as ClientTrainingSessionRow[],
+        ];
 
   return {
     client,
     companyPricing,
     initialDiets: initialDietsResult.diets,
     initialTrainingPlans: initialTrainingPlansResult.trainingPlans,
+    initialTrainingSessions,
   };
 }

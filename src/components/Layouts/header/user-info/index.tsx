@@ -3,8 +3,10 @@
 import {
   ChevronUpIcon,
   LogOutIcon,
+  PasswordIcon,
   Users,
 } from "@/components/IconsCollection/icons";
+import { ChangePasswordModal } from "@/components/Layouts/header/user-info/change-password-modal";
 import {
   Dropdown,
   DropdownContent,
@@ -23,6 +25,7 @@ export function UserInfo() {
   const auth = useAuth();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
 
   const logout = async () => {
     await signOut({ redirect: false });
@@ -116,6 +119,20 @@ export function UserInfo() {
 
         <div className="p-2 text-base text-[#4B5563] dark:text-dark-6">
           <button
+            type="button"
+            className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-[9px] hover:bg-gray-2 hover:text-dark dark:hover:bg-dark-3 dark:hover:text-white"
+            onClick={() => {
+              setIsOpen(false);
+              setIsChangePasswordOpen(true);
+            }}
+          >
+            <PasswordIcon />
+
+            <span className="text-base font-medium">Reset password</span>
+          </button>
+
+          <button
+            type="button"
             className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-[9px] hover:bg-gray-2 hover:text-dark dark:hover:bg-dark-3 dark:hover:text-white"
             onClick={logout}
           >
@@ -125,6 +142,11 @@ export function UserInfo() {
           </button>
         </div>
       </DropdownContent>
+
+      <ChangePasswordModal
+        open={isChangePasswordOpen}
+        onClose={() => setIsChangePasswordOpen(false)}
+      />
     </Dropdown>
   );
 }

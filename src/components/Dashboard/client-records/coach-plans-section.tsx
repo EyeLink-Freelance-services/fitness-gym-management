@@ -3,6 +3,7 @@
 import {
   clientDietPlanColumns,
   clientTrainingPlanColumns,
+  clientTrainingSessionColumns,
   coachDietPlanColumns,
   coachTrainingPlanColumns,
 } from "@/components/Dashboard/table-column/coach-plan-columns";
@@ -45,6 +46,7 @@ import type {
 import type {
   ClientDietPlanRow,
   ClientTrainingPlanRow,
+  ClientTrainingSessionRow,
   CoachDietPlanRecord,
   CoachTrainingPlanRecord,
 } from "@/types/dashboard/client";
@@ -66,6 +68,10 @@ type ServerTrainingsConfig = {
   clientId: string;
 
   initialRows: ClientTrainingPlanRow[];
+};
+
+type ServerTrainingSessionsConfig = {
+  initialRows: ClientTrainingSessionRow[];
 };
 
 type CoachPlansSectionProps = {
@@ -95,6 +101,8 @@ type CoachPlansSectionProps = {
 
   serverTrainings?: ServerTrainingsConfig;
 
+  serverTrainingSessions?: ServerTrainingSessionsConfig;
+
   readOnly?: boolean;
 };
 
@@ -116,6 +124,8 @@ export function CoachPlansSection({
   serverDiets,
 
   serverTrainings,
+
+  serverTrainingSessions,
 
   readOnly = false,
 }: CoachPlansSectionProps) {
@@ -433,6 +443,23 @@ export function CoachPlansSection({
             }
             emptyStateLabel="No training plan has been created for this client yet."
             tableClassName="min-w-[1240px]"
+          />
+        )}
+
+        {serverTrainingSessions && (
+          <DataTable
+            title="Training Sessions"
+            description={
+              readOnly
+                ? "Your scheduled training sessions with your coach."
+                : "Scheduled training sessions for this client."
+            }
+            data={serverTrainingSessions.initialRows}
+            columns={clientTrainingSessionColumns}
+            getRowId={(row) => row.id}
+            emptyStateLabel="No training sessions have been scheduled yet."
+            tableClassName="min-w-[760px]"
+            showFooter={false}
           />
         )}
       </div>

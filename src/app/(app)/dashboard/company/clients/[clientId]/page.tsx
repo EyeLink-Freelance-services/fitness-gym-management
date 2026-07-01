@@ -31,7 +31,9 @@ export default async function ClientProfileRoute({ params }: Props) {
       companyPricing={profileData.companyPricing}
       initialDiets={profileData.initialDiets}
       initialTrainingPlans={profileData.initialTrainingPlans}
+      initialTrainingSessions={profileData.initialTrainingSessions}
       readOnly={isCoach}
+      plansReadOnly={isCoach ? false : undefined}
       showDataEntry={isCoach}
       showBreadcrumb={isCoach}
     />

@@ -41,6 +41,12 @@ export interface RecoveryNewPasswordFormData {
   confirmPassword: string;
 }
 
+export interface ChangePasswordFormData {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
 export interface CompanyBranchField {
   branchName: string;
 }
@@ -122,10 +128,6 @@ export interface AssignClientFormProps {
   initialData?: Partial<AssignClientFormData>;
   mode?: "create" | "edit";
   onSuccess?: () => void;
-}
-
-export interface LoginFormProps {
-  onForgotPassword: () => void;
 }
 
 export interface RecoveryFormProps {

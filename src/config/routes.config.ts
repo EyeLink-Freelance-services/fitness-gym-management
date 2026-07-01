@@ -177,6 +177,7 @@ export function isPathAllowedForRole(pathname: string, role: AppRole | null): bo
   if (role === "company-coach") {
     if (pathname === ROUTES.DASHBOARD.COMPANY.ROOT) return true;
     if (pathname === ROUTES.DASHBOARD.COMPANY.CLIENTS) return true;
+    if (pathname === ROUTES.DASHBOARD.COMPANY.SESSIONS) return true;
 
     const clientsPrefix = `${ROUTES.DASHBOARD.COMPANY.CLIENTS}/`;
     if (!pathname.startsWith(clientsPrefix)) return false;

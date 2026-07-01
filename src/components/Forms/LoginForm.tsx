@@ -1,7 +1,7 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import type { LoginFormData, LoginFormProps } from "@/types/forms";
+import type { LoginFormData } from "@/types/forms";
 import { Button } from "../ui-elements/button";
 import InputGroup from "../FormElements/InputGroup";
 import { useState } from "react";
@@ -9,7 +9,7 @@ import { signIn } from "next-auth/react";
 import { useRoleRedirect } from "@/hooks/useRoleRedirect";
 import { Header } from "../FormElements/common";
 
-export default function LoginForm({ onForgotPassword }: LoginFormProps) {
+export default function LoginForm() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const { redirectToRoleDashboard } = useRoleRedirect();
   const {
@@ -74,18 +74,7 @@ export default function LoginForm({ onForgotPassword }: LoginFormProps) {
         {errorMsg && (
           <div className="mb-2 text-sm text-red-600">{errorMsg}</div>
         )}
-
-        <div className="-mt-2 text-right">
-          <Button
-            type="button"
-            label="Forgot password?"
-            variant="outlineDark"
-            size="small"
-            className="w-auto border-0 bg-transparent !px-0 !py-0 text-primary hover:bg-transparent hover:underline"
-            onClick={onForgotPassword}
-          />
-        </div>
-
+        
         <Button type="submit" label="Sign In" className="w-full" />
       </form>
     </div>

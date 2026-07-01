@@ -150,6 +150,15 @@ export interface ClientTrainingPlanRow {
   updatedAt: string;
 }
 
+export interface ClientTrainingSessionRow {
+  id: string;
+  coachName: string;
+  sessionTitle: string;
+  date: string;
+  timeFrom: string;
+  timeTo: string;
+}
+
 export interface CoachTrainingPlanRow {
   id: string;
   clientName: string;

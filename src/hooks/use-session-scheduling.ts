@@ -1,58 +1,88 @@
 "use client";
 
 import {
-  addSessionsBatch,
-  deleteSessionById,
-  filterSessionsForClient,
-  filterSessionsForCoach,
-  isClientAssignedToCoach,
-} from "@/services/session-scheduling/session-store";
+  createTrainingSessionAction,
+  deleteTrainingSessionAction,
+  fetchTrainingSessionsAction,
+} from "@/app/(app)/dashboard/company/sessions/actions";
 import type { BookSessionInput } from "@/services/session-scheduling/validation";
 import type {
   ScheduledSession,
-  SessionClientOption,
   SessionSchedulingRole,
 } from "@/types/session-scheduling";
-import { useCallback, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
+
+function filterSessionsForClient(
+  sessions: ScheduledSession[],
+  clientId?: string,
+): ScheduledSession[] {
+  if (!clientId) return [];
+  return sessions.filter((session) => session.clientId === clientId);
+}
 
 export function useSessionScheduling(
   role: SessionSchedulingRole,
   initialSessions: ScheduledSession[],
-  clientOptions: SessionClientOption[],
   viewerClientId?: string,
 ) {
+  const router = useRouter();
   const [sessions, setSessions] = useState<ScheduledSession[]>(initialSessions);
 
+  useEffect(() => {
+    setSessions(initialSessions);
+  }, [initialSessions]);
+
   const visibleSessions = useMemo(() => {
-    if (role === "coach") return filterSessionsForCoach(sessions);
+    if (role === "coach") return sessions;
     return filterSessionsForClient(sessions, viewerClientId);
   }, [role, sessions, viewerClientId]);
 
   const createSessionsBatch = useCallback(
-    (inputs: BookSessionInput[]) => {
-      const result = addSessionsBatch(sessions, inputs, clientOptions);
-      if (!result.ok) return result;
-      setSessions(result.sessions);
-      return result;
+    async (inputs: BookSessionInput[]) => {
+      if (inputs.length === 0) {
+        return { ok: false as const, error: "No sessions to add." };
+      }
+
+      for (const input of inputs) {
+        const result = await createTrainingSessionAction(input);
+        if (!result.ok) {
+          return {
+            ok: false as const,
+            error: `${input.date} ${input.timeFrom}: ${result.error}`,
+          };
+        }
+      }
+
+      const refreshed = await fetchTrainingSessionsAction();
+      setSessions(refreshed);
+      router.refresh();
+      return { ok: true as const };
     },
-    [clientOptions, sessions],
+    [router],
   );
 
   const deleteSession = useCallback(
-    (sessionId: string) => {
-      const result = deleteSessionById(sessions, sessionId);
+    async (sessionId: string) => {
+      const target = sessions.find((session) => session.id === sessionId);
+      if (!target) {
+        return { ok: false as const, error: "Session not found." };
+      }
+
+      const result = await deleteTrainingSessionAction(target);
       if (!result.ok) return result;
-      setSessions(result.sessions);
-      return result;
+
+      const refreshed = await fetchTrainingSessionsAction();
+      setSessions(refreshed);
+      router.refresh();
+      return { ok: true as const };
     },
-    [sessions],
+    [router, sessions],
   );
 
   return {
     sessions,
     visibleSessions,
-    isClientAssigned:
-      !!viewerClientId && isClientAssignedToCoach(viewerClientId, clientOptions),
     createSessionsBatch,
     deleteSession,
   };

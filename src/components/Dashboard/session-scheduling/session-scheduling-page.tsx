@@ -10,30 +10,28 @@ import type {
   SessionSchedulingRole,
 } from "@/types/session-scheduling";
 import { CalendarDate, getLocalTimeZone, today } from "@internationalized/date";
+import { Trash2 } from "lucide-react";
 import { createPortal } from "react-dom";
 import { useEffect, useMemo, useState } from "react";
 import type { BookSessionInput } from "@/services/session-scheduling/validation";
-import { Trash2 } from "lucide-react";
 
 function sortSessions(list: ScheduledSession[]) {
   return [...list].sort((a, b) => {
-    const da = a.date.localeCompare(b.date);
-    if (da !== 0) return da;
+    const dateCompare = a.date.localeCompare(b.date);
+    if (dateCompare !== 0) return dateCompare;
     return a.time.localeCompare(b.time);
   });
 }
 
 function sessionLabel(
-  s: ScheduledSession,
+  session: ScheduledSession,
   clientLabelMap: Record<string, string>,
 ) {
-  if (s.clientId === null) return "General (open)";
-  return clientLabelMap[s.clientId] ?? s.clientId;
+  return clientLabelMap[session.clientId] ?? session.clientName ?? "Client";
 }
 
 type SessionSchedulingPageProps = {
   role: SessionSchedulingRole;
-  coachId?: string;
   viewerClientId?: string;
   clientOptions?: SessionClientOption[];
   initialSessions?: ScheduledSession[];
@@ -41,7 +39,6 @@ type SessionSchedulingPageProps = {
 
 export function SessionSchedulingPage({
   role,
-  coachId = "",
   viewerClientId,
   clientOptions = [],
   initialSessions = [],
@@ -54,11 +51,8 @@ export function SessionSchedulingPage({
       ),
     [clientOptions],
   );
-  const {
-    visibleSessions,
-    createSessionsBatch,
-    deleteSession,
-  } = useSessionScheduling(role, initialSessions, clientOptions, viewerClientId);
+  const { visibleSessions, createSessionsBatch, deleteSession } =
+    useSessionScheduling(role, initialSessions, viewerClientId);
 
   const [selected, setSelected] = useState<CalendarDate>(() => today(tz));
   const [activeFormDateIso, setActiveFormDateIso] = useState<string | null>(null);
@@ -89,24 +83,24 @@ export function SessionSchedulingPage({
     };
   }, [activeFormDateIso]);
 
-  const onCalendarChange = (d: CalendarDate) => {
-    setSelected(d);
-    const iso = d.toString();
-    if (role === "coach") {
-      setActiveFormDateIso(iso);
+  const onCalendarChange = (date: CalendarDate) => {
+    setSelected(date);
+    if (role === "coach" && date.compare(today(tz)) >= 0) {
+      setActiveFormDateIso(date.toString());
     }
   };
 
-  const sessionsOnSelectedDay = sorted.filter((s) => s.date === selected.toString());
+  const todayIso = today(tz).toString();
+  const sessionsToday = sorted.filter((session) => session.date === todayIso);
 
-  const handleSave = (inputs: BookSessionInput[]) => {
-    const result = createSessionsBatch(inputs);
+  const handleSave = async (inputs: BookSessionInput[]) => {
+    const result = await createSessionsBatch(inputs);
     if (result.ok) return { ok: true as const };
     return { ok: false as const, error: result.error };
   };
 
-  const handleRemoveSession = (sessionId: string) => {
-    deleteSession(sessionId);
+  const handleRemoveSession = async (sessionId: string) => {
+    await deleteSession(sessionId);
   };
 
   return (
@@ -117,54 +111,60 @@ export function SessionSchedulingPage({
       >
         <p className="mb-6 max-w-2xl text-sm text-dark-6 dark:text-dark-6">
           {role === "coach"
-            ? "Pick a date to add a session. Use Remove to cancel a session. Weekly repeat adds the same slot for several weeks."
+            ? "Pick a date to add a session with a client."
             : "Sessions your coach has scheduled for you."}
         </p>
 
-        <div className="grid gap-8 lg:grid-cols-[minmax(0,420px)_1fr]">
-          <SessionCalendar
-            value={selected}
-            onChange={onCalendarChange}
-            allowPastDates={role === "client"}
-            sessions={visibleSessions}
-          />
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
+          <div className="w-full shrink-0 lg:w-[65%]">
+            <SessionCalendar
+              value={selected}
+              onChange={onCalendarChange}
+              sessions={visibleSessions}
+            />
+          </div>
 
-          <div className="min-w-0 space-y-4">
+          <div className="min-w-0 flex-1 space-y-3">
             <div>
-              <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-dark-5">
+              <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-dark-5">
                 {role === "coach" ? "Upcoming & scheduled" : "Your schedule"}
               </h3>
-              <ul className="mt-3 max-h-[320px] space-y-2 overflow-y-auto pr-1">
+              <ul className="mt-2 max-h-[260px] space-y-1.5 overflow-y-auto pr-1">
                 {sorted.length === 0 ? (
-                  <li className="text-sm italic text-dark-6">No sessions yet.</li>
+                  <li className="text-xs italic text-dark-6">No sessions yet.</li>
                 ) : (
-                  sorted.map((s) => (
+                  sorted.map((session) => (
                     <li
-                      key={s.id}
-                      className="flex gap-2 rounded-lg border border-stroke px-3 py-2.5 text-sm dark:border-dark-3"
+                      key={session.id}
+                      className="flex gap-1.5 rounded-lg border border-stroke px-2.5 py-2 text-xs dark:border-dark-3"
                     >
                       <div className="min-w-0 flex-1">
-                        <p className="font-medium text-dark dark:text-white">
-                          {s.title}
+                        <p className="truncate font-medium text-dark dark:text-white text-base ">
+                          {session.title}
                         </p>
-                        <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-dark-6">
-                          <span className="font-mono">{s.date}</span>
-                          <span className="font-mono">{s.time}</span>
-                          <span>{s.durationMinutes} min</span>
-                          <span className="text-dark dark:text-dark-6">
-                            {sessionLabel(s, clientLabelMap)}
+                        <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-dark-6 text-[13px]">
+                          <span className="font-mono">{session.date}</span>
+                          <span className="font-mono">
+                            {session.time} – {session.timeTo}
+                          </span>
+                          <span>{session.durationMinutes} min</span>
+                        </p>
+                        <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-dark-6 text-[13px]">
+                      
+                          <span className="truncate text-dark dark:text-dark-6">
+                            {sessionLabel(session, clientLabelMap)}
                           </span>
                         </p>
                       </div>
                       {role === "coach" && (
                         <button
                           type="button"
-                          onClick={() => handleRemoveSession(s.id)}
-                          className="shrink-0 self-start rounded-lg border border-stroke p-2 text-dark-6 transition hover:border-red/50 hover:bg-red/10 hover:text-red dark:border-dark-3"
+                          onClick={() => handleRemoveSession(session.id)}
+                          className="shrink-0 self-start rounded-lg border border-stroke p-1.5 text-dark-6 transition hover:border-red/50 hover:bg-red/10 hover:text-red dark:border-dark-3"
                           title="Remove session"
-                          aria-label={`Remove session ${s.title}`}
+                          aria-label={`Remove session ${session.title}`}
                         >
-                          <Trash2 className="size-4" aria-hidden />
+                          <Trash2 className="size-3.5" aria-hidden />
                         </button>
                       )}
                     </li>
@@ -174,38 +174,41 @@ export function SessionSchedulingPage({
             </div>
 
             <div>
-              <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-dark-5">
-                On {selected.toString()}
+              <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-dark-5">
+                Today
               </h3>
-              <ul className="mt-2 space-y-2">
-                {sessionsOnSelectedDay.length === 0 ? (
-                  <li className="text-sm italic text-dark-6">
-                    No sessions on this day.
+              <ul className="mt-1.5 space-y-1.5">
+                {sessionsToday.length === 0 ? (
+                  <li className="text-xs italic text-dark-6">
+                    No sessions today.
                   </li>
                 ) : (
-                  sessionsOnSelectedDay.map((s) => (
+                  sessionsToday.map((session) => (
                     <li
-                      key={s.id}
-                      className="flex items-start gap-2 rounded-lg bg-gray-100 px-3 py-2 text-sm dark:bg-dark-3"
+                      key={session.id}
+                      className="flex items-start gap-1.5 rounded-lg bg-gray-100 px-2.5 py-2 text-xs dark:bg-dark-3"
                     >
                       <div className="min-w-0 flex-1">
-                        <span className="font-mono font-semibold">{s.time}</span>
-                        <span className="ml-2 font-medium text-dark dark:text-white">
-                          {s.title}
+                        <span className="font-mono font-semibold">
+                          {session.time} – {session.timeTo}
                         </span>
-                        <span className="ml-2 text-dark-6">
-                          ({s.durationMinutes} min · {sessionLabel(s, clientLabelMap)})
+                        <span className="ml-1.5 font-medium text-dark dark:text-white">
+                          {session.title}
+                        </span>
+                        <span className="mt-0.5 block text-[11px] text-dark-6">
+                          {session.durationMinutes} min ·{" "}
+                          {sessionLabel(session, clientLabelMap)}
                         </span>
                       </div>
                       {role === "coach" && (
                         <button
                           type="button"
-                          onClick={() => handleRemoveSession(s.id)}
-                          className="shrink-0 rounded-lg border border-transparent p-1.5 text-dark-6 transition hover:border-red/40 hover:bg-red/10 hover:text-red"
+                          onClick={() => handleRemoveSession(session.id)}
+                          className="shrink-0 rounded-lg border border-transparent p-1 text-dark-6 transition hover:border-red/40 hover:bg-red/10 hover:text-red"
                           title="Remove session"
-                          aria-label={`Remove session ${s.title}`}
+                          aria-label={`Remove session ${session.title}`}
                         >
-                          <Trash2 className="size-4" aria-hidden />
+                          <Trash2 className="size-3.5" aria-hidden />
                         </button>
                       )}
                     </li>
@@ -235,7 +238,6 @@ export function SessionSchedulingPage({
               <div className="max-h-[85vh] overflow-y-auto p-4">
                 <SessionForm
                   dateIso={activeFormDateIso}
-                  coachId={coachId}
                   clientOptions={clientOptions}
                   onCancel={() => setActiveFormDateIso(null)}
                   onSave={handleSave}

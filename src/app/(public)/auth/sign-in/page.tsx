@@ -20,9 +20,7 @@ export default function SignInPage() {
       />
       
       <div className="w-full max-w-xl">
-        <LoginForm
-          onForgotPassword={() => router.push(ROUTES.FORGOT_PASSWORD)}
-        />
+        <LoginForm />
       </div>
     </div>
   );

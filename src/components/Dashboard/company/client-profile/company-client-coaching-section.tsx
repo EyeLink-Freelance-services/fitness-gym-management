@@ -19,6 +19,7 @@ import type { ActivePlanDialog } from "@/modules/client-records/coach-plan.types
 import type {
   ClientDietPlanRow,
   ClientTrainingPlanRow,
+  ClientTrainingSessionRow,
   CoachDietPlanRecord,
 } from "@/types/dashboard/client";
 import type { CoachTrainingPlanFormData } from "@/types/forms";
@@ -28,6 +29,7 @@ type CompanyClientCoachingSectionProps = {
   clientName: string;
   initialDiets: ClientDietPlanRow[];
   initialTrainingPlans: ClientTrainingPlanRow[];
+  initialTrainingSessions?: ClientTrainingSessionRow[];
   activeDialog: ActivePlanDialog;
   onActiveDialogChange: (dialog: ActivePlanDialog) => void;
   readOnly?: boolean;
@@ -38,6 +40,7 @@ export function CompanyClientCoachingSection({
   clientName,
   initialDiets,
   initialTrainingPlans,
+  initialTrainingSessions = [],
   activeDialog,
   onActiveDialogChange,
   readOnly = false,
@@ -115,6 +118,9 @@ export function CompanyClientCoachingSection({
       serverTrainings={{
         clientId,
         initialRows: initialTrainingPlans,
+      }}
+      serverTrainingSessions={{
+        initialRows: initialTrainingSessions,
       }}
       readOnly={readOnly}
     />

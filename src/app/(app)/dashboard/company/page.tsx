@@ -26,7 +26,7 @@ import {
   getCompanyClients,
   getCompanyLastFiveClients,
 } from "@/services/company/company.service";
-import { coachUpcomingSessions } from "@/data/coach-upcoming-sessions";
+import { getCoachUpcomingTrainingSessions } from "@/services/company/training-session.service";
 import { Trainer } from "@/components/IconsCollection/icons";
 import { PaymentsOverview } from "@/components/Charts/payments-overview";
 
@@ -46,13 +46,19 @@ export default async function CompanyDashboardPage({
         companyPricing={profileData.companyPricing}
         initialDiets={profileData.initialDiets}
         initialTrainingPlans={profileData.initialTrainingPlans}
+        initialTrainingSessions={profileData.initialTrainingSessions}
         readOnly
       />
     );
   }
 
   if (role === "company-coach") {
-    const { clients, totalCount } = await getCompanyClients({ pageSize: 5 });
+    const [{ clients, totalCount }, upcomingSessions] = await Promise.all([
+      getCompanyClients({ pageSize: 5 }),
+      getCoachUpcomingTrainingSessions(5),
+    ]);
+
+    console.log(upcomingSessions);
 
     return (
       <div>
@@ -77,7 +83,7 @@ export default async function CompanyDashboardPage({
           <TableUI
             title="Upcoming Sessions"
             description="Your next booked sessions with clients, time, and current status."
-            data={coachUpcomingSessions}
+            data={upcomingSessions}
             columns={coachUpcomingSessionColumns}
             rowKey={(row) => row.id}
           />

@@ -114,6 +114,14 @@ const SIDEBAR_ITEM_CONFIG: SidebarItemConfig[] = [
     items: [],
   },
   {
+    sectionLabel: "COMPANY COACH",
+    roles: ["company-coach"],
+    title: "Sessions",
+    url: ROUTES.DASHBOARD.COMPANY.SESSIONS,
+    icon: Icons.Calendar,
+    items: [],
+  },
+  {
     sectionLabel: "CLIENT",
     roles: ["client"],
     title: "Overview",
