@@ -8,7 +8,7 @@ type ClientCoachingActionsProps = {
 
 export function ClientCoachingActions({ clientId }: ClientCoachingActionsProps) {
   return (
-    <Link href={`${ROUTES.DASHBOARD.COMPANY.DATA_ENTRY}?clientId=${clientId}`}>
+    <Link href={ROUTES.DASHBOARD.COMPANY.CLIENT_DATA_ENTRY(clientId)}>
       <Button label="Data Entry" size="small" />
     </Link>
   );

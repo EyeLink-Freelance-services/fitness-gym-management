@@ -1,6 +1,4 @@
-import { COMPANY_FIELD_GROUPS } from "@/data/company-schema";
 import type {
-  ClientRecordDraft,
   ClientRecordRow,
   ComputedMetric,
   ProgressSeries,
@@ -9,38 +7,6 @@ import type {
   CoachDietPlanRecord,
   CoachTrainingPlanRecord,
 } from "@/types/dashboard/client";
-
-export const COMPANY_RECORD_DRAFTS: Record<
-  string,
-  Omit<ClientRecordDraft, "computedMetrics" | "previousMetrics" | "formulaSnapshots">
-> = {
-  "client-wei-liang": {
-    clientId: "client-wei-liang",
-    clientName: "Wei Liang",
-    sessionDate: "2026-03-03",
-    notes: "Moved to a moderate deficit and improved sleep compliance.",
-    groups: COMPANY_FIELD_GROUPS,
-    values: {
-      weight: "74.2",
-      height: "172",
-      age: "32",
-      goal_phase: "fat_loss",
-      waist_cm: "84",
-      hips_cm: "98",
-      chest_mm: "12",
-      abdominal_mm: "18",
-      thigh_mm: "16",
-      fasting_days: "2",
-      steps_avg: "8600",
-      sleep_hours: "7.5",
-      stress_level: "moderate",
-      diet_type: "non_veg",
-      supplements: "Whey 30g, Creatine 5g, Omega-3, Vit D3",
-      non_eating_foods: "Dairy (lactose), Shellfish",
-      activity_multiplier: "1.55",
-    },
-  },
-};
 
 export const COACH_PROGRESS_SUMMARY: ComputedMetric[] = [
   {

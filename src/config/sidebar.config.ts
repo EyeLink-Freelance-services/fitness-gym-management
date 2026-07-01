@@ -35,7 +35,7 @@ const SIDEBAR_ITEM_CONFIG: SidebarItemConfig[] = [
   },
   {
     sectionLabel: "COMPANY",
-    roles: ["company", "company-coach"],
+    roles: ["company"],
     title: "Clients",
     url: ROUTES.DASHBOARD.COMPANY.CLIENTS,
     icon: Icons.User,
@@ -76,14 +76,6 @@ const SIDEBAR_ITEM_CONFIG: SidebarItemConfig[] = [
   {
     sectionLabel: "COMPANY",
     roles: ["company"],
-    title: "Data Entry",
-    url: ROUTES.DASHBOARD.COMPANY.DATA_ENTRY,
-    icon: Icons.FourCircle,
-    items: [],
-  },
-  {
-    sectionLabel: "COMPANY",
-    roles: ["company"],
     title: "Schema Builder",
     url: ROUTES.DASHBOARD.COMPANY.SCHEMA,
     icon: Icons.FourCircle,
@@ -116,17 +108,9 @@ const SIDEBAR_ITEM_CONFIG: SidebarItemConfig[] = [
   {
     sectionLabel: "COMPANY COACH",
     roles: ["company-coach"],
-    title: "Data Entry",
-    url: ROUTES.DASHBOARD.COMPANY.DATA_ENTRY,
-    icon: Icons.FourCircle,
-    items: [],
-  },
-  {
-    sectionLabel: "COMPANY COACH",
-    roles: ["company-coach"],
-    title: "Specific Client Progress",
-    url: ROUTES.DASHBOARD.COMPANY.PROGRESS,
-    icon: Icons.TrainingIcon,
+    title: "Clients",
+    url: ROUTES.DASHBOARD.COMPANY.CLIENTS,
+    icon: Icons.User,
     items: [],
   },
   {
@@ -135,22 +119,6 @@ const SIDEBAR_ITEM_CONFIG: SidebarItemConfig[] = [
     title: "Sessions",
     url: ROUTES.DASHBOARD.COMPANY.SESSIONS,
     icon: Icons.Calendar,
-    items: [],
-  },
-  {
-    sectionLabel: "COMPANY COACH",
-    roles: ["company-coach"],
-    title: "Training Plan",
-    url: ROUTES.TRAINING_PLANS.TEMPLATES,
-    icon: Icons.TrainingIcon,
-    items: [],
-  },
-  {
-    sectionLabel: "COMPANY COACH",
-    roles: ["company-coach"],
-    title: "Diet Plan",
-    url: ROUTES.DIET_PLANS.TEMPLATES,
-    icon: Icons.DietPlanIcon,
     items: [],
   },
   {

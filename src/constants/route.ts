@@ -8,13 +8,14 @@ export const ROUTES = {
       CLIENTS: "/dashboard/company/clients",
       CLIENT_PROFILE: (clientId: string) =>
         `/dashboard/company/clients/${clientId}`,
+      CLIENT_DATA_ENTRY: (clientId: string) =>
+        `/dashboard/company/clients/${clientId}/data-entry`,
       COACHES: "/dashboard/company/coaches",
       MEMBERSHIP: "/dashboard/company/membership",
       PAYMENT: "/dashboard/company/payment",
       // STAFF: "/dashboard/company/staff",
       SCHEMA: "/dashboard/company/schema",
       FORMULAS: "/dashboard/company/formulas",
-      DATA_ENTRY: "/dashboard/company/data-entry",
       PROGRESS: "/dashboard/company/progress",
       SESSIONS: "/dashboard/company/sessions",
     },

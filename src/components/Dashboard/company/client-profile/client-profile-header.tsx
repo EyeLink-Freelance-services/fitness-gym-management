@@ -11,7 +11,7 @@ type ClientProfileHeaderProps = {
   onEdit: () => void;
   onSave: () => void;
   onCancel: () => void;
-  showCoachingActions?: boolean;
+  showDataEntry?: boolean;
   readOnly?: boolean;
 };
 
@@ -22,7 +22,7 @@ export function ClientProfileHeader({
   onEdit,
   onSave,
   onCancel,
-  showCoachingActions = false,
+  showDataEntry = false,
   readOnly = false,
 }: ClientProfileHeaderProps) {
   const fullName = getCompanyClientFullName(client);
@@ -49,9 +49,6 @@ export function ClientProfileHeader({
         <div className="flex shrink-0 flex-wrap items-center gap-2">
           {!readOnly && (
             <>
-              {!isEditing && showCoachingActions && (
-                <ClientCoachingActions clientId={client.id} />
-              )}
               {isEditing ? (
                 <>
                   <Button
@@ -78,6 +75,9 @@ export function ClientProfileHeader({
                 />
               )}
             </>
+          )}
+          {showDataEntry && !isEditing && (
+            <ClientCoachingActions clientId={client.id} />
           )}
         </div>
       </div>

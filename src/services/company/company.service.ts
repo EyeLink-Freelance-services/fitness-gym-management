@@ -2,8 +2,10 @@ import { backendGet, backendPost, backendPut} from "@/lib/api/backend-client";
 import { getAuthContext } from "@/lib/auth/get-auth-context";
 import type {
   ClientResponseApiBean,
+  CoachResponseApiBean,
   CompanyClient,
   CompanyClientFormValues,
+  CompanyCoachesRow,
   CompanyPricing,
   SearchClientsApiBean,
   SearchCoachesApiBean,
@@ -46,11 +48,22 @@ export async function getCompanyPricingForCompany(): Promise<CompanyPricing> {
 export async function getCompanyClients({
   pageNumber = 0,
   pageSize = 10,
-}: GetPageParams = {}) {
+  coachId,
+}: GetPageParams & { coachId?: string } = {}) {
   const companyId = await requireCompanyId();
 
+  const params = new URLSearchParams({
+    pageNumber: String(pageNumber),
+    pageSize: String(pageSize),
+    descendingSort: "true",
+  });
+
+  if (coachId) {
+    params.set("coachId", coachId);
+  }
+
   const data = await backendGet<SearchClientsApiBean>(
-    `${COMPANY_API_BASE}/${companyId}/clients?pageNumber=${pageNumber}&pageSize=${pageSize}&descendingSort=true`,
+    `${COMPANY_API_BASE}/${companyId}/clients?${params.toString()}`,
   );
 
   return {
@@ -142,6 +155,41 @@ export async function searchCompanyCoachOptions(
   });
 
   return mapCoachesToCoachOptions(coaches);
+}
+
+export async function getCompanyCoachById(
+  coachId: string,
+): Promise<CompanyCoachesRow | null> {
+  try {
+    const companyId = await requireCompanyId();
+    const data = await backendGet<CoachResponseApiBean>(
+      `${COMPANY_API_BASE}/${companyId}/coaches/${coachId}`,
+    );
+    return mapCoachResponseToCompanyCoachesRow(data);
+  } catch {
+    return null;
+  }
+}
+
+export async function getCompanyCoachByUserId(
+  coachUserId: string,
+): Promise<CompanyCoachesRow | null> {
+  try {
+    const companyId = await requireCompanyId();
+    const data = await backendGet<CoachResponseApiBean>(
+      `${COMPANY_API_BASE}/${companyId}/coaches/users/${coachUserId}`,
+    );
+    return mapCoachResponseToCompanyCoachesRow(data);
+  } catch {
+    return null;
+  }
+}
+
+export async function getMyCompanyCoachProfile(): Promise<CompanyCoachesRow | null> {
+  const auth = await getAuthContext();
+  if (!auth?.userId) return null;
+
+  return getCompanyCoachByUserId(auth.userId);
 }
 
 export async function getCompanyCoaches({

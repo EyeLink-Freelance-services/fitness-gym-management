@@ -4,44 +4,36 @@ import type { FieldGroup, SchemaField } from "@/types/dashboard/coach-schema";
 
 type FieldGroupCardProps = {
   group: FieldGroup;
-  onAddField?: () => void;
-  onEditField?: (field: SchemaField) => void;
+  onAddField: () => void;
+  onEditField: (field: SchemaField) => void;
+  onDeleteField: (fieldId: string) => void;
 };
 
 export function FieldGroupCard({
   group,
   onAddField,
   onEditField,
+  onDeleteField,
 }: FieldGroupCardProps) {
   return (
-    <section className="rounded-[14px] border border-stroke/70 bg-white p-4 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card">
+    <section className="mb-3 rounded-[14px] border border-stroke/70 bg-white p-4 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card">
       <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <div>
-          <div className="flex items-center gap-3">
-            <h3 className="text-body-lg font-bold text-dark dark:text-white">
-              {group.name}
-            </h3>
-            <span className="text-xs uppercase tracking-[0.18em] text-dark-5">
-              {group.fields.length} fields{" "}
-              {group.unitHint ? `· ${group.unitHint}` : ""}
-            </span>
-          </div>
-          {group.description && (
-            <p className="mt-2 text-sm text-dark-6 dark:text-dark-6">
-              {group.description}
-            </p>
-          )}
+        <div className="flex items-center gap-3">
+          <h3 className="text-body-lg font-bold text-dark dark:text-white">
+            {group.name}
+          </h3>
+          <span className="text-xs uppercase tracking-[0.18em] text-dark-5">
+            {group.fields.length} fields
+          </span>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <Button
-            type="button"
-            label="+ Field"
-            size="small"
-            variant="outlineDark"
-            onClick={onAddField}
-          />
-        </div>
+        <Button
+          type="button"
+          label="+ Field"
+          size="small"
+          variant="outlineDark"
+          onClick={onAddField}
+        />
       </div>
 
       <div className="grid gap-3">
@@ -49,7 +41,8 @@ export function FieldGroupCard({
           <FieldRow
             key={field.id}
             field={field}
-            onEdit={onEditField ? () => onEditField(field) : undefined}
+            onEdit={() => onEditField(field)}
+            onDelete={() => onDeleteField(field.id)}
           />
         ))}
       </div>

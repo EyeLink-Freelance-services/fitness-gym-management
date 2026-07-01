@@ -1,11 +1,16 @@
 export type ScheduledSession = {
   id: string;
-  coachId: string;
-  clientId: string | null;
+  clientId: string;
+  clientName?: string;
+  coachName?: string;
   date: string;
+  startDateTime: string;
+  endDateTime: string;
   time: string;
+  timeTo: string;
   title: string;
   durationMinutes: number;
+  status?: string;
 };
 
 export type SessionClientOption = {

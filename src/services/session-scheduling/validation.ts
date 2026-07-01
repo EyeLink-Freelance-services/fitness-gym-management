@@ -1,13 +1,12 @@
-import { CalendarDate, today, getLocalTimeZone } from "@internationalized/date";
+import { CalendarDate, getLocalTimeZone, now, today } from "@internationalized/date";
 import type { ScheduledSession } from "@/types/session-scheduling";
 
 export type BookSessionInput = {
-  coachId: string;
-  clientId: string | null;
+  clientId: string;
   date: string;
-  time: string;
+  timeFrom: string;
+  timeTo: string;
   title: string;
-  durationMinutes: number;
 };
 
 function parseCalendarDate(isoDay: string): CalendarDate | null {
@@ -23,27 +22,59 @@ function parseCalendarDate(isoDay: string): CalendarDate | null {
 const TIME_RE = /^([01]\d|2[0-3]):([0-5]\d)$/;
 
 const TITLE_MAX = 120;
-const DURATION_MIN = 5;
-const DURATION_MAX = 12 * 60;
+
+function timeToMinutes(time: string): number {
+  const [hours, minutes] = time.split(":").map(Number);
+  return hours * 60 + minutes;
+}
+
+function timesOverlap(
+  fromA: string,
+  toA: string,
+  fromB: string,
+  toB: string,
+): boolean {
+  const startA = timeToMinutes(fromA);
+  const endA = timeToMinutes(toA);
+  const startB = timeToMinutes(fromB);
+  const endB = timeToMinutes(toB);
+  return startA < endB && startB < endA;
+}
 
 export function validateNewSession(
   input: BookSessionInput,
   existing: ScheduledSession[],
   options?: { excludeSessionId?: string },
 ): string | null {
+  if (!input.clientId) {
+    return "Select a client.";
+  }
+
   if (!parseCalendarDate(input.date)) {
     return "Invalid date.";
   }
 
   const tz = getLocalTimeZone();
   const cd = parseCalendarDate(input.date)!;
-  const now = today(tz);
-  if (cd.compare(now) < 0) {
+  const currentDate = today(tz);
+  if (cd.compare(currentDate) < 0) {
     return "Cannot book sessions in the past.";
   }
 
-  if (!TIME_RE.test(input.time)) {
+  if (!TIME_RE.test(input.timeFrom) || !TIME_RE.test(input.timeTo)) {
     return "Invalid time.";
+  }
+
+  if (cd.compare(currentDate) === 0) {
+    const current = now(tz);
+    const currentMinutes = current.hour * 60 + current.minute;
+    if (timeToMinutes(input.timeFrom) < currentMinutes) {
+      return "Cannot book sessions in the past.";
+    }
+  }
+
+  if (timeToMinutes(input.timeTo) <= timeToMinutes(input.timeFrom)) {
+    return "End time must be after start time.";
   }
 
   const title = input.title.trim();
@@ -54,23 +85,14 @@ export function validateNewSession(
     return `Title must be at most ${TITLE_MAX} characters.`;
   }
 
-  if (
-    !Number.isFinite(input.durationMinutes) ||
-    input.durationMinutes < DURATION_MIN ||
-    input.durationMinutes > DURATION_MAX
-  ) {
-    return `Duration must be between ${DURATION_MIN} and ${DURATION_MAX} minutes.`;
-  }
-
-  const duplicate = existing.some(
+  const conflict = existing.some(
     (s) =>
-      s.coachId === input.coachId &&
+      s.id !== options?.excludeSessionId &&
       s.date === input.date &&
-      s.time === input.time &&
-      s.id !== options?.excludeSessionId,
+      timesOverlap(input.timeFrom, input.timeTo, s.time, s.timeTo),
   );
-  if (duplicate) {
-    return "This time slot is already booked.";
+  if (conflict) {
+    return "This time overlaps with an existing session.";
   }
 
   return null;

@@ -6,7 +6,7 @@ import type { SchemaField } from "@/types/dashboard/coach-schema";
 
 const IDENTIFIER_PATTERN = /\b[a-zA-Z_][a-zA-Z0-9_]*\b/g;
 
-const BUILT_IN_FUNCTIONS = new Set([
+export const EXPRESSION_FUNCTIONS = [
   "abs",
   "sqrt",
   "pow",
@@ -21,6 +21,23 @@ const BUILT_IN_FUNCTIONS = new Set([
   "sin",
   "cos",
   "tan",
+] as const;
+
+export const EXPRESSION_OPERATORS = ["+", "-", "*", "/", "^"] as const;
+
+export const EXPRESSION_PICKER_OPERATORS = [
+  ...EXPRESSION_OPERATORS,
+  "(",
+  ")",
+] as const;
+
+export function appendExpressionToken(expression: string, token: string): string {
+  const trimmed = expression.trimEnd();
+  return trimmed ? `${trimmed} ${token}` : token;
+}
+
+const BUILT_IN_FUNCTIONS = new Set<string>([
+  ...EXPRESSION_FUNCTIONS,
   "pi",
   "e",
 ]);
@@ -80,6 +97,19 @@ export function buildVariableReferences(
     { key: "pi", label: "pi", source: "constant" },
     { key: "e", label: "e", source: "constant" },
   ];
+}
+
+export function getValidExpressionParameters(
+  variableReferences: FormulaVariableReference[],
+) {
+  return {
+    schemaFields: variableReferences.filter((ref) => ref.source === "field"),
+    formulas: variableReferences.filter((ref) => ref.source === "formula"),
+    constants: variableReferences.filter((ref) => ref.source === "constant"),
+    variableKeys: variableReferences.map((ref) => ref.key),
+    functions: [...EXPRESSION_FUNCTIONS],
+    operators: [...EXPRESSION_OPERATORS],
+  };
 }
 
 export function getFormulaDependencies(

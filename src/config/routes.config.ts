@@ -58,6 +58,7 @@ function inferRoleFromContextType(contextType?: string | null): AppRole | null {
 
   if (context.includes("super")) return "super-admin";
   if (context.includes("client")) return "client";
+  if (context.includes("company") && context.includes("coach")) return "company-coach";
   if (context.includes("company")) return "company";
 
   return null;
@@ -77,7 +78,7 @@ function inferRoleFromRoleNames(roles: readonly string[] = []): AppRole | null {
 
     if (role.includes("super")) return "super-admin";
     if (role.includes("client")) return "client";
-    if (role.includes("company") && role.includes("coach")) return "company-coach";
+    if (role.includes("coach")) return "company-coach";
     if (role === "admin" || role.includes("company")) return "company";
   }
 
@@ -171,6 +172,23 @@ export function isPathAllowedForRole(pathname: string, role: AppRole | null): bo
 
   if (role === "client") {
     return pathname === ROUTES.DASHBOARD.COMPANY.ROOT;
+  }
+
+  if (role === "company-coach") {
+    if (pathname === ROUTES.DASHBOARD.COMPANY.ROOT) return true;
+    if (pathname === ROUTES.DASHBOARD.COMPANY.CLIENTS) return true;
+    if (pathname === ROUTES.DASHBOARD.COMPANY.SESSIONS) return true;
+
+    const clientsPrefix = `${ROUTES.DASHBOARD.COMPANY.CLIENTS}/`;
+    if (!pathname.startsWith(clientsPrefix)) return false;
+
+    const remainder = pathname.slice(clientsPrefix.length);
+    const segments = remainder.split("/").filter(Boolean);
+
+    if (segments.length === 1) return true;
+    if (segments.length === 2 && segments[1] === "data-entry") return true;
+
+    return false;
   }
 
   const allowedRoutes = getAllowedRoutesForRole(role);

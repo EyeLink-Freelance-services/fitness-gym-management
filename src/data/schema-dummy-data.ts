@@ -1,5 +1,4 @@
 import type { FieldGroup } from "@/types/dashboard/coach-schema";
-import type { FormulaDefinition } from "@/types/dashboard/formula-builder";
 
 export const SCHEMA_FIELD_GROUPS: FieldGroup[] = [
   {
@@ -235,40 +234,5 @@ export const SCHEMA_FIELD_GROUPS: FieldGroup[] = [
         ],
       },
     ],
-  },
-];
-
-export const SCHEMA_FORMULAS_BASE: FormulaDefinition[] = [
-  {
-    id: "formula-bmi",
-    label: "BMI",
-    key: "bmi",
-    unit: "kg/m²",
-    expression: "weight / (height / 100) ^ 2",
-  },
-  {
-    id: "formula-bmr",
-    label: "BMR",
-    key: "bmr",
-    unit: "kcal",
-    expression: "(10 * weight) + (6.25 * height) - (5 * age) - 161",
-    description: "Mifflin-St Jeor baseline metabolic rate.",
-  },
-  {
-    id: "formula-body-fat",
-    label: "Body Fat %",
-    key: "body_fat_pct",
-    unit: "%",
-    expression:
-      "495 / (1.0994921 - (0.0009929 * (chest_mm + abdominal_mm + thigh_mm)) + (0.0000023 * (chest_mm + abdominal_mm + thigh_mm) ^ 2) - (0.0001392 * age)) - 450",
-    description: "Compact 3-site estimate for body fat.",
-  },
-  {
-    id: "formula-fat-mass",
-    label: "Fat Mass",
-    key: "fat_mass",
-    unit: "kg",
-    expression: "(body_fat_pct / 100) * weight",
-    description: "Derived fat mass for recomposition tracking.",
   },
 ];

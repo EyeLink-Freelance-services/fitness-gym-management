@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ComputedResultsPanel } from "@/components/Dashboard/client-records/computed-results-panel";
 import { DynamicFormGroup } from "@/components/Dashboard/client-records/dynamic-form-group";
 import { Button } from "@/components/ui-elements/button";
-import { evaluateFormulaCollection } from "@/lib/formula/preview-engine";
+import { evaluateFormulaCollectionSafe } from "@/lib/formula/preview-engine";
 import type { ClientRecordDraft, ComputedMetric, FormulaSnapshotPreview} from "@/types/dashboard/client-records";
 import type { FormulaDefinition } from "@/types/dashboard/formula-builder";
 import { initials } from "@/utils/dashboard/shared";
@@ -22,6 +22,7 @@ type DataEntryWorkspaceProps = {
 function getNumericScope(values: Record<string, string>) {
   return Object.fromEntries(
     Object.entries(values)
+      .filter(([, value]) => value.trim() !== "")
       .map(([key, value]) => [key, Number(value)])
       .filter(([, value]) => !Number.isNaN(value)),
   );
@@ -43,19 +44,14 @@ export function DataEntryWorkspace({
 
   const { computedMetrics, formulaSnapshots } = useMemo(() => {
     const numericScope = getNumericScope(values);
-    let resolved: Record<string, number> = {};
-    try {
-      resolved = evaluateFormulaCollection(formulas, numericScope);
-    } catch {
-      // keep empty
-    }
+    const resolved = evaluateFormulaCollectionSafe(formulas, numericScope);
     const metrics: ComputedMetric[] = formulas.map((formula) => ({
       id: `metric-${formula.key}`,
       label: formula.label,
       key: formula.key,
       value:
         resolved[formula.key] !== undefined
-          ? resolved[formula.key].toLocaleString("en-US")
+          ? resolved[formula.key]!.toLocaleString("en-US")
           : "-",
       unit: formula.unit,
     }));
@@ -65,7 +61,7 @@ export function DataEntryWorkspace({
       expression: formula.expression,
       result:
         resolved[formula.key] !== undefined
-          ? `${resolved[formula.key].toLocaleString("en-US")} ${formula.unit ?? ""}`.trim()
+          ? `${resolved[formula.key]!.toLocaleString("en-US")} ${formula.unit ?? ""}`.trim()
           : "-",
     }));
     return { computedMetrics: metrics, formulaSnapshots: snapshots };

@@ -58,15 +58,6 @@ export function getCompanyPaymentColumns({
       },
     },
     {
-      id: "billingMonth",
-      header: "Billing Month",
-      cell: ({ row }) => formatBillingMonthLabel(row.original.billingMonth),
-      meta: {
-        align: "left",
-        headClassName: "min-w-[140px]",
-      },
-    },
-    {
       id: "standardPrice",
       header: "Standard Price",
       cell: ({ row }) => formatCurrency(row.original.standardPrice),

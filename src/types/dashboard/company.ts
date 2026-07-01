@@ -129,6 +129,7 @@ export interface CompanyClientsTableClientProps {
   initialData: CompanyClient[];
   totalCount: number;
   companyPricing: CompanyPricing | null;
+  coachView?: boolean;
 }
 
 export interface CompanyCoachesTableClientProps {
@@ -255,4 +256,13 @@ export interface SearchCoachesApiBean {
   pageNumber?: number;
   totalElements?: number;
   totalPages?: number;
+}
+
+export interface CoachUpcomingSessionRow {
+  id: string;
+  session: string;
+  clientName: string;
+  startsAt: string;
+  durationMinutes: number;
+  status: string;
 }

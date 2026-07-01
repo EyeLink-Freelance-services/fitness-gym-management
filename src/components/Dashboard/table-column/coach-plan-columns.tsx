@@ -1,6 +1,7 @@
 import type {
   ClientDietPlanRow,
   ClientTrainingPlanRow,
+  ClientTrainingSessionRow,
   CoachDietPlanRow,
   CoachTrainingPlanRow,
 } from "@/types/dashboard/client";
@@ -121,6 +122,56 @@ export const clientTrainingPlanColumns: ColumnDef<ClientTrainingPlanRow>[] = [
     },
   },
 ];
+
+export const clientTrainingSessionColumns: ColumnDef<ClientTrainingSessionRow>[] =
+  [
+    {
+      accessorKey: "coachName",
+      header: "Coach",
+      meta: {
+        align: "left",
+        headClassName: "min-w-[160px]",
+      },
+    },
+    {
+      accessorKey: "sessionTitle",
+      header: "Session Title",
+      cell: ({ row }) => (
+        <span className="text-dark dark:text-white">
+          {row.original.sessionTitle}
+        </span>
+      ),
+      meta: {
+        align: "left",
+        headClassName: "min-w-[200px]",
+      },
+    },
+    {
+      accessorKey: "date",
+      header: "Date",
+      cell: ({ row }) => formatDate(`${row.original.date}T12:00:00`),
+      meta: {
+        align: "left",
+        headClassName: "min-w-[140px]",
+      },
+    },
+    {
+      accessorKey: "timeFrom",
+      header: "Time From",
+      meta: {
+        align: "left",
+        headClassName: "min-w-[120px]",
+      },
+    },
+    {
+      accessorKey: "timeTo",
+      header: "Time To",
+      meta: {
+        align: "left",
+        headClassName: "min-w-[120px]",
+      },
+    },
+  ];
 
 export const coachTrainingPlanColumns: ColumnDef<CoachTrainingPlanRow>[] = [
   {

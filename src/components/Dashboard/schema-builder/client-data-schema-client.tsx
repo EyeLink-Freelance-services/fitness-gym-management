@@ -1,9 +1,18 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import {
+  createMetricDefinitionAction,
+  deleteMetricDefinitionAction,
+  updateMetricDefinitionAction,
+} from "@/app/(app)/dashboard/company/schema/actions";
 import CardTitle from "@/components/Dashboard/overview-cards/cardTitle";
 import { FieldGroupCard } from "@/components/Dashboard/schema-builder/field-group-card";
-import { SchemaFieldModal } from "@/components/Dashboard/schema-builder/schema-field-modal";
+import { MetricDefinitionModal } from "@/components/Dashboard/schema-builder/metric-definition-modal";
+import { Button } from "@/components/ui-elements/button";
+import type { MetricDefinitionFormValues } from "@/types/dashboard/client-metric-definition";
 import type { FieldGroup, SchemaField } from "@/types/dashboard/coach-schema";
 
 type ClientDataSchemaClientProps = {
@@ -15,89 +24,113 @@ export function ClientDataSchemaClient({
   initialGroups,
   pageTitle = "Client Data Configuration",
 }: ClientDataSchemaClientProps) {
-  const [groups, setGroups] = useState<FieldGroup[]>(initialGroups);
+  const router = useRouter();
+  const [groups, setGroups] = useState(initialGroups);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"add" | "edit">("add");
-  const [modalGroupId, setModalGroupId] = useState(
-    () => initialGroups[0]?.id ?? "",
-  );
-  const [editingField, setEditingField] = useState<SchemaField | null>(null);
+  const [defaultGroupName, setDefaultGroupName] = useState("");
+  const [editingFieldId, setEditingFieldId] = useState<string | null>(null);
+  const [editingValues, setEditingValues] =
+    useState<MetricDefinitionFormValues | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
-  const existingKeys = useMemo(() => {
-    const keys = new Set<string>();
-    for (const g of groups) {
-      for (const f of g.fields) {
-        keys.add(f.key);
-      }
-    }
-    return keys;
-  }, [groups]);
+  useEffect(() => {
+    setGroups(initialGroups);
+  }, [initialGroups]);
 
-  const groupOptions = useMemo(
-    () => groups.map((g) => ({ id: g.id, name: g.name })),
-    [groups],
-  );
-
-  const openAddField = (groupId: string) => {
+  const openAddField = (groupName = "") => {
     setModalMode("add");
-    setModalGroupId(groupId);
-    setEditingField(null);
+    setDefaultGroupName(groupName);
+    setEditingFieldId(null);
+    setEditingValues(null);
     setModalOpen(true);
   };
 
   const openEditField = (field: SchemaField, groupId: string) => {
     setModalMode("edit");
-    setModalGroupId(groupId);
-    setEditingField(field);
+    setEditingFieldId(field.id);
+    setEditingValues({
+      label: field.label,
+      unit: field.unit ?? "",
+      group: groups.find((g) => g.id === groupId)?.name ?? "",
+    });
     setModalOpen(true);
   };
 
-  const handleSaveField = (next: SchemaField) => {
-    const removeId = editingField?.id;
-    setGroups((prev) => {
-      const stripped = prev.map((g) => ({
-        ...g,
-        fields: removeId
-          ? g.fields.filter((f) => f.id !== removeId)
-          : g.fields,
-      }));
-      return stripped.map((g) => {
-        if (g.id !== next.groupId) return g;
-        const maxOrder = Math.max(0, ...g.fields.map((f) => f.sortOrder));
-        const sortOrder =
-          modalMode === "edit" && editingField
-            ? editingField.sortOrder
-            : maxOrder + 10;
-        return {
-          ...g,
-          fields: [...g.fields, { ...next, sortOrder }],
-        };
-      });
-    });
+  const handleSave = async (values: MetricDefinitionFormValues) => {
+    setIsSaving(true);
+
+    const result =
+      modalMode === "edit" && editingFieldId
+        ? await updateMetricDefinitionAction(editingFieldId, values)
+        : await createMetricDefinitionAction(values);
+
+    setIsSaving(false);
+
+    if (!result.ok) {
+      toast.error(result.error);
+      return;
+    }
+
+    toast.success(
+      modalMode === "edit"
+        ? "Field updated successfully"
+        : "Field created successfully",
+    );
+    setModalOpen(false);
+    router.refresh();
+  };
+
+  const handleDelete = async (fieldId: string) => {
+    const result = await deleteMetricDefinitionAction(fieldId);
+
+    if (!result.ok) {
+      toast.error(result.error);
+      return;
+    }
+
+    toast.success("Field deleted successfully");
+    router.refresh();
   };
 
   return (
     <>
-      <CardTitle title={pageTitle} className="mb-0" />
+      <div className="mb-4 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <CardTitle title={pageTitle} className="mb-0" />
 
-      {groups.map((group) => (
-        <FieldGroupCard
-          key={group.id}
-          group={group}
-          onAddField={() => openAddField(group.id)}
-          onEditField={(field) => openEditField(field, group.id)}
+        <Button
+          type="button"
+          label="Add Field"
+          size="small"
+          variant="primary"
+          onClick={() => openAddField()}
         />
-      ))}
+      </div>
 
-      <SchemaFieldModal
+      {groups.length === 0 ? (
+        <p className="rounded-[14px] border border-dashed border-stroke/70 px-4 py-8 text-center text-sm text-dark-6 dark:border-dark-3">
+          No fields configured yet. Click &quot;Add Field&quot; to create one.
+        </p>
+      ) : (
+        groups.map((group) => (
+          <FieldGroupCard
+            key={group.id}
+            group={group}
+            onAddField={() => openAddField(group.name)}
+            onEditField={(field) => openEditField(field, group.id)}
+            onDeleteField={handleDelete}
+          />
+        ))
+      )}
+
+      <MetricDefinitionModal
         open={modalOpen}
         mode={modalMode}
-        groups={groupOptions}
-        defaultGroupId={modalGroupId}
-        field={editingField}
-        existingKeys={existingKeys}
+        defaultGroup={defaultGroupName}
+        values={modalMode === "edit" ? editingValues : null}
         onClose={() => setModalOpen(false)}
-        onSave={handleSaveField}
+        onSave={handleSave}
+        isSaving={isSaving}
       />
     </>
   );

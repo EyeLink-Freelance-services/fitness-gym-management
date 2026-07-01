@@ -7,6 +7,7 @@ import type { ActivePlanDialog } from "@/modules/client-records/coach-plan.types
 import type {
   ClientDietPlanRow,
   ClientTrainingPlanRow,
+  ClientTrainingSessionRow,
 } from "@/types/dashboard/client";
 import { ClientProfileBreadcrumb } from "./client-profile-breadcrumb";
 import { ClientProfileHeader } from "./client-profile-header";
@@ -23,7 +24,11 @@ export type ClientProfilePageProps = {
   companyPricing: CompanyPricing | null;
   initialDiets?: ClientDietPlanRow[];
   initialTrainingPlans?: ClientTrainingPlanRow[];
+  initialTrainingSessions?: ClientTrainingSessionRow[];
   readOnly?: boolean;
+  plansReadOnly?: boolean;
+  showDataEntry?: boolean;
+  showBreadcrumb?: boolean;
 };
 
 export function ClientProfilePage({
@@ -31,8 +36,13 @@ export function ClientProfilePage({
   companyPricing,
   initialDiets = [],
   initialTrainingPlans = [],
+  initialTrainingSessions = [],
   readOnly = false,
+  plansReadOnly,
+  showDataEntry = false,
+  showBreadcrumb = false,
 }: ClientProfilePageProps) {
+  const coachingReadOnly = plansReadOnly ?? readOnly;
   const edit = useClientProfileEdit(client, companyPricing);
   const [activePlanDialog, setActivePlanDialog] = useState<ActivePlanDialog>(null);
   const isPersonalCoaching = client.membershipPlan === "PERSONAL";
@@ -47,7 +57,9 @@ export function ClientProfilePage({
 
   return (
     <div className="pb-12">
-      {!readOnly && <ClientProfileBreadcrumb clientName={clientName} />}
+      {(showBreadcrumb || !readOnly) && (
+        <ClientProfileBreadcrumb clientName={clientName} />
+      )}
 
       <ClientProfileHeader
         client={client}
@@ -56,7 +68,7 @@ export function ClientProfilePage({
         onEdit={edit.startEdit}
         onSave={edit.save}
         onCancel={edit.cancelEdit}
-        showCoachingActions={!readOnly && isPersonalCoaching}
+        showDataEntry={showDataEntry}
         readOnly={readOnly}
       />
 
@@ -80,9 +92,10 @@ export function ClientProfilePage({
             clientName={clientName}
             initialDiets={initialDiets}
             initialTrainingPlans={initialTrainingPlans}
+            initialTrainingSessions={initialTrainingSessions}
             activeDialog={activePlanDialog}
             onActiveDialogChange={setActivePlanDialog}
-            readOnly={readOnly}
+            readOnly={coachingReadOnly}
           />
         </div>
       )}

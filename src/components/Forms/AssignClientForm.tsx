@@ -98,12 +98,6 @@ export default function AssignClientForm({
 
   const onSubmit = (values: AssignClientCreateInput) => {
     startTransition(async () => {
-      console.log(
-        mode === "edit"
-          ? "Assign client form updated:"
-          : "Assign client form submitted:",
-        values,
-      );
       onSuccess?.();
     });
   };

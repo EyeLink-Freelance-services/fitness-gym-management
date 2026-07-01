@@ -431,6 +431,34 @@ export function evaluateFormulaCollection(
   return scope;
 }
 
+export function evaluateFormulaCollectionSafe(
+  formulas: Pick<FormulaDefinition, "key" | "label" | "expression">[],
+  fieldValues: NumericScope,
+): Record<string, number | undefined> {
+  let sorted: Pick<FormulaDefinition, "key" | "label" | "expression">[];
+
+  try {
+    sorted = topologicalSortFormulas(formulas);
+  } catch {
+    return Object.fromEntries(formulas.map((formula) => [formula.key, undefined]));
+  }
+
+  const scope = { ...fieldValues };
+  const results: Record<string, number | undefined> = {};
+
+  for (const formula of sorted) {
+    try {
+      const value = evaluateFormulaPreview(formula.expression, scope);
+      scope[formula.key] = value;
+      results[formula.key] = value;
+    } catch {
+      results[formula.key] = undefined;
+    }
+  }
+
+  return results;
+}
+
 export function validateFormulaExpression(
   expression: string,
   knownKeys: string[],

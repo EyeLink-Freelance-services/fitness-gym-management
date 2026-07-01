@@ -1,11 +1,17 @@
 import { SessionSchedulingPage } from "@/components/Dashboard/session-scheduling";
 import { getRoleFromAuthContext } from "@/config/routes.config";
 import { getAuthContext } from "@/lib/auth/get-auth-context";
-import { getCompanyClientForCurrentUser } from "@/services/company/company.service";
+import { getCompanyClientFullName } from "@/modules/company/company-client.mappers";
+import {
+  getCompanyClientForCurrentUser,
+  getCompanyClients,
+} from "@/services/company/company.service";
+import { getTrainingSessions } from "@/services/company/training-session.service";
 
 export default async function CompanySessionsPage() {
   const auth = await getAuthContext();
   const role = getRoleFromAuthContext(auth);
+  const initialSessions = await getTrainingSessions();
 
   if (role === "client") {
     const client = await getCompanyClientForCurrentUser();
@@ -14,20 +20,22 @@ export default async function CompanySessionsPage() {
       <SessionSchedulingPage
         role="client"
         viewerClientId={client?.id}
+        initialSessions={initialSessions}
       />
     );
   }
 
-  const clientOptions = [
-    { id: "client-demo-1", label: "Alex Rivera" },
-    { id: "client-demo-2", label: "Jordan Lee" },
-  ];
+  const { clients } = await getCompanyClients({ pageSize: 100 });
+  const clientOptions = clients.map((client) => ({
+    id: client.id,
+    label: getCompanyClientFullName(client),
+  }));
 
   return (
     <SessionSchedulingPage
       role="coach"
-      coachId="coach-demo-1"
       clientOptions={clientOptions}
+      initialSessions={initialSessions}
     />
   );
 }
