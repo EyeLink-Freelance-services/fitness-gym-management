@@ -108,6 +108,7 @@ export function ImageUpload({
               variant="outlineDark"
               size="small"
               onClick={(e) => {
+                e.preventDefault();
                 e.stopPropagation();
                 setFile(null);
                 if (inputRef.current) inputRef.current.value = "";

@@ -1,3 +1,4 @@
+import imageCompression from "browser-image-compression";
 import { ClientListRow } from "@/types/dashboard";
 
 export function formatDate(date: string) {
@@ -73,10 +74,15 @@ export function capitalize(str: string = "") {
  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
 
-export function fileToBase64(file: File): Promise<string> {
+export async function fileToBase64(file: File): Promise<string> {
+  const compressed = await imageCompression(file, {
+    maxSizeMB: 0.5,
+    maxWidthOrHeight: 512,
+  });
+
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(compressed);
     reader.onload = () => resolve(reader.result as string);
     reader.onerror = reject;
   });

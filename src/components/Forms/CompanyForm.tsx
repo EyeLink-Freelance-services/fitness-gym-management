@@ -40,13 +40,18 @@ export default function CompanyForm({
     },
   });
 
+  const [logo, setLogo] = useState<string | null>(
+    existingProfilePhotoUrl ?? null,
+  );
+
   useEffect(() => {
     reset({
       ...DEFAULT_COMPANY_FORM_VALUES,
       ...initialData,
       logo: undefined,
     });
-  }, [initialData, reset]);
+    setLogo(existingProfilePhotoUrl ?? null);
+  }, [initialData, existingProfilePhotoUrl, reset]);
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -54,19 +59,20 @@ export default function CompanyForm({
   });
 
   const branches = useWatch({ control, name: "branches" }) ?? [];
-  const [logoFile, setLogoFile] = useState<File | null>(null);
   const canAddBranch = branches.every(
     (branch) => branch.branchName.trim().length > 0,
   );
 
+  const handleLogoChange = async (file: File | null) => {
+    if (!file) {
+      setLogo(null);
+      return;
+    }
+    setLogo(await fileToBase64(file));
+  };
+
   const onSubmit = async (data: CompanyFormData) => {
     try {
-      let logoBase64: string | null = null;
-      if (logoFile) {
-        logoBase64 = await fileToBase64(logoFile);
-      }
-
-      const logo = logoBase64 ?? existingProfilePhotoUrl ?? data.logo ?? null;
       const payload = { ...data, logo };
 
       if (mode === "edit") {
@@ -131,8 +137,8 @@ export default function CompanyForm({
         <ImageUpload
           label="Company Logo"
           accept="image/*"
-          initialPreviewUrl={existingProfilePhotoUrl}
-          onFileChange={setLogoFile}
+          initialPreviewUrl={logo ?? undefined}
+          onFileChange={handleLogoChange}
           hint="PNG, JPG, SVG - max 5MB"
         />
 
