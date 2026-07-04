@@ -58,8 +58,6 @@ export default async function CompanyDashboardPage({
       getCoachUpcomingTrainingSessions(5),
     ]);
 
-    console.log(upcomingSessions);
-
     return (
       <div>
         <DashboardSection title="Overview">

@@ -40,7 +40,6 @@ export default function CompanyForm({
     },
   });
 
-  console.log('initialData', initialData);
   const [logo, setLogo] = useSyncedState(existingProfilePhotoUrl ?? null);
 
   const { fields, append, remove } = useFieldArray({
