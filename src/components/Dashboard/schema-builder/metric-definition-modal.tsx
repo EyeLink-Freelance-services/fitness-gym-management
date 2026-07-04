@@ -128,7 +128,8 @@ export function MetricDefinitionModal({
             variant="primary"
             size="small"
             label={primaryLabel}
-            disabled={isSaving}
+            loadingLabel="Saving..."
+            loading={isSaving}
           />
         </div>
       </form>

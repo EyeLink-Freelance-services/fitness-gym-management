@@ -136,10 +136,11 @@ export function getCompanyPaymentColumns({
         return (
           <Button
             type="button"
-            label={isProcessing ? "Saving..." : "Mark Paid"}
+            label="Mark Paid"
+            loadingLabel="Saving..."
+            loading={isProcessing}
             size="small"
             variant="primary"
-            disabled={isProcessing}
             onClick={() => onMarkPaid(row.original)}
           />
         );

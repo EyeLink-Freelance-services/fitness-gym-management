@@ -124,10 +124,11 @@ export function FormulaEditor({
         </div>
 
         <Button
-          label={isSaving ? "Saving..." : "Save Formula"}
+          label="Save Formula"
+          loadingLabel="Saving..."
+          loading={isSaving}
           className="w-full"
           onClick={onSave}
-          disabled={isSaving}
         />
       </div>
     </div>

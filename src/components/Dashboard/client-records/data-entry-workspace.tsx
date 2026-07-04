@@ -106,11 +106,12 @@ export function DataEntryWorkspace({
         ))}
 
         <Button
-          label={isSaving ? "Saving…" : "Save"}
+          label="Save"
+          loadingLabel="Saving…"
+          loading={isSaving}
           variant="outlineDark"
           size="small"
           onClick={handleSave}
-          disabled={isSaving}
           toastMessage={
             onSave ? undefined : "Draft storage will be connected in phase 2."
           }

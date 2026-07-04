@@ -9,21 +9,18 @@ import {
   AnnouncementCreateInput,
   AnnouncementCreateSchema,
 } from "@/lib/validation/schemas/announcement";
-import { useTransition } from "react";
 import { Header } from "../FormElements/common";
-
+import type { FormSuccessCallback } from "@/types/forms";
 
 type Props = {
-  onSuccess?: () => void;
+  onSuccess?: FormSuccessCallback;
 };
 
 export default function AnnouncementForm({ onSuccess }: Props) {
-  const [isPending, startTransition] = useTransition();
-
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<AnnouncementCreateInput>({
     mode: "onChange",
     resolver: zodResolver(AnnouncementCreateSchema),
@@ -33,11 +30,9 @@ export default function AnnouncementForm({ onSuccess }: Props) {
     },
   });
 
-  const onSubmit = (values: AnnouncementCreateInput) => {
-    startTransition(async () => {
-      // TODO: Connect to announcement create action when backend is ready
-      onSuccess?.();
-    });
+  const onSubmit = async (_values: AnnouncementCreateInput) => {
+    // TODO: Connect to announcement create action when backend is ready
+    await onSuccess?.();
   };
 
   return (
@@ -91,9 +86,10 @@ export default function AnnouncementForm({ onSuccess }: Props) {
 
         <Button
           type="submit"
-          disabled={isPending}
           variant="primary"
-          label={isPending ? "Submitting..." : "Submit"}
+          label="Submit"
+          loadingLabel="Submitting..."
+          loading={isSubmitting}
           className="w-full"
         />
       </form>

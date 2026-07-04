@@ -81,7 +81,7 @@ export default function CompanyForm({
           ? "Company updated successfully"
           : "Company created successfully",
       );
-      onSuccess?.();
+      await onSuccess?.();
     } catch {
       toast.error(
         mode === "edit"
@@ -273,8 +273,10 @@ export default function CompanyForm({
         <Button
           type="submit"
           label={mode === "edit" ? "Save changes" : "Register company"}
+          loadingLabel={mode === "edit" ? "Saving..." : "Creating..."}
+          loading={isSubmitting}
           className="w-full"
-          disabled={!isValid || isSubmitting}
+          disabled={!isValid}
         />
       </form>
     </div>

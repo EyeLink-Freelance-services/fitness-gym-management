@@ -148,9 +148,11 @@ export function SessionForm({
           />
           <Button
             type="submit"
-            label={saving ? "Saving..." : "Save session"}
+            label="Save session"
+            loadingLabel="Saving..."
+            loading={saving}
             className="w-full sm:w-auto"
-            disabled={saving || clientOptions.length === 0}
+            disabled={clientOptions.length === 0}
           />
         </div>
       </form>

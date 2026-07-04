@@ -21,7 +21,7 @@ type CoachDietPlanFormProps = {
   allowAddMeal?: boolean;
   allowRemoveMeal?: boolean;
   existingDietRows?: ClientDietPlanRow[];
-  onSubmit: (values: CoachDietPlanFormData) => void;
+  onSubmit: (values: CoachDietPlanFormData) => void | Promise<void>;
   onCancel: () => void;
 };
 
@@ -249,8 +249,10 @@ export default function CoachDietPlanForm({
           <Button
             type="submit"
             label={mode === "edit" ? "Save Changes" : "Create Diet Plan"}
+            loadingLabel={mode === "edit" ? "Saving..." : "Creating..."}
+            loading={isSubmitting}
             className="w-full"
-            disabled={!isValid || isSubmitting}
+            disabled={!isValid}
           />
         </div>
       </form>

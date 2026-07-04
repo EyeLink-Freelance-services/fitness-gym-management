@@ -91,8 +91,8 @@ export default function CompanyTableClient({
           <FormModalTrigger
             buttonLabel="+ Add Company"
             formType="company"
-            onSuccess={() => {
-              void pagination.refetchCurrentPage();
+            onSuccess={async () => {
+              await pagination.refetchCurrentPage();
               router.refresh();
             }}
           />
@@ -112,6 +112,7 @@ export default function CompanyTableClient({
           onRowClick={setSelectedCompany}
           tableClassName="min-w-[760px]"
           showFooter={false}
+          isLoading={pagination.isLoading}
         />
 
         {/* Server-Side Pagination */}
@@ -180,7 +181,11 @@ export default function CompanyTableClient({
                   existingProfilePhotoUrl={
                     selectedCompany.company_logo ?? undefined
                   }
-                  onSuccess={() => setSelectedCompany(null)}
+                  onSuccess={async () => {
+                    await pagination.refetchCurrentPage();
+                    router.refresh();
+                    setSelectedCompany(null);
+                  }}
                 />
               </div>
             </div>

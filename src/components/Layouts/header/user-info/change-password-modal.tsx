@@ -140,9 +140,10 @@ function ChangePasswordForm({ onClose }: { onClose: () => void }) {
         />
         <Button
           type="submit"
-          label={isSubmitting ? "Updating..." : "Update password"}
+          label="Update password"
+          loadingLabel="Updating..."
+          loading={isSubmitting}
           size="small"
-          disabled={isSubmitting}
         />
       </div>
     </form>

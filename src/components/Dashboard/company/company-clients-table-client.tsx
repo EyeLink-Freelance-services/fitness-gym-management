@@ -50,8 +50,8 @@ export function CompanyClientsTableClient({
             buttonLabel="+ Add Client"
             formType="client"
             companyPlan={companyPricing}
-            onSuccess={() => {
-              void pagination.refetchCurrentPage();
+            onSuccess={async () => {
+              await pagination.refetchCurrentPage();
               router.refresh();
             }}
           />
@@ -76,6 +76,7 @@ export function CompanyClientsTableClient({
         emptyStateLabel="No clients available."
         onRowClick={handleRowClick}
         showFooter={false}
+        isLoading={pagination.isLoading}
       />
 
       <div className="mt-5 flex flex-col gap-3 border-t border-stroke pt-4 text-sm dark:border-dark-3 sm:flex-row sm:items-center sm:justify-between">

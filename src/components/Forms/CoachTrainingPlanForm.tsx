@@ -22,7 +22,7 @@ type CoachTrainingPlanFormProps = {
   initialData: CoachTrainingPlanFormData;
   mode?: "create" | "edit";
   visibleDays?: CoachTrainingPlanDay[];
-  onSubmit: (values: CoachTrainingPlanFormData) => void;
+  onSubmit: (values: CoachTrainingPlanFormData) => void | Promise<void>;
   onCancel: () => void;
 };
 
@@ -109,8 +109,10 @@ export default function CoachTrainingPlanForm({
           <Button
             type="submit"
             label={mode === "edit" ? "Save Changes" : "Create Training Plan"}
+            loadingLabel={mode === "edit" ? "Saving..." : "Creating..."}
+            loading={isSubmitting}
             className="w-full"
-            disabled={!canSubmit || isSubmitting}
+            disabled={!canSubmit}
           />
         </div>
       </form>

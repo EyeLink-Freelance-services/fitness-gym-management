@@ -81,7 +81,7 @@ export default function CoachForm({
         toast.success("Coach created successfully");
       }
 
-      onSuccess?.();
+      await onSuccess?.();
     } catch {
       toast.error(
         mode === "edit" ? "Failed to update coach" : "Failed to create coach",
@@ -197,8 +197,10 @@ export default function CoachForm({
         <Button
           type="submit"
           label={mode === "edit" ? "Save Changes" : "Register"}
+          loadingLabel={mode === "edit" ? "Saving..." : "Creating..."}
+          loading={isSubmitting}
           className="w-full"
-          disabled={!isValid || isSubmitting}
+          disabled={!isValid}
         />
       </form>
     </div>

@@ -24,9 +24,9 @@ export function FormModalTrigger({
   const titleId = useId();
 
   const close = () => setIsOpen(false);
-  const handleSuccess = () => {
+  const handleSuccess = async () => {
+    await onSuccess?.();
     close();
-    onSuccess?.();
   };
 
   useEffect(() => {
@@ -84,7 +84,9 @@ export function FormModalTrigger({
                     {formType === "coach" && (
                       <CoachForm onSuccess={handleSuccess} />
                     )}
-                    {formType === "staff" && <StaffForm />}
+                    {formType === "staff" && (
+                      <StaffForm onSuccess={handleSuccess} />
+                    )}
                     {formType === "announcement" && (
                       <AnnouncementForm onSuccess={handleSuccess} />
                     )}

@@ -59,8 +59,8 @@ export default function StaffForm({
     setValue("role", "");
   }, [setValue]);
 
-  const onSubmit = (_data: StaffFormData) => {
-    onSuccess?.();
+  const onSubmit = async (_data: StaffFormData) => {
+    await onSuccess?.();
   };
 
   return (
@@ -154,8 +154,10 @@ export default function StaffForm({
         <Button
           type="submit"
           label={mode === "edit" ? "Update Staff" : "Create Staff"}
+          loadingLabel={mode === "edit" ? "Saving..." : "Creating..."}
+          loading={isSubmitting}
           className="w-full"
-          disabled={!isValid || isSubmitting}
+          disabled={!isValid}
         />
       </form>
     </div>

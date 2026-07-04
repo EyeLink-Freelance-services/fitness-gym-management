@@ -48,9 +48,13 @@ export function Button({
   className,
   toastMessage,
   onClick,
+  loading = false,
+  loadingLabel,
+  disabled,
   ...props
 }: ButtonProps) {
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (loading) return;
     if (toastMessage) toast(toastMessage);
     onClick?.(e);
   };
@@ -59,10 +63,19 @@ export function Button({
     <button
       className={buttonVariants({ variant, shape, size, className })}
       onClick={handleClick}
+      disabled={disabled || loading}
+      aria-busy={loading || undefined}
       {...props}
     >
-      {icon && <span>{icon}</span>}
-      {label}
+      {loading ? (
+        <span
+          className="inline-block size-4 shrink-0 animate-spin rounded-full border-2 border-current border-r-transparent"
+          aria-hidden
+        />
+      ) : (
+        icon && <span>{icon}</span>
+      )}
+      {loading ? (loadingLabel ?? label) : label}
     </button>
   );
 }

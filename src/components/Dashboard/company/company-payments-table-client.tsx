@@ -140,6 +140,7 @@ export function CompanyPaymentsTableClient({
         initialPageSize={10}
         emptyStateLabel="No payment records available."
         showFooter={false}
+        isLoading={pagination.isLoading}
       />
 
       <div className="mt-5 flex flex-col gap-3 border-t border-stroke pt-4 text-sm dark:border-dark-3 sm:flex-row sm:items-center sm:justify-between">

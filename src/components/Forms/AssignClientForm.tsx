@@ -14,7 +14,7 @@ import type { AssignClientOption, AssignCoachOption } from "@/types/dashboard/as
 import type { AssignClientFormProps } from "@/types/forms";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Header } from "../FormElements/common";
 
 const ASSIGN_CLIENT_STATUS_OPTIONS: { value: string; label: string }[] = [
@@ -34,8 +34,6 @@ export default function AssignClientForm({
   mode = "create",
   onSuccess,
 }: AssignClientFormProps) {
-  const [isPending, startTransition] = useTransition();
-
   const clientOptions = useMemo<AssignClientOption[]>(
     () =>
       COMPANY_CLIENT_ROWS.map((client) => ({
@@ -66,7 +64,7 @@ export default function AssignClientForm({
     control,
     setValue,
     reset,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<AssignClientCreateInput>({
     mode: "onChange",
     resolver: zodResolver(AssignClientCreateSchema),
@@ -95,10 +93,8 @@ export default function AssignClientForm({
     }
   }, [selectedStatus, setValue]);
 
-  const onSubmit = (values: AssignClientCreateInput) => {
-    startTransition(async () => {
-      onSuccess?.();
-    });
+  const onSubmit = async (_values: AssignClientCreateInput) => {
+    await onSuccess?.();
   };
 
   return (
@@ -183,17 +179,10 @@ export default function AssignClientForm({
 
         <Button
           type="submit"
-          disabled={isPending}
           variant="primary"
-          label={
-            isPending
-              ? mode === "edit"
-                ? "Saving..."
-                : "Submitting..."
-              : mode === "edit"
-                ? "Save Changes"
-                : "Submit"
-          }
+          label={mode === "edit" ? "Save Changes" : "Submit"}
+          loadingLabel={mode === "edit" ? "Saving..." : "Submitting..."}
+          loading={isSubmitting}
           className="w-full"
         />
       </form>

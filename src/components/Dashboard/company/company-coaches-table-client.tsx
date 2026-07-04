@@ -65,10 +65,10 @@ export function CompanyCoachesTableClient({
     };
   }, [selectedCoach]);
 
-  const handleCoachSuccess = () => {
-    setSelectedCoach(null);
-    void pagination.refetchCurrentPage();
+  const handleCoachSuccess = async () => {
+    await pagination.refetchCurrentPage();
     router.refresh();
+    setSelectedCoach(null);
   };
 
   return (
@@ -79,8 +79,8 @@ export function CompanyCoachesTableClient({
             buttonLabel="+ Add Coach"
             formType="coach"
             size="small"
-            onSuccess={() => {
-              void pagination.refetchCurrentPage();
+            onSuccess={async () => {
+              await pagination.refetchCurrentPage();
               router.refresh();
             }}
           />
@@ -100,6 +100,7 @@ export function CompanyCoachesTableClient({
           initialPageSize={10}
           emptyStateLabel="No coaches available."
           showFooter={false}
+          isLoading={pagination.isLoading}
         />
 
         <div className="mt-5 flex flex-col gap-3 border-t border-stroke pt-4 text-sm dark:border-dark-3 sm:flex-row sm:items-center sm:justify-between">

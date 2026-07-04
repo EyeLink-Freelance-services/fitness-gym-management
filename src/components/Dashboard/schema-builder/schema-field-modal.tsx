@@ -113,7 +113,7 @@ function SchemaFieldModalForm({
     control,
     handleSubmit,
     setValue,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<SchemaFieldModalFormValues>({
     resolver: zodResolver(schemaFieldModalFormSchema),
     defaultValues: getDefaultValues(mode, field, defaultGroupId),
@@ -370,6 +370,8 @@ function SchemaFieldModalForm({
             variant="primary"
             size="small"
             label={primaryLabel}
+            loadingLabel="Saving..."
+            loading={isSubmitting}
           />
         </div>
       </form>

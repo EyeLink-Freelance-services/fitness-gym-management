@@ -52,11 +52,12 @@ export function ClientProfileHeader({
               {isEditing ? (
                 <>
                   <Button
-                    label={isPending ? "Saving…" : "Save"}
+                    label="Save"
+                    loadingLabel="Saving…"
+                    loading={isPending}
                     variant="primary"
                     size="small"
                     onClick={onSave}
-                    disabled={isPending}
                   />
                   <Button
                     label="Cancel"

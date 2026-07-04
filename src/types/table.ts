@@ -30,4 +30,6 @@ export interface DataTableProps<TData extends RowData> {
   showFooter?: boolean;
   getRowId?: (originalRow: TData, index: number) => string;
   onRowClick?: (row: TData) => void;
+  /** Shows a loading overlay while server data is being fetched. */
+  isLoading?: boolean;
 }

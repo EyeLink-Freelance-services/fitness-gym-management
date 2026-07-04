@@ -11,11 +11,14 @@ import { Header } from "../FormElements/common";
 
 export default function LoginForm() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  // Stays true after auth succeeds until the page navigates away.
+  // router.replace/refresh resolve before the dashboard finishes loading.
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const { redirectToRoleDashboard } = useRoleRedirect();
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<LoginFormData>();
 
   const onSubmit = async (data: LoginFormData) => {
@@ -34,11 +37,15 @@ export default function LoginForm() {
         return;
       }
 
+      setIsRedirecting(true);
       await redirectToRoleDashboard();
     } catch (err: any) {
+      setIsRedirecting(false);
       setErrorMsg(err.message);
     }
   };
+
+  const isLoading = isSubmitting || isRedirecting;
 
   return (
     <div className="form-panel space-y-4 bg-white/80 px-8 py-12 shadow-lg backdrop-blur-sm dark:bg-dark-2">
@@ -75,7 +82,13 @@ export default function LoginForm() {
           <div className="mb-2 text-sm text-red-600">{errorMsg}</div>
         )}
         
-        <Button type="submit" label="Sign In" className="w-full" />
+        <Button
+          type="submit"
+          label="Sign In"
+          loadingLabel={isRedirecting ? "Opening dashboard..." : "Signing in..."}
+          loading={isLoading}
+          className="w-full"
+        />
       </form>
     </div>
   );

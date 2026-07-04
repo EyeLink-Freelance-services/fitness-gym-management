@@ -60,6 +60,7 @@ export function DataTable<TData extends RowData>({
   showFooter = true,
   getRowId,
   onRowClick,
+  isLoading = false,
 }: DataTableProps<TData>) {
   const isServerSearch = typeof onSearchChange === "function";
   const [globalFilter, setGlobalFilter] = useState("");
@@ -156,8 +157,24 @@ export function DataTable<TData extends RowData>({
         </div>
       </div>
 
-      <Table className={cn("w-full", tableClassName)}>
-        <TableHeader>
+      <div className="relative">
+        {isLoading && (
+          <div
+            className="absolute inset-0 z-10 flex items-center justify-center rounded-[10px] bg-white/70 dark:bg-gray-dark/70"
+            aria-busy="true"
+            aria-live="polite"
+          >
+            <span
+              className="inline-block size-8 animate-spin rounded-full border-2 border-primary border-r-transparent"
+              aria-hidden
+            />
+            <span className="sr-only">Loading</span>
+          </div>
+        )}
+        <Table
+          className={cn("w-full", tableClassName, isLoading && "opacity-60")}
+        >
+          <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow
               key={headerGroup.id}
@@ -236,7 +253,8 @@ export function DataTable<TData extends RowData>({
             ))
           )}
         </TableBody>
-      </Table>
+        </Table>
+      </div>
 
       {showFooter && (
         <div className="mt-5 flex flex-col gap-3 border-t border-stroke pt-4 text-sm dark:border-dark-3 sm:flex-row sm:items-center sm:justify-between">

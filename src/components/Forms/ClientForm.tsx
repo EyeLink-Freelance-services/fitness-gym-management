@@ -75,7 +75,7 @@ export default function ClientForm({
           ? "Client updated successfully"
           : "Client created successfully",
       );
-      onSuccess?.();
+      await onSuccess?.();
     } catch {
       toast.error(
         mode === "edit" ? "Failed to update client" : "Failed to create client",
@@ -274,8 +274,10 @@ export default function ClientForm({
 
         <Button
           type="submit"
-          disabled={!isValid || isSubmitting}
+          disabled={!isValid}
           label={mode === "edit" ? "Save changes" : "Create Client"}
+          loadingLabel={mode === "edit" ? "Saving..." : "Creating..."}
+          loading={isSubmitting}
           className="w-full"
         />
       </form>

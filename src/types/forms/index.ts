@@ -79,12 +79,14 @@ export interface CoachFormData {
   availability?: string;
 }
 
+export type FormSuccessCallback = () => void | Promise<void>;
+
 export interface CoachFormProps {
   initialData?: Partial<CoachFormData>;
   existingProfilePhotoUrl?: string;
   mode?: "create" | "edit";
   coachId?: string;
-  onSuccess?: () => void;
+  onSuccess?: FormSuccessCallback;
 }
 
 export interface CompanyFormProps {
@@ -92,13 +94,13 @@ export interface CompanyFormProps {
   existingProfilePhotoUrl?: string;
   mode?: "create" | "edit";
   companyId?: string;
-  onSuccess?: () => void;
+  onSuccess?: FormSuccessCallback;
 }
 
 export interface CompanyStaffFormProps {
   initialData?: Partial<StaffFormData>;
   mode?: "create" | "edit";
-  onSuccess?: () => void;
+  onSuccess?: FormSuccessCallback;
 }
 
 export interface CompanyClientFormProps {
@@ -107,13 +109,13 @@ export interface CompanyClientFormProps {
   mode?: "create" | "edit";
   clientId?: string;
   companyPlan?: CompanyPricing | null;
-  onSuccess?: () => void;
+  onSuccess?: FormSuccessCallback;
 }
 
 export interface AssignClientFormProps {
   initialData?: Partial<AssignClientFormData>;
   mode?: "create" | "edit";
-  onSuccess?: () => void;
+  onSuccess?: FormSuccessCallback;
 }
 
 export type FormModalId = "client" | "company" | "coach" | "staff";
@@ -174,5 +176,5 @@ export type FormModalTriggerProps = {
   clientContext?: "company";
   size?: "default" | "small" | "xs";
   companyPlan?: CompanyPricing | null;
-  onSuccess?: () => void;
+  onSuccess?: FormSuccessCallback;
 };

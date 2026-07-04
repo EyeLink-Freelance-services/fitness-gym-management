@@ -52,6 +52,10 @@ export interface ButtonProps
   label?: string;
   icon?: ReactNode;
   toastMessage?: string;
+  /** Shows a spinner and disables the button while an async action runs. */
+  loading?: boolean;
+  /** Optional label shown while `loading` is true (defaults to `label`). */
+  loadingLabel?: string;
 }
 
 export interface TableUIColumn<TData extends TableRowData = TableRowData> {
