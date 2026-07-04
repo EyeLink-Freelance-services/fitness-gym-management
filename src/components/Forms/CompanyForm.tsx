@@ -9,7 +9,6 @@ import { Button } from "../ui-elements/button";
 import { ImageUpload } from "../FormElements/ImageUpload";
 import { validatePhone, validateRequired } from "@/lib/forms/formValidation";
 import Label from "../FormElements/common/label";
-import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { fileToBase64 } from "@/utils/dashboard/shared";
 import { DEFAULT_COMPANY_FORM_VALUES } from "@/data/superAdmin";
@@ -18,6 +17,7 @@ import {
   updateCompanyAction,
 } from "@/app/(app)/dashboard/super-admin/company/actions";
 import { Header, HeaderTitle } from "../FormElements/common";
+import { useSyncedState } from "@/hooks/use-synced-state";
 
 export default function CompanyForm({
   initialData,
@@ -30,28 +30,18 @@ export default function CompanyForm({
     register,
     control,
     handleSubmit,
-    reset,
     formState: { errors, isValid, isSubmitting },
   } = useForm<CompanyFormData>({
     mode: "all",
-    defaultValues: {
-      ...DEFAULT_COMPANY_FORM_VALUES,
-      ...initialData,
-    },
-  });
-
-  const [logo, setLogo] = useState<string | null>(
-    existingProfilePhotoUrl ?? null,
-  );
-
-  useEffect(() => {
-    reset({
+    values: {
       ...DEFAULT_COMPANY_FORM_VALUES,
       ...initialData,
       logo: undefined,
-    });
-    setLogo(existingProfilePhotoUrl ?? null);
-  }, [initialData, existingProfilePhotoUrl, reset]);
+    },
+  });
+
+  console.log('initialData', initialData);
+  const [logo, setLogo] = useSyncedState(existingProfilePhotoUrl ?? null);
 
   const { fields, append, remove } = useFieldArray({
     control,

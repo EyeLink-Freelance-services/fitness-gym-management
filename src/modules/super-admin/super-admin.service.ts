@@ -58,7 +58,9 @@ function mapCompanyApiToRow(
     city: company.address.city,
     postcode: company.address.postalCode,
     district: company.address.state,
-    branches: (company.information.branches ?? []).map((b) => b.name),
+    branches: (company.information.branches ?? []).map(
+      (b) => b.branchName ?? b.name ?? "",
+    ),
     standard_price: company.price.standardPrice ?? 0,
     disclaimer_text: company.miscellaneous.disclaimer ?? "",
     terms_and_conditions: company.miscellaneous.agreeTermsOfService

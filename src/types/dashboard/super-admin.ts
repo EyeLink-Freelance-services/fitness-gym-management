@@ -36,8 +36,9 @@ export interface SuperAdminCompanyRow {
 /** Branch as returned by the backend. Swagger field: branchName. */
 export interface CompanyBranchApiBean {
   id?: string;
-  /** NOTE: backend currently serialises this as `name` (not `branchName` per spec). */
-  name: string;
+  branchName?: string;
+  /** Some responses still use `name`. */
+  name?: string;
 }
 
 export interface CompanyInformationApiBean {
