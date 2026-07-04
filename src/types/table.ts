@@ -20,6 +20,10 @@ export interface DataTableProps<TData extends RowData> {
   className?: string;
   tableClassName?: string;
   searchPlaceholder?: string;
+  /** Controlled search value for server-side filtering. */
+  searchValue?: string;
+  /** When set, search is handled by the parent (no client-side filtering). */
+  onSearchChange?: (value: string) => void;
   emptyStateLabel?: string;
   initialPageSize?: number;
   pageSizeOptions?: number[];

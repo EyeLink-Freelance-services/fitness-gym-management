@@ -8,6 +8,7 @@ import AssignClientForm from "@/components/Forms/AssignClientForm";
 import { DataTable } from "@/components/Tables";
 import type { CompanyClient } from "@/types/dashboard/company";
 import type { AssignClientFormData, AssignClientStatus } from "@/types/forms";
+import { useMounted } from "@/hooks/use-mounted";
 import { useEffect, useId, useState } from "react";
 import { createPortal } from "react-dom";
 
@@ -36,12 +37,8 @@ export function CompanyClientCoachAssignTableClient({
 }: CompanyClientCoachAssignTableClientProps) {
   const [selectedAssignment, setSelectedAssignment] =
     useState<CompanyClient | null>(null);
-  const [mounted, setMounted] = useState(false);
+  const mounted = useMounted();
   const titleId = useId();
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     if (!selectedAssignment) return;

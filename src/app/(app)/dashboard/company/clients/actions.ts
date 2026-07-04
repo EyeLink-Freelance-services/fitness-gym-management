@@ -47,10 +47,12 @@ export async function updateClientAction(
 export async function fetchCompanyClientPage(
   pageNumber: number,
   pageSize: number,
+  search?: string,
 ) {
   const { clients, totalCount } = await getCompanyClients({
     pageNumber,
     pageSize,
+    search,
   });
 
   return {
@@ -62,10 +64,12 @@ export async function fetchCompanyClientPage(
 export async function fetchCoachClientPage(
   pageNumber: number,
   pageSize: number,
+  search?: string,
 ) {
   const { clients, totalCount } = await getCompanyClients({
     pageNumber,
     pageSize,
+    search,
   });
 
   return {

@@ -52,6 +52,8 @@ export function DataTable<TData extends RowData>({
   className,
   tableClassName,
   searchPlaceholder,
+  searchValue,
+  onSearchChange,
   emptyStateLabel,
   initialPageSize = 10,
   pageSizeOptions = [5, 10, 20],
@@ -59,34 +61,54 @@ export function DataTable<TData extends RowData>({
   getRowId,
   onRowClick,
 }: DataTableProps<TData>) {
+  const isServerSearch = typeof onSearchChange === "function";
   const [globalFilter, setGlobalFilter] = useState("");
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: initialPageSize,
   });
 
+  const searchInputValue = isServerSearch
+    ? (searchValue ?? "")
+    : globalFilter;
+
+  const handleSearchChange = (value: string) => {
+    if (isServerSearch) {
+      onSearchChange(value);
+      return;
+    }
+    setGlobalFilter(value);
+  };
+
+  // TanStack Table returns unstable function refs by design; not memoization-safe.
+  // eslint-disable-next-line react-hooks/incompatible-library -- useReactTable API
   const table = useReactTable({
     data,
     columns,
     state: {
-      globalFilter,
+      globalFilter: isServerSearch ? "" : globalFilter,
       pagination,
     },
-    onGlobalFilterChange: setGlobalFilter,
+    onGlobalFilterChange: isServerSearch ? undefined : setGlobalFilter,
     onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     globalFilterFn: "includesString",
+    manualFiltering: isServerSearch,
     getRowId,
   });
 
   useEffect(() => {
-    setPagination((current) => ({ ...current, pageIndex: 0 }));
-  }, [data, globalFilter]);
+    setPagination((current) =>
+      current.pageIndex === 0 ? current : { ...current, pageIndex: 0 },
+    );
+  }, [data, globalFilter, searchValue]);
 
   const rows = table.getRowModel().rows;
-  const filteredRowCount = table.getFilteredRowModel().rows.length;
+  const filteredRowCount = isServerSearch
+    ? data.length
+    : table.getFilteredRowModel().rows.length;
   const hasRows = rows.length > 0;
   const hasToolbar = Boolean(searchPlaceholder || toolbar);
 
@@ -119,8 +141,8 @@ export function DataTable<TData extends RowData>({
               {searchPlaceholder ? (
                 <input
                   type="text"
-                  value={globalFilter}
-                  onChange={(event) => setGlobalFilter(event.target.value)}
+                  value={searchInputValue}
+                  onChange={(event) => handleSearchChange(event.target.value)}
                   placeholder={searchPlaceholder}
                   className={cn(inputClasses, "w-full xl:max-w-sm")}
                 />
@@ -217,14 +239,14 @@ export function DataTable<TData extends RowData>({
       </Table>
 
       {showFooter && (
-        <div className="mt-5 flex flex-col gap-3 border-t border-stroke pt-4 text-sm dark:border-dark-3 lg:flex-row lg:items-center lg:justify-between">
-          <div className="text-dark-6 dark:text-dark-6">
+        <div className="mt-5 flex flex-col gap-3 border-t border-stroke pt-4 text-sm dark:border-dark-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="shrink-0 whitespace-nowrap text-dark-6 dark:text-dark-6">
             Showing {rows.length} of {filteredRowCount} result
             {filteredRowCount === 1 ? "" : "s"}
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
-            <label className="flex items-center gap-2 text-dark-6 dark:text-dark-6">
+          <div className="flex flex-wrap items-center gap-3 sm:justify-end">
+            <label className="flex shrink-0 items-center gap-2 text-dark-6 dark:text-dark-6">
               <span>Rows</span>
               <select
                 value={table.getState().pagination.pageSize}
@@ -245,12 +267,12 @@ export function DataTable<TData extends RowData>({
               </select>
             </label>
 
-            <span className="text-dark-6 dark:text-dark-6">
+            <span className="shrink-0 whitespace-nowrap text-dark-6 dark:text-dark-6">
               Page {table.getState().pagination.pageIndex + 1} of{" "}
               {Math.max(table.getPageCount(), 1)}
             </span>
 
-            <div className="flex items-center gap-2">
+            <div className="flex shrink-0 items-center gap-2">
               <Button
                 type="button"
                 label="Previous"

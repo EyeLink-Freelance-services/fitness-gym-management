@@ -92,9 +92,10 @@ export async function getCompanyPayments({
   pageNumber = 0,
   pageSize = 10,
   billingMonth,
-}: GetPageParams & { billingMonth: string }) {
+  search,
+}: GetPageParams & { billingMonth: string; search?: string }) {
   const [clientsResult, companyPricing] = await Promise.all([
-    getCompanyClients({ pageNumber, pageSize }),
+    getCompanyClients({ pageNumber, pageSize, search }),
     getCompanyPricingForCompany(),
   ]);
 

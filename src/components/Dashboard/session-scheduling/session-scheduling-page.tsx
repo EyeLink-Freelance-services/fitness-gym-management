@@ -11,6 +11,7 @@ import type {
 } from "@/types/session-scheduling";
 import { CalendarDate, getLocalTimeZone, today } from "@internationalized/date";
 import { Trash2 } from "lucide-react";
+import { useMounted } from "@/hooks/use-mounted";
 import { createPortal } from "react-dom";
 import { useEffect, useMemo, useState } from "react";
 import type { BookSessionInput } from "@/services/session-scheduling/validation";
@@ -56,13 +57,9 @@ export function SessionSchedulingPage({
 
   const [selected, setSelected] = useState<CalendarDate>(() => today(tz));
   const [activeFormDateIso, setActiveFormDateIso] = useState<string | null>(null);
-  const [mounted, setMounted] = useState(false);
+  const mounted = useMounted();
 
   const sorted = useMemo(() => sortSessions(visibleSessions), [visibleSessions]);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     if (!activeFormDateIso) return;
@@ -237,6 +234,7 @@ export function SessionSchedulingPage({
             <div className="w-full max-w-4xl overflow-hidden rounded-2xl bg-white shadow-xl dark:bg-dark-2">
               <div className="max-h-[85vh] overflow-y-auto p-4">
                 <SessionForm
+                  key={activeFormDateIso}
                   dateIso={activeFormDateIso}
                   clientOptions={clientOptions}
                   onCancel={() => setActiveFormDateIso(null)}

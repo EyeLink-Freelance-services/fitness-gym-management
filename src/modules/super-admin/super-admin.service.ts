@@ -6,6 +6,7 @@ import {
   SuperAdminCompanyRow,
 } from "@/types/dashboard/super-admin";
 import { backendGet, backendPost, backendPut } from "@/lib/api/backend-client";
+import { applyContactSearchParams } from "@/lib/api/apply-search-params";
 import { GetPageParams } from "@/types/dashboard/shared";
 
 function mapCompanyFormToCompanyRequest(form: CompanyFormData) {
@@ -80,9 +81,18 @@ export async function createCompanyService(form: CompanyFormData) {
 export async function getCompanies({
   pageNumber = 0,
   pageSize = 10,
-}: GetPageParams = {}) {
+  search,
+}: GetPageParams & { search?: string } = {}) {
+  const params = new URLSearchParams({
+    pageNumber: String(pageNumber),
+    pageSize: String(pageSize),
+    descendingSort: "true",
+  });
+
+  applyContactSearchParams(params, search, "companyName");
+
   const data = await backendGet<SearchCompaniesApiBean>(
-    `${COMPANY_API_BASE}?pageNumber=${pageNumber}&pageSize=${pageSize}&descendingSort=true`,
+    `${COMPANY_API_BASE}?${params.toString()}`,
   );
 
   return {

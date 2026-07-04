@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { saveClientMetricValuesAction } from "@/app/(app)/dashboard/company/clients/[clientId]/data-entry/actions";
 import { DataEntryWorkspace } from "@/components/Dashboard/client-records/data-entry-workspace";
+import { useSyncedState } from "@/hooks/use-synced-state";
 import type {
   ClientMetricValueDraft,
   SearchClientMetricValueResponseBody,
@@ -22,13 +22,8 @@ export function CompanyDataEntry({
   metricValues: initialMetricValues,
 }: CompanyDataEntryProps) {
   const router = useRouter();
-  const [draft, setDraft] = useState(initialDraft);
-  const [metricValues, setMetricValues] = useState(initialMetricValues);
-
-  useEffect(() => {
-    setDraft(initialDraft);
-    setMetricValues(initialMetricValues);
-  }, [initialDraft, initialMetricValues]);
+  const [draft, setDraft] = useSyncedState(initialDraft);
+  const [metricValues, setMetricValues] = useSyncedState(initialMetricValues);
 
   return (
     <div>

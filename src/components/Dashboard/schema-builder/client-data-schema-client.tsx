@@ -1,7 +1,8 @@
 "use client";
 
+import { useSyncedState } from "@/hooks/use-synced-state";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import {
   createMetricDefinitionAction,
@@ -25,7 +26,7 @@ export function ClientDataSchemaClient({
   pageTitle = "Client Data Configuration",
 }: ClientDataSchemaClientProps) {
   const router = useRouter();
-  const [groups, setGroups] = useState(initialGroups);
+  const [groups, setGroups] = useSyncedState(initialGroups);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"add" | "edit">("add");
   const [defaultGroupName, setDefaultGroupName] = useState("");
@@ -33,10 +34,6 @@ export function ClientDataSchemaClient({
   const [editingValues, setEditingValues] =
     useState<MetricDefinitionFormValues | null>(null);
   const [isSaving, setIsSaving] = useState(false);
-
-  useEffect(() => {
-    setGroups(initialGroups);
-  }, [initialGroups]);
 
   const openAddField = (groupName = "") => {
     setModalMode("add");

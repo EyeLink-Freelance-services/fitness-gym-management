@@ -14,6 +14,7 @@ import type {
   CompanyCoachesTableClientProps,
 } from "@/types/dashboard/company";
 import { useRouter } from "next/navigation";
+import { useMounted } from "@/hooks/use-mounted";
 import { useEffect, useId, useState } from "react";
 import { createPortal } from "react-dom";
 
@@ -25,17 +26,18 @@ export function CompanyCoachesTableClient({
   const [selectedCoach, setSelectedCoach] = useState<CompanyCoachesRow | null>(
     null,
   );
-  const [mounted, setMounted] = useState(false);
+  const mounted = useMounted();
   const titleId = useId();
 
   const pagination = usePagination({
     initialData,
     initialTotalCount: totalCount,
     pageSize: 10,
-    fetchFn: async (pageNumber, pageSize) => {
+    fetchFn: async (pageNumber, pageSize, search) => {
       const { coaches, totalCount } = await fetchCompanyCoachPage(
         pageNumber,
         pageSize,
+        search,
       );
       return {
         data: coaches,
@@ -43,10 +45,6 @@ export function CompanyCoachesTableClient({
       };
     },
   });
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     if (!selectedCoach) return;
@@ -97,24 +95,26 @@ export function CompanyCoachesTableClient({
           onRowClick={setSelectedCoach}
           tableClassName="min-w-[860px]"
           searchPlaceholder="Search coach, email, location..."
+          searchValue={pagination.search}
+          onSearchChange={pagination.setSearch}
           initialPageSize={10}
           emptyStateLabel="No coaches available."
           showFooter={false}
         />
 
-        <div className="mt-5 flex items-center justify-between border-t border-stroke pt-4 text-sm dark:border-dark-3">
-          <div className="text-dark-6 dark:text-dark-6">
+        <div className="mt-5 flex flex-col gap-3 border-t border-stroke pt-4 text-sm dark:border-dark-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="shrink-0 whitespace-nowrap text-dark-6 dark:text-dark-6">
             Showing {pagination.data.length} of {pagination.totalCount} result
             {pagination.totalCount === 1 ? "" : "s"}
           </div>
 
-          <div className="flex items-center gap-3">
-            <span className="text-dark-6 dark:text-dark-6">
+          <div className="flex flex-wrap items-center gap-3 sm:justify-end">
+            <span className="shrink-0 whitespace-nowrap text-dark-6 dark:text-dark-6">
               Page {pagination.currentPage + 1} of{" "}
               {Math.max(pagination.totalPages, 1)}
             </span>
 
-            <div className="flex items-center gap-2">
+            <div className="flex shrink-0 items-center gap-2">
               <Button
                 type="button"
                 label="Previous"

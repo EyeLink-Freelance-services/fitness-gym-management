@@ -43,7 +43,17 @@ export function useCoachSearch(
   }, []);
 
   useEffect(() => {
-    void search("");
+    let cancelled = false;
+
+    queueMicrotask(() => {
+      if (!cancelled) {
+        void search("");
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
   }, [search]);
 
   const displayOptions = useMemo(

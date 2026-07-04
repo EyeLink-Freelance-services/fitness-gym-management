@@ -3,7 +3,7 @@
 import { FormModalTrigger } from "@/components/Dashboard/form-modal-trigger";
 import { cn } from "@/lib/utils";
 import type { AnnouncementListProps } from "@/types/dashboard/announcement";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { AnnouncementCard } from "./announcement-card";
 import { Button } from "@/components/ui-elements/button";
 
@@ -44,10 +44,6 @@ export function AnnouncementList({
     [filteredAnnouncements, currentPage],
   );
 
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [selectedStatus]);
-
   return (
     <section className="mb-8 rounded-[10px] bg-white px-7.5 py-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card">
       <div className="mb-5 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
@@ -77,7 +73,10 @@ export function AnnouncementList({
             <button
               key={item.value}
               type="button"
-              onClick={() => setSelectedStatus(item.value)}
+              onClick={() => {
+                setSelectedStatus(item.value);
+                setCurrentPage(1);
+              }}
               className={cn(
                 "inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition",
                 isActive

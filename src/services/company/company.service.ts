@@ -1,3 +1,4 @@
+import { applyContactSearchParams } from "@/lib/api/apply-search-params";
 import { backendGet, backendPost, backendPut} from "@/lib/api/backend-client";
 import { getAuthContext } from "@/lib/auth/get-auth-context";
 import type {
@@ -49,7 +50,8 @@ export async function getCompanyClients({
   pageNumber = 0,
   pageSize = 10,
   coachId,
-}: GetPageParams & { coachId?: string } = {}) {
+  search,
+}: GetPageParams & { coachId?: string; search?: string } = {}) {
   const companyId = await requireCompanyId();
 
   const params = new URLSearchParams({
@@ -61,6 +63,8 @@ export async function getCompanyClients({
   if (coachId) {
     params.set("coachId", coachId);
   }
+
+  applyContactSearchParams(params, search);
 
   const data = await backendGet<SearchClientsApiBean>(
     `${COMPANY_API_BASE}/${companyId}/clients?${params.toString()}`,
@@ -211,16 +215,7 @@ export async function getCompanyCoaches({
     sort,
   });
 
-  const trimmedSearch = search?.trim();
-  if (trimmedSearch) {
-    if (trimmedSearch.includes("@")) {
-      params.set("email", trimmedSearch);
-    } else if (/^[+\d\s-]+$/.test(trimmedSearch)) {
-      params.set("contactNumber", trimmedSearch);
-    } else {
-      params.set("firstName", trimmedSearch);
-    }
-  }
+  applyContactSearchParams(params, search);
 
   const data = await backendGet<SearchCoachesApiBean>(
     `${COMPANY_API_BASE}/${companyId}/coaches?${params.toString()}`,

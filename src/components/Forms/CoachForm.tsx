@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ImageUpload } from "../FormElements/ImageUpload";
 import type { CoachFormData, CoachFormProps } from "@/types/forms";
@@ -21,9 +21,7 @@ export default function CoachForm({
 }: CoachFormProps) {
   const {
     register,
-    control,
     handleSubmit,
-    watch,
     reset,
     formState: { errors, isValid, isSubmitting },
   } = useForm<CoachFormData>({
@@ -66,15 +64,13 @@ export default function CoachForm({
     });
   }, [initialData, reset]);
 
-  watch();
-
-  const logoRef = useRef<File | null>(null);
+  const [profilePhoto, setProfilePhoto] = useState<File | null>(null);
 
   const onSubmit = async (data: CoachFormData) => {
     try {
       const payload = {
         ...data,
-        profilePhoto: logoRef.current,
+        profilePhoto,
       };
 
       if (mode === "edit" && coachId) {
@@ -194,9 +190,7 @@ export default function CoachForm({
           label="Profile Photo"
           accept="image/*"
           initialPreviewUrl={existingProfilePhotoUrl}
-          onFileChange={(file) => {
-            logoRef.current = file;
-          }}
+          onFileChange={setProfilePhoto}
           hint="PNG, JPG, SVG - max 5MB"
         />
 

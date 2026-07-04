@@ -5,7 +5,7 @@ import InputGroup from "@/components/FormElements/InputGroup";
 import { Button } from "@/components/ui-elements/button";
 import type { CoachTrainingPlanDay } from "@/types/dashboard/client";
 import type { CoachTrainingPlanFormData } from "@/types/forms";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { Header } from "../FormElements/common";
 
 const TRAINING_DAYS = [
@@ -41,9 +41,9 @@ export default function CoachTrainingPlanForm({
 
   const {
     register,
+    control,
     handleSubmit,
     reset,
-    watch,
     formState: { errors, isSubmitting, isValid },
   } = useForm<CoachTrainingPlanFormData>({
     mode: "all",
@@ -54,8 +54,8 @@ export default function CoachTrainingPlanForm({
     reset(initialData);
   }, [initialData, reset]);
 
-  const values = watch();
-  const hasFilledDay = daysToRender.some((day) => values[day]?.trim());
+  const values = useWatch({ control });
+  const hasFilledDay = daysToRender.some((day) => values?.[day]?.trim());
   const canSubmit = mode === "edit" ? isValid : hasFilledDay;
 
   return (

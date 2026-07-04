@@ -6,6 +6,7 @@ import StaffForm from "@/components/Forms/StaffForm";
 import { DataTable } from "@/components/Tables";
 import type { CompanyStaffRow } from "@/types/dashboard/company";
 import { StaffFormData } from "@/types/forms";
+import { useMounted } from "@/hooks/use-mounted";
 import { useEffect, useId, useState } from "react";
 import { createPortal } from "react-dom";
 
@@ -19,12 +20,8 @@ export function CompanyStaffTableClient({
   const [selectedStaff, setSelectedStaff] = useState<CompanyStaffRow | null>(
     null,
   );
-  const [mounted, setMounted] = useState(false);
+  const mounted = useMounted();
   const titleId = useId();
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     if (!selectedStaff) return;

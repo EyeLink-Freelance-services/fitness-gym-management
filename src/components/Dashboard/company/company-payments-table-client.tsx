@@ -29,11 +29,12 @@ export function CompanyPaymentsTableClient({
   const [paidRows, setPaidRows] = useState<Record<string, CompanyPaymentRow>>({});
 
   const fetchPage = useCallback(
-    async (pageNumber: number, pageSize: number) => {
+    async (pageNumber: number, pageSize: number, search: string) => {
       const { payments, totalCount } = await fetchCompanyPaymentPage(
         pageNumber,
         pageSize,
         selectedBillingMonth,
+        search,
       );
       return {
         data: payments,
@@ -134,24 +135,26 @@ export function CompanyPaymentsTableClient({
         getRowId={(row) => row.id}
         tableClassName="min-w-[980px]"
         searchPlaceholder="Search client, plan, billing month..."
+        searchValue={pagination.search}
+        onSearchChange={pagination.setSearch}
         initialPageSize={10}
         emptyStateLabel="No payment records available."
         showFooter={false}
       />
 
-      <div className="mt-5 flex items-center justify-between border-t border-stroke pt-4 text-sm dark:border-dark-3">
-        <div className="text-dark-6 dark:text-dark-6">
+      <div className="mt-5 flex flex-col gap-3 border-t border-stroke pt-4 text-sm dark:border-dark-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="shrink-0 whitespace-nowrap text-dark-6 dark:text-dark-6">
           Showing {pagination.data.length} of {pagination.totalCount} result
           {pagination.totalCount === 1 ? "" : "s"}
         </div>
 
-        <div className="flex items-center gap-3">
-          <span className="text-dark-6 dark:text-dark-6">
+        <div className="flex flex-wrap items-center gap-3 sm:justify-end">
+          <span className="shrink-0 whitespace-nowrap text-dark-6 dark:text-dark-6">
             Page {pagination.currentPage + 1} of{" "}
             {Math.max(pagination.totalPages, 1)}
           </span>
 
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-2">
             <Button
               type="button"
               label="Previous"

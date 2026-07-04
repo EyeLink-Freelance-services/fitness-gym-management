@@ -12,7 +12,7 @@ import {
 } from "@/lib/validation/schemas/assign-client";
 import type { AssignClientOption, AssignCoachOption } from "@/types/dashboard/assign-client";
 import type { AssignClientFormProps } from "@/types/forms";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { Header } from "../FormElements/common";
@@ -64,7 +64,6 @@ export default function AssignClientForm({
   const {
     handleSubmit,
     control,
-    watch,
     setValue,
     reset,
     formState: { errors },
@@ -77,7 +76,7 @@ export default function AssignClientForm({
     },
   });
 
-  const selectedStatus = watch("status");
+  const selectedStatus = useWatch({ control, name: "status" });
 
   useEffect(() => {
     reset({

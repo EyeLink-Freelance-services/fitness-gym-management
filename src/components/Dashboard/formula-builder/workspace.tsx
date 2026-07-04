@@ -14,7 +14,7 @@ import { resolveDefinitionIds } from "@/modules/company/metric-formula.mappers";
 import type { FieldGroup } from "@/types/dashboard/coach-schema";
 import type { FormulaDefinition } from "@/types/dashboard/formula-builder";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 type FormulaBuilderWorkspaceProps = {
@@ -43,12 +43,19 @@ export function FormulaBuilderWorkspace({
     (formula) => formula.id === selectedFormulaId,
   );
   const [formula, setFormula] = useState<FormulaDefinition>(emptyFormula);
+  const [prevSelectedFormulaId, setPrevSelectedFormulaId] =
+    useState(selectedFormulaId);
+  const [prevFormulas, setPrevFormulas] = useState(formulas);
 
-  useEffect(() => {
+  if (
+    selectedFormulaId !== prevSelectedFormulaId ||
+    formulas !== prevFormulas
+  ) {
+    setPrevSelectedFormulaId(selectedFormulaId);
+    setPrevFormulas(formulas);
     const fromList = formulas.find((f) => f.id === selectedFormulaId);
-    if (fromList) setFormula({ ...fromList });
-    else setFormula(emptyFormula());
-  }, [selectedFormulaId, formulas]);
+    setFormula(fromList ? { ...fromList } : emptyFormula());
+  }
 
   const onFormulaChange = useCallback((patch: Partial<FormulaDefinition>) => {
     setFormula((current) => ({ ...current, ...patch }));

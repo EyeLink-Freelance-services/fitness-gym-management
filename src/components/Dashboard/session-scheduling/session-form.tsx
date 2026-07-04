@@ -7,7 +7,7 @@ import { Select } from "@/components/FormElements/select";
 import { Button } from "@/components/ui-elements/button";
 import type { BookSessionInput } from "@/services/session-scheduling/validation";
 import type { SessionClientOption } from "@/types/session-scheduling";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 type SessionFormProps = {
   dateIso: string;
@@ -30,14 +30,6 @@ export function SessionForm({
   const [title, setTitle] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
-
-  useEffect(() => {
-    setError(null);
-    setTimeFrom("10:00");
-    setTimeTo("11:00");
-    setTitle("");
-    setClientId(clientOptions[0]?.id ?? "");
-  }, [clientOptions, dateIso]);
 
   const submit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

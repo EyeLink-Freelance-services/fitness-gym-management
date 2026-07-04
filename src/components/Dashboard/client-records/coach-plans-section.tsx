@@ -56,7 +56,8 @@ import type {
   CoachTrainingPlanFormData,
 } from "@/types/forms";
 
-import { useEffect, useMemo, useState } from "react";
+import { useSyncedState } from "@/hooks/use-synced-state";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 type ServerDietsConfig = {
   clientId: string;
@@ -129,32 +130,26 @@ export function CoachPlansSection({
 
   readOnly = false,
 }: CoachPlansSectionProps) {
-  const [dietPlans, setDietPlans] = useState(initialDietPlans);
+  const [dietPlans, setDietPlans] = useSyncedState(initialDietPlans);
 
-  const [trainingPlans, setTrainingPlans] = useState(initialTrainingPlans);
+  const [trainingPlans, setTrainingPlans] = useSyncedState(initialTrainingPlans);
 
   const [internalDialog, setInternalDialog] = useState<ActivePlanDialog>(null);
 
   const activeDialog =
     controlledDialog !== undefined ? controlledDialog : internalDialog;
 
-  const setActiveDialog = (dialog: ActivePlanDialog) => {
-    if (onActiveDialogChange) {
-      onActiveDialogChange(dialog);
+  const setActiveDialog = useCallback(
+    (dialog: ActivePlanDialog) => {
+      if (onActiveDialogChange) {
+        onActiveDialogChange(dialog);
+        return;
+      }
 
-      return;
-    }
-
-    setInternalDialog(dialog);
-  };
-
-  useEffect(() => {
-    setDietPlans(initialDietPlans);
-  }, [initialDietPlans]);
-
-  useEffect(() => {
-    setTrainingPlans(initialTrainingPlans);
-  }, [initialTrainingPlans]);
+      setInternalDialog(dialog);
+    },
+    [onActiveDialogChange],
+  );
 
   useEffect(() => {
     if (!activeDialog) {
@@ -178,7 +173,7 @@ export function CoachPlansSection({
 
       document.removeEventListener("keydown", onKeyDown);
     };
-  }, [activeDialog]);
+  }, [activeDialog, setActiveDialog]);
 
   const legacyDietRows = useMemo(() => dietPlans.map(toDietRow), [dietPlans]);
 

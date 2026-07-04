@@ -1,7 +1,7 @@
 import { Moon, Sun } from "@/components/IconsCollection/icons";
+import { useMounted } from "@/hooks/use-mounted";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
 
 const THEMES = [
   {
@@ -16,11 +16,7 @@ const THEMES = [
 
 export function ThemeToggleSwitch() {
   const { setTheme, theme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useMounted();
 
   if (!mounted) {
     return null;

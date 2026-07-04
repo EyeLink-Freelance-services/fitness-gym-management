@@ -1,6 +1,6 @@
 "use client";
 
-import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import type { CompanyFormData, CompanyFormProps } from "@/types/forms";
 import { COMPANY_STATES } from "@/data/dashboardForm";
 import InputGroup from "../FormElements/InputGroup";
@@ -9,7 +9,7 @@ import { Button } from "../ui-elements/button";
 import { ImageUpload } from "../FormElements/ImageUpload";
 import { validatePhone, validateRequired } from "@/lib/forms/formValidation";
 import Label from "../FormElements/common/label";
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { fileToBase64 } from "@/utils/dashboard/shared";
 import { DEFAULT_COMPANY_FORM_VALUES } from "@/data/superAdmin";
@@ -30,7 +30,6 @@ export default function CompanyForm({
     register,
     control,
     handleSubmit,
-    watch,
     reset,
     formState: { errors, isValid, isSubmitting },
   } = useForm<CompanyFormData>({
@@ -40,8 +39,6 @@ export default function CompanyForm({
       ...initialData,
     },
   });
-
-  const branches = watch("branches");
 
   useEffect(() => {
     reset({
@@ -56,7 +53,8 @@ export default function CompanyForm({
     name: "branches",
   });
 
-  const logoRef = useRef<File | null>(null);
+  const branches = useWatch({ control, name: "branches" }) ?? [];
+  const [logoFile, setLogoFile] = useState<File | null>(null);
   const canAddBranch = branches.every(
     (branch) => branch.branchName.trim().length > 0,
   );
@@ -64,8 +62,8 @@ export default function CompanyForm({
   const onSubmit = async (data: CompanyFormData) => {
     try {
       let logoBase64: string | null = null;
-      if (logoRef.current) {
-        logoBase64 = await fileToBase64(logoRef.current);
+      if (logoFile) {
+        logoBase64 = await fileToBase64(logoFile);
       }
 
       const logo = logoBase64 ?? existingProfilePhotoUrl ?? data.logo ?? null;
@@ -94,7 +92,7 @@ export default function CompanyForm({
   };
 
   return (
-    <div className="form-panel space-y-4">
+    <div className="form-panel space-y-3 max-sm:rounded-none max-sm:border-0 max-sm:p-0 sm:space-y-4 [&_.panel-header]:max-sm:mb-3 [&_.panel-label]:max-sm:mb-1.5 [&_.panel-sub]:max-sm:mt-1.5 [&_.panel-sub]:max-sm:text-[13px] [&_.panel-title]:max-sm:text-[2rem] [&_.panel-title]:max-sm:tracking-[1px]">
       <Header
         label="- Organization"
         title={mode === "edit" ? "Edit company" : "Register company"}
@@ -134,9 +132,7 @@ export default function CompanyForm({
           label="Company Logo"
           accept="image/*"
           initialPreviewUrl={existingProfilePhotoUrl}
-          onFileChange={(file) => {
-            logoRef.current = file;
-          }}
+          onFileChange={setLogoFile}
           hint="PNG, JPG, SVG - max 5MB"
         />
 
@@ -259,7 +255,7 @@ export default function CompanyForm({
                 variant="outlineDark"
                 size="small"
                 className="shrink-0 !px-3 !py-2 text-red-500 hover:bg-red-500/10"
-                onClick={() => fields.length > 1 && remove(i)}
+                onClick={() => remove(i)}
                 aria-label={`Remove branch ${i + 1}`}
               />
             </div>

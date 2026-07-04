@@ -26,10 +26,12 @@ export async function updateCompanyAction(
 export async function fetchCompaniesPage(
   pageNumber: number,
   pageSize: number,
+  search?: string,
 ) {
   const { companies, totalCount } = await getCompanies({
     pageNumber,
     pageSize,
+    search,
   });
 
   return {

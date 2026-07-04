@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { UseFormRegisterReturn } from "react-hook-form";
 import Label from "./common/label";
 import { Button } from "../ui-elements/button";
 
@@ -34,18 +33,28 @@ export function ImageUpload({
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const previewUrlRef = useRef<string | null>(null);
 
   const setFile = (file: File | null) => {
+    if (previewUrlRef.current) {
+      URL.revokeObjectURL(previewUrlRef.current);
+      previewUrlRef.current = null;
+    }
+
+    const nextUrl = file ? URL.createObjectURL(file) : null;
+    previewUrlRef.current = nextUrl;
     setPreviewFile(file);
+    setPreviewUrl(nextUrl);
     onFileChange(file);
   };
 
   useEffect(() => {
-    if (!previewFile) return setPreviewUrl(null);
-    const url = URL.createObjectURL(previewFile);
-    setPreviewUrl(url);
-    return () => URL.revokeObjectURL(url);
-  }, [previewFile]);
+    return () => {
+      if (previewUrlRef.current) {
+        URL.revokeObjectURL(previewUrlRef.current);
+      }
+    };
+  }, []);
 
   const resolvedPreviewUrl = previewUrl ?? initialPreviewUrl ?? null;
 

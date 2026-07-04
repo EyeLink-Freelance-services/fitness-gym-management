@@ -1,8 +1,8 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useMemo } from "react";
-import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { useMemo } from "react";
+import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { ChevronUpIcon } from "@/components/IconsCollection/icons";
 import InputGroup from "@/components/FormElements/InputGroup";
 import { Select } from "@/components/FormElements/select";
@@ -41,7 +41,59 @@ function fieldLabelClass() {
   return "text-[11px] font-semibold uppercase tracking-[0.22em] text-dark-5 dark:text-dark-6";
 }
 
-export function SchemaFieldModal({
+function getDefaultValues(
+  mode: "add" | "edit",
+  field: SchemaField | null,
+  defaultGroupId: string,
+): SchemaFieldModalFormValues {
+  if (mode === "edit" && field) {
+    const opts =
+      field.type === "dropdown" && field.options?.length
+        ? field.options.map((o) => ({ label: o.label, value: o.value }))
+        : [];
+
+    return {
+      label: field.label,
+      type: field.type,
+      unit: field.unit ?? "",
+      min:
+        field.validation?.min !== undefined
+          ? String(field.validation.min)
+          : "",
+      max:
+        field.validation?.max !== undefined
+          ? String(field.validation.max)
+          : "",
+      groupId: field.groupId,
+      options:
+        field.type === "dropdown"
+          ? opts.length > 0
+            ? opts
+            : [emptyOptionRow]
+          : [],
+    };
+  }
+
+  return {
+    label: "",
+    type: "number",
+    unit: "",
+    min: "",
+    max: "",
+    groupId: defaultGroupId,
+    options: [],
+  };
+}
+
+export function SchemaFieldModal(props: SchemaFieldModalProps) {
+  const instanceKey = props.open
+    ? `${props.mode}:${props.field?.id ?? "new"}:${props.defaultGroupId}`
+    : "closed";
+
+  return <SchemaFieldModalForm key={instanceKey} {...props} />;
+}
+
+function SchemaFieldModalForm({
   open,
   mode,
   groups,
@@ -60,22 +112,11 @@ export function SchemaFieldModal({
     register,
     control,
     handleSubmit,
-    reset,
-    watch,
-    getValues,
     setValue,
     formState: { errors },
   } = useForm<SchemaFieldModalFormValues>({
     resolver: zodResolver(schemaFieldModalFormSchema),
-    defaultValues: {
-      label: "",
-      type: "number",
-      unit: "",
-      min: "",
-      max: "",
-      groupId: defaultGroupId,
-      options: [],
-    },
+    defaultValues: getDefaultValues(mode, field, defaultGroupId),
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -83,55 +124,8 @@ export function SchemaFieldModal({
     name: "options",
   });
 
-  const fieldType = watch("type");
+  const fieldType = useWatch({ control, name: "type" });
   const typeField = register("type");
-
-  useEffect(() => {
-    if (fieldType !== "dropdown") return;
-    if (getValues("options")?.length === 0) {
-      append(emptyOptionRow);
-    }
-  }, [fieldType, append, getValues]);
-
-  useEffect(() => {
-    if (!open) return;
-    if (mode === "edit" && field) {
-      const opts =
-        field.type === "dropdown" && field.options?.length
-          ? field.options.map((o) => ({ label: o.label, value: o.value }))
-          : [];
-      reset({
-        label: field.label,
-        type: field.type,
-        unit: field.unit ?? "",
-        min:
-          field.validation?.min !== undefined
-            ? String(field.validation.min)
-            : "",
-        max:
-          field.validation?.max !== undefined
-            ? String(field.validation.max)
-            : "",
-        groupId: field.groupId,
-        options:
-          field.type === "dropdown"
-            ? opts.length > 0
-              ? opts
-              : [emptyOptionRow]
-            : [],
-      });
-    } else {
-      reset({
-        label: "",
-        type: "number",
-        unit: "",
-        min: "",
-        max: "",
-        groupId: defaultGroupId,
-        options: [],
-      });
-    }
-  }, [open, mode, field, defaultGroupId, reset]);
 
   const submit = (values: SchemaFieldModalFormValues) => {
     const trimmed = values.label.trim();
@@ -165,7 +159,7 @@ export function SchemaFieldModal({
     }
 
     const next: SchemaField = {
-      id: field?.id ?? `schema-field-${key}-${Date.now()}`,
+      id: field?.id ?? `schema-field-${key}`,
       groupId: values.groupId,
       label: trimmed,
       key,
@@ -224,7 +218,10 @@ export function SchemaFieldModal({
                   {...typeField}
                   onChange={(e) => {
                     typeField.onChange(e);
-                    setValue("options", []);
+                    setValue(
+                      "options",
+                      e.target.value === "dropdown" ? [emptyOptionRow] : [],
+                    );
                   }}
                   className="w-full appearance-none rounded-lg border-[1.5px] border-stroke bg-transparent px-5.5 py-3 pr-10 text-dark outline-none transition focus:border-primary dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary"
                 >

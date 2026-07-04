@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import InputGroup from "@/components/FormElements/InputGroup";
 import { Select } from "@/components/FormElements/select";
 import { Button } from "@/components/ui-elements/button";
@@ -68,7 +68,6 @@ export default function CoachDietPlanForm({
     register,
     handleSubmit,
     reset,
-    watch,
     formState: { errors, isSubmitting, isValid },
   } = useForm<CoachDietPlanFormData>({
     mode: "all",
@@ -96,7 +95,7 @@ export default function CoachDietPlanForm({
     });
   }, [initialData, reset, existingDietRows]);
 
-  const meals = watch("meals");
+  const meals = useWatch({ control, name: "meals" }) ?? [];
   const canAddMeal =
     allowAddMeal &&
     meals.length > 0 &&

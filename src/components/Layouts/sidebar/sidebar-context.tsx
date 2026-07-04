@@ -2,7 +2,7 @@
 
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SidebarContextType } from "@/types/shared";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState } from "react";
 
 const SidebarContext = createContext<SidebarContextType | null>(null);
 
@@ -21,16 +21,14 @@ export function SidebarProvider({
   children: React.ReactNode;
   defaultOpen?: boolean;
 }) {
-  const [isOpen, setIsOpen] = useState(defaultOpen);
   const isMobile = useIsMobile();
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+  const [prevIsMobile, setPrevIsMobile] = useState(isMobile);
 
-  useEffect(() => {
-    if (isMobile) {
-      setIsOpen(false);
-    } else {
-      setIsOpen(true);
-    }
-  }, [isMobile]);
+  if (isMobile !== prevIsMobile) {
+    setPrevIsMobile(isMobile);
+    setIsOpen(!isMobile);
+  }
 
   function toggleSidebar() {
     setIsOpen((prev) => !prev);

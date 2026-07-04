@@ -8,7 +8,7 @@ import {
 import type { CompanyClientFormValues } from "@/types/dashboard/company";
 import { CompanyClientFormProps } from "@/types/forms";
 import { useEffect } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { CoachSearchSelect } from "@/components/FormElements/CoachSearchSelect";
 import InputGroup from "../FormElements/InputGroup";
 import { Select } from "../FormElements/select";
@@ -34,7 +34,6 @@ export default function ClientForm({
     register,
     handleSubmit,
     setValue,
-    watch,
     reset,
     control,
     formState: { errors, isValid, isSubmitting },
@@ -46,7 +45,7 @@ export default function ClientForm({
     },
   });
 
-  const membershipPlan = watch("membershipPlan");
+  const membershipPlan = useWatch({ control, name: "membershipPlan" });
 
   useEffect(() => {
     reset({

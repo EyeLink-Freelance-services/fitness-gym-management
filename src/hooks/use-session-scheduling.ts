@@ -10,8 +10,9 @@ import type {
   ScheduledSession,
   SessionSchedulingRole,
 } from "@/types/session-scheduling";
+import { useSyncedState } from "@/hooks/use-synced-state";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 
 function filterSessionsForClient(
   sessions: ScheduledSession[],
@@ -27,11 +28,7 @@ export function useSessionScheduling(
   viewerClientId?: string,
 ) {
   const router = useRouter();
-  const [sessions, setSessions] = useState<ScheduledSession[]>(initialSessions);
-
-  useEffect(() => {
-    setSessions(initialSessions);
-  }, [initialSessions]);
+  const [sessions, setSessions] = useSyncedState(initialSessions);
 
   const visibleSessions = useMemo(() => {
     if (role === "coach") return sessions;
@@ -59,7 +56,7 @@ export function useSessionScheduling(
       router.refresh();
       return { ok: true as const };
     },
-    [router],
+    [router, setSessions],
   );
 
   const deleteSession = useCallback(
@@ -77,7 +74,7 @@ export function useSessionScheduling(
       router.refresh();
       return { ok: true as const };
     },
-    [router, sessions],
+    [router, sessions, setSessions],
   );
 
   return {

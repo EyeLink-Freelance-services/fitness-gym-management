@@ -4,6 +4,7 @@ import { DataTable } from "@/components/Tables";
 import { FormModalTrigger } from "@/components/Dashboard/form-modal-trigger";
 import { SuperAdminCompanyRow } from "@/types/dashboard/super-admin";
 import { superAdminCompanyColumns } from "@/components/Dashboard/table-column/super-admin-column";
+import { useMounted } from "@/hooks/use-mounted";
 import { useEffect, useId, useState } from "react";
 import { CompanyFormData } from "@/types/forms";
 import { createPortal } from "react-dom";
@@ -22,17 +23,18 @@ export default function CompanyTableClient({
   const router = useRouter();
   const [selectedCompany, setSelectedCompany] =
     useState<SuperAdminCompanyRow | null>(null);
-  const [mounted, setMounted] = useState(false);
+  const mounted = useMounted();
   const titleId = useId();
 
   const pagination = usePagination({
     initialData,
     initialTotalCount: totalCount,
     pageSize: 10,
-    fetchFn: async (pageNumber, pageSize) => {
+    fetchFn: async (pageNumber, pageSize, search) => {
       const { companies, totalCount } = await fetchCompaniesPage(
         pageNumber,
         pageSize,
+        search,
       );
       return {
         data: companies,
@@ -40,10 +42,6 @@ export default function CompanyTableClient({
       };
     },
   });
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     if (!selectedCompany) return;
@@ -106,6 +104,8 @@ export default function CompanyTableClient({
           data={pagination.data}
           columns={superAdminCompanyColumns}
           searchPlaceholder="Search company, brn, contact..."
+          searchValue={pagination.search}
+          onSearchChange={pagination.setSearch}
           initialPageSize={10}
           emptyStateLabel="No companies available."
           getRowId={(row) => row.id}
@@ -115,19 +115,19 @@ export default function CompanyTableClient({
         />
 
         {/* Server-Side Pagination */}
-        <div className="mt-5 flex items-center justify-between border-t border-stroke pt-4 text-sm dark:border-dark-3">
-          <div className="text-dark-6 dark:text-dark-6">
+        <div className="mt-5 flex flex-col gap-3 border-t border-stroke pt-4 text-sm dark:border-dark-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="shrink-0 whitespace-nowrap text-dark-6 dark:text-dark-6">
             Showing {pagination.data.length} of {pagination.totalCount} result
             {pagination.totalCount === 1 ? "" : "s"}
           </div>
 
-          <div className="flex items-center gap-3">
-            <span className="text-dark-6 dark:text-dark-6">
+          <div className="flex flex-wrap items-center gap-3 sm:justify-end">
+            <span className="shrink-0 whitespace-nowrap text-dark-6 dark:text-dark-6">
               Page {pagination.currentPage + 1} of{" "}
               {Math.max(pagination.totalPages, 1)}
             </span>
 
-            <div className="flex items-center gap-2">
+            <div className="flex shrink-0 items-center gap-2">
               <Button
                 type="button"
                 label="Previous"

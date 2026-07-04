@@ -1,5 +1,6 @@
 "use client";
 
+import { useMounted } from "@/hooks/use-mounted";
 import { useEffect, useId, useState } from "react";
 import { createPortal } from "react-dom";
 import AnnouncementForm from "@/components/Forms/AnnouncementForm";
@@ -19,7 +20,7 @@ export function FormModalTrigger({
   onSuccess,
 }: FormModalTriggerProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const mounted = useMounted();
   const titleId = useId();
 
   const close = () => setIsOpen(false);
@@ -27,10 +28,6 @@ export function FormModalTrigger({
     close();
     onSuccess?.();
   };
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     if (!isOpen) return;

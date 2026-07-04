@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useSyncedState } from "@/hooks/use-synced-state";
+import { useMemo, useState } from "react";
 import { ComputedResultsPanel } from "@/components/Dashboard/client-records/computed-results-panel";
 import { DynamicFormGroup } from "@/components/Dashboard/client-records/dynamic-form-group";
 import { Button } from "@/components/ui-elements/button";
@@ -33,12 +34,8 @@ export function DataEntryWorkspace({
   formulas,
   onSave,
 }: DataEntryWorkspaceProps) {
-  const [values, setValues] = useState<Record<string, string>>(draft.values);
+  const [values, setValues] = useSyncedState(draft.values);
   const [isSaving, setIsSaving] = useState(false);
-
-  useEffect(() => {
-    setValues(draft.values);
-  }, [draft]);
 
   const clientInitials = initials(draft.clientName);
 

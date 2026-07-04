@@ -11,11 +11,13 @@ export async function fetchCompanyPaymentPage(
   pageNumber: number,
   pageSize: number,
   billingMonth: string,
+  search?: string,
 ) {
   const { payments, totalCount } = await getCompanyPayments({
     pageNumber,
     pageSize,
     billingMonth,
+    search,
   });
 
   return {
