@@ -6,9 +6,14 @@ import { useSidebarContext } from "../sidebar/sidebar-context";
 import { Notification } from "./notification";
 import { UserInfo } from "./user-info";
 import { MenuIcon } from "@/components/IconsCollection/icons";
+import { useAuth } from "@/app/context/auth-context";
+import { getRoleFromAuthContext } from "@/config/routes.config";
 
 export function Header() {
   const { toggleSidebar, isMobile } = useSidebarContext();
+  const auth = useAuth();
+  const role = getRoleFromAuthContext(auth);
+  const showNotifications = role !== "super-admin" && role !== "company";
 
   return (
     <header className="sticky top-0 z-[30] flex items-center justify-between border-b border-stroke bg-white px-4 py-5 shadow-1 dark:border-stroke-dark dark:bg-gray-dark md:px-5 2xl:px-10">
@@ -34,7 +39,7 @@ export function Header() {
 
       <div className="flex flex-1 items-center justify-end gap-2 min-[375px]:gap-4">
         {/* <ThemeToggleSwitch /> */}
-        <Notification />
+        {showNotifications ? <Notification /> : null}
 
         <div className="shrink-0">
           <UserInfo />

@@ -171,7 +171,10 @@ export function isPathAllowedForRole(pathname: string, role: AppRole | null): bo
   if (!role) return false;
 
   if (role === "client") {
-    return pathname === ROUTES.DASHBOARD.COMPANY.ROOT;
+    return (
+      pathname === ROUTES.DASHBOARD.COMPANY.ROOT ||
+      pathname === ROUTES.DASHBOARD.COMPANY.NOTICES
+    );
   }
 
   if (role === "company-coach") {

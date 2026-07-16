@@ -129,6 +129,14 @@ const SIDEBAR_ITEM_CONFIG: SidebarItemConfig[] = [
     icon: Icons.HomeIcon,
     items: [],
   },
+  {
+    sectionLabel: "CLIENT",
+    roles: ["client"],
+    title: "Announcement",
+    url: ROUTES.DASHBOARD.COMPANY.NOTICES,
+    icon: Icons.Alphabet,
+    items: [],
+  },
 ];
 
 export function getSidebarNavForRole(role: AppRole | null): NavSection[] {

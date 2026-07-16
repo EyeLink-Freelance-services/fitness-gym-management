@@ -136,7 +136,7 @@ export default async function CompanyDashboardPage({
         <Suspense fallback={<Skeleton />}>
           <TableUI
             title="Announcements"
-            description="Recent client communications and scheduled updates."
+            description="Recent announcements and events."
             data={announcements}
             columns={announcementColumns}
             rowKey={(row) => row.id}

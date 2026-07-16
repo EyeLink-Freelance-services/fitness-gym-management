@@ -122,7 +122,10 @@ export type FormModalId = "client" | "company" | "coach" | "staff";
 
 export interface AnnouncementFormData {
   title: string;
-  message: string;
+  content?: string;
+  noticeType: "ANNOUNCEMENT" | "EVENT";
+  eventDateTime?: string;
+  expiresAt?: string;
 }
 
 export interface CoachDietPlanMealFormData {

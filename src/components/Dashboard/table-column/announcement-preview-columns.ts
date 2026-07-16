@@ -4,26 +4,23 @@ import type { TableUIColumn } from "@/types/shared";
 export const announcementColumns: TableUIColumn<AnnouncementCardItem>[] = [
   {
     key: "title",
-    label: "Announcement",
+    label: "Title",
     align: "left",
-    headClassName: "min-w-[240px]",
+    headClassName: "min-w-[200px]",
   },
   {
-    key: "audience",
-    label: "Audience",
+    key: "noticeType",
+    label: "Type",
     align: "left",
-    headClassName: "min-w-[140px]",
+    render: (row) =>
+      row.noticeType === "EVENT" ? "Event" : "Announcement",
+    headClassName: "min-w-[120px]",
   },
   {
     key: "timestampLabel",
-    label: "Publish Date",
+    label: "Posted",
     align: "left",
+    render: (row) => row.timestampLabel?.replace(/^Posted\s+/, "") ?? "—",
     headClassName: "min-w-[140px]",
-  },
-  {
-    key: "status",
-    label: "Status",
-    render: (row) => row.status,
-    headClassName: "min-w-[120px]",
   },
 ];

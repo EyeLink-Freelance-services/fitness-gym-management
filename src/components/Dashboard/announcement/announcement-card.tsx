@@ -1,7 +1,10 @@
 "use client";
 
-import { Button } from "@/components/ui-elements/button";
-import { StatusBadge } from "@/components/ui-elements/status-badge";
+import {
+  Calendar,
+  PencilSquareIcon,
+  TrashIcon,
+} from "@/components/IconsCollection/icons";
 import { cn } from "@/lib/utils";
 import type { AnnouncementCardProps } from "@/types/dashboard/announcement";
 import { StatusTone } from "@/types/shared";
@@ -16,57 +19,93 @@ const accentClasses: Record<StatusTone, string> = {
   neutral: "border-dark/20 border-l-4 border-l-dark dark:border-white/10",
 };
 
-export function AnnouncementCard({ announcement }: AnnouncementCardProps) {
+export function AnnouncementCard({
+  announcement,
+  onEdit,
+  onDelete,
+  isDeleting,
+}: AnnouncementCardProps) {
+  const typeLabel =
+    announcement.noticeType === "EVENT" ? "Event" : "Announcement";
+  const showActions = Boolean(onEdit || onDelete);
+
   return (
     <article
       className={cn(
-        "rounded-[14px] border bg-white px-5 py-5 shadow-1 dark:bg-gray-dark dark:shadow-card",
+        "overflow-hidden rounded-[14px] border bg-white px-5 py-5 shadow-1 dark:bg-gray-dark dark:shadow-card",
         accentClasses[announcement.accent],
       )}
     >
-      <div className="mb-4 flex flex-wrap items-center gap-2">
-        {/* <StatusBadge
-          label={announcement.priority}
-          tone={announcement.priorityTone}
-        /> */}
-
-        <span className="inline-flex rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary dark:bg-primary/15">
-          {announcement.audience}
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+        <span
+          className={cn(
+            "inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium",
+            announcement.noticeType === "EVENT"
+              ? "bg-[#FFA70B]/15 text-[#FFA70B]"
+              : "bg-primary/10 text-primary dark:bg-primary/15",
+          )}
+        >
+          <Calendar className="size-3.5" />
+          {typeLabel}
         </span>
 
-        <StatusBadge
-          label={announcement.status}
-          tone={announcement.statusTone}
-        />
-
-        {announcement.timestampLabel ? (
-          <span className="text-sm text-dark-6 dark:text-dark-6">
-            {announcement.timestampLabel}
-          </span>
+        {showActions ? (
+          <div className="flex items-center gap-1">
+            {onEdit ? (
+              <button
+                type="button"
+                aria-label={`Edit ${typeLabel.toLowerCase()}`}
+                disabled={isDeleting}
+                onClick={() => onEdit(announcement)}
+                className="rounded-lg p-2 text-dark-6 transition hover:bg-gray-2 hover:text-primary disabled:cursor-not-allowed disabled:opacity-50 dark:text-dark-6 dark:hover:bg-dark-3"
+              >
+                <PencilSquareIcon className="size-4" />
+              </button>
+            ) : null}
+            {onDelete ? (
+              <button
+                type="button"
+                aria-label={`Delete ${typeLabel.toLowerCase()}`}
+                disabled={isDeleting}
+                onClick={() => void onDelete(announcement.id)}
+                className="rounded-lg p-2 text-red transition hover:bg-red/10 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <TrashIcon className="size-4" />
+              </button>
+            ) : null}
+          </div>
         ) : null}
       </div>
 
-      <div>
-        <h3 className="text-xl font-semibold text-dark dark:text-white">
+      <div className="min-w-0 overflow-hidden">
+        <h3 className="break-words text-xl font-semibold text-dark dark:text-white">
           {announcement.title}
         </h3>
-        <p className="mt-2 max-w-4xl text-base leading-7 text-dark-6 dark:text-dark-6">
-          {announcement.description}
-        </p>
+        {announcement.description ? (
+          <p className="mt-2 max-w-full break-all text-base leading-7 text-dark-6 dark:text-dark-6">
+            {announcement.description}
+          </p>
+        ) : null}
       </div>
 
-      <div className="flex flex-col gap-4 pt-4 xl:flex-row xl:items-center xl:justify-end">
-        <div className="flex flex-wrap items-center gap-3">
-          {announcement.actions.map((action) => (
-            <Button
-              key={`${announcement.id}-${action.label}`}
-              label={action.label}
-              size="small"
-              variant={action.variant}
-              toastMessage={action.toastMessage}
-            />
-          ))}
-        </div>
+      <div className="mt-4 space-y-1.5 text-sm text-dark-6 dark:text-dark-6">
+        {announcement.eventDateLabel ? (
+          <p className="flex items-center gap-2">
+            <Calendar className="size-4 shrink-0" />
+            {announcement.eventDateLabel}
+          </p>
+        ) : null}
+        {announcement.timestampLabel ? (
+          <p className="flex items-center gap-2">
+            <Calendar className="size-4 shrink-0" />
+            {announcement.timestampLabel}
+          </p>
+        ) : null}
+        {announcement.expiresLabel ? (
+          <p className="flex items-center gap-2">
+            Expires {announcement.expiresLabel}
+          </p>
+        ) : null}
       </div>
     </article>
   );

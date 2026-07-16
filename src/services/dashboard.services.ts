@@ -3,12 +3,6 @@ import {
   COMPANY_STAFF_ROWS,
 } from "@/data/company";
 import {
-  COMPANY_ANNOUNCEMENT_FILTERS,
-  COMPANY_ANNOUNCEMENT_OVERVIEW,
-  COMPANY_ANNOUNCEMENTS,
-} from "@/data/company-announcement";
-import { COMPANY_ANNOUNCEMENT_METRICS } from "@/data/company-announcement-metrics";
-import {
   COMPANY_MEMBERSHIP_DISTRIBUTION,
   COMPANY_MEMBERSHIP_OVERVIEW,
   COMPANY_MEMBERSHIP_PLANS,
@@ -137,27 +131,14 @@ export async function getCompanyMembershipPromotions() {
   return COMPANY_MEMBERSHIP_PROMOTIONS;
 }
 
-export async function getCompanyAnnouncementOverviewData() {
-  await new Promise((r) => setTimeout(r, 200));
-  return COMPANY_ANNOUNCEMENT_OVERVIEW;
-}
+export async function getCompanyAnnouncements(limit = 4) {
+  const { getRecentNotices } = await import(
+    "@/services/company/notice.service"
+  );
+  const { mapNoticeToCardItem } = await import(
+    "@/types/dashboard/announcement"
+  );
 
-export async function getCompanyAnnouncements(limit?: number) {
-  await new Promise((r) => setTimeout(r, 200));
-
-  if (!limit) {
-    return COMPANY_ANNOUNCEMENTS;
-  }
-
-  return COMPANY_ANNOUNCEMENTS.slice(0, limit);
-}
-
-export async function getCompanyAnnouncementFilters() {
-  await new Promise((r) => setTimeout(r, 200));
-  return COMPANY_ANNOUNCEMENT_FILTERS;
-}
-
-export async function getCompanyAnnouncementMetrics() {
-  await new Promise((r) => setTimeout(r, 200));
-  return COMPANY_ANNOUNCEMENT_METRICS;
+  const notices = await getRecentNotices(limit);
+  return notices.map(mapNoticeToCardItem);
 }
