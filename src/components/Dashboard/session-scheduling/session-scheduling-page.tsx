@@ -1,6 +1,7 @@
 "use client";
 
 import { DashboardSection } from "@/components/Dashboard/dashboard-section";
+import { FormModalShell } from "@/components/Dashboard/form-modal-shell";
 import { SessionCalendar } from "@/components/Dashboard/session-scheduling/session-calendar";
 import { SessionForm } from "@/components/Dashboard/session-scheduling/session-form";
 import { useSessionScheduling } from "@/hooks/use-session-scheduling";
@@ -231,17 +232,15 @@ export function SessionSchedulingPage({
               }
             }}
           >
-            <div className="w-full max-w-4xl overflow-hidden rounded-2xl bg-white shadow-xl dark:bg-dark-2">
-              <div className="max-h-[85vh] overflow-y-auto p-4">
-                <SessionForm
-                  key={activeFormDateIso}
-                  dateIso={activeFormDateIso}
-                  clientOptions={clientOptions}
-                  onCancel={() => setActiveFormDateIso(null)}
-                  onSave={handleSave}
-                />
-              </div>
-            </div>
+            <FormModalShell onClose={() => setActiveFormDateIso(null)}>
+              <SessionForm
+                key={activeFormDateIso}
+                dateIso={activeFormDateIso}
+                clientOptions={clientOptions}
+                onCancel={() => setActiveFormDateIso(null)}
+                onSave={handleSave}
+              />
+            </FormModalShell>
           </div>,
           document.body,
         )}

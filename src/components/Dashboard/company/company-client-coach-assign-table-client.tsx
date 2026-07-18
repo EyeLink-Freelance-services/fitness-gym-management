@@ -1,5 +1,6 @@
 "use client";
 
+import { FormModalShell } from "@/components/Dashboard/form-modal-shell";
 import { FormModalTrigger } from "@/components/Dashboard/form-modal-trigger";
 import {
   companyClientCoachAssignmentColumns,
@@ -109,15 +110,13 @@ export function CompanyClientCoachAssignTableClient({
               }
             }}
           >
-            <div className="w-full max-w-4xl overflow-hidden rounded-2xl bg-white shadow-xl dark:bg-dark-2">
-              <div className="max-h-[85vh] overflow-y-auto p-4">
-                <AssignClientForm
-                  mode="edit"
-                  initialData={selectedAssignmentFormData}
-                  onSuccess={() => setSelectedAssignment(null)}
-                />
-              </div>
-            </div>
+            <FormModalShell onClose={() => setSelectedAssignment(null)}>
+              <AssignClientForm
+                mode="edit"
+                initialData={selectedAssignmentFormData}
+                onSuccess={() => setSelectedAssignment(null)}
+              />
+            </FormModalShell>
           </div>,
           document.body,
         )}

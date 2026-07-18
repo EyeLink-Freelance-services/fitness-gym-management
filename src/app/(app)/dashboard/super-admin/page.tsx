@@ -46,7 +46,7 @@ export default async function SuperAdminDashboardPage({
       <div className="col-span-12 mt-8 grid">
         <Suspense fallback={<Skeleton />}>
           <TableUI
-            title="Last 5 Companies"
+            title="Recent Companies"
             data={last5Companies}
             columns={superAdminCompanyPreviewColumns}
             buttonLabel="View All"

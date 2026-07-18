@@ -1,5 +1,6 @@
 "use client";
 
+import { FormModalShell } from "@/components/Dashboard/form-modal-shell";
 import { FormModalTrigger } from "@/components/Dashboard/form-modal-trigger";
 import { companyStaffColumns } from "@/components/Dashboard/table-column/company-columns";
 import StaffForm from "@/components/Forms/StaffForm";
@@ -89,15 +90,13 @@ export function CompanyStaffTableClient({
               }
             }}
           >
-            <div className="w-full max-w-4xl overflow-hidden rounded-2xl bg-white shadow-xl dark:bg-dark-2">
-              <div className="max-h-[85vh] overflow-y-auto p-4">
-                <StaffForm
-                  mode="edit"
-                  initialData={selectedStaffFormData}
-                  onSuccess={() => setSelectedStaff(null)}
-                />
-              </div>
-            </div>
+            <FormModalShell onClose={() => setSelectedStaff(null)}>
+              <StaffForm
+                mode="edit"
+                initialData={selectedStaffFormData}
+                onSuccess={() => setSelectedStaff(null)}
+              />
+            </FormModalShell>
           </div>,
           document.body,
         )}

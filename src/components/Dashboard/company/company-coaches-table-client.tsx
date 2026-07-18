@@ -1,6 +1,7 @@
 "use client";
 
 import { fetchCompanyCoachPage } from "@/app/(app)/dashboard/company/coaches/actions";
+import { FormModalShell } from "@/components/Dashboard/form-modal-shell";
 import { FormModalTrigger } from "@/components/Dashboard/form-modal-trigger";
 import CoachForm from "@/components/Forms/CoachForm";
 import { companyCoachColumns } from "@/components/Dashboard/table-column/company-columns";
@@ -159,19 +160,17 @@ export function CompanyCoachesTableClient({
               }
             }}
           >
-            <div className="w-full max-w-4xl overflow-hidden rounded-2xl bg-white shadow-xl dark:bg-dark-2">
-              <div className="max-h-[85vh] overflow-y-auto p-4">
-                <CoachForm
-                  mode="edit"
-                  coachId={selectedCoach.id}
-                  initialData={mapCompanyCoachesRowToFormValues(selectedCoach)}
-                  existingProfilePhotoUrl={
-                    selectedCoach.profile_photo ?? undefined
-                  }
-                  onSuccess={handleCoachSuccess}
-                />
-              </div>
-            </div>
+            <FormModalShell onClose={() => setSelectedCoach(null)}>
+              <CoachForm
+                mode="edit"
+                coachId={selectedCoach.id}
+                initialData={mapCompanyCoachesRowToFormValues(selectedCoach)}
+                existingProfilePhotoUrl={
+                  selectedCoach.profile_photo ?? undefined
+                }
+                onSuccess={handleCoachSuccess}
+              />
+            </FormModalShell>
           </div>,
           document.body,
         )}

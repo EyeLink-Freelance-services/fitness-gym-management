@@ -1,5 +1,6 @@
 "use client";
 
+import { FormModalShell } from "@/components/Dashboard/form-modal-shell";
 import { FormModalTrigger } from "@/components/Dashboard/form-modal-trigger";
 import AnnouncementForm from "@/components/Forms/AnnouncementForm";
 import { deleteNoticeAction } from "@/app/(app)/dashboard/company/announcement/actions";
@@ -162,22 +163,20 @@ export function AnnouncementList({
               if (e.target === e.currentTarget) setEditingNotice(null);
             }}
           >
-            <div className="w-full max-w-4xl overflow-hidden rounded-2xl bg-white shadow-xl dark:bg-dark-2">
-              <div className="max-h-[85vh] overflow-y-auto p-4">
-                <AnnouncementForm
-                  mode="edit"
-                  noticeId={editingNotice.id}
-                  initialData={{
-                    title: editingNotice.title,
-                    content: editingNotice.description,
-                    noticeType: editingNotice.noticeType,
-                    eventDateTime: editingNotice.eventDateTime,
-                    expiresAt: editingNotice.expiresAt,
-                  }}
-                  onSuccess={handleEditSuccess}
-                />
-              </div>
-            </div>
+            <FormModalShell onClose={() => setEditingNotice(null)}>
+              <AnnouncementForm
+                mode="edit"
+                noticeId={editingNotice.id}
+                initialData={{
+                  title: editingNotice.title,
+                  content: editingNotice.description,
+                  noticeType: editingNotice.noticeType,
+                  eventDateTime: editingNotice.eventDateTime,
+                  expiresAt: editingNotice.expiresAt,
+                }}
+                onSuccess={handleEditSuccess}
+              />
+            </FormModalShell>
           </div>,
           document.body,
         )}

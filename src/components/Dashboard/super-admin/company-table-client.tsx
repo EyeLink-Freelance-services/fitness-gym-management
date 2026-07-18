@@ -1,6 +1,7 @@
 "use client";
 
 import { DataTable } from "@/components/Tables";
+import { FormModalShell } from "@/components/Dashboard/form-modal-shell";
 import { FormModalTrigger } from "@/components/Dashboard/form-modal-trigger";
 import { SuperAdminCompanyRow } from "@/types/dashboard/super-admin";
 import { superAdminCompanyColumns } from "@/components/Dashboard/table-column/super-admin-column";
@@ -172,23 +173,21 @@ export default function CompanyTableClient({
               }
             }}
           >
-            <div className="w-full max-w-4xl overflow-hidden rounded-2xl bg-white shadow-xl dark:bg-dark-2">
-              <div className="max-h-[85vh] overflow-y-auto p-4">
-                <CompanyForm
-                  mode="edit"
-                  companyId={selectedCompany.id}
-                  initialData={selectedCompanyFormData}
-                  existingProfilePhotoUrl={
-                    selectedCompany.company_logo ?? undefined
-                  }
-                  onSuccess={async () => {
-                    await pagination.refetchCurrentPage();
-                    router.refresh();
-                    setSelectedCompany(null);
-                  }}
-                />
-              </div>
-            </div>
+            <FormModalShell onClose={() => setSelectedCompany(null)}>
+              <CompanyForm
+                mode="edit"
+                companyId={selectedCompany.id}
+                initialData={selectedCompanyFormData}
+                existingProfilePhotoUrl={
+                  selectedCompany.company_logo ?? undefined
+                }
+                onSuccess={async () => {
+                  await pagination.refetchCurrentPage();
+                  router.refresh();
+                  setSelectedCompany(null);
+                }}
+              />
+            </FormModalShell>
           </div>,
           document.body,
         )}

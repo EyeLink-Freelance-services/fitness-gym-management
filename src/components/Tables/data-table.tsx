@@ -116,7 +116,7 @@ export function DataTable<TData extends RowData>({
   return (
     <div
       className={cn(
-        "grid rounded-[10px] bg-white p-6 shadow-1 dark:bg-gray-dark dark:shadow-card",
+        "grid min-w-0 rounded-[10px] bg-white p-4 shadow-1 dark:bg-gray-dark dark:shadow-card sm:p-6",
         className,
       )}
     >
@@ -157,7 +157,7 @@ export function DataTable<TData extends RowData>({
         </div>
       </div>
 
-      <div className="relative">
+      <div className="relative min-w-0 overflow-x-auto">
         {isLoading && (
           <div
             className="absolute inset-0 z-10 flex items-center justify-center rounded-[10px] bg-white/70 dark:bg-gray-dark/70"

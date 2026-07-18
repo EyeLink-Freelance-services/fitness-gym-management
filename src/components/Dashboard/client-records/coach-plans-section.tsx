@@ -8,6 +8,8 @@ import {
   coachTrainingPlanColumns,
 } from "@/components/Dashboard/table-column/coach-plan-columns";
 
+import { FormModalShell } from "@/components/Dashboard/form-modal-shell";
+
 import CoachDietPlanForm from "@/components/Forms/CoachDietPlanForm";
 
 import CoachTrainingPlanForm from "@/components/Forms/CoachTrainingPlanForm";
@@ -470,31 +472,29 @@ export function CoachPlansSection({
             }
           }}
         >
-          <div className="w-full max-w-4xl overflow-hidden rounded-2xl bg-white shadow-xl dark:bg-dark-2">
-            <div className="max-h-[85vh] overflow-y-auto p-4">
-              {activeDialog.type === "diet" ? (
-                <CoachDietPlanForm
-                  mode={activeDialog.mode}
-                  initialData={dietFormData}
-                  allowAddMeal={!serverDiets || activeDialog.mode === "create"}
-                  allowRemoveMeal={
-                    !serverDiets || activeDialog.mode === "create"
-                  }
-                  existingDietRows={existingDietRowsForForm}
-                  onCancel={() => setActiveDialog(null)}
-                  onSubmit={handleDietSubmit}
-                />
-              ) : (
-                <CoachTrainingPlanForm
-                  mode={activeDialog.mode}
-                  initialData={trainingFormData}
-                  visibleDays={trainingVisibleDays}
-                  onCancel={() => setActiveDialog(null)}
-                  onSubmit={handleTrainingSubmit}
-                />
-              )}
-            </div>
-          </div>
+          <FormModalShell onClose={() => setActiveDialog(null)}>
+            {activeDialog.type === "diet" ? (
+              <CoachDietPlanForm
+                mode={activeDialog.mode}
+                initialData={dietFormData}
+                allowAddMeal={!serverDiets || activeDialog.mode === "create"}
+                allowRemoveMeal={
+                  !serverDiets || activeDialog.mode === "create"
+                }
+                existingDietRows={existingDietRowsForForm}
+                onCancel={() => setActiveDialog(null)}
+                onSubmit={handleDietSubmit}
+              />
+            ) : (
+              <CoachTrainingPlanForm
+                mode={activeDialog.mode}
+                initialData={trainingFormData}
+                visibleDays={trainingVisibleDays}
+                onCancel={() => setActiveDialog(null)}
+                onSubmit={handleTrainingSubmit}
+              />
+            )}
+          </FormModalShell>
         </div>
       )}
     </>

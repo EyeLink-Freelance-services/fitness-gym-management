@@ -8,6 +8,7 @@ import AssignClientForm from "@/components/Forms/AssignClientForm";
 import ClientForm from "@/components/Forms/ClientForm";
 import CoachForm from "@/components/Forms/CoachForm";
 import CompanyForm from "@/components/Forms/CompanyForm";
+import { FormModalShell } from "@/components/Dashboard/form-modal-shell";
 import { Button } from "@/components/ui-elements/button";
 import { FormModalTriggerProps } from "@/types/forms";
 import StaffForm from "../Forms/StaffForm";
@@ -67,31 +68,29 @@ export function FormModalTrigger({
                   if (e.target === e.currentTarget) close();
                 }}
               >
-                <div className="w-full max-w-4xl overflow-hidden rounded-2xl bg-white shadow-xl dark:bg-dark-2">
-                  <div className="max-h-[85vh] overflow-y-auto p-4">
-                    {formType === "client" && (
-                      <ClientForm
-                        companyPlan={companyPlan}
-                        onSuccess={handleSuccess}
-                      />
-                    )}
-                    {formType === "assignClient" && (
-                      <AssignClientForm onSuccess={handleSuccess} />
-                    )}
-                    {formType === "company" && (
-                      <CompanyForm onSuccess={handleSuccess} />
-                    )}
-                    {formType === "coach" && (
-                      <CoachForm onSuccess={handleSuccess} />
-                    )}
-                    {formType === "staff" && (
-                      <StaffForm onSuccess={handleSuccess} />
-                    )}
-                    {formType === "announcement" && (
-                      <AnnouncementForm onSuccess={handleSuccess} />
-                    )}
-                  </div>
-                </div>
+                <FormModalShell onClose={close}>
+                  {formType === "client" && (
+                    <ClientForm
+                      companyPlan={companyPlan}
+                      onSuccess={handleSuccess}
+                    />
+                  )}
+                  {formType === "assignClient" && (
+                    <AssignClientForm onSuccess={handleSuccess} />
+                  )}
+                  {formType === "company" && (
+                    <CompanyForm onSuccess={handleSuccess} />
+                  )}
+                  {formType === "coach" && (
+                    <CoachForm onSuccess={handleSuccess} />
+                  )}
+                  {formType === "staff" && (
+                    <StaffForm onSuccess={handleSuccess} />
+                  )}
+                  {formType === "announcement" && (
+                    <AnnouncementForm onSuccess={handleSuccess} />
+                  )}
+                </FormModalShell>
               </div>,
               document.body,
             )

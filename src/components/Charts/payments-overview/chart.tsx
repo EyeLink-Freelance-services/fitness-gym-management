@@ -15,6 +15,7 @@ const Chart = dynamic(() => import("react-apexcharts"), {
 
 export function PaymentsOverviewChart({ data }: PropsType) {
   const isMobile = useIsMobile();
+  const received = isMobile ? data.received.slice(-5) : data.received;
 
   const options: ApexOptions = {
     legend: {
@@ -90,8 +91,8 @@ export function PaymentsOverviewChart({ data }: PropsType) {
         series={[
           {
             name: "Received",
-            data: data.received,
-          }
+            data: received,
+          },
         ]}
         type="area"
         height={310}
